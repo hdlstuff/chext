@@ -4,19 +4,6 @@ import chisel3._
 import chisel3.util.ReadyValidIO
 import chisel3.reflect.DataMirror
 
-private[axi4] trait PropagatesFlip extends Bundle {
-
-  /** Master ports are not flipped, slave ports are flipped.
-    *
-    * @return
-    */
-  private[axi4] final def isFlipped =
-    DataMirror.specifiedDirectionOf(this) == SpecifiedDirection.Flip
-
-  private[axi4] final def propagateFlip[T <: Data](t: T) =
-    if (isFlipped) Flipped(t) else t
-}
-
 // TODO maybe bring in the `cache` flags
 // TODO may support ACE as well?
 
@@ -90,9 +77,7 @@ case class Config(
   * @param cfg
   *   configuration
   */
-class Interface(implicit val cfg: Config)
-    extends Bundle
-    with PropagatesFlip {
+class Interface(implicit val cfg: Config) extends Bundle {
 
   val ARREADY = if (cfg.read) Some(Input(Bool())) else None
   val ARVALID = if (cfg.read) Some(Output(Bool())) else None
@@ -164,10 +149,6 @@ class Interface(implicit val cfg: Config)
       Some(Input(Bits(cfg.wUserB.W)))
     else None
 }
-object Master {
-
-  /** create an AXI4 master interface with the given configuration. */
-}
 
 object Interface {
   def slave(implicit cfg: Config) = Flipped(new Interface)
@@ -191,13 +172,4 @@ object Util {
       }
     ).asUInt
   }
-}
-
-trait InterfaceLike extends Bundle {
-  def getConfig: Config
-  def ar: ReadyValidIO[Data]
-  def r: ReadyValidIO[Data]
-  def aw: ReadyValidIO[Data]
-  def w: ReadyValidIO[Data]
-  def b: ReadyValidIO[Data]
 }

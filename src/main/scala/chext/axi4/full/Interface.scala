@@ -1,4 +1,4 @@
-package chext.axi4.lite
+package chext.axi4.full
 
 import chisel3._
 import chisel3.util._
@@ -13,13 +13,48 @@ import chext.axi4.utils._
   * @param cfg
   *   configuration
   */
-class AddressChannel(implicit cfg: axi4.Config) extends Bundle {
+abstract class AddressChannel(implicit cfg: axi4.Config) extends Bundle {
+
+  /** identification tag */
+  val id = UInt(cfg.wId.W)
 
   /** the address of the first transfer */
   val addr = UInt(cfg.wAddr.W)
 
+  /** the exact number of data transfers */
+  val len = UInt(8.W)
+
+  /** the number of bytes in each data transfer */
+  val size = UInt(3.W)
+
+  /** burst type */
+  val burst = UInt(2.W)
+
+  /** atomic access */
+  val lock = Bool()
+
+  /** cache flag */
+  val cache = UInt(4.W)
+
   /** protection flag */
   val prot = UInt(3.W)
+
+  /** quality-of-service */
+  val qos = UInt(4.W)
+
+  /** region identifier */
+  val region = UInt(4.W)
+
+  /** user-defined data */
+  def user: Bits
+}
+
+class ReadAddressChannel(implicit cfg: axi4.Config) extends AddressChannel {
+  val user = Bits(cfg.wUserAR.W)
+}
+
+class WriteAddressChannel(implicit cfg: axi4.Config) extends AddressChannel {
+  val user = Bits(cfg.wUserAW.W)
 }
 
 /** Read data channel. (R)
@@ -29,11 +64,20 @@ class AddressChannel(implicit cfg: axi4.Config) extends Bundle {
   */
 class ReadDataChannel(implicit cfg: axi4.Config) extends Bundle {
 
+  /** identification tag */
+  val id = UInt(cfg.wId.W)
+
   /** data */
-  val data = UInt(cfg.wData.W)
+  val data = Bits(cfg.wData.W)
 
   /** response flag */
   val resp = UInt(2.W)
+
+  /** last burst */
+  val last = Bool()
+
+  /** user-defined data */
+  val user = Bits(cfg.wUserR.W)
 }
 
 /** Write data channel. (W)
@@ -43,22 +87,37 @@ class ReadDataChannel(implicit cfg: axi4.Config) extends Bundle {
   */
 class WriteDataChannel(implicit cfg: axi4.Config) extends Bundle {
 
+  /** identification tag */
+  val id = UInt(cfg.wId.W)
+
   /** data */
-  val data = UInt(cfg.wData.W)
+  val data = Bits(cfg.wData.W)
 
   /** strobe */
   val strb = UInt(cfg.wStrobe.W)
+
+  /** last burst */
+  val last = Bool()
+
+  /** user-defined data */
+  val user = Bits(cfg.wUserW.W)
 }
 
 /** Write response channel. (B)
   *
   * @param cfg
-  *   configuration (not used)
+  *   configuration
   */
-class WriteResponseChannel(implicit val cfg: axi4.Config) extends Bundle {
+class WriteResponseChannel(implicit cfg: axi4.Config) extends Bundle {
+
+  /** identification tag */
+  val id = UInt(cfg.wId.W)
 
   /** response flag */
   val resp = UInt(2.W)
+
+  /** user-defined data */
+  val user = Bits(cfg.wUserB.W)
 }
 
 abstract class Interface extends Bundle {
@@ -84,7 +143,7 @@ abstract class Interface extends Bundle {
 
 object Interface {
   def apply(cfg: axi4.Config): Interface = {
-    assert(cfg.lite)
+    assert(!cfg.lite)
     implicit val _cfg: axi4.Config = cfg
 
     (cfg.read, cfg.write) match {
@@ -107,14 +166,26 @@ object Interface {
       // AR
       x.ARREADY -> y.ar.ready,
       x.ARVALID -> y.ar.valid,
+      x.ARID -> y.ar.bits.id,
       x.ARADDR -> y.ar.bits.addr,
+      x.ARLEN -> y.ar.bits.len,
+      x.ARSIZE -> y.ar.bits.size,
+      x.ARBURST -> y.ar.bits.burst,
+      x.ARLOCK -> y.ar.bits.lock,
+      x.ARCACHE -> y.ar.bits.cache,
       x.ARPROT -> y.ar.bits.prot,
+      x.ARQOS -> y.ar.bits.qos,
+      x.ARREGION -> y.ar.bits.region,
+      x.ARUSER -> y.ar.bits.user,
 
       // R
       x.RREADY -> y.r.ready,
       x.RVALID -> y.r.valid,
+      x.RID -> y.r.bits.id,
       x.RDATA -> y.r.bits.data,
-      x.RRESP -> y.r.bits.resp
+      x.RRESP -> y.r.bits.resp,
+      x.RLAST -> y.r.bits.last,
+      x.RUSER -> y.r.bits.user
     ).map { case (a, b) => a.get -> b }
 
   /** pairs for DataView */
@@ -126,19 +197,33 @@ object Interface {
       // AW
       x.AWREADY -> y.aw.ready,
       x.AWVALID -> y.aw.valid,
+      x.AWID -> y.aw.bits.id,
       x.AWADDR -> y.aw.bits.addr,
+      x.AWLEN -> y.aw.bits.len,
+      x.AWSIZE -> y.aw.bits.size,
+      x.AWBURST -> y.aw.bits.burst,
+      x.AWLOCK -> y.aw.bits.lock,
+      x.AWCACHE -> y.aw.bits.cache,
       x.AWPROT -> y.aw.bits.prot,
+      x.AWQOS -> y.aw.bits.qos,
+      x.AWREGION -> y.aw.bits.region,
+      x.AWUSER -> y.aw.bits.user,
 
       // W
       x.WREADY -> y.w.ready,
       x.WVALID -> y.w.valid,
+      x.WID -> y.w.bits.id,
       x.WDATA -> y.w.bits.data,
       x.WSTRB -> y.w.bits.strb,
+      x.WLAST -> y.w.bits.last,
+      x.WUSER -> y.w.bits.user,
 
       // B
       x.BREADY -> y.b.ready,
       x.BVALID -> y.b.valid,
-      x.BRESP -> y.b.bits.resp
+      x.BID -> y.b.bits.id,
+      x.BRESP -> y.b.bits.resp,
+      x.BUSER -> y.b.bits.user
     ).map { case (a, b) => a.get -> b }
 
   implicit val view: DataView[axi4.Interface, Interface] =
@@ -163,20 +248,20 @@ object Interface {
 }
 
 private class ReadInterface(implicit val cfg: axi4.Config) extends Interface {
-  override val ar = Irrevocable(new AddressChannel)
+  override val ar = Irrevocable(new ReadAddressChannel)
   override val r = Flipped(Irrevocable(new ReadDataChannel))
 }
 
 private class WriteInterface(implicit val cfg: axi4.Config) extends Interface {
-  override val aw = Irrevocable(new AddressChannel)
+  override val aw = Irrevocable(new WriteAddressChannel)
   override val w = Irrevocable(new WriteDataChannel)
   override val b = Flipped(Irrevocable(new WriteResponseChannel))
 }
 private class ReadWriteInterface(implicit val cfg: axi4.Config)
     extends Interface {
-  override val ar = Irrevocable(new AddressChannel)
+  override val ar = Irrevocable(new ReadAddressChannel)
   override val r = Flipped(Irrevocable(new ReadDataChannel))
-  override val aw = Irrevocable(new AddressChannel)
+  override val aw = Irrevocable(new WriteAddressChannel)
   override val w = Irrevocable(new WriteDataChannel)
   override val b = Flipped(Irrevocable(new WriteResponseChannel))
 }
@@ -184,9 +269,9 @@ private class ReadWriteInterface(implicit val cfg: axi4.Config)
 import axi4.Casts._
 
 object main extends App {
-  class LiteInterfaceTestDevice extends Module {
-    private val cfg1 = axi4.Config(read = true, write = false, lite = true)
-    private val cfg2 = axi4.Config(lite = true)
+  class FullInterfaceTestDevice extends Module {
+    private val cfg1 = axi4.Config(read = true, write = false)
+    private val cfg2 = axi4.Config(wUserAR = 1, wUserB = 5)
 
     val slave1 = IO(axi4.Interface.slave(cfg1))
     val master1 = IO(axi4.Interface.master(cfg1))
@@ -197,12 +282,12 @@ object main extends App {
     val slave3 = IO(axi4.Interface.slave(cfg2))
     val master3 = IO(axi4.Interface.master(cfg2))
 
-    master1.asLite <> slave1.asLite
-    master2.asLite <> slave2.asLite
-    master2.asLite <> slave2.asLite
+    master1.asFull <> slave1.asFull
+    master2.asFull <> slave2.asFull
+    master2.asFull <> slave2.asFull
 
-    slave3.asLite <> master3.asLite
+    slave3.asFull <> master3.asFull
   }
 
-  emitVerilog(new LiteInterfaceTestDevice, Array("--target-dir", "output/"))
+  emitVerilog(new FullInterfaceTestDevice, Array("--target-dir", "output/"))
 }
