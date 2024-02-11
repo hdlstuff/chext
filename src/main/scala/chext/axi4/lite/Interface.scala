@@ -96,7 +96,7 @@ object Interface {
   }
 
   /** pairs for DataView */
-  private[axi4] def readPairs(
+  def readPairs(
       x: axi4.RawInterface,
       y: Interface
   ): Iterable[(Data, Data)] =
@@ -115,7 +115,7 @@ object Interface {
     ).map { case (a, b) => a.get -> b }
 
   /** pairs for DataView */
-  private[axi4] def writePairs(
+  def writePairs(
       x: axi4.RawInterface,
       y: Interface
   ): Iterable[(Data, Data)] =

@@ -11,8 +11,8 @@ object connect {
   }
 }
 
-object ConnectOps {
-  implicit class connectTo[T <: Data](source: ReadyValidIO[T]) {
+object ConnectOp {
+  implicit class elastic_connect_op[T <: Data](source: ReadyValidIO[T]) {
     def :=>(sink: ReadyValidIO[T]): Unit = {
       connect(source, sink)
     }
