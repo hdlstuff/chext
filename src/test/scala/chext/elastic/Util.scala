@@ -5,9 +5,12 @@ import chext.elastic
 
 import chisel3._
 import chisel3.util._
+
 import chiseltest._
+
 import chisel3.experimental.BundleLiterals._
-import elastic.test.{PacketBridge, Packet}
+
+import elastic.test.PacketOps._
 
 class DataLast extends Bundle {
   val data = UInt(32.W)
@@ -22,7 +25,7 @@ case class TesterDataLast(
 object TesterDataLast {
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
   implicit val tagTesterDataLast =
-    chext.elastic.test.PacketTag.makeTag[TesterDataLast]
+    elastic.test.PacketTag.makeTag[TesterDataLast]
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
   implicit val bridgeTesterDataLast =
