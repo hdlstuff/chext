@@ -1,7 +1,7 @@
 package chext.axi4
 
 import chisel3._
-import chisel3.util.ReadyValidIO
+import chisel3.util._
 import chisel3.reflect.DataMirror
 
 import chext.{axi4 => axi4}
@@ -57,7 +57,7 @@ case class Config(
     val wUserB: Int = 0
 ) {
   require(wData >= 8)
-  require(util.isPow2(wData))
+  require(isPow2(wData))
   require(!lite || (wData == 32 || wData == 64))
 
   /** width of the strobe signal for the write data channel */
@@ -164,7 +164,7 @@ object Master {
   def apply(cfg: axi4.Config) = Interface(cfg)
 }
 
-object Util {
+object util {
 
   /** Implements logic for write strobe */
   def writeStrobeLogic(original: Bits, wdata: Bits, wstrb: Bits): Bits = {

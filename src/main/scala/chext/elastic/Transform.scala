@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
-object Transform {
+object TransformOp {
   implicit class transformDecoupled[T <: Data](input: DecoupledIO[T]) {
     def transform[TT <: Data](gen: TT)(fn: (T, TT) => Unit) = {
       val result = Wire(Flipped(new DecoupledIO(gen)))
