@@ -3,6 +3,9 @@ package chext.elastic.test
 import chisel3._
 import chisel3.util._
 import chiseltest._
+
+import chext.utils.Expect
+
 import scala.collection.mutable.ArrayBuffer
 
 trait Packet {
@@ -29,18 +32,6 @@ abstract class PacketBridge[D <: Data, TP: PacketTag] {
 }
 
 trait PacketOps {
-  def expectEquals[T](a: T, b: T, msg: String = "") = {
-    if (a != b) {
-      throw new Exception(f"${a} != ${b}. Message: ${msg}")
-    }
-  }
-
-  def expectCondition(b: Boolean, msg: String = "") = {
-    if (!b) {
-      throw new Exception(f"Condition failed. Message: ${msg}")
-    }
-  }
-
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
   implicit val tagInt = PacketTag.makeTagPrimitive[Int]
 
@@ -139,7 +130,7 @@ trait PacketOps {
     ): Unit = tps.foreach { (tp) =>
       {
         require(tag.isLast(tps.last))
-        expectEquals(tp, receivePacket[TP](), "expectPacket")
+        Expect.equals(tp, receivePacket[TP](), "expectPacket")
       }
     }
 

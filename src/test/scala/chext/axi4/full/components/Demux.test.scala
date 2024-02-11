@@ -8,46 +8,16 @@ import chisel3.experimental.BundleLiterals._
 import chiseltest._
 
 import chext.axi4
-import chext.elastic
+import axi4.full.components.{InterconnectTester, InterconnectHelper}
 
-import axi4.ConnectTo._
-import axi4.ResponseFlag
-import axi4.full._
-import axi4.full.test.InterconnectTester
-import elastic.test.TesterSpec
-import axi4.full.components.{Demux, DemuxConfig}
-import axi4.test.TestedModule
-import axi4.full.ReadWriteInterface
-import axi4.Config
-import chext.axi4.{Config, ResponseFlag}
-
-class DemuxTester(
-    val axiCfg: axi4.Config,
-    val numMasters: Int = 4,
-    val decoder: (UInt) => (UInt),
-    val demuxCfg: DemuxConfig = DemuxConfig()
-) extends axi4.test.TestedModule {
-  require(axiCfg.read && axiCfg.write)
-  val demux = Module(new Demux(axiCfg, numMasters, decoder, demuxCfg))
-
-  val s_axi = IO(ReadWriteInterface.slave(axiCfg))
-  val m_axi = IO(Vec(numMasters, ReadWriteInterface.master(axiCfg)))
-
-  s_axi :=> demux.S_AXI
-  demux.M_AXI.zip(m_axi).foreach { case (a, b) => a :=> b }
-
-  declareSlaveInterface(s_axi)
-  m_axi.foreach { declareMasterInterface(_) }
-}
-
-class DemuxSpec extends elastic.test.TesterSpec {
+class DemuxSpec extends chext.test.TesterSpec {
   def decodeFn(x: UInt) = (x >> 12) & 3.U
   def encodeFn(masterIdx: Int, offset: Int) = {
     ((masterIdx << 12) | offset)
   }
 
-  def moduleFn = new DemuxTester(
-    chext.axi4.Config(
+  def moduleFn = new Demux(
+    axi4.Config(
       wId = 4,
       wAddr = 32,
       wData = 32,
@@ -62,8 +32,13 @@ class DemuxSpec extends elastic.test.TesterSpec {
   enableVcd()
   useVerilator()
 
-  "AXI4 Full Demux (basic)" in moduleTest(moduleFn) {
-    new InterconnectTester(_) {
+  private implicit val helper: InterconnectHelper[Demux] = new InterconnectHelper[Demux] {
+    def slaveInterfaces(module: Demux): Seq[axi4.full.Interface] = Seq(module.s_axi)
+    def masterInterfaces(module: Demux): Seq[axi4.full.Interface] = module.m_axi.toSeq
+  }
+
+  "AXI4 Full Demux (basic)" in testWithTester(moduleFn) {
+    new InterconnectTester(_, 2000) {
       protected def createTasks(): Unit = {
         for (masterIdx <- (0 until 4)) {
           for (id <- (0 until 16)) {

@@ -166,8 +166,13 @@ class Demux(
 
   override def desiredName: String = "axi4FullDemux"
 
-  val S_AXI = IO(axi4.Slave(axiCfg))
-  val M_AXI = IO(Vec(numMasters, axi4.Master(axiCfg)))
+  val s_axi = IO(axi4.full.Slave(axiCfg))
+  val m_axi = IO(Vec(numMasters, axi4.full.Master(axiCfg)))
+
+  private val s_axi_ = SlaveBuffer(s_axi, demuxCfg.slaveBuffers)
+  private val m_axi_ = m_axi.map { (x) =>
+    MasterBuffer(x, demuxCfg.masterBuffers)
+  }
 
   private val wPort = log2Up(numMasters)
   private val genPort = UInt(wPort.W)
@@ -185,16 +190,11 @@ class Demux(
     transactionTracker.noComplete()
     transactionTracker.noInitiate()
 
-    val s_axi = SlaveBuffer(S_AXI.asFull, demuxCfg.slaveBuffers)
-    val m_axi = M_AXI.map { (x) =>
-      MasterBuffer(x.asFull, demuxCfg.masterBuffers)
-    }
-
     def arLogic: Unit = {
-      val genArPort = new Bundle2(s_axi.ar.bits.cloneType, genPort)
+      val genArPort = new Bundle2(s_axi_.ar.bits.cloneType, genPort)
       val arPort = Wire(Irrevocable(genArPort))
 
-      new OnPacket(s_axi.ar, arPort) {
+      new OnPacket(s_axi_.ar, arPort) {
         override protected def onPacket: Unit = {
           val id = bits.id
           val addr = bits.addr
@@ -209,7 +209,7 @@ class Demux(
         }
       }
 
-      val demuxInput = Wire(Irrevocable(s_axi.ar.bits.cloneType))
+      val demuxInput = Wire(Irrevocable(s_axi_.ar.bits.cloneType))
       val demuxSelect = Wire(Irrevocable(genPort))
 
       new Fork(arPort) {
@@ -221,21 +221,21 @@ class Demux(
 
       chext.elastic.Demux(
         demuxInput,
-        m_axi.map { _.ar },
+        m_axi_.map { _.ar },
         demuxSelect
       )
     }
 
     def rLogic: Unit = {
       chext.elastic.Arbiter(
-        m_axi.map { _.r },
-        s_axi.r,
+        m_axi_.map { _.r },
+        s_axi_.r,
         demuxCfg.arbiterPolicy,
         isLastFn = (x: ReadDataChannel) => x.last
       )
 
-      when(s_axi.r.fire && s_axi.r.bits.last) {
-        transactionTracker.complete(s_axi.r.bits.id)
+      when(s_axi_.r.fire && s_axi_.r.bits.last) {
+        transactionTracker.complete(s_axi_.r.bits.id)
       }
     }
 
@@ -256,11 +256,6 @@ class Demux(
     transactionTracker.noComplete()
     transactionTracker.noInitiate()
 
-    val s_axi = SlaveBuffer(S_AXI.asFull, demuxCfg.slaveBuffers)
-    val m_axi = M_AXI.map { (x) =>
-      MasterBuffer(x.asFull, demuxCfg.masterBuffers)
-    }
-
     val portQueue = Module(
       new Queue(
         genPort,
@@ -271,10 +266,10 @@ class Demux(
     )
 
     def awLogic: Unit = {
-      val genAwPort = new Bundle2(s_axi.aw.bits.cloneType, genPort)
+      val genAwPort = new Bundle2(s_axi_.aw.bits.cloneType, genPort)
       val awPort = Wire(Irrevocable(genAwPort))
 
-      new OnPacket(s_axi.aw, awPort) {
+      new OnPacket(s_axi_.aw, awPort) {
         protected def onPacket: Unit = {
           val id = bits.id
           val addr = bits.addr
@@ -289,7 +284,7 @@ class Demux(
         }
       }
 
-      val demuxInput = Wire(Irrevocable(s_axi.aw.bits.cloneType))
+      val demuxInput = Wire(Irrevocable(s_axi_.aw.bits.cloneType))
       val demuxSelect = Wire(Irrevocable(genPort))
 
       new Fork(awPort) {
@@ -300,23 +295,27 @@ class Demux(
         }
       }
 
-      chext.elastic.Demux(demuxInput, m_axi.map { _.aw }, demuxSelect)
+      chext.elastic.Demux(demuxInput, m_axi_.map { _.aw }, demuxSelect)
     }
 
     def wLogic: Unit = {
       chext.elastic.Demux(
-        s_axi.w,
-        m_axi.map { _.w },
+        s_axi_.w,
+        m_axi_.map { _.w },
         portQueue.io.deq,
         isLastFn = (x: WriteDataChannel) => x.last
       )
     }
 
     def bLogic: Unit = {
-      chext.elastic.Arbiter(m_axi.map { _.b }, s_axi.b, demuxCfg.arbiterPolicy)
+      chext.elastic.Arbiter(
+        m_axi_.map { _.b },
+        s_axi_.b,
+        demuxCfg.arbiterPolicy
+      )
 
-      when(s_axi.b.fire) {
-        transactionTracker.complete(s_axi.b.bits.id)
+      when(s_axi_.b.fire) {
+        transactionTracker.complete(s_axi_.b.bits.id)
       }
     }
 
