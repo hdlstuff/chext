@@ -154,12 +154,9 @@ object Interface {
     }
   }
 
-  def master(cfg: axi4.Config): Interface = apply(cfg)
-  def slave(cfg: axi4.Config): Interface = Flipped(apply(cfg))
-
   /** pairs for DataView */
   private[axi4] def readPairs(
-      x: axi4.Interface,
+      x: axi4.RawInterface,
       y: Interface
   ): Iterable[(Data, Data)] =
     Seq(
@@ -190,7 +187,7 @@ object Interface {
 
   /** pairs for DataView */
   private[axi4] def writePairs(
-      x: axi4.Interface,
+      x: axi4.RawInterface,
       y: Interface
   ): Iterable[(Data, Data)] =
     Seq(
@@ -226,8 +223,8 @@ object Interface {
       x.BUSER -> y.b.bits.user
     ).map { case (a, b) => a.get -> b }
 
-  implicit val view: DataView[axi4.Interface, Interface] =
-    PartialDataView.mapping[axi4.Interface, Interface](
+  implicit val view: DataView[axi4.RawInterface, Interface] =
+    PartialDataView.mapping[axi4.RawInterface, Interface](
       (x) => {
         val interface = Interface(x.cfg)
 
@@ -245,6 +242,14 @@ object Interface {
         }
       }
     )
+}
+
+object Slave {
+  def apply(cfg: axi4.Config) = Flipped(Interface(cfg))
+}
+
+object Master {
+  def apply(cfg: axi4.Config) = Interface(cfg)
 }
 
 private class ReadInterface(implicit val cfg: axi4.Config) extends Interface {
@@ -266,21 +271,21 @@ private class ReadWriteInterface(implicit val cfg: axi4.Config)
   override val b = Flipped(Irrevocable(new WriteResponseChannel))
 }
 
-import axi4.Casts._
+private object main extends App {
+  import axi4.Casts._
 
-object main extends App {
   class FullInterfaceTestDevice extends Module {
     private val cfg1 = axi4.Config(read = true, write = false)
     private val cfg2 = axi4.Config(wUserAR = 1, wUserB = 5)
 
-    val slave1 = IO(axi4.Interface.slave(cfg1))
-    val master1 = IO(axi4.Interface.master(cfg1))
+    val slave1 = IO(axi4.Slave(cfg1))
+    val master1 = IO(axi4.Master(cfg1))
 
-    val slave2 = IO(axi4.Interface.slave(cfg2))
-    val master2 = IO(axi4.Interface.master(cfg2))
+    val slave2 = IO(axi4.Slave(cfg2))
+    val master2 = IO(axi4.Master(cfg2))
 
-    val slave3 = IO(axi4.Interface.slave(cfg2))
-    val master3 = IO(axi4.Interface.master(cfg2))
+    val slave3 = IO(axi4.Slave(cfg2))
+    val master3 = IO(axi4.Master(cfg2))
 
     master1.asFull <> slave1.asFull
     master2.asFull <> slave2.asFull

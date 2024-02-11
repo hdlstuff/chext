@@ -4,6 +4,8 @@ import chisel3._
 import chisel3.util.ReadyValidIO
 import chisel3.reflect.DataMirror
 
+import chext.{axi4 => axi4}
+
 // TODO maybe bring in the `cache` flags
 // TODO may support ACE as well?
 
@@ -77,7 +79,7 @@ case class Config(
   * @param cfg
   *   configuration
   */
-class Interface(implicit val cfg: Config) extends Bundle {
+class RawInterface(val cfg: axi4.Config) extends Bundle {
 
   val ARREADY = if (cfg.read) Some(Input(Bool())) else None
   val ARVALID = if (cfg.read) Some(Output(Bool())) else None
@@ -151,8 +153,15 @@ class Interface(implicit val cfg: Config) extends Bundle {
 }
 
 object Interface {
-  def slave(implicit cfg: Config) = Flipped(new Interface)
-  def master(implicit cfg: Config) = new Interface
+  def apply(cfg: axi4.Config) = new RawInterface(cfg)
+}
+
+object Slave {
+  def apply(cfg: axi4.Config) = Flipped(Interface(cfg))
+}
+
+object Master {
+  def apply(cfg: axi4.Config) = Interface(cfg)
 }
 
 object Util {
