@@ -14,29 +14,29 @@ class Distributor[T <: Data](
   override def desiredName: String = "elasticDistributor"
 
   val io = IO(new Bundle {
-    val input = Flipped(Decoupled(gen))
-    val outputs = Vec(n, Decoupled(gen))
-    val select = Irrevocable(genSelect)
+    val source = Source(Decoupled(gen))
+    val sinks = Vec(n, Sink(Decoupled(gen)))
+    val select = Sink(Irrevocable(genSelect))
   })
 
-  protected val chooser = chooserFn(VecInit(io.outputs.map { _.ready }))
+  protected val chooser = chooserFn(VecInit(io.sinks.map { _.ready }))
 
-  protected val inputValid = io.input.valid
-  protected val inputLast = isLastFn(io.input.bits)
-  protected val inputReady = io.input.ready
+  protected val sourceValid = io.source.valid
+  protected val sourceLast = isLastFn(io.source.bits)
+  protected val sourceReady = io.source.ready
 
   protected val selectValid = io.select.valid
   protected val selectReady = io.select.ready
 
-  protected val outputValid = Wire(Bool())
-  protected val outputReady = io.outputs(choice).ready
+  protected val sinkValid = Wire(Bool())
+  protected val sinkReady = io.sinks(choice).ready
 
   protected def implementDataPlane() = {
-    io.outputs.foreach { x => x.bits := io.input.bits }
+    io.sinks.foreach { x => x.bits := io.source.bits }
     io.select.bits := choice
 
-    io.outputs.zipWithIndex.foreach { case (x, i) =>
-      x.valid := outputValid && i.U === (choice)
+    io.sinks.zipWithIndex.foreach { case (x, i) =>
+      x.valid := sinkValid && i.U === (choice)
     }
   }
 
@@ -47,23 +47,23 @@ class Distributor[T <: Data](
 
 object Distributor {
   def apply[T <: Data](
-      input: ReadyValidIO[T],
-      outputs: Seq[ReadyValidIO[T]],
+      source: ReadyValidIO[T],
+      sinks: Seq[ReadyValidIO[T]],
       chooserFn: Chooser.ChooserFn,
       select: Option[ReadyValidIO[T]] = None,
       isLastFn: T => Bool = (_: T) => true.B
   ): Unit = {
     val Distributor = Module(
       new Distributor(
-        chiselTypeOf(input.bits),
-        outputs.length,
+        chiselTypeOf(source.bits),
+        sinks.length,
         chooserFn,
         isLastFn
       )
     )
 
-    Distributor.io.input <> input
-    Distributor.io.outputs.zip(outputs).foreach { case (x, y) => x <> y }
+    Distributor.io.source <> source
+    Distributor.io.sinks.zip(sinks).foreach { case (x, y) => x <> y }
 
     select match {
       case None         => Disposed(Distributor.io.select)

@@ -13,29 +13,29 @@ class Arbiter[T <: Data](
   override def desiredName: String = "elasticArbiter"
 
   val io = IO(new Bundle {
-    val inputs = Vec(n, Flipped(Decoupled(gen)))
-    val output = Decoupled(gen)
-    val select = Irrevocable(genSelect)
+    val sources = Vec(n, Source(Decoupled(gen)))
+    val sink = Sink(Decoupled(gen))
+    val select = Sink(Irrevocable(genSelect))
   })
 
-  protected val chooser = chooserFn(VecInit(io.inputs.map { _.valid }))
+  protected val chooser = chooserFn(VecInit(io.sources.map { _.valid }))
 
-  protected val inputValid = io.inputs(choice).valid
-  protected val inputLast = isLastFn(io.inputs(choice).bits)
-  protected val inputReady = Wire(Bool())
+  protected val sourceValid = io.sources(choice).valid
+  protected val sourceLast = isLastFn(io.sources(choice).bits)
+  protected val sourceReady = Wire(Bool())
 
   protected val selectValid = io.select.valid
   protected val selectReady = io.select.ready
 
-  protected val outputValid = io.output.valid
-  protected val outputReady = io.output.ready
+  protected val sinkValid = io.sink.valid
+  protected val sinkReady = io.sink.ready
 
   protected def implementDataPlane() = {
-    io.output.bits := io.inputs(choice).bits
+    io.sink.bits := io.sources(choice).bits
     io.select.bits := choice
 
-    io.inputs.zipWithIndex.foreach { case (x, i) =>
-      x.ready := inputReady && i.U === (choice)
+    io.sources.zipWithIndex.foreach { case (x, i) =>
+      x.ready := sourceReady && i.U === (choice)
     }
   }
 
@@ -46,23 +46,23 @@ class Arbiter[T <: Data](
 
 object Arbiter {
   def apply[T <: Data](
-      inputs: Seq[ReadyValidIO[T]],
-      output: ReadyValidIO[T],
+      sources: Seq[ReadyValidIO[T]],
+      sink: ReadyValidIO[T],
       chooserFn: Chooser.ChooserFn,
       select: Option[ReadyValidIO[UInt]] = None,
       isLastFn: T => Bool = (_: T) => true.B
   ): Unit = {
     val arbiter = Module(
       new Arbiter(
-        chiselTypeOf(inputs(0).bits),
-        inputs.length,
+        chiselTypeOf(sources(0).bits),
+        sources.length,
         chooserFn,
         isLastFn
       )
     )
 
-    arbiter.io.inputs.zip(inputs).foreach { case (x, y) => x <> y }
-    arbiter.io.output <> output
+    arbiter.io.sources.zip(sources).foreach { case (x, y) => x <> y }
+    arbiter.io.sink <> sink
 
     select match {
       case None         => Disposed(arbiter.io.select)

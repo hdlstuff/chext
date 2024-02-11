@@ -14,40 +14,40 @@ class Mux[T <: Data](
   val genSelect = UInt(chisel3.util.log2Up(n).W)
 
   val io = IO(new Bundle {
-    val inputs = Vec(n, Flipped(Decoupled(gen)))
-    val output = Decoupled(gen)
-    val select = Flipped(Irrevocable(genSelect))
+    val sources = Vec(n, Source(Decoupled(gen)))
+    val sink = Sink(Decoupled(gen))
+    val select = Source(Irrevocable(genSelect))
   })
 
-  private val valid = io.select.valid && io.inputs(io.select.bits).valid
-  private val fire = valid && io.output.ready
-  private val isLast = isLastFn(io.output.bits)
+  private val valid = io.select.valid && io.sources(io.select.bits).valid
+  private val fire = valid && io.sink.ready
+  private val isLast = isLastFn(io.sink.bits)
 
-  io.inputs.zipWithIndex.foreach { case (x, i) =>
+  io.sources.zipWithIndex.foreach { case (x, i) =>
     x.ready := fire && i.U === (io.select.bits)
   }
 
-  // output ready might wait for output valid
+  // sink ready might wait for sink valid
   // so, make sure that they do not depend on each other
-  io.output.valid := valid
+  io.sink.valid := valid
   
   io.select.ready := fire && isLast
 
-  io.output.bits := io.inputs(io.select.bits.asUInt).bits
+  io.sink.bits := io.sources(io.select.bits.asUInt).bits
 }
 
 object Mux {
   def apply[T <: Data](
-      inputs: Seq[ReadyValidIO[T]],
-      output: ReadyValidIO[T],
+      sources: Seq[ReadyValidIO[T]],
+      sink: ReadyValidIO[T],
       select: ReadyValidIO[UInt],
       isLastFn: T => Bool = (_: T) => true.B
   ): Unit = {
     val mux = Module(
-      new Mux(chiselTypeOf(inputs(0).bits), inputs.length, isLastFn)
+      new Mux(chiselTypeOf(sources(0).bits), sources.length, isLastFn)
     )
-    mux.io.inputs.zip(inputs).foreach { case (x, y) => x <> y }
-    output <> mux.io.output
+    mux.io.sources.zip(sources).foreach { case (x, y) => x <> y }
+    sink <> mux.io.sink
     mux.io.select <> select
   }
 }

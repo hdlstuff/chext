@@ -5,40 +5,40 @@ import chisel3.util._
 import chisel3.experimental._
 
 object TransformOp {
-  implicit class transformDecoupled[T <: Data](input: DecoupledIO[T]) {
+  implicit class transformDecoupled[T <: Data](source: DecoupledIO[T]) {
     def transform[TT <: Data](gen: TT)(fn: (T, TT) => Unit) = {
-      val result = Wire(Flipped(new DecoupledIO(gen)))
-      result.valid := input.valid
-      input.ready := result.ready
-      fn(input.bits, result.bits)
+      val result = Wire(Source(new DecoupledIO(gen)))
+      result.valid := source.valid
+      source.ready := result.ready
+      fn(source.bits, result.bits)
       result
     }
   }
 
-  implicit class transformIrrevocable[T <: Data](input: IrrevocableIO[T]) {
+  implicit class transformIrrevocable[T <: Data](source: IrrevocableIO[T]) {
     def transform[TT <: Data](gen: TT)(fn: (T, TT) => Unit) = {
-      val result = Wire(Flipped(new IrrevocableIO(gen)))
-      result.valid := input.valid
-      input.ready := result.ready
-      fn(input.bits, result.bits)
+      val result = Wire(Source(new IrrevocableIO(gen)))
+      result.valid := source.valid
+      source.ready := result.ready
+      fn(source.bits, result.bits)
       result
     }
   }
 
-  implicit class transform[T <: Data](input: ReadyValidIO[T]) {
+  implicit class transform[T <: Data](source: ReadyValidIO[T]) {
     def transformAsDecoupled[TT <: Data](gen: TT)(fn: (T, TT) => Unit) = {
-      val result = Wire(Flipped(new DecoupledIO(gen)))
-      result.valid := input.valid
-      input.ready := result.ready
-      fn(input.bits, result.bits)
+      val result = Wire(Source(new DecoupledIO(gen)))
+      result.valid := source.valid
+      source.ready := result.ready
+      fn(source.bits, result.bits)
       result
     }
 
     def transformAsIrrevocable[TT <: Data](gen: TT)(fn: (T, TT) => Unit) = {
-      val result = Wire(Flipped(new IrrevocableIO(gen)))
-      result.valid := input.valid
-      input.ready := result.ready
-      fn(input.bits, result.bits)
+      val result = Wire(Source(new IrrevocableIO(gen)))
+      result.valid := source.valid
+      source.ready := result.ready
+      fn(source.bits, result.bits)
       result
     }
   }

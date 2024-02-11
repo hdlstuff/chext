@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 object Disposed {
-  /** Disposes the output of the given ready/valid interface.
+  /** Disposes the sink of the given ready/valid interface.
     *
     * @param rv
     */

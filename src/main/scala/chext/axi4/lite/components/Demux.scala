@@ -63,9 +63,9 @@ class Demux(
 
       s_axil.ar
         .transform(genArPort) {
-          case (input, output) => {
-            output._1 := input
-            output._2 := decodeFn(input.addr)
+          case (source, sink) => {
+            sink._1 := source
+            sink._2 := decodeFn(source.addr)
           }
         } :=> arPort
 
@@ -121,9 +121,9 @@ class Demux(
 
       s_axil.aw
         .transform(genAwPort) {
-          case (input, output) => {
-            output._1 := input
-            output._2 := decodeFn(input.addr)
+          case (source, sink) => {
+            sink._1 := source
+            sink._2 := decodeFn(source.addr)
           }
         } :=> awPort
 

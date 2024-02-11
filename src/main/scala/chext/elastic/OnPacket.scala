@@ -37,13 +37,13 @@ abstract class OnPacket[Tin <: Data, T <: Data](
     sinkBuffered.bits := DontCare
   }
 
-  /** Consumes the current packet from the input.
+  /** Consumes the current packet from the source.
     */
   protected def consume(): Unit = {
     source.ready := true.B
   }
 
-  /** Produces a new packet to the output.
+  /** Produces a new packet to the sink.
     *
     * @param t
     */

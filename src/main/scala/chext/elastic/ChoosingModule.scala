@@ -21,17 +21,17 @@ abstract class Chooser(val v: Vec[Bool]) extends AffectsChiselPrefix {
 }
 
 private[elastic] trait InputToOutputSelectModule {
-  protected val inputBurst = RegInit(false.B)
+  protected val sourceBurst = RegInit(false.B)
 
-  protected def inputValid: Bool
-  protected def inputLast: Bool
-  protected def inputReady: Bool
+  protected def sourceValid: Bool
+  protected def sourceLast: Bool
+  protected def sourceReady: Bool
 
   protected def selectValid: Bool
   protected def selectReady: Bool
 
-  protected def outputValid: Bool
-  protected def outputReady: Bool
+  protected def sinkValid: Bool
+  protected def sinkReady: Bool
 
   /** Initializes the data path and connects the control signals.
     */
@@ -44,30 +44,30 @@ private[elastic] trait InputToOutputSelectModule {
   /** Initializes the control signals
     */
   protected def implementControlPlane(): Unit = {
-    val outputSent = RegInit(false.B)
+    val sinkSent = RegInit(false.B)
     val selectSent = RegInit(false.B)
 
-    def isSentLogic(outputReady: Bool, outputSent: Bool) = {
-      outputSent := (outputReady || outputSent) && inputValid && !inputReady
+    def isSentLogic(sinkReady: Bool, sinkSent: Bool) = {
+      sinkSent := (sinkReady || sinkSent) && sourceValid && !sourceReady
     }
 
-    isSentLogic(outputReady, outputSent)
+    isSentLogic(sinkReady, sinkSent)
     isSentLogic(selectReady, selectSent)
 
-    selectValid := inputValid && !selectSent && inputLast
-    outputValid := inputValid && !outputSent
+    selectValid := sourceValid && !selectSent && sourceLast
+    sinkValid := sourceValid && !sinkSent
 
-    inputReady := (outputSent || outputReady) &&
-      (!inputLast || inputLast && (selectSent || selectReady))
+    sourceReady := (sinkSent || sinkReady) &&
+      (!sourceLast || sourceLast && (selectSent || selectReady))
 
-    when(inputValid && inputReady) {
-      when(inputLast) {
-        inputBurst := false.B
+    when(sourceValid && sourceReady) {
+      when(sourceLast) {
+        sourceBurst := false.B
       }.otherwise {
-        inputBurst := true.B
+        sourceBurst := true.B
       }
 
-      when(!inputBurst) {
+      when(!sourceBurst) {
         onBurst
       }
     }
@@ -85,7 +85,7 @@ private[elastic] trait ChoosingModule extends InputToOutputSelectModule {
   protected def onBurst: Unit = chooser.onBurst
 
   protected lazy val lastChoice = Reg(genSelect)
-  protected lazy val choice = Mux(inputBurst, lastChoice, chooser.choice)
+  protected lazy val choice = Mux(sourceBurst, lastChoice, chooser.choice)
 
   protected def implementChoiceLogic() = {
     lastChoice := choice
