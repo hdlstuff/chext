@@ -29,8 +29,8 @@ class DemuxSpec extends chext.test.TesterSpec {
     decodeFn
   )
 
-  enableVcd()
   useVerilator()
+  enableVcd()
 
   private implicit val helper: InterconnectHelper[Demux] = new InterconnectHelper[Demux] {
     def slaveInterfaces(module: Demux): Seq[axi4.full.Interface] = Seq(module.s_axi)
@@ -44,6 +44,7 @@ class DemuxSpec extends chext.test.TesterSpec {
           for (id <- (0 until 16)) {
             readTask(
               0,
+              masterIdx,
               encodeFn(masterIdx, rand.nextInt(32) << 2),
               len = rand.nextInt(32),
               id = id
@@ -51,6 +52,7 @@ class DemuxSpec extends chext.test.TesterSpec {
 
             writeTask(
               0,
+              masterIdx,
               encodeFn(masterIdx, rand.nextInt(32) << 2),
               len = rand.nextInt(32),
               id = id
