@@ -131,14 +131,10 @@ class TrueDualPortBram(
     val wData: Int = 32,
     val readLatency: Int = 2
 ) extends Module
-    with bram.Primitive {
-  val interface1 = IO(
-    new bram.PrimitiveIO(bram.PrimitiveConfig(wAddr, wData, true, true))
-  )
+    with bram.RawMemory {
+  val interface1 = IO(new bram.RawInterface(wAddr, wData, true, true))
 
-  val interface2 = IO(
-    new bram.PrimitiveIO(bram.PrimitiveConfig(wAddr, wData, true, true))
-  )
+  val interface2 = IO(new bram.RawInterface(wAddr, wData, true, true))
 
   private val xpm_mem_cfg = xpm_memory_tdpram_config(
     addrWidthA = wAddr,
@@ -178,5 +174,5 @@ class TrueDualPortBram(
   xpm_mem.io.wea := interface1.writeStrobe
   xpm_mem.io.web := interface1.writeStrobe
 
-  def getPorts: Seq[bram.PrimitiveIO] = Seq(interface1, interface2)
+  def getPorts: Seq[bram.RawInterface] = Seq(interface1, interface2)
 }
