@@ -20,12 +20,6 @@ trait TestMixin {
   }
 }
 
-abstract class TesterBase extends TestMixin {
-  def onTest(): Unit
-  def onTimeout(e: TimeoutException): Unit = throw e
-  def run() = onTest()
-}
-
 abstract class TesterSpec extends AnyFreeSpec with ChiselScalatestTester {
   private val annotations = ArrayBuffer.empty[firrtl2.annotations.Annotation]
 
@@ -39,26 +33,4 @@ abstract class TesterSpec extends AnyFreeSpec with ChiselScalatestTester {
 
   override def test[T <: Module](dutGen: => T): TestBuilder[T] =
     super.test(dutGen).withAnnotations(annotations.toSeq)
-
-  /** @note
-    *   Should probably return a TestResult or something. Figure out later.
-    */
-  def testWithTester[T <: Module](
-      dutGen: => T
-  )(testerGen: (T) => TesterBase): Unit = {
-    var tester = Option.empty[TesterBase]
-
-    try {
-      test(dutGen).withAnnotations(annotations.toSeq) { (dut) =>
-        {
-          tester = Some(testerGen(dut))
-          tester.get.run()
-          chiseltest.step()
-        }
-      }
-    } catch {
-      case e: TimeoutException => tester.get.onTimeout(e)
-      case e: Exception        => throw e
-    }
-  }
 }

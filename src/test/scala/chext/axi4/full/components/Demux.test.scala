@@ -29,37 +29,50 @@ class DemuxSpec extends chext.test.TesterSpec {
     decodeFn
   )
 
-  useVerilator()
   enableVcd()
+  useVerilator()
 
-  private implicit val helper: InterconnectHelper[Demux] = new InterconnectHelper[Demux] {
-    def slaveInterfaces(module: Demux): Seq[axi4.full.Interface] = Seq(module.s_axi)
-    def masterInterfaces(module: Demux): Seq[axi4.full.Interface] = module.m_axi.toSeq
-  }
+  private implicit val helper: InterconnectHelper[Demux] =
+    new InterconnectHelper[Demux] {
+      def slaveInterfaces(module: Demux): Seq[axi4.full.Interface] =
+        Seq(module.s_axi)
 
-  "AXI4 Full Demux (basic)" in testWithTester(moduleFn) {
-    new InterconnectTester(_, 2000) {
+      def masterInterfaces(module: Demux): Seq[axi4.full.Interface] =
+        module.m_axi.toSeq
+    }
+
+  "AXI4 Full Demux (basic)" in test(moduleFn) {
+
+    /** The expect test failure behavior is a deadlock.
+      *
+      * If a deadlock happens, you can enable logging for debugging. Note that
+      * VSCode "Debug Console" stops printing log messages after some time, so
+      * to make sure that every event is visible, use `sbt Test`.
+      */
+    new InterconnectTester(_, false) {
       protected def createTasks(): Unit = {
         for (masterIdx <- (0 until 4)) {
           for (id <- (0 until 16)) {
-            readTask(
-              0,
-              masterIdx,
-              encodeFn(masterIdx, rand.nextInt(32) << 2),
-              len = rand.nextInt(32),
-              id = id
-            )
+            for (n <- (0 until 2)) {
+              readTask(
+                0,
+                masterIdx,
+                encodeFn(masterIdx, rand.nextInt(32) << 2),
+                len = rand.nextInt(32),
+                id = id
+              )
 
-            writeTask(
-              0,
-              masterIdx,
-              encodeFn(masterIdx, rand.nextInt(32) << 2),
-              len = rand.nextInt(32),
-              id = id
-            )
+              writeTask(
+                0,
+                masterIdx,
+                encodeFn(masterIdx, rand.nextInt(32) << 2),
+                len = rand.nextInt(32),
+                id = id
+              )
+            }
           }
         }
       }
-    }
+    }.run()
   }
 }

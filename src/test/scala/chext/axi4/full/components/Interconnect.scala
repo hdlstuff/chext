@@ -15,10 +15,9 @@ trait InterconnectHelper[M <: Module] {
 
 abstract class InterconnectTester[T <: Module](
     val dut: T,
-    val timeout: Int = 10000,
     val logEnabled: Boolean = true
 )(implicit val helper: InterconnectHelper[T])
-    extends chext.test.TesterBase {
+    extends chext.test.TestMixin {
 
   private val slaveInterfaces = helper.slaveInterfaces(dut)
   private val masterInterfaces = helper.masterInterfaces(dut)
@@ -216,7 +215,10 @@ abstract class InterconnectTester[T <: Module](
           val threadIdx = threadInfoId + (slaveIdx << threadInfoShift)
           val threadInfo = threadInfos(threadIdx)
 
-          val popNum = rand.nextInt(4 /* TODO make reconfigurable */ )
+          // for sentAny trick to work, we should pop at least once
+          // otherwise, if popNum == 0 for all threads, sentAny = false,
+          // and we exit early (resulting in a deadlock)
+          val popNum = 1 + rand.nextInt(4 /* TODO make reconfigurable */ )
 
           for (i <- (0 until popNum)) {
             if (threadInfo.arTaskQueue.nonEmpty) {
@@ -267,7 +269,8 @@ abstract class InterconnectTester[T <: Module](
           val threadIdx = threadInfoId + (slaveIdx << threadInfoShift)
           val threadInfo = threadInfos(threadIdx)
 
-          val popNum = rand.nextInt(4 /* TODO make reconfigurable */ )
+          // for sentAny trick to work, we should pop at least once
+          val popNum = 1 + rand.nextInt(4 /* TODO make reconfigurable */ )
 
           for (i <- (0 until popNum)) {
             if (threadInfo.awTaskQueue.nonEmpty) {
@@ -381,36 +384,7 @@ abstract class InterconnectTester[T <: Module](
 
   protected def createTasks(): Unit
 
-  override def onTimeout(e: TimeoutException): Unit = {
-    println("Simulation timed out.")
-
-    threadInfos.zipWithIndex.foreach {
-      case (threadInfo, id) => {
-        assert(
-          threadInfo.arTaskQueue.isEmpty,
-          f"threadInfos(${id}).arTaskQueue.isEmpty"
-        )
-        assert(
-          threadInfo.rTaskQueue.isEmpty,
-          f"threadInfos(${id}).rTaskQueue.isEmpty"
-        )
-        assert(
-          threadInfo.awTaskQueue.isEmpty,
-          f"threadInfos(${id}).awTaskQueue.isEmpty"
-        )
-        assert(
-          threadInfo.wTaskQueue.isEmpty,
-          f"threadInfos(${id}).wTaskQueue.isEmpty"
-        )
-        assert(
-          threadInfo.bTaskQueue.isEmpty,
-          f"threadInfos(${id}).bTaskQueue.isEmpty"
-        )
-      }
-    }
-  }
-
-  override def onTest() = {
+  def run() = {
     import chiseltest.internal.Context
 
     createTasks()

@@ -65,29 +65,29 @@ class Mux(
   private val genPort = UInt(wPort.W)
   val axiCfgMaster = axiCfgSlave.copy(wId = axiCfgSlave.wId + wPort)
 
-  val S_AXI = IO(Vec(numSlaves, axi4.Slave(axiCfgSlave)))
-  val M_AXI = IO(axi4.Master(axiCfgMaster))
+  val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiCfgSlave)))
+  val m_axi = IO(axi4.full.Master(axiCfgMaster))
 
-  val s_axi = IdExtend(
-    S_AXI.map { (x) =>
-      SlaveBuffer(x.asFull, muxCfg.slaveBuffers)
+  val s_axi_ = IdExtend(
+    s_axi.map { (x) =>
+      SlaveBuffer(x, muxCfg.slaveBuffers)
     },
     axiCfgSlave,
     axiCfgMaster
   )
 
-  val m_axi = MasterBuffer(M_AXI.asFull, muxCfg.masterBuffers)
+  val m_axi_ = MasterBuffer(m_axi, muxCfg.masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      elastic.Arbiter(s_axi.map { _.ar }, m_axi.ar, muxCfg.arbiterPolicy)
+      elastic.Arbiter(s_axi_.map { _.ar }, m_axi_.ar, muxCfg.arbiterPolicy)
     }
 
     def rLogic: Unit = {
-      val demuxInput = Wire(Irrevocable(m_axi.r.bits.cloneType))
+      val demuxInput = Wire(Irrevocable(m_axi_.r.bits.cloneType))
       val demuxSelect = Wire(Irrevocable(UInt(wPort.W)))
 
-      new Fork(m_axi.r) {
+      new Fork(m_axi_.r) {
         protected def onFork: Unit = {
           demuxInput <> fork { in }
           demuxSelect <> fork { in.id >> axiCfgSlave.wId }
@@ -96,7 +96,7 @@ class Mux(
 
       // NOTE we SHOULD NOT need to preserve bursts on R-arbiter
       // that might cause deadlocks
-      elastic.Demux(demuxInput, s_axi.map { _.r }, demuxSelect)
+      elastic.Demux(demuxInput, s_axi_.map { _.r }, demuxSelect)
     }
 
     arLogic
@@ -108,8 +108,8 @@ class Mux(
 
     def awLogic: Unit = {
       elastic.Arbiter(
-        s_axi.map { _.aw },
-        m_axi.aw,
+        s_axi_.map { _.aw },
+        m_axi_.aw,
         muxCfg.arbiterPolicy,
         Some(portQueue.io.enq)
       )
@@ -117,25 +117,25 @@ class Mux(
 
     def wLogic: Unit = {
       elastic.Mux(
-        s_axi.map { _.w },
-        m_axi.w,
+        s_axi_.map { _.w },
+        m_axi_.w,
         portQueue.io.deq,
         isLastFn = (x: WriteDataChannel) => x.last
       )
     }
 
     def bLogic: Unit = {
-      val demuxInput = Wire(Irrevocable(m_axi.b.bits.cloneType))
+      val demuxInput = Wire(Irrevocable(m_axi_.b.bits.cloneType))
       val demuxSelect = Wire(Irrevocable(UInt(wPort.W)))
 
-      new Fork(m_axi.b) {
+      new Fork(m_axi_.b) {
         protected def onFork: Unit = {
           demuxInput <> fork { in }
           demuxSelect <> fork { in.id >> axiCfgSlave.wId }
         }
       }
 
-      elastic.Demux(demuxInput, s_axi.map { _.b }, demuxSelect)
+      elastic.Demux(demuxInput, s_axi_.map { _.b }, demuxSelect)
     }
 
     awLogic
