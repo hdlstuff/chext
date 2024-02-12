@@ -11,7 +11,10 @@ import chext.axi4
 import axi4.full.components.{InterconnectTester, InterconnectHelper}
 
 class DemuxSpec extends chext.test.TesterSpec {
-  def decodeFn(x: UInt) = (x >> 12) & 3.U
+  val numMasters = 4
+  assert(isPow2(numMasters))
+
+  def decodeFn(x: UInt) = (x >> 12) & (numMasters - 1).U
   def encodeFn(masterIdx: Int, offset: Int) = {
     ((masterIdx << 12) | offset)
   }
@@ -25,14 +28,14 @@ class DemuxSpec extends chext.test.TesterSpec {
       write = true,
       lite = false
     ),
-    4,
+    numMasters,
     decodeFn
   )
 
   enableVcd()
   useVerilator()
 
-  private implicit val helper: InterconnectHelper[Demux] =
+  implicit val helper: InterconnectHelper[Demux] =
     new InterconnectHelper[Demux] {
       def slaveInterfaces(module: Demux): Seq[axi4.full.Interface] =
         Seq(module.s_axi)
@@ -51,7 +54,7 @@ class DemuxSpec extends chext.test.TesterSpec {
       */
     new InterconnectTester(_, false) {
       protected def createTasks(): Unit = {
-        for (masterIdx <- (0 until 4)) {
+        for (masterIdx <- (0 until numMasters)) {
           for (id <- (0 until 16)) {
             for (n <- (0 until 2)) {
               readTask(

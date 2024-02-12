@@ -35,19 +35,18 @@ class Demux(
 
   override def desiredName: String = "axi4LiteDemux"
 
-  val S_AXIL = IO(axi4.Slave(axiCfg))
-  val M_AXIL = IO(Vec(numMasters, axi4.Master(axiCfg)))
+  val s_axil = IO(axi4.lite.Slave(axiCfg))
+  val m_axil = IO(Vec(numMasters, axi4.lite.Master(axiCfg)))
 
   private val wPort = log2Up(numMasters)
   private val genPort = UInt(wPort.W)
 
-  val s_axil = SlaveBuffer(S_AXIL.asLite, demuxCfg.slaveBuffers)
-  val m_axil = M_AXIL.map { (x) =>
-    MasterBuffer(x.asLite, demuxCfg.masterBuffers)
+  val s_axil_ = SlaveBuffer(s_axil, demuxCfg.slaveBuffers)
+  val m_axil_ = m_axil.map { (x) =>
+    MasterBuffer(x, demuxCfg.masterBuffers)
   }
 
   private def implRead(): Unit = prefix("read") {
-
     val portQueue = Module(
       new Queue(
         genPort,
@@ -58,10 +57,10 @@ class Demux(
     )
 
     def arLogic: Unit = {
-      val genArPort = new Bundle2(s_axil.ar.bits.cloneType, genPort)
+      val genArPort = new Bundle2(s_axil_.ar.bits.cloneType, genPort)
       val arPort = Wire(Irrevocable(genArPort))
 
-      s_axil.ar
+      s_axil_.ar
         .transform(genArPort) {
           case (source, sink) => {
             sink._1 := source
@@ -69,7 +68,7 @@ class Demux(
           }
         } :=> arPort
 
-      val demuxInput = Wire(Irrevocable(s_axil.ar.bits.cloneType))
+      val demuxInput = Wire(Irrevocable(s_axil_.ar.bits.cloneType))
       val demuxSelect = Wire(Irrevocable(genPort))
 
       new Fork(arPort) {
@@ -80,11 +79,11 @@ class Demux(
         }
       }
 
-      chext.elastic.Demux(demuxInput, m_axil.map(_.ar), demuxSelect)
+      chext.elastic.Demux(demuxInput, m_axil_.map(_.ar), demuxSelect)
     }
 
     def rLogic: Unit = {
-      chext.elastic.Mux(m_axil.map { _.r }, s_axil.r, portQueue.io.deq)
+      chext.elastic.Mux(m_axil_.map { _.r }, s_axil_.r, portQueue.io.deq)
     }
 
     arLogic
@@ -92,11 +91,6 @@ class Demux(
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val s_axil = SlaveBuffer(S_AXIL.asLite, demuxCfg.slaveBuffers)
-    val m_axil = M_AXIL.map { (x) =>
-      MasterBuffer(x.asLite, demuxCfg.masterBuffers)
-    }
-
     val portQueueW = Module(
       new Queue(
         genPort,
@@ -116,10 +110,10 @@ class Demux(
     )
 
     def awLogic: Unit = {
-      val genAwPort = new Bundle2(s_axil.aw.bits.cloneType, genPort)
+      val genAwPort = new Bundle2(s_axil_.aw.bits.cloneType, genPort)
       val awPort = Wire(Irrevocable(genAwPort))
 
-      s_axil.aw
+      s_axil_.aw
         .transform(genAwPort) {
           case (source, sink) => {
             sink._1 := source
@@ -127,7 +121,7 @@ class Demux(
           }
         } :=> awPort
 
-      val demuxAwInput = Wire(Irrevocable(s_axil.aw.bits.cloneType))
+      val demuxAwInput = Wire(Irrevocable(s_axil_.aw.bits.cloneType))
       val demuxAwSelect = Wire(Irrevocable(genPort))
 
       new Fork(awPort) {
@@ -140,15 +134,15 @@ class Demux(
         }
       }
 
-      chext.elastic.Demux(demuxAwInput, m_axil.map { _.aw }, demuxAwSelect)
+      chext.elastic.Demux(demuxAwInput, m_axil_.map { _.aw }, demuxAwSelect)
     }
 
     def wLogic: Unit = {
-      chext.elastic.Demux(s_axil.w, m_axil.map { _.w }, portQueueW.io.deq)
+      chext.elastic.Demux(s_axil_.w, m_axil_.map { _.w }, portQueueW.io.deq)
     }
 
     def bLogic: Unit = {
-      chext.elastic.Mux(m_axil.map { _.b }, s_axil.b, portQueueB.io.deq)
+      chext.elastic.Mux(m_axil_.map { _.b }, s_axil_.b, portQueueB.io.deq)
     }
 
     awLogic

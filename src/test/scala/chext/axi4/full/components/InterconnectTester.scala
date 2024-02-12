@@ -23,7 +23,6 @@ abstract class InterconnectTester[T <: Module](
   private val masterInterfaces = helper.masterInterfaces(dut)
 
   private var counter = 0
-  private var notFinished = true
 
   val axiSlaveConfig = slaveInterfaces(0).cfg
   require(slaveInterfaces.forall { _.cfg == axiSlaveConfig })

@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental.BundleLiterals._
 
 import chext.elastic
-import chext.axi4.full.{
+import chext.axi4.lite.{
   Interface,
   AddressChannel,
   ReadDataChannel,
@@ -220,3 +220,5 @@ trait PacketUtils {
       interface.b.sendPacket(b)
   }
 }
+
+object PacketUtils extends PacketUtils

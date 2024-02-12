@@ -30,7 +30,7 @@ class MuxSpec extends chext.test.TesterSpec {
   enableVcd()
   useVerilator()
 
-  private implicit val helper: InterconnectHelper[Mux] =
+  implicit val helper: InterconnectHelper[Mux] =
     new InterconnectHelper[Mux] {
       def slaveInterfaces(module: Mux): Seq[axi4.full.Interface] =
         module.s_axi.toSeq
@@ -40,7 +40,7 @@ class MuxSpec extends chext.test.TesterSpec {
     }
 
   "AXI4 Full Mux (basic)" in test(moduleFn) {
-    new InterconnectTester(_, true) {
+    new InterconnectTester(_, false) {
       protected def createTasks(): Unit = {
         for (i <- (0 until 4)) {
           for (slaveIdx <- (0 until 8)) {
