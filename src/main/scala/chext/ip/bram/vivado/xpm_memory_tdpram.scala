@@ -1,7 +1,10 @@
 package chext.ip.bram.vivado
 
+import chext.ip.bram
+
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.noPrefix
 
 case class xpm_memory_tdpram_config(
     val addrWidthA: Int = 6,
@@ -121,4 +124,59 @@ class xpm_memory_tdpram(cfg: xpm_memory_tdpram_config)
     val wea = Input(Bits((cfg.writeEnabledWidthA.W)))
     val web = Input(Bits((cfg.writeEnabledWidthB.W)))
   })
+}
+
+class TrueDualPortBram(
+    val wAddr: Int = 6,
+    val wData: Int = 32,
+    val readLatency: Int = 2
+) extends Module
+    with bram.Primitive {
+  val interface1 = IO(
+    new bram.PrimitiveIO(bram.PrimitiveConfig(wAddr, wData, true, true))
+  )
+
+  val interface2 = IO(
+    new bram.PrimitiveIO(bram.PrimitiveConfig(wAddr, wData, true, true))
+  )
+
+  private val xpm_mem_cfg = xpm_memory_tdpram_config(
+    addrWidthA = wAddr,
+    addrWidthB = wAddr,
+    byteWriteWidthA = 8,
+    byteWriteWidthB = 8,
+    memorySize = (wData << wAddr),
+    readDataWidthA = wData,
+    readDataWidthB = wData,
+    readLatencyA = readLatency,
+    readLatencyB = readLatency,
+    writeDataWidthA = wData,
+    writeDataWidthB = wData
+  )
+
+  private val xpm_mem = Module(new xpm_memory_tdpram(xpm_mem_cfg))
+
+  xpm_mem.io.addra := interface1.addr
+  xpm_mem.io.addrb := interface2.addr
+  xpm_mem.io.clka := clock.asBool
+  xpm_mem.io.clkb := clock.asBool
+  xpm_mem.io.dina := interface1.dataIn
+  xpm_mem.io.dinb := interface2.dataIn
+  interface1.dataOut := xpm_mem.io.douta
+  interface2.dataOut := xpm_mem.io.doutb
+  xpm_mem.io.ena := true.B
+  xpm_mem.io.enb := true.B
+  xpm_mem.io.injectdbiterra := false.B
+  xpm_mem.io.injectdbiterrb := false.B
+  xpm_mem.io.injectsbiterra := false.B
+  xpm_mem.io.injectsbiterrb := false.B
+  xpm_mem.io.regcea := true.B
+  xpm_mem.io.regceb := true.B
+  xpm_mem.io.rsta := reset.asBool
+  xpm_mem.io.rstb := reset.asBool
+  xpm_mem.io.sleep := false.B
+  xpm_mem.io.wea := interface1.writeStrobe
+  xpm_mem.io.web := interface1.writeStrobe
+
+  def getPorts: Seq[bram.PrimitiveIO] = Seq(interface1, interface2)
 }

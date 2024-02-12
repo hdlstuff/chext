@@ -91,33 +91,38 @@ class xpm_memory_spram(cfg: xpm_memory_spram_config)
   })
 }
 
-class SinglePortBram(val cfg: bram.PrimitiveConfig, val readLatency: Int = 2)
-    extends Module
+class SinglePortBram(
+    val wAddr: Int = 6,
+    val wData: Int = 32,
+    val readLatency: Int = 2
+) extends Module
     with bram.Primitive {
-  val interface = noPrefix { IO(new bram.PrimitiveIO(cfg)) }
+  val interface1 = IO(
+    new bram.PrimitiveIO(bram.PrimitiveConfig(wAddr, wData, true, true))
+  )
 
   private val xpm_mem_cfg = xpm_memory_spram_config(
-    addrWidthA = cfg.wAddr,
+    addrWidthA = wAddr,
     byteWriteWidthA = 8,
-    memorySize = (cfg.wData << cfg.wAddr),
-    readDataWidthA = cfg.wData,
+    memorySize = (wData << wAddr),
+    readDataWidthA = wData,
     readLatencyA = readLatency,
-    writeDataWidthA = cfg.wData
+    writeDataWidthA = wData
   )
 
   private val xpm_mem = Module(new xpm_memory_spram(xpm_mem_cfg))
 
-  xpm_mem.io.addra := interface.addr
+  xpm_mem.io.addra := interface1.addr
   xpm_mem.io.clka := clock.asBool
-  xpm_mem.io.dina := interface.dataIn
-  interface.dataOut := xpm_mem.io.douta
-  xpm_mem.io.ena := interface.en
+  xpm_mem.io.dina := interface1.dataIn
+  interface1.dataOut := xpm_mem.io.douta
+  xpm_mem.io.ena := true.B
   xpm_mem.io.injectdbiterra := false.B
   xpm_mem.io.injectsbiterra := false.B
   xpm_mem.io.regcea := true.B
   xpm_mem.io.rsta := reset.asBool
   xpm_mem.io.sleep := false.B
-  xpm_mem.io.wea := interface.writeStrobe
+  xpm_mem.io.wea := interface1.writeStrobe
 
-  def getPorts: Seq[bram.PrimitiveIO] = Seq(interface)
+  def getPorts: Seq[bram.PrimitiveIO] = Seq(interface1)
 }
