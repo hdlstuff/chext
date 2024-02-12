@@ -46,13 +46,13 @@ class DemuxSpec extends chext.test.TesterSpec {
 
   "AXI4 Full Demux (basic)" in test(moduleFn) {
 
-    /** The expect test failure behavior is a deadlock.
+    /** The expected test failure behavior is a deadlock.
       *
       * If a deadlock happens, you can enable logging for debugging. Note that
       * VSCode "Debug Console" stops printing log messages after some time, so
       * to make sure that every event is visible, use `sbt Test`.
       */
-    new InterconnectTester(_, false) {
+    new InterconnectTester(_, true) {
       protected def createTasks(): Unit = {
         for (masterIdx <- (0 until numMasters)) {
           for (id <- (0 until 16)) {

@@ -32,19 +32,18 @@ class Mux(
 
   override def desiredName: String = "axi4LiteMux"
 
-  val S_AXIL = IO(Vec(numSlaves, axi4.Slave(axiCfg)))
-  val M_AXIL = IO(axi4.Master(axiCfg))
+  val s_axil = IO(Vec(numSlaves, axi4.lite.Slave(axiCfg)))
+  val m_axil = IO(axi4.lite.Master(axiCfg))
 
   private val wPort = log2Up(numSlaves)
   private val genPort = UInt(wPort.W)
 
-  val s_axil = S_AXIL.map { (x) =>
-    SlaveBuffer(x.asLite, muxCfg.slaveBuffers)
+  val s_axil_ = s_axil.map { (x) =>
+    SlaveBuffer(x, muxCfg.slaveBuffers)
   }
-  val m_axil = MasterBuffer(M_AXIL.asLite, muxCfg.masterBuffers)
+  val m_axil_ = MasterBuffer(m_axil, muxCfg.masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
-
     val portQueue = Module(
       new Queue(
         genPort,
@@ -56,15 +55,15 @@ class Mux(
 
     def arLogic: Unit = {
       chext.elastic.Arbiter(
-        s_axil.map { _.ar },
-        m_axil.ar,
+        s_axil_.map { _.ar },
+        m_axil_.ar,
         muxCfg.arbiterPolicy,
         Some(portQueue.io.enq)
       )
     }
 
     def rLogic: Unit = {
-      chext.elastic.Demux(m_axil.r, s_axil.map { _.r }, portQueue.io.deq)
+      chext.elastic.Demux(m_axil_.r, s_axil_.map { _.r }, portQueue.io.deq)
     }
 
     arLogic
@@ -94,8 +93,8 @@ class Mux(
       val arbiterSelect = Wire(Irrevocable(genPort))
 
       chext.elastic.Arbiter(
-        s_axil.map { _.aw },
-        m_axil.aw,
+        s_axil_.map { _.aw },
+        m_axil_.aw,
         muxCfg.arbiterPolicy,
         Some(arbiterSelect)
       )
@@ -109,11 +108,11 @@ class Mux(
     }
 
     def wLogic: Unit = {
-      chext.elastic.Mux(s_axil.map { _.w }, m_axil.w, portQueueW.io.deq)
+      chext.elastic.Mux(s_axil_.map { _.w }, m_axil_.w, portQueueW.io.deq)
     }
 
     def bLogic: Unit = {
-      chext.elastic.Demux(m_axil.b, s_axil.map { _.b }, portQueueB.io.deq)
+      chext.elastic.Demux(m_axil_.b, s_axil_.map { _.b }, portQueueB.io.deq)
     }
 
     awLogic
