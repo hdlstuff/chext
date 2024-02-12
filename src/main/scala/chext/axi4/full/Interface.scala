@@ -6,7 +6,7 @@ import chisel3.experimental.dataview.{PartialDataView, DataView}
 import chisel3.reflect.DataMirror
 
 import chext.axi4
-import chext.axi4.utils._
+import chext.axi4.util._
 
 /** Address channel. (AR and AW)
   *

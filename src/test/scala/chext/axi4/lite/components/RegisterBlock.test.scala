@@ -6,7 +6,7 @@ import chiseltest._
 
 import chisel3.experimental.prefix
 
-import chext.utils.Expect
+import chext.util.Expect
 import chext.axi4
 
 import axi4.lite.test.PacketUtils._

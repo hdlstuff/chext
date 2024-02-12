@@ -12,7 +12,7 @@ import chext.axi4.full.{
   WriteDataChannel,
   WriteResponseChannel
 }
-import chext.utils.Expect
+import chext.util.Expect
 
 import elastic.test.{Packet, PacketTag, PacketBridge}
 import elastic.test.PacketOps._

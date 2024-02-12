@@ -163,22 +163,3 @@ object Slave {
 object Master {
   def apply(cfg: axi4.Config) = Interface(cfg)
 }
-
-object util {
-
-  /** Implements logic for write strobe */
-  def writeStrobeLogic(original: Bits, wdata: Bits, wstrb: Bits): Bits = {
-    require(original.getWidth == wdata.getWidth)
-    require(wstrb.getWidth == original.getWidth / 8)
-
-    VecInit(
-      wstrb.asBools.zipWithIndex.map {
-        case (strobe, idx) => {
-          val byte_wdata = wdata((idx + 1) * 8 - 1, idx * 8)
-          val byte_original = original((idx + 1) * 8 - 1, idx * 8)
-          Mux(strobe, byte_wdata, byte_original)
-        }
-      }
-    ).asUInt
-  }
-}

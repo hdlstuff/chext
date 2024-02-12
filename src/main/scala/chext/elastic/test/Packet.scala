@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import chiseltest._
 
-import chext.utils.Expect
+import chext.util.Expect
 
 import scala.collection.mutable.ArrayBuffer
 
