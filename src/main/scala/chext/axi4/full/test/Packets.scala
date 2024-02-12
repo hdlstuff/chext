@@ -153,7 +153,7 @@ trait PacketUtils {
 
     }
 
-  implicit class readInterfaceUtils(interface: Interface) {
+  implicit class axi4_full_interface_packet_utils(interface: Interface) {
     def receiveReadAddress() = interface.ar.receivePacket[AddressPacket]()
 
     def expectReadAddress(id: Int, addr: Int, len: Int): Unit =
