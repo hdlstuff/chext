@@ -19,25 +19,15 @@ private object unpack {
   }
 }
 
-private object pack {
-  def apply(in: Vec[UInt]): UInt = {
-    assert(in.length > 0)
-    val length = in.length
-    val elemWidth = in(0).getWidth
-    val packed = Wire(UInt((in.length * elemWidth).W))
-    in.zipWithIndex.foreach {
-      case (elem, idx) => {
-        packed(elemWidth * (idx + 1) - 1, elemWidth * idx) := elem
-      }
-    }
-    packed
-  }
-}
-
 class SimpleDualPortMem(
     val cfg: bram.RawMemConfig
 ) extends Module
     with bram.RawMem {
+  override val desiredName = "ChiselSimpleDualPortMem"
+
+  assert(cfg.readLatency == 1)
+  assert(cfg.writeLatency == 1)
+
   val interfaceRd = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, false))
   val interfaceWr = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, false, true))
 
@@ -51,8 +41,9 @@ class SimpleDualPortMem(
     unpack(interfaceWr.dataIn, 8),
     interfaceWr.writeStrobe.asBools
   )
+  interfaceWr.dataOut := 0.U
 
-  interfaceRd.dataOut := pack(mem.read(interfaceRd.addr, true.B))
+  interfaceRd.dataOut := mem.read(interfaceRd.addr, true.B).asUInt
 
   def getPorts: Seq[bram.RawInterface] = Seq(interfaceRd, interfaceWr)
 }

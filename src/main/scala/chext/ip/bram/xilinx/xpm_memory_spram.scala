@@ -95,6 +95,8 @@ class SinglePortRawMem(
     val cfg: bram.RawMemConfig
 ) extends Module
     with bram.RawMem {
+  assert(cfg.writeLatency == 1)
+
   override val desiredName = "XilinxSinglePortRawMem"
 
   val interface1 = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, true))

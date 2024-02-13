@@ -108,10 +108,12 @@ class SimpleDualPortRawMem(
     val cfg: bram.RawMemConfig
 ) extends Module
     with bram.RawMem {
+  assert(cfg.writeLatency == 1)
+
   override val desiredName = "XilinxSimpleDualPortRawMem"
 
-  val interface1 = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, false))
-  val interface2 = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, false, true))
+  val interfaceW = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, false, true))
+  val interfaceR = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, false))
 
   private val xpm_mem_cfg = xpm_memory_sdpram_config(
     addrWidthA = cfg.wAddr,
@@ -120,18 +122,19 @@ class SimpleDualPortRawMem(
     memorySize = (cfg.wData << cfg.wAddr),
     readDataWidthB = cfg.wData,
     readLatencyB = cfg.readLatency,
-    writeDataWidthA = cfg.wData
+    writeDataWidthA = cfg.wData,
+    useEmbeddedConstraint = false
   )
 
   private val xpm_mem = Module(new xpm_memory_sdpram(xpm_mem_cfg))
 
-  xpm_mem.io.addra := interface1.addr
-  xpm_mem.io.addrb := interface2.addr
+  xpm_mem.io.addra := interfaceW.addr
+  xpm_mem.io.addrb := interfaceR.addr
   xpm_mem.io.clka := clock.asBool
   xpm_mem.io.clkb := clock.asBool
-  xpm_mem.io.dina := interface1.dataIn
-  interface1.dataOut := 0.U
-  interface2.dataOut := xpm_mem.io.doutb
+  xpm_mem.io.dina := interfaceW.dataIn
+  interfaceW.dataOut := 0.U
+  interfaceR.dataOut := xpm_mem.io.doutb
   xpm_mem.io.ena := true.B
   xpm_mem.io.enb := true.B
   xpm_mem.io.injectdbiterra := false.B
@@ -139,7 +142,14 @@ class SimpleDualPortRawMem(
   xpm_mem.io.regceb := true.B
   xpm_mem.io.rstb := reset.asBool
   xpm_mem.io.sleep := false.B
-  xpm_mem.io.wea := interface1.writeStrobe
+  xpm_mem.io.wea := interfaceW.writeStrobe
 
-  def getPorts: Seq[bram.RawInterface] = Seq(interface1, interface2)
+  def getPorts: Seq[bram.RawInterface] = Seq(interfaceW, interfaceR)
+}
+
+object EmitSdpram extends App {
+  emitVerilog(
+    new SimpleDualPortRawMem(bram.RawMemConfig(20, 32, 4, 1)),
+    Array("--target-dir", "output/")
+  )
 }
