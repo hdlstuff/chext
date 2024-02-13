@@ -3,13 +3,18 @@ package chext.util
 object Expect {
   def equals[T](a: T, b: T, msg: String = "") = {
     if (a != b) {
-      throw new Exception(f"${a} != ${b}. Message: ${msg}")
+      doThrow(f"${a} != ${b}. Message: ${msg}")
     }
   }
 
-  protected def condition(b: Boolean, msg: String = "") = {
+  def condition(b: Boolean, msg: String = "") = {
     if (!b) {
-      throw new Exception(f"Condition failed. Message: ${msg}")
+      doThrow(f"Condition failed. Message: ${msg}")
     }
+  }
+
+  protected def doThrow(msg: String) = {
+    Console.err.println(f"Expect Failed: ${msg}")
+    throw new Exception(msg)
   }
 }

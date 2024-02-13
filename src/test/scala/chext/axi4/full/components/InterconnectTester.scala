@@ -6,6 +6,7 @@ import chisel3.util._
 import chiseltest._
 
 import chext.axi4
+
 import chext.util.Expect
 
 trait InterconnectHelper[M <: Module] {
@@ -30,9 +31,9 @@ abstract class InterconnectTester[T <: Module](
   val axiMasterConfig = masterInterfaces(0).cfg
   require(masterInterfaces.forall { _.cfg == axiMasterConfig })
 
-  val threadInfoShift = axiSlaveConfig.wId
-  val threadInfoMask = (1 << threadInfoShift) - 1
-  val numThreadsPerSlave = 1 << threadInfoShift
+  val threadShift = axiSlaveConfig.wId
+  val threadMask = (1 << threadShift) - 1
+  val numThreadsPerSlave = 1 << threadShift
   val numThreads = slaveInterfaces.length * numThreadsPerSlave
 
   import scala.collection.mutable.Queue
@@ -43,13 +44,13 @@ abstract class InterconnectTester[T <: Module](
 
   class ThreadInfo {
     val arTaskQueue = Queue.empty[AddressPacket]
-    val rTaskQueue = Queue.empty[Seq[ReadDataPacket]]
+    val rTaskQueue = Queue.empty[ReadDataPacket]
     val awTaskQueue = Queue.empty[AddressPacket]
     val wTaskQueue = Queue.empty[Seq[WriteDataPacket]]
     val bTaskQueue = Queue.empty[WriteResponsePacket]
 
     val arExpectedQueue = Queue.empty[AddressPacket]
-    val rExpectedQueue = Queue.empty[Seq[ReadDataPacket]]
+    val rExpectedQueue = Queue.empty[ReadDataPacket]
     val awExpectedQueue = Queue.empty[AddressPacket]
     val wExpectedQueue = Queue.empty[Seq[WriteDataPacket]]
     val bExpectedQueue = Queue.empty[WriteResponsePacket]
@@ -108,26 +109,32 @@ abstract class InterconnectTester[T <: Module](
 
         logMaster(masterIdx, "received read address", arPacket)
 
-        assert(
+        Expect.condition(
           threadInfo.arExpectedQueue.nonEmpty,
           "threadInfo.arExpectedQueue.nonEmpty"
         )
-        Expect.equals(threadInfo.arExpectedQueue.head, arPacket)
+
+        Expect.equals(
+          threadInfo.arExpectedQueue.head, arPacket
+        )
+        
         threadInfo.arExpectedQueue.removeHead()
 
-        assert(threadInfo.rTaskQueue.nonEmpty, "threadInfo.rTaskQueue.nonEmpty")
-        val rNext = threadInfo.rTaskQueue.head
-        threadInfo.rTaskQueue.removeHead()
-        assert(
-          rNext.forall { _.id == arPacket.id },
-          "rNext.forall { _.id == arPacket.id }"
+        Expect.condition(
+          threadInfo.rTaskQueue.nonEmpty, "threadInfo.rTaskQueue.nonEmpty"
         )
-        val id = arPacket.id & threadInfoMask
-        threadInfo.rExpectedQueue.addOne(rNext.map { _.copy(id = id) })
 
-        stepRandom(16)
-        logMaster(masterIdx, "send read data", rNext)
-        master.sendReadDataBurst(rNext)
+        for (i <- (0 until (1 + arPacket.len))) {
+          val rNext = threadInfo.rTaskQueue.head
+          threadInfo.rTaskQueue.removeHead()
+
+          Expect.equals(rNext.id, arPacket.id)
+          val id = arPacket.id & threadMask
+          threadInfo.rExpectedQueue.addOne(rNext.copy(id = id))
+          stepRandom(4)
+          logMaster(masterIdx, "send read data", rNext)
+          master.sendReadData(rNext)
+        }
 
         masterInfo.arReceiveCount -= 1
       }
@@ -162,32 +169,32 @@ abstract class InterconnectTester[T <: Module](
         val awPacket = awPacket_.get
         val wPacket = wPacket_.get
 
-        assert(
+        Expect.condition(
           wPacket.forall { _.id == awPacket.id },
           "wPacket.forall { _.id == awPacket.id }"
         )
 
         val threadInfo = threadInfos(awPacket.id)
 
-        assert(
+        Expect.condition(
           threadInfo.awExpectedQueue.nonEmpty,
           "threadInfo.awExpectedQueue.nonEmpty"
         )
         Expect.equals(threadInfo.awExpectedQueue.head, awPacket)
         threadInfo.awExpectedQueue.removeHead()
 
-        assert(
+        Expect.condition(
           threadInfo.wExpectedQueue.nonEmpty,
           "threadInfo.wExpectedQueue.nonEmpty"
         )
         Expect.equals(threadInfo.wExpectedQueue.head, wPacket)
         threadInfo.wExpectedQueue.removeHead()
 
-        assert(threadInfo.bTaskQueue.nonEmpty, "threadInfo.bTaskQueue.nonEmpty")
+        Expect.condition(threadInfo.bTaskQueue.nonEmpty, "threadInfo.bTaskQueue.nonEmpty")
         val bNext = threadInfo.bTaskQueue.head
         threadInfo.bTaskQueue.removeHead()
-        assert(bNext.id == awPacket.id, "bNext.id == awPacket.id")
-        val id = awPacket.id & threadInfoMask
+        Expect.condition(bNext.id == awPacket.id, "bNext.id == awPacket.id")
+        val id = awPacket.id & threadMask
         threadInfo.bExpectedQueue.addOne(bNext.copy(id = id))
 
         stepRandom(16)
@@ -211,7 +218,7 @@ abstract class InterconnectTester[T <: Module](
         var sentAny = false
 
         for (threadInfoId <- (0 until numThreadsPerSlave)) {
-          val threadIdx = threadInfoId + (slaveIdx << threadInfoShift)
+          val threadIdx = threadInfoId + (slaveIdx << threadShift)
           val threadInfo = threadInfos(threadIdx)
 
           // for sentAny trick to work, we should pop at least once
@@ -239,15 +246,16 @@ abstract class InterconnectTester[T <: Module](
       }
     }.fork {
       while (slaveInfo.rReceiveCount > 0) {
+        /* read data might be interleaved, so receive them one-by-one */
         logSlave(slaveIdx, f"Remaining R packets: ${slaveInfo.rReceiveCount}")
         logSlave(slaveIdx, "waiting for read data")
-        val rPacket = slave.receiveReadDataBurst()
+        val rPacket = slave.receiveReadData()
         logSlave(slaveIdx, "received read data", rPacket)
 
         val threadInfo =
-          threadInfos(rPacket(0).id + (slaveIdx << threadInfoShift))
+          threadInfos(rPacket.id + (slaveIdx << threadShift))
 
-        assert(
+        Expect.condition(
           threadInfo.rExpectedQueue.nonEmpty,
           "threadInfo.rExpectedQueue.nonEmpty"
         )
@@ -265,7 +273,7 @@ abstract class InterconnectTester[T <: Module](
         var sentAny = false
 
         for (threadInfoId <- (0 until numThreadsPerSlave)) {
-          val threadIdx = threadInfoId + (slaveIdx << threadInfoShift)
+          val threadIdx = threadInfoId + (slaveIdx << threadShift)
           val threadInfo = threadInfos(threadIdx)
 
           // for sentAny trick to work, we should pop at least once
@@ -277,7 +285,7 @@ abstract class InterconnectTester[T <: Module](
               threadInfo.awTaskQueue.removeHead()
               threadInfo.awExpectedQueue.addOne(awNext.copy(id = threadIdx))
 
-              assert(
+              Expect.condition(
                 threadInfo.wTaskQueue.nonEmpty,
                 "threadInfo.wTaskQueue.nonEmpty"
               )
@@ -309,9 +317,9 @@ abstract class InterconnectTester[T <: Module](
         logSlave(slaveIdx, "waiting for write response")
         val bPacket = slave.receiveWriteResponse()
         logSlave(slaveIdx, "received write response", bPacket)
-        val threadInfo = threadInfos(bPacket.id + (slaveIdx << threadInfoShift))
+        val threadInfo = threadInfos(bPacket.id + (slaveIdx << threadShift))
 
-        assert(
+        Expect.condition(
           threadInfo.bExpectedQueue.nonEmpty,
           "threadInfo.bExpectedQueue.nonEmpty"
         )
@@ -338,10 +346,10 @@ abstract class InterconnectTester[T <: Module](
     val slaveInfo = slaveInfos(slaveIdx)
     val masterInfo = masterInfos(masterIdx)
 
-    val threadIdx = id + (slaveIdx << threadInfoShift)
+    val threadIdx = id + (slaveIdx << threadShift)
     val threadInfo = threadInfos(threadIdx)
     threadInfo.arTaskQueue.addOne(AddressPacket(id, addr, len))
-    threadInfo.rTaskQueue.addOne(Seq.tabulate(len + 1) { (pktIdx) =>
+    threadInfo.rTaskQueue.addAll(Seq.tabulate(len + 1) { (pktIdx) =>
       ReadDataPacket(
         threadIdx,
         rand.nextInt(0x7fff_ffff),
@@ -349,7 +357,7 @@ abstract class InterconnectTester[T <: Module](
       )
     })
 
-    slaveInfo.rReceiveCount += 1
+    slaveInfo.rReceiveCount += (len + 1)
     masterInfo.arReceiveCount += 1
   }
 
@@ -364,7 +372,7 @@ abstract class InterconnectTester[T <: Module](
     val slaveInfo = slaveInfos(slaveIdx)
     val masterInfo = masterInfos(masterIdx)
 
-    val threadIdx = id + (slaveIdx << threadInfoShift)
+    val threadIdx = id + (slaveIdx << threadShift)
     val threadInfo = threadInfos(threadIdx)
     threadInfo.awTaskQueue.addOne(AddressPacket(id, addr, len))
     threadInfo.wTaskQueue.addOne(Seq.tabulate(len + 1) { (pktIdx) =>

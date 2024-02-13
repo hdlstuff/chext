@@ -94,8 +94,7 @@ class Mux(
         }
       }
 
-      // NOTE we SHOULD NOT need to preserve bursts on R-arbiter
-      // that might cause deadlocks
+      // R channel supports burst interleaving, so no isLastFn
       elastic.Demux(demuxInput, s_axi_.map { _.r }, demuxSelect)
     }
 
@@ -116,6 +115,8 @@ class Mux(
     }
 
     def wLogic: Unit = {
+      // W channel does not support burst interleaving due to the selection logic
+      // so isLastFn
       elastic.Mux(
         s_axi_.map { _.w },
         m_axi_.w,

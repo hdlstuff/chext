@@ -227,11 +227,11 @@ class Demux(
     }
 
     def rLogic: Unit = {
+      // R channel supports burst interleaving, so no isLastFn
       chext.elastic.Arbiter(
         m_axi_.map { _.r },
         s_axi_.r,
-        demuxCfg.arbiterPolicy,
-        isLastFn = (x: ReadDataChannel) => x.last
+        demuxCfg.arbiterPolicy
       )
 
       when(s_axi_.r.fire && s_axi_.r.bits.last) {
@@ -299,6 +299,8 @@ class Demux(
     }
 
     def wLogic: Unit = {
+      // W channel does not support burst interleaving due to the selection logic
+      // so isLastFn
       chext.elastic.Demux(
         s_axi_.w,
         m_axi_.map { _.w },
