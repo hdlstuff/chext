@@ -36,7 +36,7 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
           dut.write.payload.enqueueSeq(writeData)
         }.fork {
           for (i <- 0 until TEST_SIZE) {
-            dut.write.response.expectDequeue(true.B)
+            dut.write.response.expectDequeue(0.U)
             dut.clock.step(1 + rand.nextInt(16))
           }
         }.join()

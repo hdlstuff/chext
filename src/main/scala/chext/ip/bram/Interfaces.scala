@@ -22,5 +22,5 @@ class WrBundle(wAddr: Int, wData: Int) extends Bundle {
 
 class WrInterface(wAddr: Int, wData: Int) extends Bundle {
   val payload = Flipped(new IrrevocableIO(new WrBundle(wAddr, wData)))
-  val response = new IrrevocableIO(Bool())
+  val response = new IrrevocableIO(UInt(0.W))
 }
