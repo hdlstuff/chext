@@ -145,7 +145,7 @@ class ReadWriteMem(
 }
 
 object Emitter extends App {
-  Target.setCurrent(vivado.Target)
+  Target.setCurrent(xilinx.Target)
 
   emitVerilog(
     new ReadWriteMem(ReadWriteMemConfig(64, 10, 8, 1, 12, 12)),

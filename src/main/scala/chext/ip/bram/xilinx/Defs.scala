@@ -1,4 +1,4 @@
-package chext.ip.bram.vivado
+package chext.ip.bram.xilinx
 
 abstract sealed class ClockingMode(val str: String)
 
