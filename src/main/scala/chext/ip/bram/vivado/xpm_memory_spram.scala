@@ -91,21 +91,21 @@ class xpm_memory_spram(cfg: xpm_memory_spram_config)
   })
 }
 
-class SinglePortBram(
-    val wAddr: Int = 6,
-    val wData: Int = 32,
-    val readLatency: Int = 2
+class SinglePortRawMem(
+    val cfg: bram.RawMemConfig
 ) extends Module
-    with bram.RawMemory {
-  val interface1 = IO(new bram.RawInterface(wAddr, wData, true, true))
+    with bram.RawMem {
+  override val desiredName = "VivadoSinglePortRawMem"
+
+  val interface1 = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, true))
 
   private val xpm_mem_cfg = xpm_memory_spram_config(
-    addrWidthA = wAddr,
+    addrWidthA = cfg.wAddr,
     byteWriteWidthA = 8,
-    memorySize = (wData << wAddr),
-    readDataWidthA = wData,
-    readLatencyA = readLatency,
-    writeDataWidthA = wData
+    memorySize = (cfg.wData << cfg.wAddr),
+    readDataWidthA = cfg.wData,
+    readLatencyA = cfg.readLatency,
+    writeDataWidthA = cfg.wData
   )
 
   private val xpm_mem = Module(new xpm_memory_spram(xpm_mem_cfg))

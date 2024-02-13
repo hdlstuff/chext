@@ -126,28 +126,27 @@ class xpm_memory_tdpram(cfg: xpm_memory_tdpram_config)
   })
 }
 
-class TrueDualPortBram(
-    val wAddr: Int = 6,
-    val wData: Int = 32,
-    val readLatency: Int = 2
+class TrueDualPortRawMem(
+    val cfg: bram.RawMemConfig
 ) extends Module
-    with bram.RawMemory {
-  val interface1 = IO(new bram.RawInterface(wAddr, wData, true, true))
+    with bram.RawMem {
+  override val desiredName = "VivadoTrueDualPortRawMem"
 
-  val interface2 = IO(new bram.RawInterface(wAddr, wData, true, true))
+  val interface1 = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, true))
+  val interface2 = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, true))
 
   private val xpm_mem_cfg = xpm_memory_tdpram_config(
-    addrWidthA = wAddr,
-    addrWidthB = wAddr,
+    addrWidthA = cfg.wAddr,
+    addrWidthB = cfg.wAddr,
     byteWriteWidthA = 8,
     byteWriteWidthB = 8,
-    memorySize = (wData << wAddr),
-    readDataWidthA = wData,
-    readDataWidthB = wData,
-    readLatencyA = readLatency,
-    readLatencyB = readLatency,
-    writeDataWidthA = wData,
-    writeDataWidthB = wData
+    memorySize = (cfg.wData << cfg.wAddr),
+    readDataWidthA = cfg.wData,
+    readDataWidthB = cfg.wData,
+    readLatencyA = cfg.readLatency,
+    readLatencyB = cfg.readLatency,
+    writeDataWidthA = cfg.wData,
+    writeDataWidthB = cfg.wData
   )
 
   private val xpm_mem = Module(new xpm_memory_tdpram(xpm_mem_cfg))

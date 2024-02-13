@@ -6,12 +6,11 @@ import chisel3.util._
 class RawInterface(
     val wAddr: Int,
     val wData: Int,
-    val read: Boolean = true,
-    val write: Boolean = true
+    val supportsRead: Boolean = true,
+    val supportsWrite: Boolean = true
 ) extends Bundle {
-  require(isPow2(wAddr))
   require(isPow2(wData) && wData >= 8)
-  require(read || write)
+  require(supportsRead || supportsWrite)
 
   val wWriteStrobe = (wData >> 3)
 
@@ -21,6 +20,14 @@ class RawInterface(
   val writeStrobe = Input(UInt(wWriteStrobe.W))
 }
 
-trait RawMemory extends Module {
+case class RawMemConfig(
+    val wAddr: Int = 6,
+    val wData: Int = 32,
+    val readLatency: Int = 2,
+    val writeLatency: Int = 1
+)
+
+trait RawMem extends Module {
+  def cfg: RawMemConfig
   def getPorts: Seq[RawInterface]
 }
