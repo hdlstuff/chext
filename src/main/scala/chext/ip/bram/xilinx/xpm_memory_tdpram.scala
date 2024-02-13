@@ -1,6 +1,6 @@
-package chext.ip.bram.xilinx
+package chext.ip.memory.xilinx
 
-import chext.ip.bram
+import chext.ip.memory
 
 import chisel3._
 import chisel3.util._
@@ -127,15 +127,15 @@ class xpm_memory_tdpram(cfg: xpm_memory_tdpram_config)
 }
 
 class TrueDualPortRawMem(
-    val cfg: bram.RawMemConfig
+    val cfg: memory.RawMemConfig
 ) extends Module
-    with bram.RawMem {
+    with memory.RawMem {
   assert(cfg.writeLatency == 1)
 
   override val desiredName = "XilinxTrueDualPortRawMem"
 
-  val interface1 = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, true))
-  val interface2 = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, true))
+  val interface1 = IO(new memory.RawInterface(cfg.wAddr, cfg.wData, true, true))
+  val interface2 = IO(new memory.RawInterface(cfg.wAddr, cfg.wData, true, true))
 
   private val xpm_mem_cfg = xpm_memory_tdpram_config(
     addrWidthA = cfg.wAddr,
@@ -175,5 +175,5 @@ class TrueDualPortRawMem(
   xpm_mem.io.wea := interface1.writeStrobe
   xpm_mem.io.web := interface1.writeStrobe
 
-  def getPorts: Seq[bram.RawInterface] = Seq(interface1, interface2)
+  def getPorts: Seq[memory.RawInterface] = Seq(interface1, interface2)
 }

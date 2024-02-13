@@ -1,10 +1,10 @@
-package chext.ip.bram.altera
+package chext.ip.memory.altera
 
-import chext.ip.bram
+import chext.ip.memory
 
-case object Target extends bram.Target {
+case object Target extends memory.Target {
   val name: String = "Altera"
-  def createSinglePortRawMem(cfg: bram.RawMemConfig): bram.RawMem = ???
-  def createSimpleDualPortRawMem(cfg: bram.RawMemConfig): bram.RawMem = ???
-  def createTrueDualPortRawMem(cfg: bram.RawMemConfig): bram.RawMem = ???
+  def createSinglePortRawMem(cfg: memory.RawMemConfig): memory.RawMem = ???
+  def createSimpleDualPortRawMem(cfg: memory.RawMemConfig): memory.RawMem = ???
+  def createTrueDualPortRawMem(cfg: memory.RawMemConfig): memory.RawMem = ???
 }

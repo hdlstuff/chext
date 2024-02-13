@@ -1,13 +1,13 @@
-package chext.ip.bram.xilinx
+package chext.ip.memory.xilinx
 
-import chext.ip.bram
+import chext.ip.memory
 
-case object Target extends bram.Target {
+case object Target extends memory.Target {
   val name = "Xilinx"
-  def createSinglePortRawMem(cfg: bram.RawMemConfig): bram.RawMem =
+  def createSinglePortRawMem(cfg: memory.RawMemConfig): memory.RawMem =
     new SinglePortRawMem(cfg)
-  def createSimpleDualPortRawMem(cfg: bram.RawMemConfig): bram.RawMem =
+  def createSimpleDualPortRawMem(cfg: memory.RawMemConfig): memory.RawMem =
     new SimpleDualPortRawMem(cfg)
-  def createTrueDualPortRawMem(cfg: bram.RawMemConfig): bram.RawMem =
+  def createTrueDualPortRawMem(cfg: memory.RawMemConfig): memory.RawMem =
     new TrueDualPortRawMem(cfg)
 }

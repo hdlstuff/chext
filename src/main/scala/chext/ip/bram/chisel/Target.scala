@@ -1,11 +1,11 @@
-package chext.ip.bram.chisel
+package chext.ip.memory.chisel
 
-import chext.ip.bram
+import chext.ip.memory
 
-case object Target extends bram.Target {
+case object Target extends memory.Target {
   val name = "Chisel"
-  def createSinglePortRawMem(cfg: bram.RawMemConfig): bram.RawMem = ???
-  def createSimpleDualPortRawMem(cfg: bram.RawMemConfig): bram.RawMem =
+  def createSinglePortRawMem(cfg: memory.RawMemConfig): memory.RawMem = ???
+  def createSimpleDualPortRawMem(cfg: memory.RawMemConfig): memory.RawMem =
     new SimpleDualPortMem(cfg)
-  def createTrueDualPortRawMem(cfg: bram.RawMemConfig): bram.RawMem = ???
+  def createTrueDualPortRawMem(cfg: memory.RawMemConfig): memory.RawMem = ???
 }

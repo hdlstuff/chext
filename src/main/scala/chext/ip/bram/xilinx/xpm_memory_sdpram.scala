@@ -1,6 +1,6 @@
-package chext.ip.bram.xilinx
+package chext.ip.memory.xilinx
 
-import chext.ip.bram
+import chext.ip.memory
 
 import chisel3._
 import chisel3.util._
@@ -105,15 +105,15 @@ class xpm_memory_sdpram(cfg: xpm_memory_sdpram_config)
 }
 
 class SimpleDualPortRawMem(
-    val cfg: bram.RawMemConfig
+    val cfg: memory.RawMemConfig
 ) extends Module
-    with bram.RawMem {
+    with memory.RawMem {
   assert(cfg.writeLatency == 1)
 
   override val desiredName = "XilinxSimpleDualPortRawMem"
 
-  val interfaceW = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, false, true))
-  val interfaceR = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, false))
+  val interfaceW = IO(new memory.RawInterface(cfg.wAddr, cfg.wData, false, true))
+  val interfaceR = IO(new memory.RawInterface(cfg.wAddr, cfg.wData, true, false))
 
   private val xpm_mem_cfg = xpm_memory_sdpram_config(
     addrWidthA = cfg.wAddr,
@@ -144,12 +144,12 @@ class SimpleDualPortRawMem(
   xpm_mem.io.sleep := false.B
   xpm_mem.io.wea := interfaceW.writeStrobe
 
-  def getPorts: Seq[bram.RawInterface] = Seq(interfaceW, interfaceR)
+  def getPorts: Seq[memory.RawInterface] = Seq(interfaceW, interfaceR)
 }
 
 object EmitSdpram extends App {
   emitVerilog(
-    new SimpleDualPortRawMem(bram.RawMemConfig(20, 32, 4, 1)),
+    new SimpleDualPortRawMem(memory.RawMemConfig(20, 32, 4, 1)),
     Array("--target-dir", "output/")
   )
 }

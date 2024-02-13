@@ -1,9 +1,9 @@
-package chext.ip.bram.chisel
+package chext.ip.memory.chisel
 
 import chisel3._
 import chisel3.util._
 
-import chext.ip.bram
+import chext.ip.memory
 
 private object unpack {
   def apply(in: UInt, elemWidth: Int): Vec[UInt] = {
@@ -20,16 +20,16 @@ private object unpack {
 }
 
 class SimpleDualPortMem(
-    val cfg: bram.RawMemConfig
+    val cfg: memory.RawMemConfig
 ) extends Module
-    with bram.RawMem {
+    with memory.RawMem {
   override val desiredName = "ChiselSimpleDualPortMem"
 
   assert(cfg.readLatency == 1)
   assert(cfg.writeLatency == 1)
 
-  val interfaceRd = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, true, false))
-  val interfaceWr = IO(new bram.RawInterface(cfg.wAddr, cfg.wData, false, true))
+  val interfaceRd = IO(new memory.RawInterface(cfg.wAddr, cfg.wData, true, false))
+  val interfaceWr = IO(new memory.RawInterface(cfg.wAddr, cfg.wData, false, true))
 
   private val numBytes = cfg.wData >> 3
 
@@ -45,5 +45,5 @@ class SimpleDualPortMem(
 
   interfaceRd.dataOut := mem.read(interfaceRd.addr, true.B).asUInt
 
-  def getPorts: Seq[bram.RawInterface] = Seq(interfaceRd, interfaceWr)
+  def getPorts: Seq[memory.RawInterface] = Seq(interfaceRd, interfaceWr)
 }

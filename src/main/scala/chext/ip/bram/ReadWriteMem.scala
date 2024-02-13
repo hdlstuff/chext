@@ -1,4 +1,4 @@
-package chext.ip.bram
+package chext.ip.memory
 
 import chisel3._
 import chisel3.util._

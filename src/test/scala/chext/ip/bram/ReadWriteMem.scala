@@ -1,4 +1,4 @@
-package chext.ip.bram
+package chext.ip.memory
 
 import chisel3._
 import chisel3.util._
@@ -16,7 +16,7 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
   def writeBundle(addr: BigInt, data: BigInt) =
     genWrBundle.Lit(_.addr -> addr.U, _.data -> data.U, _.writeStrobe -> 15.U)
 
-  "chext.ip.bram.ReadWriteMem.Basic" in {
+  "chext.ip.memory.ReadWriteMem.Basic" in {
     test(
       new ReadWriteMem(ReadWriteMemConfig(32, 10, 1, 1, 8, 8))
     ).withAnnotations(Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)) { dut =>
