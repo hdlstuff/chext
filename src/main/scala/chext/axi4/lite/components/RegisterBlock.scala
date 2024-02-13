@@ -172,7 +172,7 @@ class RegisterBlock(
   // Otherwise, valid signal waits for the ready signal
   private val rdRespQueue_ = Module(new Queue(chiselTypeOf(s_axil_.r.bits), 1))
   private val rdResp_ = rdRespQueue_.io.enq
-  s_axil_.r <> rdRespQueue_.io.deq
+  rdRespQueue_.io.deq :=> s_axil_.r
 
   private val wrReq_ = Queue.irrevocable(s_axil_.aw, 1)
   private val wrReqData_ = Queue.irrevocable(s_axil_.w, 1)
@@ -180,7 +180,7 @@ class RegisterBlock(
   // Same as before
   private val wrRespQueue_ = Module(new Queue(chiselTypeOf(s_axil_.b.bits), 1))
   private val wrResp_ = wrRespQueue_.io.enq
-  s_axil_.b <> wrRespQueue_.io.deq
+  wrRespQueue_.io.deq :=> s_axil_.b
 
   rdReq_.nodeq()
   rdResp_.noenq()

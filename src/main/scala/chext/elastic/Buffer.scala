@@ -1,8 +1,12 @@
 package chext.elastic
 
+import chext.elastic
+
 import chisel3._
 import chisel3.util._
 import chisel3.experimental._
+
+import elastic.ConnectOp._
 
 object UnsafeCasts {
   implicit class unsafe_casts[T <: Data](rv: ReadyValidIO[T]) {
@@ -72,7 +76,8 @@ object SourceBuffer {
       val sourceBuffer = Module(
         new Queue(chiselTypeOf(source.bits), n, pipe = true)
       )
-      sourceBuffer.io.enq <> source
+
+      source :=> sourceBuffer.io.enq
       sourceBuffer.io.deq
     }
   }
@@ -89,11 +94,9 @@ object SourceBuffer {
         new Queue(chiselTypeOf(source.bits), n, pipe = true)
       )
       val result = Wire(new IrrevocableIO(chiselTypeOf(source.bits)))
-      sourceBuffer.io.enq <> source
 
-      result.bits := sourceBuffer.io.deq.bits
-      result.valid := sourceBuffer.io.deq.valid
-      sourceBuffer.io.deq.ready := result.ready
+      source :=> sourceBuffer.io.enq
+      sourceBuffer.io.deq :=> result
 
       result
     }
@@ -128,7 +131,8 @@ object SinkBuffer {
       val sinkBuffer = Module(
         new Queue(chiselTypeOf(sink.bits), n, pipe = true)
       )
-      sinkBuffer.io.deq <> sink
+      
+      sinkBuffer.io.deq :=> sink
       sinkBuffer.io.enq
     }
   }
@@ -145,11 +149,9 @@ object SinkBuffer {
         new Queue(chiselTypeOf(sink.bits), n, pipe = true)
       )
       val result = Wire(new IrrevocableIO(chiselTypeOf(sink.bits)))
-      sinkBuffer.io.deq <> sink
 
-      sinkBuffer.io.enq.bits := result.bits
-      sinkBuffer.io.enq.valid := result.valid
-      result.ready := sinkBuffer.io.enq.ready
+      sinkBuffer.io.deq :=> sink
+      result :=> sinkBuffer.io.enq
 
       result
     }

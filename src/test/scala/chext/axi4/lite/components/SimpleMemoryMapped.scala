@@ -6,7 +6,7 @@ import chext.elastic
 import chisel3._
 import chisel3.experimental.prefix
 import chisel3.util._
-import axi4.Casts._
+import axi4.Ops._
 
 class SimpleMemoryMappedDevice extends Module {
   private val regBlock = prefix("regBlock") { new RegisterBlock(32, 32, 8) }
@@ -16,7 +16,7 @@ class SimpleMemoryMappedDevice extends Module {
 
   val SAXIL = IO(axi4.Slave(axiConfig))
 
-  SAXIL.asLite <> regBlock.s_axil
+  SAXIL.asLite :=> regBlock.s_axil
 
   private val reg1 = RegInit(0.U(8.W))
   private val reg2 = RegInit(0.U(32.W))

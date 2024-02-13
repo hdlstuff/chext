@@ -89,8 +89,8 @@ class Mux(
 
       new Fork(m_axi_.r) {
         protected def onFork: Unit = {
-          demuxInput <> fork { in }
-          demuxSelect <> fork { in.id >> axiCfgSlave.wId }
+          fork { in } :=> demuxInput
+          fork { in.id >> axiCfgSlave.wId } :=> demuxSelect
         }
       }
 
@@ -131,8 +131,8 @@ class Mux(
 
       new Fork(m_axi_.b) {
         protected def onFork: Unit = {
-          demuxInput <> fork { in }
-          demuxSelect <> fork { in.id >> axiCfgSlave.wId }
+          fork { in } :=> demuxInput
+          fork { in.id >> axiCfgSlave.wId } :=> demuxSelect
         }
       }
 

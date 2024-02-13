@@ -9,6 +9,7 @@ import chisel3.experimental.prefix
 import chext.util.Expect
 import chext.axi4
 
+import axi4.lite.ConnectOp._
 import axi4.lite.test.PacketUtils._
 
 class RegisterBlockTestDevice extends Module {
@@ -16,7 +17,7 @@ class RegisterBlockTestDevice extends Module {
   
   val saxil = IO(axi4.lite.Slave(regBlock.cfgAxi))
 
-  saxil <> regBlock.s_axil
+  saxil :=> regBlock.s_axil
 
   private val reg1 = RegInit(0.U(32.W))
   private val reg2 = RegInit(0.U(32.W))

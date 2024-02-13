@@ -1,8 +1,11 @@
 package chext.elastic
 
+import chext.elastic
+
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.AffectsChiselPrefix
+
+import elastic.ConnectOp._
 
 class Distributor[T <: Data](
     val gen: T,
@@ -50,7 +53,7 @@ object Distributor {
       source: ReadyValidIO[T],
       sinks: Seq[ReadyValidIO[T]],
       chooserFn: Chooser.ChooserFn,
-      select: Option[ReadyValidIO[T]] = None,
+      select: Option[ReadyValidIO[UInt]] = None,
       isLastFn: T => Bool = (_: T) => true.B
   ): Unit = {
     val Distributor = Module(
@@ -62,12 +65,12 @@ object Distributor {
       )
     )
 
-    Distributor.io.source <> source
-    Distributor.io.sinks.zip(sinks).foreach { case (x, y) => x <> y }
+    source :=> Distributor.io.source
+    Distributor.io.sinks.zip(sinks).foreach { case (x, y) => x :=> y }
 
     select match {
       case None         => Disposed(Distributor.io.select)
-      case Some(select) => Distributor.io.select <> select
+      case Some(select) => Distributor.io.select :=> select
     }
   }
 }

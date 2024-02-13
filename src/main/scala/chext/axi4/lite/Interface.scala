@@ -187,7 +187,7 @@ private class ReadWriteInterface(implicit val cfg: axi4.Config)
 }
 
 private object main extends App {
-  import axi4.Casts._
+  import axi4.Ops._
 
   class LiteInterfaceTestDevice extends Module {
     private val cfg1 = axi4.Config(read = true, write = false, lite = true)
@@ -202,11 +202,10 @@ private object main extends App {
     val slave3 = IO(axi4.Slave(cfg2))
     val master3 = IO(axi4.Master(cfg2))
 
-    master1.asLite <> slave1.asLite
-    master2.asLite <> slave2.asLite
-    master2.asLite <> slave2.asLite
-
-    slave3.asLite <> master3.asLite
+    slave1.asLite :=> master1.asLite
+    slave2.asLite :=> master2.asLite
+    slave2.asLite :=> master2.asLite
+    master3.asLite :=> slave3.asLite
   }
 
   emitVerilog(new LiteInterfaceTestDevice, Array("--target-dir", "output/"))

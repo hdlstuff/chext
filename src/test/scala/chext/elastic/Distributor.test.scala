@@ -79,13 +79,13 @@ class DistributorTestDevice(
 
   Distributor.io.sinks.zip(processElements).foreach {
     case (x, y) => {
-      x <> SinkBuffer(y.io.source)
+      x :=> SinkBuffer(y.io.source)
     }
   }
 
   sinkMux.io.sources.zip(processElements).foreach {
     case (x, y) => {
-      x <> SourceBuffer(y.io.sink)
+      SourceBuffer(y.io.sink) :=> x
     }
   }
 

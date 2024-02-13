@@ -272,7 +272,7 @@ private class ReadWriteInterface(implicit val cfg: axi4.Config)
 }
 
 private object main extends App {
-  import axi4.Casts._
+  import axi4.Ops._
 
   class FullInterfaceTestDevice extends Module {
     private val cfg1 = axi4.Config(read = true, write = false)
@@ -287,11 +287,10 @@ private object main extends App {
     val slave3 = IO(axi4.Slave(cfg2))
     val master3 = IO(axi4.Master(cfg2))
 
-    master1.asFull <> slave1.asFull
-    master2.asFull <> slave2.asFull
-    master2.asFull <> slave2.asFull
-
-    slave3.asFull <> master3.asFull
+    slave1.asFull :=> master1.asFull
+    slave2.asFull :=> master2.asFull
+    slave2.asFull :=> master2.asFull
+    slave3.asFull :=> master3.asFull
   }
 
   emitVerilog(new FullInterfaceTestDevice, Array("--target-dir", "output/"))

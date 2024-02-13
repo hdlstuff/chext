@@ -1,14 +1,19 @@
 package chext.elastic
 
+import chext.elastic
+
 import chisel3._
 import chisel3.util._
+
+import elastic.ConnectOp._
 
 class Arbiter[T <: Data](
     val gen: T,
     val n: Int,
     val chooserFn: Chooser.ChooserFn,
     val isLastFn: T => Bool = (_: T) => true.B
-) extends Module with ChoosingModule {
+) extends Module
+    with ChoosingModule {
   require(n > 0)
   override def desiredName: String = "elasticArbiter"
 
@@ -61,12 +66,12 @@ object Arbiter {
       )
     )
 
-    arbiter.io.sources.zip(sources).foreach { case (x, y) => x <> y }
-    arbiter.io.sink <> sink
+    sources.zip(arbiter.io.sources).foreach { case (x, y) => x :=> y }
+    arbiter.io.sink :=> sink
 
     select match {
       case None         => Disposed(arbiter.io.select)
-      case Some(select) => arbiter.io.select <> select
+      case Some(select) => arbiter.io.select :=> select
     }
   }
 }

@@ -1,7 +1,11 @@
 package chext.elastic
 
+import chext.elastic
+
 import chisel3._
 import chisel3.util._
+
+import elastic.ConnectOp._
 
 class Mux[T <: Data](
     val gen: T,
@@ -30,7 +34,7 @@ class Mux[T <: Data](
   // sink ready might wait for sink valid
   // so, make sure that they do not depend on each other
   io.sink.valid := valid
-  
+
   io.select.ready := fire && isLast
 
   io.sink.bits := io.sources(io.select.bits.asUInt).bits
@@ -46,8 +50,9 @@ object Mux {
     val mux = Module(
       new Mux(chiselTypeOf(sources(0).bits), sources.length, isLastFn)
     )
-    mux.io.sources.zip(sources).foreach { case (x, y) => x <> y }
-    sink <> mux.io.sink
-    mux.io.select <> select
+
+    sources.zip(mux.io.sources).foreach { case (x, y) => x :=> y }
+    mux.io.sink :=> sink
+    select :=> mux.io.select
   }
 }

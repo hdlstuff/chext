@@ -138,6 +138,7 @@ class ReadWriteMem(
   private val internalWrite =
     rawMem.getPorts.filter((x) => !x.supportsRead && x.supportsWrite)(0)
 
+  // TODO: change <> with a better operator
   read <> controller.read
   write <> controller.write
   internalRead <> controller.rawRead
@@ -148,7 +149,7 @@ object Emitter extends App {
   Target.setCurrent(xilinx.Target)
 
   emitVerilog(
-    new ReadWriteMem(ReadWriteMemConfig(64, 14, 8, 1, 12, 12)),
+    new ReadWriteMem(ReadWriteMemConfig(256, 15, 8, 1, 12, 12)),
     Array("--target-dir", "output/")
   )
 }

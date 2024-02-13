@@ -1,7 +1,11 @@
 package chext.elastic
 
+import chext.elastic
+
 import chisel3._
 import chisel3.util._
+
+import elastic.ConnectOp._
 
 class Demux[T <: Data](
     val gen: T,
@@ -31,7 +35,7 @@ class Demux[T <: Data](
   }
   io.select.ready := fire && isLast
 
-  io.sinks.foreach { _.bits <> io.source.bits }
+  io.sinks.foreach { _.bits := io.source.bits }
 }
 
 object Demux {
@@ -44,8 +48,9 @@ object Demux {
     val demux = Module(
       new Demux(chiselTypeOf(source.bits), sinks.length, isLastFn)
     )
-    demux.io.source <> source
-    demux.io.sinks.zip(sinks).foreach { case (x, y) => { x <> y } }
-    demux.io.select <> select
+
+    source :=> demux.io.source
+    demux.io.sinks.zip(sinks).foreach { case (x, y) => { x :=> y } }
+    select :=> demux.io.select
   }
 }
