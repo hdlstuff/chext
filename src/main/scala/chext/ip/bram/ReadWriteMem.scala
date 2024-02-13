@@ -148,7 +148,7 @@ object Emitter extends App {
   Target.setCurrent(xilinx.Target)
 
   emitVerilog(
-    new ReadWriteMem(ReadWriteMemConfig(64, 20, 8, 1, 12, 12)),
+    new ReadWriteMem(ReadWriteMemConfig(64, 14, 8, 1, 12, 12)),
     Array("--target-dir", "output/")
   )
 }
