@@ -15,9 +15,9 @@ abstract class Chooser(val v: Vec[Bool]) extends AffectsChiselPrefix {
     */
   def choice: UInt
 
-  /** Logic active at the beginning of a burst.
+  /** Logic active when a selection is to be made.
     */
-  def onBurst: Unit
+  def updateState: Unit
 }
 
 private[elastic] trait InputToOutputSelectModule {
@@ -82,7 +82,7 @@ private[elastic] trait ChoosingModule extends InputToOutputSelectModule {
 
   protected def chooser: Chooser
 
-  protected def onBurst: Unit = chooser.onBurst
+  protected def onBurst: Unit = chooser.updateState
 
   protected lazy val lastChoice = Reg(genSelect)
   protected lazy val choice = Mux(sourceBurst, lastChoice, chooser.choice)
@@ -99,7 +99,7 @@ class RRChooser(v: Vec[Bool]) extends Chooser(v) {
   override def choice: UInt = {
     Mux(v(rrChoice), rrChoice, priorityChoice)
   }
-  override def onBurst: Unit = (lastChoice := choice)
+  override def updateState: Unit = (lastChoice := choice)
 
   private val rrChoice =
     Mux(
@@ -118,7 +118,7 @@ class PriorityChooser(v: Vec[Bool]) extends Chooser(v) {
     PriorityEncoder(v)
   }
 
-  def onBurst: Unit = { /* stateless */ }
+  def updateState: Unit = { /* stateless */ }
 }
 
 object Chooser {

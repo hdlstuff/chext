@@ -32,8 +32,8 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
 
           dut.write.req.initSource()
           dut.write.resp.initSink()
-          dut.read.addr.initSource()
-          dut.read.data.initSink()
+          dut.read.req.initSource()
+          dut.read.resp.initSink()
 
           fork {
             writeData.foreach { (x) =>
@@ -52,13 +52,13 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
           fork {
             indices.foreach { (x) =>
               {
-                dut.read.addr.enqueue(x)
+                dut.read.req.enqueue(x)
                 dut.clock.step(1 + rand.nextInt(16))
               }
             }
           }.fork {
             data.foreach(x => {
-              dut.read.data.expectDequeue(x)
+              dut.read.resp.expectDequeue(x)
             })
           }.join()
         }
@@ -81,8 +81,8 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
 
           dut.write.req.initSource()
           dut.write.resp.initSink()
-          dut.read.addr.initSource()
-          dut.read.data.initSink()
+          dut.read.req.initSource()
+          dut.read.resp.initSink()
 
           fork {
             writeData.foreach { (x) =>
@@ -101,12 +101,12 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
           fork {
             indices.foreach { (x) =>
               {
-                dut.read.addr.enqueue(x)
+                dut.read.req.enqueue(x)
               }
             }
           }.fork {
             data.foreach(x => {
-              dut.read.data.expectDequeue(x)
+              dut.read.resp.expectDequeue(x)
                 dut.clock.step(1 + rand.nextInt(16))
             })
           }.join()
@@ -130,8 +130,8 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
 
           dut.write.req.initSource()
           dut.write.resp.initSink()
-          dut.read.addr.initSource()
-          dut.read.data.initSink()
+          dut.read.req.initSource()
+          dut.read.resp.initSink()
 
           fork {
             writeData.foreach { (x) =>
@@ -149,12 +149,12 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
           fork {
             indices.foreach { (x) =>
               {
-                dut.read.addr.enqueue(x)
+                dut.read.req.enqueue(x)
               }
             }
           }.fork {
             data.foreach(x => {
-              dut.read.data.expectDequeue(x)
+              dut.read.resp.expectDequeue(x)
             })
           }.join()
         }

@@ -2,6 +2,7 @@ package chext.ip.memory
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.prefix
 
 class ReadToRawBridge(
     val wAddr: Int,
@@ -18,7 +19,7 @@ class ReadToRawBridge(
 
   private val dataQueue = Module(
     new Queue(
-      read.data.bits.cloneType,
+      read.resp.bits.cloneType,
       numOutstanding,
       flow = true,
       pipe = true
@@ -26,6 +27,7 @@ class ReadToRawBridge(
   )
   private val dataQueueEnq = dataQueue.io.enq
   private val dataQueueDeq = dataQueue.io.deq
+
   dataQueueEnq.noenq()
   dataQueueDeq.nodeq()
 
@@ -33,24 +35,24 @@ class ReadToRawBridge(
   raw.dIn := DontCare
   raw.wstrb := 0.U
 
-  read.addr.nodeq()
-  read.data.noenq()
+  read.req.nodeq()
+  read.resp.noenq()
 
-  when(ctr.notFull && read.addr.valid) {
-    raw.addr := read.addr.bits
-    read.addr.deq()
+  when(ctr.notFull && read.req.valid) {
+    raw.addr := read.req.bits
+    read.req.deq()
   }
 
-  when(read.addr.fire) {
+  when(read.req.fire) {
     ctr.inc()
   }
 
-  when(ShiftRegister(read.addr.fire, latency)) {
+  when(ShiftRegister(read.req.fire, latency)) {
     dataQueueEnq.enq(raw.dOut)
   }
 
-  when(read.data.ready && dataQueueDeq.valid) {
-    read.data.enq(dataQueueDeq.deq())
+  when(read.resp.ready && dataQueueDeq.valid) {
+    read.resp.enq(dataQueueDeq.deq())
     ctr.dec()
   }
 }
@@ -99,5 +101,105 @@ class WriteToRawBridge(
     write.resp.enq(0.U)
     ctr.dec()
     ctrResp.dec()
+  }
+}
+
+class ReadWriteToRawBridge(
+    val wAddr: Int,
+    val wData: Int,
+    val latencyRead: Int,
+    val latencyWrite: Int,
+    val numOutstandingRead: Int,
+    val numOutstandingWrite: Int
+) extends Module {
+  val read = IO(new ReadInterface(wAddr, wData))
+  val write = IO(new WriteInterface(wAddr, wData))
+  val raw = IO(Flipped(new RawInterface(wAddr, wData, true, true)))
+
+  private val ctrRead = Module(new chext.util.Counter(numOutstandingRead + 1))
+  ctrRead.noInc()
+  ctrRead.noDec()
+
+  read.req.nodeq()
+  read.resp.noenq()
+
+  private val ctrWrite = Module(new chext.util.Counter(numOutstandingWrite + 1))
+  ctrWrite.noInc()
+  ctrWrite.noDec()
+
+  private val ctrWriteResp = Module(
+    new chext.util.Counter(numOutstandingWrite + 1)
+  )
+  ctrWriteResp.noInc()
+  ctrWriteResp.noDec()
+
+  raw.addr := DontCare
+  raw.dIn := DontCare
+  raw.wstrb := 0.U
+
+  write.req.nodeq()
+  write.resp.noenq()
+
+  prefix("arbiter") {
+    val canAcceptRead = ctrRead.notFull && read.req.valid
+    val canAcceptWrite = ctrWrite.notFull && write.req.valid
+
+    val chooser =
+      chext.elastic.Chooser.rr(VecInit(canAcceptRead, canAcceptWrite))
+
+    when(canAcceptRead && chooser.choice === 0.U) {
+      raw.addr := read.req.bits
+
+      read.req.deq()
+      chooser.updateState
+    }.elsewhen(canAcceptWrite && chooser.choice === 1.U) {
+      raw.addr := write.req.bits.addr
+      raw.dIn := write.req.bits.data
+      raw.wstrb := write.req.bits.wstrb
+
+      write.req.deq()
+      chooser.updateState
+    }
+  }
+
+  prefix("read") {
+    val dataQueue = Module(
+      new Queue(
+        read.resp.bits.cloneType,
+        numOutstandingRead,
+        flow = true,
+        pipe = true
+      )
+    )
+    val dataQueueEnq = dataQueue.io.enq
+    val dataQueueDeq = dataQueue.io.deq
+
+    when(read.req.fire) {
+      ctrRead.inc()
+    }
+
+    when(ShiftRegister(read.req.fire, latencyRead)) {
+      dataQueueEnq.enq(raw.dOut)
+    }
+
+    when(read.resp.ready && dataQueueDeq.valid) {
+      read.resp.enq(dataQueueDeq.deq())
+      ctrRead.dec()
+    }
+  }
+
+  prefix("write") {
+    when(write.req.fire) {
+      ctrWrite.inc()
+    }
+
+    when(ShiftRegister(write.req.fire, latencyWrite)) {
+      ctrWriteResp.inc()
+    }
+    when(write.resp.ready && ctrWriteResp.notZero) {
+      write.resp.enq(0.U)
+      ctrWrite.dec()
+      ctrWriteResp.dec()
+    }
   }
 }

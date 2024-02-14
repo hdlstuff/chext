@@ -31,8 +31,8 @@ class RawInterface(
 class ReadInterface(wAddr: Int, wData: Int) extends Bundle {
   require(isPow2(wData))
 
-  val addr = Flipped(new IrrevocableIO(UInt(wAddr.W)))
-  val data = new IrrevocableIO(UInt(wData.W))
+  val req = Flipped(new IrrevocableIO(UInt(wAddr.W)))
+  val resp = new IrrevocableIO(UInt(wData.W))
 }
 
 class WriteRequest(wAddr: Int, wData: Int) extends Bundle {
