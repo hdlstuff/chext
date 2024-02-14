@@ -114,15 +114,15 @@ class SinglePortRawMem(
 
   xpm_mem.io.addra := interface1.addr
   xpm_mem.io.clka := clock.asBool
-  xpm_mem.io.dina := interface1.dataIn
-  interface1.dataOut := xpm_mem.io.douta
+  xpm_mem.io.dina := interface1.dIn
+  interface1.dOut := xpm_mem.io.douta
   xpm_mem.io.ena := true.B
   xpm_mem.io.injectdbiterra := false.B
   xpm_mem.io.injectsbiterra := false.B
   xpm_mem.io.regcea := true.B
   xpm_mem.io.rsta := reset.asBool
   xpm_mem.io.sleep := false.B
-  xpm_mem.io.wea := interface1.writeStrobe
+  xpm_mem.io.wea := interface1.wstrb
 
   def getPorts: Seq[memory.RawInterface] = Seq(interface1)
 }

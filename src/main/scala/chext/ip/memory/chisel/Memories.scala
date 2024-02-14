@@ -41,17 +41,17 @@ class SimpleDualPortMem(
   private val mem =
     SyncReadMem(1 << cfg.wAddr, Vec(numBytes, UInt(8.W)))
   private class WrReq(val wAddr: Int, val wData: Int) extends Bundle {
-    val wWriteStrobe = (wData >> 3)
+    val wStrobe = (wData >> 3)
 
     val addr = UInt(wAddr.W)
-    val dataIn = Bits(wData.W)
-    val writeStrobe = UInt(wWriteStrobe.W)
+    val dIn = Bits(wData.W)
+    val wstrb = UInt(wStrobe.W)
   }
 
   private val wrReq_ = Wire(new WrReq(wAddr = cfg.wAddr, wData = cfg.wData))
   wrReq_.addr := interfaceWr.addr
-  wrReq_.dataIn := interfaceWr.dataIn
-  wrReq_.writeStrobe := interfaceWr.writeStrobe
+  wrReq_.dIn := interfaceWr.dIn
+  wrReq_.wstrb := interfaceWr.wstrb
 
   private val wrReqDelayed_ =
     if (cfg.writeLatency > 1) ShiftRegister(wrReq_, cfg.writeLatency - 1)
@@ -59,16 +59,16 @@ class SimpleDualPortMem(
 
   mem.write(
     wrReqDelayed_.addr,
-    unpack(wrReqDelayed_.dataIn, 8),
-    wrReqDelayed_.writeStrobe.asBools
+    unpack(wrReqDelayed_.dIn, 8),
+    wrReqDelayed_.wstrb.asBools
   )
-  interfaceWr.dataOut := 0.U
+  interfaceWr.dOut := 0.U
 
-  private val dataOut_ = mem.read(interfaceRd.addr, true.B).asUInt
+  private val dOut_ = mem.read(interfaceRd.addr, true.B).asUInt
 
-  interfaceRd.dataOut := {
-    if (cfg.readLatency > 1) ShiftRegister(dataOut_, cfg.readLatency - 1)
-    else dataOut_
+  interfaceRd.dOut := {
+    if (cfg.readLatency > 1) ShiftRegister(dOut_, cfg.readLatency - 1)
+    else dOut_
   }
 
   def getPorts: Seq[memory.RawInterface] = Seq(interfaceRd, interfaceWr)

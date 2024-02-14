@@ -3,24 +3,49 @@ package chext.ip.memory
 import chisel3._
 import chisel3.util._
 
-class RdInterface(wAddr: Int, wData: Int) extends Bundle {
+// TODO: also support EN
+class RawInterface(
+    val wAddr: Int,
+    val wData: Int,
+    val supportsRead: Boolean = true,
+    val supportsWrite: Boolean = true
+) extends Bundle {
+  require(isPow2(wData) && wData >= 8)
+  require(supportsRead || supportsWrite)
+
+  val wStrobe = (wData >> 3)
+
+  /** @brief Address (index RAM words of size wData) */
+  val addr = Input(UInt(wAddr.W))
+
+  /** @brief Data input */
+  val dIn = Input(Bits(wData.W))
+
+  /** @brief Data output */
+  val dOut = Output(Bits(wData.W))
+
+  /** @brief Write strobe */
+  val wstrb = Input(UInt(wStrobe.W))
+}
+
+class ReadInterface(wAddr: Int, wData: Int) extends Bundle {
   require(isPow2(wData))
 
   val addr = Flipped(new IrrevocableIO(UInt(wAddr.W)))
   val data = new IrrevocableIO(UInt(wData.W))
 }
 
-class WrBundle(wAddr: Int, wData: Int) extends Bundle {
+class WriteRequest(wAddr: Int, wData: Int) extends Bundle {
   require(isPow2(wData))
 
-  val wWriteStrobe = (wData >> 3)
+  val wStrobe = (wData >> 3)
 
   val addr = UInt(wAddr.W)
   val data = UInt(wData.W)
-  val writeStrobe = UInt(wWriteStrobe.W)
+  val wstrb = UInt(wStrobe.W)
 }
 
-class WrInterface(wAddr: Int, wData: Int) extends Bundle {
-  val payload = Flipped(new IrrevocableIO(new WrBundle(wAddr, wData)))
-  val response = new IrrevocableIO(UInt(0.W))
+class WriteInterface(wAddr: Int, wData: Int) extends Bundle {
+  val req = Flipped(new IrrevocableIO(new WriteRequest(wAddr, wData)))
+  val resp = new IrrevocableIO(UInt(0.W))
 }

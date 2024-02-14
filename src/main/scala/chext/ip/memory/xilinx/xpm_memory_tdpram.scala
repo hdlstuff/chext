@@ -157,10 +157,10 @@ class TrueDualPortRawMem(
   xpm_mem.io.addrb := interface2.addr
   xpm_mem.io.clka := clock.asBool
   xpm_mem.io.clkb := clock.asBool
-  xpm_mem.io.dina := interface1.dataIn
-  xpm_mem.io.dinb := interface2.dataIn
-  interface1.dataOut := xpm_mem.io.douta
-  interface2.dataOut := xpm_mem.io.doutb
+  xpm_mem.io.dina := interface1.dIn
+  xpm_mem.io.dinb := interface2.dIn
+  interface1.dOut := xpm_mem.io.douta
+  interface2.dOut := xpm_mem.io.doutb
   xpm_mem.io.ena := true.B
   xpm_mem.io.enb := true.B
   xpm_mem.io.injectdbiterra := false.B
@@ -172,8 +172,8 @@ class TrueDualPortRawMem(
   xpm_mem.io.rsta := reset.asBool
   xpm_mem.io.rstb := reset.asBool
   xpm_mem.io.sleep := false.B
-  xpm_mem.io.wea := interface1.writeStrobe
-  xpm_mem.io.web := interface1.writeStrobe
+  xpm_mem.io.wea := interface1.wstrb
+  xpm_mem.io.web := interface1.wstrb
 
   def getPorts: Seq[memory.RawInterface] = Seq(interface1, interface2)
 }

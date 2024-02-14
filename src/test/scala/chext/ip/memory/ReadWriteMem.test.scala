@@ -12,9 +12,9 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
   Target.setCurrent(chisel.Target)
 
   val rand = scala.util.Random
-  val genWrBundle = new WrBundle(32, 32)
-  def writeBundle(addr: BigInt, data: BigInt) =
-    genWrBundle.Lit(_.addr -> addr.U, _.data -> data.U, _.wstrb -> 15.U)
+  val genWriteRequest = new WriteRequest(32, 32)
+  def writeRequest(addr: BigInt, data: BigInt) =
+    genWriteRequest.Lit(_.addr -> addr.U, _.data -> data.U, _.wstrb -> 15.U)
 
   "chext.ip.memory.ReadWriteMem.Basic1" in {
     test(
@@ -28,7 +28,7 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
           val writeData =
             indices
               .zip(data)
-              .map(x => writeBundle(x._1.litValue, x._2.litValue))
+              .map(x => writeRequest(x._1.litValue, x._2.litValue))
 
           dut.write.req.initSource()
           dut.write.resp.initSink()
@@ -77,7 +77,7 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
           val writeData =
             indices
               .zip(data)
-              .map(x => writeBundle(x._1.litValue, x._2.litValue))
+              .map(x => writeRequest(x._1.litValue, x._2.litValue))
 
           dut.write.req.initSource()
           dut.write.resp.initSink()
@@ -126,7 +126,7 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
           val writeData =
             indices
               .zip(data)
-              .map(x => writeBundle(x._1.litValue, x._2.litValue))
+              .map(x => writeRequest(x._1.litValue, x._2.litValue))
 
           dut.write.req.initSource()
           dut.write.resp.initSink()

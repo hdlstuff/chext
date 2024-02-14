@@ -2,15 +2,14 @@ package chext.ip.memory
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
 
 case class ReadWriteMemConfig(
     wData: Int,
     wAddr: Int,
     readLatency: Int,
     writeLatency: Int,
-    numRdOutstanding: Int,
-    numWrOutstanding: Int
+    numReadOutstanding: Int,
+    numWriteOutstanding: Int
 ) {
   require(readLatency >= 1)
   require(writeLatency >= 1)
@@ -20,93 +19,34 @@ case class ReadWriteMemConfig(
 class ReadWriteMemController(
     cfg: ReadWriteMemConfig
 ) extends Module {
-  val read = IO(new RdInterface(cfg.wAddr, cfg.wData))
-  val write = IO(new WrInterface(cfg.wAddr, cfg.wData))
+  val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
+  val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
   val rawRead = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData)))
   val rawWrite = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData)))
 
-  prefix("read") {
-    val counter = Module(new chext.util.Counter(cfg.numRdOutstanding + 1))
-    counter.noInc()
-    counter.noDec()
-
-    val dataQueue = Module(
-      new Queue(
-        read.data.bits.cloneType,
-        cfg.numRdOutstanding,
-        flow = true,
-        pipe = true
-      )
+  private val readBridge = Module(
+    new ReadToRawBridge(
+      cfg.wAddr,
+      cfg.wData,
+      cfg.readLatency,
+      cfg.numReadOutstanding
     )
-    val dataQueueEnq = dataQueue.io.enq
-    val dataQueueDeq = dataQueue.io.deq
-    dataQueueEnq.noenq()
-    dataQueueDeq.nodeq()
+  )
 
-    rawRead.addr := DontCare
-    rawRead.dIn := DontCare
-    rawRead.wstrb := 0.U
+  private val writeBridge = Module(
+    new WriteToRawBridge(
+      cfg.wAddr,
+      cfg.wData,
+      cfg.writeLatency,
+      cfg.numWriteOutstanding
+    )
+  )
 
-    read.addr.nodeq()
-    read.data.noenq()
+  read <> readBridge.read
+  rawRead <> readBridge.raw
 
-    when(counter.notFull && read.addr.valid) {
-      rawRead.addr := read.addr.bits
-      read.addr.deq()
-    }
-
-    when(read.addr.fire) {
-      counter.inc()
-    }
-
-    when(ShiftRegister(read.addr.fire, cfg.readLatency)) {
-      dataQueueEnq.enq(rawRead.dOut)
-    }
-
-    when(read.data.ready && dataQueueDeq.valid) {
-      read.data.enq(dataQueueDeq.deq())
-      counter.dec()
-    }
-  }
-
-  prefix("write") {
-    val counter1 = Module(new chext.util.Counter(cfg.numWrOutstanding + 1))
-    counter1.noInc()
-    counter1.noDec()
-
-    val counter2 = Module(new chext.util.Counter(cfg.numWrOutstanding + 1))
-    counter2.noInc()
-    counter2.noDec()
-
-    rawWrite.addr := DontCare
-    rawWrite.dIn := DontCare
-    rawWrite.wstrb := 0.U
-
-    write.req.nodeq()
-    write.resp.noenq()
-
-    when(counter1.notFull && write.req.valid) {
-      rawWrite.addr := write.req.bits.addr
-      rawWrite.dIn := write.req.bits.data
-      rawWrite.wstrb := write.req.bits.wstrb
-
-      write.req.deq()
-    }
-
-    when(write.req.fire) {
-      counter1.inc()
-    }
-
-    when(ShiftRegister(write.req.fire, cfg.writeLatency)) {
-      counter2.inc()
-    }
-
-    when(write.resp.ready && counter2.notZero) {
-      write.resp.enq(true.B)
-      counter1.dec()
-      counter2.dec()
-    }
-  }
+  write <> writeBridge.write
+  rawWrite <> writeBridge.raw
 }
 
 class ReadWriteMem(
@@ -114,8 +54,8 @@ class ReadWriteMem(
 ) extends Module {
   override val desiredName = f"${Target.current.name}ReadWriteMem"
 
-  val read = IO(new RdInterface(cfg.wAddr, cfg.wData))
-  val write = IO(new WrInterface(cfg.wAddr, cfg.wData))
+  val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
+  val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
 
   private val rawMem = Module(
     Target.current.createSimpleDualPortRawMem(
