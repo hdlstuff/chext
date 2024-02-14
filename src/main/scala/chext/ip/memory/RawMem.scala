@@ -10,6 +10,12 @@ case class RawMemConfig(
 
     /** @note Not used in case of ROM. */
     val latencyWrite: Int = 1
+
+    /** @note
+      *   TODO: To support ROMs, extend this structure with an initial content
+      *   field. Maybe, it should be loaded from a file or the contents are
+      *   given inline?
+      */
 )
 
 trait RawMem extends Module {
