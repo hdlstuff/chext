@@ -25,9 +25,6 @@ class ReadWriteMemController(
   val rawRead = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData)))
   val rawWrite = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData)))
 
-  assert(rawRead.supportsRead)
-  assert(rawWrite.supportsWrite)
-
   prefix("read") {
     val counter = Module(new chext.util.Counter(cfg.numRdOutstanding + 1))
     counter.noInc()
@@ -47,8 +44,8 @@ class ReadWriteMemController(
     dataQueueDeq.nodeq()
 
     rawRead.addr := DontCare
-    rawRead.dataIn := DontCare
-    rawRead.writeStrobe := 0.U
+    rawRead.dIn := DontCare
+    rawRead.wstrb := 0.U
 
     read.addr.nodeq()
     read.data.noenq()
@@ -63,7 +60,7 @@ class ReadWriteMemController(
     }
 
     when(ShiftRegister(read.addr.fire, cfg.readLatency)) {
-      dataQueueEnq.enq(rawRead.dataOut)
+      dataQueueEnq.enq(rawRead.dOut)
     }
 
     when(read.data.ready && dataQueueDeq.valid) {
@@ -82,30 +79,30 @@ class ReadWriteMemController(
     counter2.noDec()
 
     rawWrite.addr := DontCare
-    rawWrite.dataIn := DontCare
-    rawWrite.writeStrobe := 0.U
+    rawWrite.dIn := DontCare
+    rawWrite.wstrb := 0.U
 
-    write.payload.nodeq()
-    write.response.noenq()
+    write.req.nodeq()
+    write.resp.noenq()
 
-    when(counter1.notFull && write.payload.valid) {
-      rawWrite.addr := write.payload.bits.addr
-      rawWrite.dataIn := write.payload.bits.data
-      rawWrite.writeStrobe := write.payload.bits.writeStrobe
+    when(counter1.notFull && write.req.valid) {
+      rawWrite.addr := write.req.bits.addr
+      rawWrite.dIn := write.req.bits.data
+      rawWrite.wstrb := write.req.bits.wstrb
 
-      write.payload.deq()
+      write.req.deq()
     }
 
-    when(write.payload.fire) {
+    when(write.req.fire) {
       counter1.inc()
     }
 
-    when(ShiftRegister(write.payload.fire, cfg.writeLatency)) {
+    when(ShiftRegister(write.req.fire, cfg.writeLatency)) {
       counter2.inc()
     }
 
-    when(write.response.ready && counter2.notZero) {
-      write.response.enq(true.B)
+    when(write.resp.ready && counter2.notZero) {
+      write.resp.enq(true.B)
       counter1.dec()
       counter2.dec()
     }
