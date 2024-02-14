@@ -11,7 +11,7 @@ class SinglePortRAM(
     numOutstandingRead: Int,
     numOutstandingWrite: Int
 ) extends Module {
-  override val desiredName = f"${Target.current.name}SimpleDualPortRAM"
+  override val desiredName = f"${Target.current.name}SinglePortRAM"
 
   val read = IO(new ReadInterface(wAddr, wData))
   val write = IO(new WriteInterface(wAddr, wData))
@@ -116,7 +116,7 @@ class TrueDualPortRAM(
     numOutstandingRead: Int,
     numOutstandingWrite: Int
 ) extends Module {
-  override val desiredName = f"${Target.current.name}SimpleDualPortRAM"
+  override val desiredName = f"${Target.current.name}TrueDualPortRAM"
 
   val read1 = IO(new ReadInterface(wAddr, wData))
   val read2 = IO(new ReadInterface(wAddr, wData))
@@ -138,8 +138,8 @@ class TrueDualPortRAM(
     )
   )
 
-  private val raw1 = rawMem.getPorts(1)
-  private val raw2 = rawMem.getPorts(2)
+  private val raw1 = rawMem.getPorts(0)
+  private val raw2 = rawMem.getPorts(1)
 
   private val bridge1 = Module(
     new ReadWriteToRawBridge(
@@ -183,4 +183,15 @@ object Emitter extends App {
     new SimpleDualPortRAM(256, 15, 8, 1, 12, 12),
     Array("--target-dir", "output/")
   )
+
+  emitVerilog(
+    new SinglePortRAM(256, 15, 8, 1, 12, 12),
+    Array("--target-dir", "output/")
+  )
+
+  emitVerilog(
+    new TrueDualPortRAM(256, 15, 8, 1, 12, 12),
+    Array("--target-dir", "output/")
+  )
+
 }

@@ -66,7 +66,7 @@ class SinglePortRawRAM(
     val dOut_ = mem.read(raw.addr, true.B).asUInt
 
     raw.dOut := {
-      if (cfg.latencyRead > 1) ShiftRegister(dOut_, cfg.latencyWrite - 1)
+      if (cfg.latencyRead > 1) ShiftRegister(dOut_, cfg.latencyRead - 1)
       else dOut_
     }
   }
@@ -124,7 +124,7 @@ class SimpleDualPortRawRAM(
   private val dOut_ = mem.read(rawRead.addr, true.B).asUInt
 
   rawRead.dOut := {
-    if (cfg.latencyRead > 1) ShiftRegister(dOut_, cfg.latencyWrite - 1)
+    if (cfg.latencyRead > 1) ShiftRegister(dOut_, cfg.latencyRead - 1)
     else dOut_
   }
 
@@ -181,7 +181,7 @@ class TrueDualPortRawRAM(
     val dOut_ = mem.read(raw.addr, true.B).asUInt
 
     raw.dOut := {
-      if (cfg.latencyRead > 1) ShiftRegister(dOut_, cfg.latencyWrite - 1)
+      if (cfg.latencyRead > 1) ShiftRegister(dOut_, cfg.latencyRead - 1)
       else dOut_
     }
   }
