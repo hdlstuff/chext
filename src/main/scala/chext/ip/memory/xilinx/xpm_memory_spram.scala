@@ -95,7 +95,7 @@ class SinglePortRawMem(
     val cfg: memory.RawMemConfig
 ) extends Module
     with memory.RawMem {
-  assert(cfg.writeLatency == 1)
+  assert(cfg.latencyWrite == 1)
 
   override val desiredName = "XilinxSinglePortRawMem"
 
@@ -106,7 +106,7 @@ class SinglePortRawMem(
     byteWriteWidthA = 8,
     memorySize = (cfg.wData << cfg.wAddr),
     readDataWidthA = cfg.wData,
-    readLatencyA = cfg.readLatency,
+    readLatencyA = cfg.latencyRead,
     writeDataWidthA = cfg.wData
   )
 

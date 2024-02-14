@@ -19,14 +19,14 @@ private object unpack {
   }
 }
 
-class SimpleDualPortMem(
+class SimpleDualPortRawRAM(
     val cfg: memory.RawMemConfig
 ) extends Module
     with memory.RawMem {
   override val desiredName = "ChiselSimpleDualPortMem"
 
-  assert(cfg.readLatency >= 1)
-  assert(cfg.writeLatency >= 1)
+  assert(cfg.latencyRead >= 1)
+  assert(cfg.latencyWrite >= 1)
 
   val interfaceRd = IO(
     new memory.RawInterface(cfg.wAddr, cfg.wData, true, false)
@@ -54,7 +54,7 @@ class SimpleDualPortMem(
   wrReq_.wstrb := interfaceWr.wstrb
 
   private val wrReqDelayed_ =
-    if (cfg.writeLatency > 1) ShiftRegister(wrReq_, cfg.writeLatency - 1)
+    if (cfg.latencyRead > 1) ShiftRegister(wrReq_, cfg.latencyWrite - 1)
     else wrReq_
 
   mem.write(
@@ -67,7 +67,7 @@ class SimpleDualPortMem(
   private val dOut_ = mem.read(interfaceRd.addr, true.B).asUInt
 
   interfaceRd.dOut := {
-    if (cfg.readLatency > 1) ShiftRegister(dOut_, cfg.readLatency - 1)
+    if (cfg.latencyRead > 1) ShiftRegister(dOut_, cfg.latencyWrite - 1)
     else dOut_
   }
 

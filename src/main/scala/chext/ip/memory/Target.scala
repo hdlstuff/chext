@@ -2,9 +2,14 @@ package chext.ip.memory
 
 abstract class Target {
   def name: String
-  def createSinglePortRawMem(cfg: RawMemConfig): RawMem
-  def createSimpleDualPortRawMem(cfg: RawMemConfig): RawMem
-  def createTrueDualPortRawMem(cfg: RawMemConfig): RawMem
+
+  def createSinglePortRawROM(cfg: RawMemConfig): RawMem
+  def createSimpleDualPortRawROM(cfg: RawMemConfig): RawMem
+  def createTrueDualPortRawROM(cfg: RawMemConfig): RawMem
+
+  def createSinglePortRawRAM(cfg: RawMemConfig): RawMem
+  def createSimpleDualPortRawRAM(cfg: RawMemConfig): RawMem
+  def createTrueDualPortRawRAM(cfg: RawMemConfig): RawMem
 }
 
 object Target {

@@ -108,7 +108,7 @@ class SimpleDualPortRawMem(
     val cfg: memory.RawMemConfig
 ) extends Module
     with memory.RawMem {
-  assert(cfg.writeLatency == 1)
+  assert(cfg.latencyWrite == 1)
 
   override val desiredName = "XilinxSimpleDualPortRawMem"
 
@@ -121,7 +121,7 @@ class SimpleDualPortRawMem(
     byteWriteWidthA = 8,
     memorySize = (cfg.wData << cfg.wAddr),
     readDataWidthB = cfg.wData,
-    readLatencyB = cfg.readLatency,
+    readLatencyB = cfg.latencyRead,
     writeDataWidthA = cfg.wData,
     useEmbeddedConstraint = false
   )

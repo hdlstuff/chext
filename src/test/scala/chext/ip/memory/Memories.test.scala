@@ -8,7 +8,7 @@ import chiseltest._
 
 import org.scalatest.freespec.AnyFreeSpec
 
-class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
+class SimpleDualPortRAMSpec extends AnyFreeSpec with ChiselScalatestTester {
   Target.setCurrent(chisel.Target)
 
   val rand = scala.util.Random
@@ -18,7 +18,7 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
 
   "chext.ip.memory.ReadWriteMem.Basic1" in {
     test(
-      new ReadWriteMem(ReadWriteMemConfig(32, 10, 4, 4, 8, 8))
+      new SimpleDualPortRAM(32, 10, 4, 4, 8, 8)
     ).withAnnotations(Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)) {
       dut =>
         {
@@ -67,7 +67,7 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
 
   "chext.ip.memory.ReadWriteMem.Basic2" in {
     test(
-      new ReadWriteMem(ReadWriteMemConfig(32, 10, 4, 4, 8, 8))
+      new SimpleDualPortRAM(32, 10, 4, 4, 8, 8)
     ).withAnnotations(Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)) {
       dut =>
         {
@@ -116,7 +116,7 @@ class ReadWriteMemSpec extends AnyFreeSpec with ChiselScalatestTester {
 
   "chext.ip.memory.ReadWriteMem.LongLatency" in {
     test(
-      new ReadWriteMem(ReadWriteMemConfig(32, 10, 32, 32, 4, 4))
+      new SimpleDualPortRAM(32, 10, 32, 32, 4, 4)
     ).withAnnotations(Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)) {
       dut =>
         {

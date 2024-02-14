@@ -4,10 +4,22 @@ import chext.ip.memory
 
 case object Target extends memory.Target {
   val name = "Xilinx"
-  def createSinglePortRawMem(cfg: memory.RawMemConfig): memory.RawMem =
+
+  def createSinglePortRawROM(cfg: memory.RawMemConfig): memory.RawMem =
+    ???
+
+  def createSimpleDualPortRawROM(cfg: memory.RawMemConfig): memory.RawMem =
+    ???
+
+  def createTrueDualPortRawROM(cfg: memory.RawMemConfig): memory.RawMem =
+    ???
+
+  def createSinglePortRawRAM(cfg: memory.RawMemConfig): memory.RawMem =
     new SinglePortRawMem(cfg)
-  def createSimpleDualPortRawMem(cfg: memory.RawMemConfig): memory.RawMem =
+
+  def createSimpleDualPortRawRAM(cfg: memory.RawMemConfig): memory.RawMem =
     new SimpleDualPortRawMem(cfg)
-  def createTrueDualPortRawMem(cfg: memory.RawMemConfig): memory.RawMem =
+
+  def createTrueDualPortRawRAM(cfg: memory.RawMemConfig): memory.RawMem =
     new TrueDualPortRawMem(cfg)
 }
