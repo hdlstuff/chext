@@ -6,7 +6,7 @@ import chisel3.util._
 import chiseltest._
 
 import chext.axi4
-import chext.util.Expect
+import chext.test.Expect
 
 trait InterconnectHelper[M <: Module] {
   def slaveInterfaces(module: M): Seq[axi4.lite.Interface]

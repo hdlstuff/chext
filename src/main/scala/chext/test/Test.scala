@@ -20,7 +20,7 @@ trait TestMixin {
   }
 }
 
-abstract class TesterSpec extends AnyFreeSpec with ChiselScalatestTester {
+abstract class FreeSpec extends AnyFreeSpec with ChiselScalatestTester {
   private val annotations = ArrayBuffer.empty[firrtl2.annotations.Annotation]
 
   protected final def clearAnnotations() = annotations.clear()

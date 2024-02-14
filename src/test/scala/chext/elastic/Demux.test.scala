@@ -12,7 +12,7 @@ import elastic._
 import elastic.ConnectOp._
 import elastic.test.PacketOps._
 
-class DemuxSpec extends chext.test.TesterSpec with chext.test.TestMixin {
+class DemuxSpec extends chext.test.FreeSpec with chext.test.TestMixin {
   useVerilator()
   enableVcd()
 

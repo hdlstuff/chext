@@ -6,9 +6,10 @@ import chisel3.experimental.BundleLiterals._
 
 import chiseltest._
 
-import org.scalatest.freespec.AnyFreeSpec
+import TestOps._
+import chext.test.Expect
 
-class SinglePortRAMSpec extends AnyFreeSpec with ChiselScalatestTester {
+class SinglePortRAMSpec extends chext.test.FreeSpec {
   Target.setCurrent(chisel.Target)
 
   val rand = scala.util.Random
@@ -22,13 +23,9 @@ class SinglePortRAMSpec extends AnyFreeSpec with ChiselScalatestTester {
     ).withAnnotations(Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)) {
       dut =>
         {
-          val TEST_SIZE = 100;
-          val indices = Seq.range(0, TEST_SIZE).map(_.U)
-          val data = indices.map(x => (x.litValue + 0xa0).U)
-          val writeData =
-            indices
-              .zip(data)
-              .map(x => writeRequest(x._1.litValue, x._2.litValue))
+          val testSize = 100;
+          val addr = Seq.range(0, testSize)
+          val data = addr.map { (x) => (x + 0xa0) + ((x + 0xb0) << 16) }
 
           dut.write.req.initSource()
           dut.write.resp.initSink()
@@ -36,29 +33,27 @@ class SinglePortRAMSpec extends AnyFreeSpec with ChiselScalatestTester {
           dut.read.resp.initSink()
 
           fork {
-            writeData.foreach { (x) =>
-              {
-                dut.write.req.enqueue(x)
+            addr.zip(data).foreach {
+              case (a, d) => {
+                dut.write.sendReq(a, d, 0xf)
                 dut.clock.step(1 + rand.nextInt(16))
               }
             }
 
           }.fork {
-            for (i <- 0 until TEST_SIZE) {
-              dut.write.resp.expectDequeue(0.U)
-            }
+            data.foreach { (x) => dut.write.receiveResp() }
           }.join()
 
           fork {
-            indices.foreach { (x) =>
+            addr.foreach { (a) =>
               {
-                dut.read.req.enqueue(x)
+                dut.read.sendReq(a)
                 dut.clock.step(1 + rand.nextInt(16))
               }
             }
           }.fork {
-            data.foreach(x => {
-              dut.read.resp.expectDequeue(x)
+            data.foreach((d) => {
+              dut.read.expectResp(d)
             })
           }.join()
         }
@@ -71,13 +66,9 @@ class SinglePortRAMSpec extends AnyFreeSpec with ChiselScalatestTester {
     ).withAnnotations(Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)) {
       dut =>
         {
-          val TEST_SIZE = 100;
-          val indices = Seq.range(0, TEST_SIZE).map(_.U)
-          val data = indices.map(x => (x.litValue + 0xa0).U)
-          val writeData =
-            indices
-              .zip(data)
-              .map(x => writeRequest(x._1.litValue, x._2.litValue))
+          val testSize = 100;
+          val addr = Seq.range(0, testSize)
+          val data = addr.map { (x) => (x + 0xa0) + ((x + 0xb0) << 16) }
 
           dut.write.req.initSource()
           dut.write.resp.initSink()
@@ -85,28 +76,28 @@ class SinglePortRAMSpec extends AnyFreeSpec with ChiselScalatestTester {
           dut.read.resp.initSink()
 
           fork {
-            writeData.foreach { (x) =>
-              {
-                dut.write.req.enqueue(x)
+            addr.zip(data).foreach {
+              case (a, d) => {
+                dut.write.sendReq(a, d, 0xf)
               }
             }
 
           }.fork {
-            for (i <- 0 until TEST_SIZE) {
-              dut.write.resp.expectDequeue(0.U)
+            data.foreach { (x) =>
+              dut.write.receiveResp()
               dut.clock.step(1 + rand.nextInt(16))
             }
           }.join()
 
           fork {
-            indices.foreach { (x) =>
+            addr.foreach { (a) =>
               {
-                dut.read.req.enqueue(x)
+                dut.read.sendReq(a)
               }
             }
           }.fork {
-            data.foreach(x => {
-              dut.read.resp.expectDequeue(x)
+            data.foreach((d) => {
+              dut.read.expectResp(d)
               dut.clock.step(1 + rand.nextInt(16))
             })
           }.join()
@@ -160,7 +151,8 @@ class SinglePortRAMSpec extends AnyFreeSpec with ChiselScalatestTester {
         }
     }
   }
-  "chext.ip.memory.SinglePortRAMSpec.LongLatency" in {
+
+  "chext.ip.memory.SinglePortRAMSpec.InterleavedReadsWrites" in {
     test(
       new SimpleDualPortRAM(32, 10, 16, 8, 1, 1)
     ).withAnnotations(Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)) {
@@ -207,7 +199,7 @@ class SinglePortRAMSpec extends AnyFreeSpec with ChiselScalatestTester {
     }
   }
 }
-class SimpleDualPortRAMSpec extends AnyFreeSpec with ChiselScalatestTester {
+class SimpleDualPortRAMSpec extends chext.test.FreeSpec {
   Target.setCurrent(chisel.Target)
 
   val rand = scala.util.Random

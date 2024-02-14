@@ -10,7 +10,7 @@ import chiseltest._
 import chext.axi4
 import axi4.lite.components.{InterconnectTester, InterconnectHelper}
 
-class DemuxSpec extends chext.test.TesterSpec {
+class DemuxSpec extends chext.test.FreeSpec {
   val numMasters = 4
   assert(isPow2(numMasters))
 

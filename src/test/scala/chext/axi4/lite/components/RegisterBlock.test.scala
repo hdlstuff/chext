@@ -6,7 +6,7 @@ import chiseltest._
 
 import chisel3.experimental.prefix
 
-import chext.util.Expect
+import chext.test.Expect
 import chext.axi4
 
 import axi4.lite.ConnectOp._
@@ -42,7 +42,7 @@ class RegisterBlockTestDevice extends Module {
   }
 }
 
-class RegisterBundleSpec extends chext.test.TesterSpec {
+class RegisterBundleSpec extends chext.test.FreeSpec {
   "RegisterBlockTestDevice should perform correctly" in {
     test(new RegisterBlockTestDevice).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {

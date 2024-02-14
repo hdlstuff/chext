@@ -10,7 +10,7 @@ import chiseltest._
 import chext.axi4
 import axi4.full.components.{InterconnectTester, InterconnectHelper}
 
-class MuxSpec extends chext.test.TesterSpec {
+class MuxSpec extends chext.test.FreeSpec {
   def moduleFn = new Mux(
     axi4.Config(
       wId = 4,

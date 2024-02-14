@@ -19,7 +19,7 @@ class MyModule extends Module {
   SourceBuffer(in) :=> out
 }
 
-class BurstTest extends chext.test.TesterSpec {
+class BurstTest extends chext.test.FreeSpec {
   enableVcd()
 
   "BurstTest" in test(new MyModule) { dut =>
