@@ -3,6 +3,8 @@ package chext.ip.memory
 import chisel3._
 import chisel3.util._
 
+// TODO: also support EN
+
 class RawInterface(
     val wAddr: Int,
     val wData: Int,
