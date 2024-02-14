@@ -21,7 +21,7 @@ class SinglePortRAM(
   require(isPow2(wData))
 
   private val rawMem = Module(
-    Target.current.createSimpleDualPortRawRAM(
+    Target.current.createSinglePortRawRAM(
       RawMemConfig(
         wAddr = wAddr,
         wData = wData,

@@ -25,6 +25,7 @@ class ReadToRawBridge(
       pipe = true
     )
   )
+  
   private val dataQueueEnq = dataQueue.io.enq
   private val dataQueueDeq = dataQueue.io.deq
 
@@ -171,8 +172,12 @@ class ReadWriteToRawBridge(
         pipe = true
       )
     )
+    
     val dataQueueEnq = dataQueue.io.enq
     val dataQueueDeq = dataQueue.io.deq
+
+    dataQueueEnq.noenq()
+    dataQueueDeq.nodeq()
 
     when(read.req.fire) {
       ctrRead.inc()
