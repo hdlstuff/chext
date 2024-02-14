@@ -3,7 +3,7 @@ package chext.util
 import chisel3._
 import chisel3.util._
 
-class Counter(max: Int) extends Module {
+class Counter(maxExclusive: Int) extends Module {
   val io = IO(new Bundle {
     val incEn = Input(Bool())
     val decEn = Input(Bool())
@@ -12,7 +12,7 @@ class Counter(max: Int) extends Module {
     val full = Output(Bool())
   })
 
-  val wCounter = log2Up(max)
+  val wCounter = log2Up(maxExclusive)
   private val rCounter = RegInit(0.U(wCounter.W))
 
   when(io.incEn && io.decEn) {}
@@ -24,7 +24,7 @@ class Counter(max: Int) extends Module {
     }
 
   io.empty := rCounter === 0.U
-  io.full := rCounter === (max - 1).U
+  io.full := rCounter === (maxExclusive - 1).U
 
   def zero = io.empty
   def notZero = !io.empty

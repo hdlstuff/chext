@@ -9,7 +9,7 @@ import chext.{axi4 => axi4}
 // TODO maybe bring in the `cache` flags
 // TODO may support ACE as well?
 
-object BurstFlag {
+object BurstType {
   val FIXED = 0x0.U(2.W)
   val INCR = 0x1.U(2.W)
   val WRAP = 0x2.U(2.W)
