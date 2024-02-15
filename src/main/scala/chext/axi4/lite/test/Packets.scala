@@ -42,23 +42,20 @@ case class WriteResponsePacket(
 
 trait PacketUtils {
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val tagAddressPacket =
-    chext.elastic.test.PacketTag.makeTag[AddressPacket]
+  implicit val axi4_lite_tagAddressPacket = PacketTag.makeTag[AddressPacket]
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val tagReadDataPacket =
-    chext.elastic.test.PacketTag.makeTag[ReadDataPacket]
+  implicit val axi4_lite_tagReadDataPacket = PacketTag.makeTag[ReadDataPacket]
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val tagWriteDataPacket =
-    chext.elastic.test.PacketTag.makeTag[WriteDataPacket]
+  implicit val axi4_lite_tagWriteDataPacket = PacketTag.makeTag[WriteDataPacket]
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val tagWriteResponsePacket =
-    chext.elastic.test.PacketTag.makeTag[WriteResponsePacket]
+  implicit val axi4_lite_tagWriteResponsePacket =
+    PacketTag.makeTag[WriteResponsePacket]
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val bridgeAddressPacket =
+  implicit val axi4_lite_bridgeAddressPacket =
     new elastic.test.PacketBridge[AddressChannel, AddressPacket] {
       def toTester(t: AddressChannel): AddressPacket =
         AddressPacket(
@@ -73,7 +70,7 @@ trait PacketUtils {
     }
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val bridgeReadDataPacket =
+  implicit val axi4_lite_bridgeReadDataPacket =
     new elastic.test.PacketBridge[ReadDataChannel, ReadDataPacket] {
       def toTester(t: ReadDataChannel): ReadDataPacket =
         ReadDataPacket(
@@ -92,7 +89,7 @@ trait PacketUtils {
     }
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val bridgeWriteDataPacket =
+  implicit val axi4_lite_bridgeWriteDataPacket =
     new elastic.test.PacketBridge[WriteDataChannel, WriteDataPacket] {
       def toTester(t: WriteDataChannel): WriteDataPacket =
         WriteDataPacket(
@@ -111,7 +108,7 @@ trait PacketUtils {
     }
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val bridgeWriteResponsePacket =
+  implicit val axi4_lite_bridgeWriteResponsePacket =
     new elastic.test.PacketBridge[
       WriteResponseChannel,
       WriteResponsePacket

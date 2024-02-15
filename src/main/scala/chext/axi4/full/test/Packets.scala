@@ -20,7 +20,8 @@ import elastic.test.PacketOps._
 case class AddressPacket(
     val id: Int,
     val addr: Int,
-    val len: Int
+    val len: Int,
+    val burst: Int = 1 /* INCR */
 ) extends Packet {
   val last: Boolean = true
 }
@@ -45,29 +46,27 @@ case class WriteResponsePacket(
 
 trait PacketUtils {
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val tagAddressPacket =
-    PacketTag.makeTag[AddressPacket]
+  implicit val axi4_full_tagAddressPacket = PacketTag.makeTag[AddressPacket]
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val tagReadDataPacket =
-    PacketTag.makeTag[ReadDataPacket]
+  implicit val axi4_full_tagReadDataPacket = PacketTag.makeTag[ReadDataPacket]
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val tagWriteDataPacket =
-    PacketTag.makeTag[WriteDataPacket]
+  implicit val axi4_full_tagWriteDataPacket = PacketTag.makeTag[WriteDataPacket]
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val tagWriteResponsePacket =
+  implicit val axi4_full_tagWriteResponsePacket =
     PacketTag.makeTag[WriteResponsePacket]
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val bridgeAddressPacket =
+  implicit val axi4_full_bridgeAddressPacket =
     new PacketBridge[AddressChannel, AddressPacket] {
       def toTester(t: AddressChannel): AddressPacket =
         AddressPacket(
           t.id.litValue.toInt,
           t.addr.litValue.toInt,
-          t.len.litValue.toInt
+          t.len.litValue.toInt,
+          t.burst.litValue.toInt
         )
 
       def toLit(gen: AddressChannel, tt: AddressPacket): AddressChannel =
@@ -76,7 +75,7 @@ trait PacketUtils {
           _.addr -> tt.addr.U,
           _.len -> tt.len.U,
           _.size -> 0x7.U,
-          _.burst -> 1.U,
+          _.burst -> tt.burst.U,
           _.lock -> false.B,
           _.cache -> 0.U,
           _.prot -> 0.U,
@@ -86,7 +85,7 @@ trait PacketUtils {
     }
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val bridgeReadDataPacket =
+  implicit val axi4_full_bridgeReadDataPacket =
     new PacketBridge[ReadDataChannel, ReadDataPacket] {
       def toTester(t: ReadDataChannel): ReadDataPacket =
         ReadDataPacket(
@@ -109,7 +108,7 @@ trait PacketUtils {
     }
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val bridgeWriteDataPacket =
+  implicit val axi4_full_bridgeWriteDataPacket =
     new PacketBridge[WriteDataChannel, WriteDataPacket] {
       def toTester(t: WriteDataChannel): WriteDataPacket =
         WriteDataPacket(
@@ -132,7 +131,7 @@ trait PacketUtils {
     }
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  private implicit val bridgeWriteResponsePacket =
+  implicit val axi4_full_bridgeWriteResponsePacket =
     new PacketBridge[
       WriteResponseChannel,
       WriteResponsePacket
