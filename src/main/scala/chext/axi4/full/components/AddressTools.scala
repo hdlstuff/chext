@@ -11,7 +11,7 @@ import elastic.ConnectOp._
 import axi4.Casts._
 
 import axi4.full.{AddressChannel, ReadAddressChannel, WriteAddressChannel}
-import elastic.{Source, Sink}
+import elastic.{Source, Sink, SourceBuffer, SinkBuffer}
 
 private object addressChannel {
   def apply(cfg: axi4.Config, write: Boolean): IrrevocableIO[AddressChannel] =
@@ -45,43 +45,59 @@ class AddressTransformer(
   *   Decodes an address packet by calculating the addresses corresponding to
   *   each beat of the transaction.
   */
-class AddressDecoder(val cfg: axi4.Config, val write: Boolean = false)
+class AddressGenerator(val cfg: axi4.Config, val write: Boolean = false)
     extends Module {
   require(!cfg.lite)
   require(write && cfg.write || !write && cfg.read)
 
-  val in = IO(Source(addressChannel(cfg, write)))
-  val out = IO(Sink(Irrevocable(UInt(cfg.wAddr.W))))
+  val arSource = IO(Source(addressChannel(cfg, write)))
+  val addrSink = IO(Sink(Irrevocable(UInt(cfg.wAddr.W))))
 
-  private val in_ = elastic.SourceBuffer(in)
-
-  out.noenq()
-  in_.nodeq()
+  val arSource_ = SourceBuffer(arSource)
+  val addrSink_ = SinkBuffer(addrSink)
 
   private val numBytes = cfg.wStrobe
   private val genAddr = UInt(cfg.wAddr.W)
 
   private val addr = Reg(genAddr)
-  private val ctr = Reg(UInt(8.W))
-  private val isAligned = (addr & (numBytes - 1).U) === 0.U
-  private val alignedAddr =
-    Mux(isAligned, addr, (addr | (numBytes - 1).U) + 1.U)
+  private val len = Reg(UInt(8.W))
+  private val generating = RegInit(false.B)
 
-  when(in.fire) {
-    addr := in.bits.addr
-    ctr := 0.U
-  }
+  arSource_.nodeq()
+  addrSink_.noenq()
 
-  when(in_.valid && out.ready) {
-    when(ctr === in_.bits.len) {
-      in_.deq()
-    }.elsewhen(ctr === 0.U) {
-      addr := alignedAddr + numBytes.U
+  when(arSource_.valid && addrSink_.ready) {
+    when(generating) {
+      when(len === 0.U) {
+        generating := false.B
+        arSource_.deq()
+      }.otherwise {
+        len := len - 1.U
+        addr := addr + numBytes.U
+      }
+      addrSink_.enq(addr)
     }.otherwise {
-      addr := addr + numBytes.U
-    }
+      val ar = arSource_.bits
 
-    ctr := ctr + 1.U
-    out.enq(addr)
+      when(ar.len === 0.U) {
+        // create a single addr
+        arSource_.deq()
+      }.otherwise {
+        generating := true.B
+
+        val isAligned = (ar.addr & (numBytes - 1).U) === 0.U
+        val alignedAddr =
+          Mux(isAligned, ar.addr, (ar.addr | (numBytes - 1).U) + 1.U)
+
+        when(isAligned) {
+          addr := alignedAddr + numBytes.U
+        }.otherwise {
+          addr := alignedAddr
+        }
+        len := ar.len - 1.U
+      }
+
+      addrSink_.enq(ar.addr)
+    }
   }
 }
