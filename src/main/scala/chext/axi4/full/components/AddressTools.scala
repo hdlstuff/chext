@@ -10,6 +10,7 @@ import elastic.ConnectOp._
 
 import axi4.Casts._
 
+import axi4.BurstType
 import axi4.full.{AddressChannel, ReadAddressChannel, WriteAddressChannel}
 import elastic.{Source, Sink, SourceBuffer, SinkBuffer}
 
@@ -56,11 +57,15 @@ class AddressGenerator(val cfg: axi4.Config, val write: Boolean = false)
   val arSource_ = SourceBuffer(arSource)
   val addrSink_ = SinkBuffer(addrSink)
 
-  private val numBytes = cfg.wStrobe
-  private val genAddr = UInt(cfg.wAddr.W)
+  private val ar = arSource_.bits
 
-  private val addr = Reg(genAddr)
-  private val len = Reg(UInt(8.W))
+  /** @brief Current address to emit (INCR bursts). */
+  private val addr = Reg(UInt(cfg.wAddr.W))
+
+  /** @brief Beat counter. */
+  private val ctr = Reg(UInt(8.W))
+
+  /** @brief Flag for generating right now. */
   private val generating = RegInit(false.B)
 
   arSource_.nodeq()
@@ -68,26 +73,34 @@ class AddressGenerator(val cfg: axi4.Config, val write: Boolean = false)
 
   when(arSource_.valid && addrSink_.ready) {
     when(generating) {
-      when(len === 0.U) {
+      when(ctr === 0.U) {
         generating := false.B
         arSource_.deq()
       }.otherwise {
-        len := len - 1.U
-        addr := addr + numBytes.U
-      }
-      addrSink_.enq(addr)
-    }.otherwise {
-      val ar = arSource_.bits
+        ctr := ctr - 1.U
 
+        when(ar.burst === BurstType.INCR) {
+          addr := addr + 1.U
+        }.elsewhen(ar.burst === BurstType.WRAP) {
+          val mask1 = ar.len + 0.U(cfg.wAddr.W)
+          val mask2 = ~mask1
+          addr := (addr & mask2) | (((addr + 1.U) & mask1))
+        }
+      }
+
+      when(ar.burst === BurstType.FIXED) {
+        addrSink_.enq(ar.addr)
+      }.otherwise {
+        addrSink_.enq(addr << ar.size)
+      }
+    }.otherwise {
       when(ar.len === 0.U) {
         // create a single addr
         arSource_.deq()
       }.otherwise {
         generating := true.B
-
-        val mask = ~((numBytes - 1).U(cfg.wAddr.W))
-        addr := (ar.addr & mask) + numBytes.U
-        len := ar.len - 1.U
+        addr := ((ar.addr >> ar.size) + 1.U)
+        ctr := ar.len - 1.U
       }
 
       addrSink_.enq(ar.addr)
