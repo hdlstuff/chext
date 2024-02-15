@@ -85,15 +85,8 @@ class AddressGenerator(val cfg: axi4.Config, val write: Boolean = false)
       }.otherwise {
         generating := true.B
 
-        val isAligned = (ar.addr & (numBytes - 1).U) === 0.U
-        val alignedAddr =
-          Mux(isAligned, ar.addr, (ar.addr | (numBytes - 1).U) + 1.U)
-
-        when(isAligned) {
-          addr := alignedAddr + numBytes.U
-        }.otherwise {
-          addr := alignedAddr
-        }
+        val mask = ~((numBytes - 1).U(cfg.wAddr.W))
+        addr := (ar.addr & mask) + numBytes.U
         len := ar.len - 1.U
       }
 
