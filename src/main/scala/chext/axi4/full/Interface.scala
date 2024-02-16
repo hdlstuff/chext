@@ -87,9 +87,6 @@ class ReadDataChannel(implicit cfg: axi4.Config) extends Bundle {
   */
 class WriteDataChannel(implicit cfg: axi4.Config) extends Bundle {
 
-  /** identification tag */
-  val id = UInt(cfg.wId.W)
-
   /** data */
   val data = Bits(cfg.wData.W)
 
@@ -209,7 +206,6 @@ object Interface {
       // W
       x.WREADY -> y.w.ready,
       x.WVALID -> y.w.valid,
-      x.WID -> y.w.bits.id,
       x.WDATA -> y.w.bits.data,
       x.WSTRB -> y.w.bits.strb,
       x.WLAST -> y.w.bits.last,

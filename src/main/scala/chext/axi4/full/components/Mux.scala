@@ -41,7 +41,6 @@ private[components] object IdExtend {
           result.b :=> interface.b
 
           result.aw.bits.id := port.U ## interface.aw.bits.id
-          result.w.bits.id := port.U ## interface.w.bits.id
         }
 
         result

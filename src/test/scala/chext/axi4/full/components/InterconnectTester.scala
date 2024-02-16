@@ -169,11 +169,6 @@ abstract class InterconnectTester[T <: Module](
         val awPacket = awPacket_.get
         val wPacket = wPacket_.get
 
-        Expect.condition(
-          wPacket.forall { _.id == awPacket.id },
-          "wPacket.forall { _.id == awPacket.id }"
-        )
-
         val threadInfo = threadInfos(awPacket.id)
 
         Expect.condition(
@@ -291,9 +286,7 @@ abstract class InterconnectTester[T <: Module](
               )
               val wNext = threadInfo.wTaskQueue.head
               threadInfo.wTaskQueue.removeHead()
-              threadInfo.wExpectedQueue.addOne(wNext.map {
-                _.copy(id = threadIdx)
-              })
+              threadInfo.wExpectedQueue.addOne(wNext)
               fork {
                 logSlave(slaveIdx, "send write address", awNext)
                 slave.sendWriteAddress(awNext)
@@ -377,7 +370,6 @@ abstract class InterconnectTester[T <: Module](
     threadInfo.awTaskQueue.addOne(AddressPacket(id, addr, len))
     threadInfo.wTaskQueue.addOne(Seq.tabulate(len + 1) { (pktIdx) =>
       WriteDataPacket(
-        id,
         rand.nextInt(0x7fff_ffff),
         pktIdx == len
       )

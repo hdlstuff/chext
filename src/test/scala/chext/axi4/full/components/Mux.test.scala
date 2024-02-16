@@ -11,6 +11,7 @@ import chext.axi4
 import axi4.full.components.{InterconnectTester, InterconnectHelper}
 
 class MuxSpec extends chext.test.FreeSpec {
+  val numSlaves = 4
   def moduleFn = new Mux(
     axi4.Config(
       wId = 4,
@@ -20,7 +21,7 @@ class MuxSpec extends chext.test.FreeSpec {
       write = true,
       lite = false
     ),
-    8,
+    numSlaves,
     MuxConfig(
       slaveBuffers = axi4.BufferConfig.all(1),
       masterBuffers = axi4.BufferConfig.all(1)
@@ -40,10 +41,10 @@ class MuxSpec extends chext.test.FreeSpec {
     }
 
   "AXI4 Full Mux (basic)" in test(moduleFn) {
-    new InterconnectTester(_, false) {
+    new InterconnectTester(_, true) {
       protected def createTasks(): Unit = {
         for (i <- (0 until 4)) {
-          for (slaveIdx <- (0 until 8)) {
+          for (slaveIdx <- (0 until numSlaves)) {
             for (id <- (0 until 16)) {
               for (n <- (0 until 2)) {
                 readTask(

@@ -131,8 +131,6 @@ class RawInterface(val cfg: axi4.Config) extends Bundle {
 
   val WREADY = if (cfg.write) Some(Input(Bool())) else None
   val WVALID = if (cfg.write) Some(Output(Bool())) else None
-  val WID =
-    if (cfg.write && !cfg.lite) Some(Output(UInt(cfg.wId.W))) else None
   val WDATA = if (cfg.write) Some(Output(Bits(cfg.wData.W))) else None
   val WSTRB = if (cfg.write) Some(Output(UInt(cfg.wStrobe.W))) else None
   val WLAST = if (cfg.write && !cfg.lite) Some(Output(Bool())) else None
