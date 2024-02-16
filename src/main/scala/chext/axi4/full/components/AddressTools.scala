@@ -52,6 +52,10 @@ class AddressGenerator(val cfg: axi4.Config, val write: Boolean = false)
   require(write && cfg.write || !write && cfg.read)
 
   val arSource = IO(Source(addressChannel(cfg, write)))
+
+  // TODO: The output should also include the strobe information
+  // inferred from the size and the address, which is possibly unaligned
+  // the strobe is different than the strobe present in the write packet
   val addrSink = IO(Sink(Irrevocable(UInt(cfg.wAddr.W))))
 
   val arSource_ = SourceBuffer(arSource)
