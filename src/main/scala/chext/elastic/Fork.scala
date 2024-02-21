@@ -28,7 +28,7 @@ abstract class Fork[T <: Data](source: ReadyValidIO[T]) {
   protected def onFork: Unit
 
   onFork
-  ForkUtils.eagerFork(source, sinkList.toSeq)
+  eagerFork(source, sinkList.toSeq)
 }
 
 object Clone {
@@ -41,7 +41,7 @@ object Clone {
       r.bits := source.bits
       r
     }
-    ForkUtils.eagerFork(source, sinks)
+    eagerFork(source, sinks)
     sinks
   }
 
@@ -54,21 +54,21 @@ object Clone {
       r.bits := source.bits
       r
     }
-    ForkUtils.eagerFork(source, sinks)
+    eagerFork(source, sinks)
     sinks
   }
 }
 
-private[elastic] object ForkUtils {
+object eagerFork {
 
   /** Implements an eager fork.
     *
     * @param f
     * @return
     */
-  def eagerFork[T <: Data](
+  def apply[T <: Data](
       source: ReadyValidIO[T],
-      sinks: Seq[ReadyValidIO[T]]
+      sinks: Seq[ReadyValidIO[Data]]
   ): Unit = {
     prefix("eagerFork") {
       // registers to remember if transmission already took place
