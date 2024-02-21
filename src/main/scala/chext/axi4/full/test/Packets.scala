@@ -21,8 +21,8 @@ case class AddressPacket(
     val id: Int,
     val addr: Int,
     val len: Int,
-    val burst: Int = 1 /* INCR */,
-    val size: Int = 7
+    val size: Int = 7,
+    val burst: Int = 1 /* INCR */
 ) extends Packet {
   val last: Boolean = true
 }
@@ -66,6 +66,7 @@ trait PacketUtils {
           t.id.litValue.toInt,
           t.addr.litValue.toInt,
           t.len.litValue.toInt,
+          t.size.litValue.toInt,
           t.burst.litValue.toInt
         )
 
