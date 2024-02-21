@@ -1,4 +1,4 @@
-package chext.axi4.full.components
+package chext.axi4.full.components.addrgen
 
 import chext.{axi4, elastic}
 
@@ -28,20 +28,34 @@ class AddrSizeLastBundle(val wAddr: Int) extends Bundle {
   val last = Bool()
 }
 
+class AddrSizeStrobeLastBundle(val wAddr: Int, val wData: Int) extends Bundle {
+  assert(isPow2(wData) && wData >= 32)
+
+  val wStrobe = wData / 8
+
+  val addr = UInt(wAddr.W)
+  val size = UInt(3.W)
+  val strb = UInt(wStrobe.W)
+  val lowerByteIndex = UInt(log2Ceil(wStrobe).W)
+  val upperByteIndex = UInt(log2Ceil(wStrobe).W)
+
+  val last = Bool()
+}
+
 /** @brief
   *   Decodes an address packet by calculating the addresses corresponding to each beat of the
   *   transaction.
   */
 class AddressGenerator(val wAddr: Int) extends Module {
 
-  val genSource = new AddrLenSizeBurstBundle(wAddr)
-  val genSink = new AddrSizeLastBundle(wAddr)
+  val genInput = new AddrLenSizeBurstBundle(wAddr)
+  val genOutput = new AddrSizeLastBundle(wAddr)
 
-  val source = IO(Source(Irrevocable(genSource)))
-  val sink = IO(Sink(Irrevocable(genSink)))
+  val source = IO(Source(Irrevocable(genInput)))
+  val sink = IO(Sink(Irrevocable(genOutput)))
 
-  val source_ = SourceBuffer(source)
-  val sink_ = SinkBuffer(sink)
+  private val source_ = SourceBuffer(source)
+  private val sink_ = SinkBuffer(sink)
 
   private val current = source_.bits
 
@@ -79,21 +93,23 @@ class AddressGenerator(val wAddr: Int) extends Module {
       }
 
       when(current.burst === BurstType.FIXED) {
-        val result = Wire(genSink)
-        result.addr := current.addr
-        result.size := current.size
-        result.last := last
+        sink_.enq {
+          val result = Wire(genOutput)
+          result.addr := current.addr
+          result.size := current.size
+          result.last := last
 
-        sink_.enq(result)
-
+          result
+        }
       }.otherwise {
-        val result = Wire(genSink)
-        result.addr := addr << current.size
-        result.size := current.size
-        result.last := last
+        sink_.enq {
+          val result = Wire(genOutput)
+          result.addr := addr << current.size
+          result.size := current.size
+          result.last := last
 
-        sink_.enq(result)
-
+          result
+        }
       }
     }.otherwise {
       val last = current.len === 0.U
@@ -106,14 +122,61 @@ class AddressGenerator(val wAddr: Int) extends Module {
         ctr := current.len - 1.U
       }
 
-      val result = Wire(genSink)
-      result.addr := current.addr
-      result.size := current.size
-      result.last := last
+      sink_.enq {
+        val result = Wire(genOutput)
+        result.addr := current.addr
+        result.size := current.size
+        result.last := last
 
-      sink_.enq(result)
+        result
+      }
     }
   }
 }
 
-class StrobeGenerator {}
+class StrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
+  val genInput = new AddrSizeLastBundle(wAddr)
+  val genOutput = new AddrSizeStrobeLastBundle(wAddr, wData)
+
+  val source = IO(Source(Irrevocable(genInput)))
+  val sink = IO(Sink(Irrevocable(genOutput)))
+
+  private val log2strobe = log2Ceil(genOutput.wStrobe)
+
+  new elastic.Transform(source, sink) {
+    protected def onTransform: Unit = {
+      val lowerByteIndex = in.addr(log2strobe - 1, 0)
+      val upperByteIndex = in.addr(log2strobe - 1, 0) + (1.U << in.size)
+
+      /* pass through */
+      out.addr := in.addr
+      out.size := in.size
+      out.last := in.last
+
+      out.lowerByteIndex := lowerByteIndex
+      out.upperByteIndex := upperByteIndex
+
+      /* TODO: is there a better way to optimize this? */
+      out.strb := VecInit
+        .tabulate(wStrobe) { (idx) =>
+          (idx.U <= upperByteIndex) && (idx.U >= lowerByteIndex)
+        }
+        .asUInt
+    }
+  }
+}
+
+class AddressStrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
+  private val addressGenerator = Module(new AddressGenerator(wAddr))
+  private val strobeGenerator = Module(new StrobeGenerator(wAddr, wData))
+
+  val genInput = addressGenerator.genInput
+  val genOutput = strobeGenerator.genOutput
+
+  val source = IO(Source(Irrevocable(genInput)))
+  val sink = IO(Sink(Irrevocable(genOutput)))
+
+  source :=> addressGenerator.source
+  addressGenerator.sink :=> strobeGenerator.source
+  strobeGenerator.sink :=> sink
+}

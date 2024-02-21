@@ -1,4 +1,4 @@
-package chext.axi4.full.components
+package chext.axi4.full.components.addrgen
 
 import chext.axi4
 import chext.elastic
@@ -184,6 +184,26 @@ class AddressGeneratorTest extends chext.test.FreeSpec with chext.test.TestMixin
           dut.sink.expectPacket(AddressSizeLastPacket(0xa010, 4, false))
           dut.sink.expectPacket(AddressSizeLastPacket(0xa010, 4, true))
 
+        }.join()
+      }
+    }
+
+  "chext.axi4.full.components.AddressStrobeGenerator.INCR" in
+    test(new AddressStrobeGenerator(32, 256)) { (dut) =>
+      {
+        dut.source.initSource()
+        dut.sink.initSink()
+
+        fork {
+          dut.source.sendPacket(AddrLenSizeBurstPacket(0x3000, 0, 0, Burst.INCR))
+          dut.source.sendPacket(AddrLenSizeBurstPacket(0x5024, 1, 0, Burst.INCR))
+          dut.source.sendPacket(AddrLenSizeBurstPacket(0x6008, 3, 0, Burst.INCR))
+          dut.source.sendPacket(AddrLenSizeBurstPacket(0x7000, 7, 0, Burst.INCR))
+          dut.source.sendPacket(AddrLenSizeBurstPacket(0x8000, 15, 0, Burst.INCR))
+          dut.source.sendPacket(AddrLenSizeBurstPacket(0xa000, 255, 0, Burst.INCR))
+        }.fork {
+          dut.sink.ready.poke(true)
+          step(1000)
         }.join()
       }
     }

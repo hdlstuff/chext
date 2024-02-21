@@ -43,3 +43,18 @@ object TransformOp {
     }
   }
 }
+
+abstract class Transform[T1 <: Data, T2 <: Data](
+    source: ReadyValidIO[T1],
+    sink: ReadyValidIO[T2]
+) {
+  protected val in = source.bits
+  protected val out = sink.bits
+
+  protected def onTransform: Unit
+
+  onTransform
+
+  sink.valid := source.valid
+  source.ready := sink.ready
+}
