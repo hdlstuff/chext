@@ -141,12 +141,13 @@ class StrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
   val source = IO(Source(Irrevocable(genInput)))
   val sink = IO(Sink(Irrevocable(genOutput)))
 
-  private val log2strobe = log2Ceil(genOutput.wStrobe)
+  private val wStrobe = genOutput.wStrobe
+  private val log2strobe = log2Ceil(wStrobe)
 
   new elastic.Transform(source, sink) {
     protected def onTransform: Unit = {
       val lowerByteIndex = in.addr(log2strobe - 1, 0)
-      val upperByteIndex = in.addr(log2strobe - 1, 0) + (1.U << in.size)
+      val upperByteIndex = in.addr(log2strobe - 1, 0) + (1.U << in.size) - 1.U
 
       /* pass through */
       out.addr := in.addr
