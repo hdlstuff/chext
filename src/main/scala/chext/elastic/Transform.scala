@@ -44,9 +44,9 @@ object TransformOp {
   }
 }
 
-abstract class Transform[T1 <: Data, T2 <: Data](
-    source: ReadyValidIO[T1],
-    sink: ReadyValidIO[T2]
+abstract class Transform[SourceT <: Data, SinkT <: Data](
+    source: ReadyValidIO[SourceT],
+    sink: ReadyValidIO[SinkT]
 ) {
   protected val in = source.bits
   protected val out = sink.bits

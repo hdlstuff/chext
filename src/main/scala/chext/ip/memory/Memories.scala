@@ -35,12 +35,14 @@ class SinglePortRAM(
 
   private val bridge = Module(
     new ReadWriteToRawBridge(
-      wAddr,
-      wData,
-      latencyRead,
-      latencyWrite,
-      numOutstandingRead,
-      numOutstandingWrite
+      ReadWriteToRawBridgeConfig(
+        wAddr,
+        wData,
+        latencyRead,
+        latencyWrite,
+        numOutstandingRead,
+        numOutstandingWrite
+      )
     )
   )
 
@@ -85,19 +87,23 @@ class SimpleDualPortRAM(
 
   private val readBridge = Module(
     new ReadToRawBridge(
-      wAddr,
-      wData,
-      latencyRead,
-      numOutstandingRead
+      ReadToRawBridgeConfig(
+        wAddr,
+        wData,
+        latencyRead,
+        numOutstandingRead
+      )
     )
   )
 
   private val writeBridge = Module(
     new WriteToRawBridge(
-      wAddr,
-      wData,
-      latencyWrite,
-      numOutstandingWrite
+      WriteToRawBridgeConfig(
+        wAddr,
+        wData,
+        latencyWrite,
+        numOutstandingWrite
+      )
     )
   )
 
@@ -143,23 +149,27 @@ class TrueDualPortRAM(
 
   private val bridge1 = Module(
     new ReadWriteToRawBridge(
-      wAddr,
-      wData,
-      latencyRead,
-      latencyWrite,
-      numOutstandingRead,
-      numOutstandingWrite
+      ReadWriteToRawBridgeConfig(
+        wAddr,
+        wData,
+        latencyRead,
+        latencyWrite,
+        numOutstandingRead,
+        numOutstandingWrite
+      )
     )
   )
 
   private val bridge2 = Module(
     new ReadWriteToRawBridge(
-      wAddr,
-      wData,
-      latencyRead,
-      latencyWrite,
-      numOutstandingRead,
-      numOutstandingWrite
+      ReadWriteToRawBridgeConfig(
+        wAddr,
+        wData,
+        latencyRead,
+        latencyWrite,
+        numOutstandingRead,
+        numOutstandingWrite
+      )
     )
   )
 

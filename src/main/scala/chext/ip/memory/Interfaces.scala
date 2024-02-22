@@ -10,7 +10,7 @@ class RawInterface(
     val supportsRead: Boolean = true,
     val supportsWrite: Boolean = true
 ) extends Bundle {
-  require(isPow2(wData) && wData >= 8)
+  require(wData >= 8 && (wData % 8) == 0)
   require(supportsRead || supportsWrite)
 
   val wStrobe = (wData >> 3)
@@ -36,7 +36,7 @@ class ReadInterface(wAddr: Int, wData: Int) extends Bundle {
 }
 
 class WriteRequest(wAddr: Int, wData: Int) extends Bundle {
-  require(isPow2(wData))
+  require(wData >= 8 && (wData % 8) == 0)
 
   val wStrobe = (wData >> 3)
 
