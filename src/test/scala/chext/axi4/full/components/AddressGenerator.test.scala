@@ -239,6 +239,7 @@ class AddressGeneratorTest extends chext.test.FreeSpec with chext.test.TestMixin
           dut.source.sendPacket(AddrLenSizeBurstPacket(0x6008, 3, 0, Burst.INCR))
           dut.source.sendPacket(AddrLenSizeBurstPacket(0xA000, 3, 3 /* 8B */, Burst.INCR))
           dut.source.sendPacket(AddrLenSizeBurstPacket(0xA001, 3, 3 /* 8B */, Burst.INCR))
+          dut.source.sendPacket(AddrLenSizeBurstPacket(0xA009, 1, 3 /* 8B */, Burst.INCR))
         }.fork {
           dut.sink.expectPacket(AddrSizeStrobeLastPacket(0x3000, 0, 0x0001, 0, 0, true))
 
@@ -259,6 +260,9 @@ class AddressGeneratorTest extends chext.test.FreeSpec with chext.test.TestMixin
           dut.sink.expectPacket(AddrSizeStrobeLastPacket(0xA008, 3, 0xFF00, 8, 15, false))
           dut.sink.expectPacket(AddrSizeStrobeLastPacket(0xA010, 3, 0x00FF, 0, 7, false))
           dut.sink.expectPacket(AddrSizeStrobeLastPacket(0xA018, 3, 0xFF00, 8, 15, true))
+
+          dut.sink.expectPacket(AddrSizeStrobeLastPacket(0xA009, 3, 0xFE00, 9, 15, false))
+          dut.sink.expectPacket(AddrSizeStrobeLastPacket(0xA010, 3, 0x00FF, 0, 7, true))
         }.join()
       }
     }

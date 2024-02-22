@@ -146,8 +146,13 @@ class StrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
 
   new elastic.Transform(source, sink) {
     protected def onTransform: Unit = {
-      val lowerByteIndex = in.addr(log2strobe - 1, 0)
-      val upperByteIndex = in.addr(log2strobe - 1, 0) + (1.U << in.size) - 1.U
+      val addr = in.addr(log2strobe - 1, 0)
+      
+      // we should preserve the lower bits for unaligned transactions
+      val lowerByteIndex = addr
+
+      // we should not preserve the lower bits
+      val upperByteIndex = ((1.U + (addr >> in.size)) << in.size) - 1.U
 
       /* pass through */
       out.addr := in.addr
