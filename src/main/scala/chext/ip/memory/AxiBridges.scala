@@ -19,17 +19,17 @@ private class IdLastBundle(wId: Int) extends Bundle {
 
 class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
   private val addrShift = log2Ceil(cfg.wData >> 3)
-  private val wAddr = cfg.wAddr >> addrShift
+  private val wWordAddr = cfg.wAddr >> addrShift
   private val wData = cfg.wData
 
   assert(cfg.read && cfg.write && !cfg.lite)
 
   val s_axi = IO(axi4.full.Slave(cfg))
-  val read = IO(Flipped(new ReadInterface(wAddr, wData)))
-  val write = IO(Flipped(new WriteInterface(wAddr, wData)))
+  val read = IO(Flipped(new ReadInterface(wWordAddr, wData)))
+  val write = IO(Flipped(new WriteInterface(wWordAddr, wData)))
 
   private def implRead() = prefix("read") {
-    val addressGenerator = Module(new AddressGenerator(wAddr))
+    val addressGenerator = Module(new AddressGenerator(cfg.wAddr))
     val idLast = Wire(Irrevocable(new IdLastBundle(cfg.wId)))
 
     val fork1 = new Fork(s_axi.ar) {
@@ -75,7 +75,7 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
   }
 
   private def implWrite() = prefix("write") {
-    val addressStrobeGenerator = Module(new AddressStrobeGenerator(wAddr, wData))
+    val addressStrobeGenerator = Module(new AddressStrobeGenerator(cfg.wAddr, wData))
     val idLast = Wire(Irrevocable(new IdLastBundle(cfg.wId)))
 
     val fork1 = new Fork(s_axi.aw) {

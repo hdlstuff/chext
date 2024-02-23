@@ -25,7 +25,7 @@ class Axi4FullTestModule extends Module {
   )
 
   val s_axi = IO(axi4.full.Slave(axiCfg))
-  val s_axi_ = axi4.full.SlaveBuffer(s_axi, axi4.BufferConfig.all(1))
+  private val s_axi_ = axi4.full.SlaveBuffer(s_axi, axi4.BufferConfig.all(1))
 
   private val memory = Module(new SinglePortRAM(memCfg))
   private val axi4fullBridge = Module(new Axi4FullToReadWriteBridge(axiCfg))
@@ -47,16 +47,26 @@ class Axi4FullToReadWriteBridgeSpec extends chext.test.FreeSpec with chext.test.
     {
       import axi4.full.test._
 
-      dut.s_axi.initSlave()
+      val s_axi = dut.s_axi
+      s_axi.initSlave()
 
-      dut.s_axi.b.ready.poke(true.B)
-      dut.s_axi.sendWriteAddress(AddressPacket(0, 0x0000, 3, 5, 1))
-      dut.s_axi.sendWriteData(0x0ded_beef)
-      dut.s_axi.sendWriteData(0x1ded_beef)
-      dut.s_axi.sendWriteData(0x2ded_beef)
-      dut.s_axi.sendWriteData(0x3ded_beef)
+      fork {
+        s_axi.sendWriteAddress(AddressPacket(8, 0x0000, 3, 2, 1))
+      }.fork {
+        s_axi.sendWriteData(0x0ded_beef)
+        s_axi.sendWriteData(0x1ded_beef)
+        s_axi.sendWriteData(0x2ded_beef)
+        s_axi.sendWriteData(0x3ded_beef)
+      }.fork {
+        println(s_axi.receiveWriteResponse())
 
-      step(10)
+        s_axi.sendReadAddress(AddressPacket(0, 0x0000, 3, 2, 1))
+
+        println(s_axi.receiveReadData())
+        println(s_axi.receiveReadData())
+        println(s_axi.receiveReadData())
+        println(s_axi.receiveReadData())
+      }.join()
     }
   }
 }
