@@ -45,6 +45,9 @@ abstract class InterconnectTester[T <: Module](
   import axi4.lite.test._
   import axi4.lite.test.PacketUtils._
 
+  slaveInterfaces.foreach { _.initSlave() }
+  masterInterfaces.foreach { _.initMaster() }
+
   class ThreadInfo {
     val arTaskQueue = Queue.empty[AddressPacket]
     val rTaskQueue = Queue.empty[ReadDataPacket]

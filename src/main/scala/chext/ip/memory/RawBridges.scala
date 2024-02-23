@@ -4,25 +4,18 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental.prefix
 
-case class ReadToRawBridgeConfig(
-    val wAddr: Int,
-    val wData: Int,
-    val latency: Int,
-    val numOutstanding: Int
-)
-
-class ReadToRawBridge(val cfg: ReadToRawBridgeConfig) extends Module {
+class ReadToRawBridge(val cfg: MemConfig) extends Module {
   val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
   val raw = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData, true, false)))
 
-  private val ctr = Module(new chext.util.Counter(cfg.numOutstanding + 1))
+  private val ctr = Module(new chext.util.Counter(cfg.numOutstandingRead + 1))
   ctr.noInc()
   ctr.noDec()
 
   private val dataQueue = Module(
     new Queue(
       read.resp.bits.cloneType,
-      cfg.numOutstanding,
+      cfg.numOutstandingRead,
       flow = true,
       pipe = true
     )
@@ -50,7 +43,7 @@ class ReadToRawBridge(val cfg: ReadToRawBridgeConfig) extends Module {
     ctr.inc()
   }
 
-  when(ShiftRegister(read.req.fire, cfg.latency)) {
+  when(ShiftRegister(read.req.fire, cfg.latencyRead)) {
     dataQueueEnq.enq(raw.dOut)
   }
 
@@ -60,22 +53,15 @@ class ReadToRawBridge(val cfg: ReadToRawBridgeConfig) extends Module {
   }
 }
 
-case class WriteToRawBridgeConfig(
-    val wAddr: Int,
-    val wData: Int,
-    val latency: Int,
-    val numOutstanding: Int
-)
-
-class WriteToRawBridge(val cfg: WriteToRawBridgeConfig) extends Module {
+class WriteToRawBridge(val cfg: MemConfig) extends Module {
   val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
   val raw = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData, true, false)))
 
-  private val ctr = Module(new chext.util.Counter(cfg.numOutstanding + 1))
+  private val ctr = Module(new chext.util.Counter(cfg.numOutstandingWrite + 1))
   ctr.noInc()
   ctr.noDec()
 
-  private val ctrResp = Module(new chext.util.Counter(cfg.numOutstanding + 1))
+  private val ctrResp = Module(new chext.util.Counter(cfg.numOutstandingWrite + 1))
   ctrResp.noInc()
   ctrResp.noDec()
 
@@ -98,7 +84,7 @@ class WriteToRawBridge(val cfg: WriteToRawBridgeConfig) extends Module {
     ctr.inc()
   }
 
-  when(ShiftRegister(write.req.fire, cfg.latency)) {
+  when(ShiftRegister(write.req.fire, cfg.latencyWrite)) {
     ctrResp.inc()
   }
 
@@ -109,16 +95,7 @@ class WriteToRawBridge(val cfg: WriteToRawBridgeConfig) extends Module {
   }
 }
 
-case class ReadWriteToRawBridgeConfig(
-    val wAddr: Int,
-    val wData: Int,
-    val latencyRead: Int,
-    val latencyWrite: Int,
-    val numOutstandingRead: Int,
-    val numOutstandingWrite: Int
-)
-
-class ReadWriteToRawBridge(val cfg: ReadWriteToRawBridgeConfig) extends Module {
+class ReadWriteToRawBridge(val cfg: MemConfig) extends Module {
   val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
   val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
   val raw = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData, true, true)))

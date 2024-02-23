@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental._
 import scala.collection.mutable.ListBuffer
 
-abstract class Join[T <: Data](val sink: ReadyValidIO[T]) {
+abstract class Join[T <: Data](val sink: ReadyValidIO[T]) extends AffectsChiselPrefix {
   private val sources = ListBuffer.empty[ReadyValidIO[Data]]
   protected val out: T = sink.bits
 

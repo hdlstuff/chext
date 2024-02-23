@@ -196,13 +196,16 @@ class Demux(
 
       new OnPacket(s_axi_.ar, arPort) {
         override protected def onPacket: Unit = {
-          val id = bits.id
-          val addr = bits.addr
+          val id = in.id
+          val addr = in.addr
           val port = decodeFn(addr)
+
+          out._1 := in
+          out._2 := port
 
           when(transactionTracker.canInitiate(id, port)) {
             transactionTracker.initiate(id, port)
-            accept(WireBundleN(bits, port))
+            accept()
           }.otherwise {
             noAccept()
           }
@@ -271,13 +274,16 @@ class Demux(
 
       new OnPacket(s_axi_.aw, awPort) {
         protected def onPacket: Unit = {
-          val id = bits.id
-          val addr = bits.addr
+          val id = in.id
+          val addr = in.addr
           val port = decodeFn(addr)
+
+          out._1 := in
+          out._2 := port
 
           when(transactionTracker.canInitiate(id, port)) {
             transactionTracker.initiate(id, port)
-            accept(WireBundleN(bits, port))
+            accept()
           }.otherwise {
             noAccept()
           }

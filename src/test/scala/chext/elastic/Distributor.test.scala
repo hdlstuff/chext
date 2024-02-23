@@ -27,24 +27,22 @@ class TestPE extends Module {
     protected def onPacket: Unit = {
       consume() /* consume the source packet */
 
-      when(bits.last) {
-        val outPacket = Wire(new DataLast)
-
+      when(in.last) {
         when(isBurst) {
-          outPacket.data := accumulated + bits.data
-          outPacket.last := true.B
+          out.data := accumulated + in.data
+          out.last := true.B
         }.otherwise {
-          outPacket.data := bits.data
-          outPacket.last := true.B
+          out.data := in.data
+          out.last := true.B
         }
 
-        produce(outPacket) /* send the sink packet */
+        produce() /* send the sink packet */
         isBurst := false.B
       }.otherwise {
         when(isBurst) {
-          accumulated := accumulated + bits.data
+          accumulated := accumulated + in.data
         }.otherwise {
-          accumulated := bits.data
+          accumulated := in.data
         }
 
         isBurst := true.B

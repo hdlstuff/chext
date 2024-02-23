@@ -42,6 +42,9 @@ abstract class InterconnectTester[T <: Module](
   import axi4.full.test._
   import axi4.full.test.PacketUtils._
 
+  slaveInterfaces.foreach { _.initSlave() }
+  masterInterfaces.foreach { _.initMaster() }
+
   class ThreadInfo {
     val arTaskQueue = Queue.empty[AddressPacket]
     val rTaskQueue = Queue.empty[ReadDataPacket]
@@ -115,13 +118,15 @@ abstract class InterconnectTester[T <: Module](
         )
 
         Expect.equals(
-          threadInfo.arExpectedQueue.head, arPacket
+          threadInfo.arExpectedQueue.head,
+          arPacket
         )
-        
+
         threadInfo.arExpectedQueue.removeHead()
 
         Expect.condition(
-          threadInfo.rTaskQueue.nonEmpty, "threadInfo.rTaskQueue.nonEmpty"
+          threadInfo.rTaskQueue.nonEmpty,
+          "threadInfo.rTaskQueue.nonEmpty"
         )
 
         for (i <- (0 until (1 + arPacket.len))) {

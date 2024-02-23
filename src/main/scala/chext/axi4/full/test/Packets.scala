@@ -12,6 +12,8 @@ import chext.axi4.full.{
   WriteDataChannel,
   WriteResponseChannel
 }
+import chiseltest._
+
 import chext.test.Expect
 
 import elastic.test.{Packet, PacketTag, PacketBridge}
@@ -280,6 +282,24 @@ trait PacketUtils {
 
     def sendWriteResponse(b: WriteResponsePacket): Unit =
       interface.b.sendPacket(b)
+
+    def initSlave(): Unit = {
+      interface.ar.initSource()
+      interface.r.initSink()
+
+      interface.aw.initSource()
+      interface.w.initSource()
+      interface.b.initSink()
+    }
+
+    def initMaster(): Unit = {
+      interface.ar.initSink()
+      interface.r.initSource()
+
+      interface.aw.initSink()
+      interface.w.initSink()
+      interface.b.initSource()
+    }
   }
 }
 

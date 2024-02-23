@@ -8,11 +8,18 @@ import chext.axi4
 
 import axi4.full.components.addrgen._
 
-import elastic.{Fork, Join, Replicate, Transform}
+import elastic.{Fork, Join, Replicate, Transform, SourceBuffer, OnPacket}
 import elastic.ConnectOp._
+import chisel3.experimental.prefix
 
-class Axi4FullToReadWriteBridge(val cfg: axi4.Config) {
-  private val wAddr = cfg.wAddr >> (cfg.wStrobe)
+private class IdLastBundle(wId: Int) extends Bundle {
+  val id = UInt(wId.W)
+  val last = Bool()
+}
+
+class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
+  private val addrShift = log2Ceil(cfg.wData >> 3)
+  private val wAddr = cfg.wAddr >> addrShift
   private val wData = cfg.wData
 
   assert(cfg.read && cfg.write && !cfg.lite)
@@ -21,58 +28,21 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) {
   val read = IO(Flipped(new ReadInterface(wAddr, wData)))
   val write = IO(Flipped(new WriteInterface(wAddr, wData)))
 
-  private def implRead() = {
+  private def implRead() = prefix("read") {
     val addressGenerator = Module(new AddressGenerator(wAddr))
-    val respIds = Wire(Irrevocable(UInt(cfg.wId.W)))
+    val idLast = Wire(Irrevocable(new IdLastBundle(cfg.wId)))
 
-    new Fork(s_axi.ar) {
+    val fork1 = new Fork(s_axi.ar) {
       protected def onFork: Unit = {
-        new Replicate(fork(), respIds) {
+        val replicate1 = new Replicate(fork(), idLast) {
           protected def onReplicate: Unit = {
-            len := in.len
-            out := in.id
+            len := in.len + 1.U
+            out.id := in.id
+            out.last := last
           }
         }
 
-        new Transform(fork(), addressGenerator.source) {
-          protected def onTransform: Unit = {
-            out.addr := (in.addr >> (wData >> 3 /* in bytes */ ))
-            out.len := in.len
-            out.size := in.size
-            out.burst := in.burst
-          }
-        }
-      }
-    }
-
-    new Transform(addressGenerator.sink, read.req) {
-      protected def onTransform: Unit = {
-        out := in.addr
-      }
-    }
-
-    new Join(s_axi.r) {
-      protected def onJoin: Unit = {
-        val resp = join(read.resp)
-        val id = join(respIds)
-
-        out.data := resp
-        out.id := id
-        out.resp := axi4.ResponseFlag.OKAY
-        out.user := 0.U /* TODO: propagate the user data, maybe? */
-      }
-    }
-  }
-
-  private def implWrite() = {
-    val addressStrobeGenerator = Module(new AddressStrobeGenerator(wAddr, wData))
-    val respId = Wire(Irrevocable(UInt(cfg.wId.W)))
-
-    new Fork(s_axi.aw) {
-      fork { in.id } :=> respId
-
-      protected def onFork: Unit = {
-        new Transform(fork(), addressStrobeGenerator.source) {
+        val transform1 = new Transform(fork(), addressGenerator.source) {
           protected def onTransform: Unit = {
             out.addr := in.addr
             out.len := in.len
@@ -83,24 +53,83 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) {
       }
     }
 
-    new Join(write.req) {
+    val transform2 = new Transform(addressGenerator.sink, read.req) {
+      protected def onTransform: Unit = {
+        out := in.addr >> addrShift
+      }
+    }
+
+    val join1 = new Join(s_axi.r) {
+      protected def onJoin: Unit = {
+        // NOTE: We need to have a source buffer to avoid combinational loops
+        val resp = join(SourceBuffer(read.resp))
+        val id = join(idLast)
+
+        out.data := resp
+        out.id := id.id
+        out.resp := axi4.ResponseFlag.OKAY
+        out.user := 0.U // TODO: propagate the user data, maybe?
+        out.last := id.last
+      }
+    }
+  }
+
+  private def implWrite() = prefix("write") {
+    val addressStrobeGenerator = Module(new AddressStrobeGenerator(wAddr, wData))
+    val idLast = Wire(Irrevocable(new IdLastBundle(cfg.wId)))
+
+    val fork1 = new Fork(s_axi.aw) {
+      protected def onFork: Unit = {
+        val replicate1 = new Replicate(fork(), idLast) {
+          protected def onReplicate: Unit = {
+            len := in.len + 1.U
+            out.id := in.id
+            out.last := last
+          }
+        }
+
+        val transform1 = new Transform(fork(), addressStrobeGenerator.source) {
+          protected def onTransform: Unit = {
+            out.addr := in.addr
+            out.len := in.len
+            out.size := in.size
+            out.burst := in.burst
+          }
+        }
+      }
+    }
+
+    val join1 = new Join(write.req) {
       protected def onJoin: Unit = {
         val addrStrobe = join(addressStrobeGenerator.sink)
         val w = join(s_axi.w)
 
-        out.addr := addrStrobe.addr
+        out.addr := addrStrobe.addr >> addrShift
         out.data := w.data
         out.strb := addrStrobe.strb & w.strb
       }
     }
 
-    new Join(s_axi.b) {
-      protected def onJoin: Unit = {
-        out.id := join(respId)
-        out.resp := axi4.ResponseFlag.OKAY
-        out.user := 0.U /* TODO: propagate the user data, maybe? */
+    val idLastJoined = Wire(Irrevocable(new IdLastBundle(cfg.wId)))
 
-        join(write.resp)
+    val join2 = new Join(idLastJoined) {
+      protected def onJoin: Unit = {
+        out := join(idLast)
+        // NOTE: We need to have a source buffer to avoid combinational loops
+        join(SourceBuffer(write.resp))
+      }
+    }
+
+    val packet1 = new OnPacket(idLastJoined, s_axi.b) {
+      protected def onPacket: Unit = {
+        consume()
+
+        when(in.last) {
+          out.id := in.id
+          out.resp := axi4.ResponseFlag.OKAY
+          out.user := 0.U // TODO: propagate the user data, maybe?
+          produce()
+        }
       }
     }
   }

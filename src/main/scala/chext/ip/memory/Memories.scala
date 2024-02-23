@@ -3,48 +3,48 @@ package chext.ip.memory
 import chisel3._
 import chisel3.util._
 
-class SinglePortRAM(
-    wData: Int,
-    wAddr: Int,
-    latencyRead: Int,
-    latencyWrite: Int,
-    numOutstandingRead: Int,
-    numOutstandingWrite: Int
-) extends Module {
+class MemConfig(
+    override val wAddr: Int,
+    override val wData: Int,
+    override val latencyRead: Int,
+    override val latencyWrite: Int,
+    val numOutstandingRead: Int,
+    val numOutstandingWrite: Int
+) extends RawMemConfig(wAddr, wData, latencyRead, latencyWrite) {
+  assert(numOutstandingRead >= 1)
+  assert(numOutstandingWrite >= 1)
+}
+
+object MemConfig {
+  def apply(
+      wAddr: Int = 6,
+      wData: Int = 32,
+      latencyRead: Int = 2,
+      latencyWrite: Int = 1,
+      numOutstandingRead: Int = 1,
+      numOutstandingWrite: Int = 1
+  ) =
+    new MemConfig(
+      wAddr = wAddr,
+      wData = wData,
+      latencyRead = latencyRead,
+      latencyWrite = latencyWrite,
+      numOutstandingRead = numOutstandingRead,
+      numOutstandingWrite = numOutstandingWrite
+    )
+}
+
+class SinglePortRAM(val cfg: MemConfig) extends Module {
   override val desiredName = f"${Target.current.name}SinglePortRAM"
 
-  val read = IO(new ReadInterface(wAddr, wData))
-  val write = IO(new WriteInterface(wAddr, wData))
+  val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
+  val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
 
-  require(latencyRead >= 1)
-  require(latencyWrite >= 1)
-  require(isPow2(wData))
-
-  private val rawMem = Module(
-    Target.current.createSinglePortRawRAM(
-      RawMemConfig(
-        wAddr = wAddr,
-        wData = wData,
-        latencyRead = latencyRead,
-        latencyWrite = latencyWrite
-      )
-    )
-  )
+  private val rawMem = Module(Target.current.createSinglePortRawRAM(cfg))
 
   private val raw = rawMem.getPorts(0)
 
-  private val bridge = Module(
-    new ReadWriteToRawBridge(
-      ReadWriteToRawBridgeConfig(
-        wAddr,
-        wData,
-        latencyRead,
-        latencyWrite,
-        numOutstandingRead,
-        numOutstandingWrite
-      )
-    )
-  )
+  private val bridge = Module(new ReadWriteToRawBridge(cfg))
 
   // TODO: change <> with a better operator
   read <> bridge.read
@@ -52,60 +52,24 @@ class SinglePortRAM(
   raw <> bridge.raw
 }
 
-class SimpleDualPortRAM(
-    wData: Int,
-    wAddr: Int,
-    latencyRead: Int,
-    latencyWrite: Int,
-    numOutstandingRead: Int,
-    numOutstandingWrite: Int
-) extends Module {
+class SimpleDualPortRAM(val cfg: MemConfig) extends Module {
   override val desiredName = f"${Target.current.name}SimpleDualPortRAM"
 
-  val read = IO(new ReadInterface(wAddr, wData))
-  val write = IO(new WriteInterface(wAddr, wData))
+  val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
+  val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
 
-  require(latencyRead >= 1)
-  require(latencyWrite >= 1)
-  require(isPow2(wData))
+  require(cfg.latencyRead >= 1)
+  require(cfg.latencyWrite >= 1)
 
-  private val rawMem = Module(
-    Target.current.createSimpleDualPortRawRAM(
-      RawMemConfig(
-        wAddr = wAddr,
-        wData = wData,
-        latencyRead = latencyRead,
-        latencyWrite = latencyWrite
-      )
-    )
-  )
+  private val rawMem = Module(Target.current.createSimpleDualPortRawRAM(cfg))
 
   private val rawRead =
     rawMem.getPorts.filter((x) => x.supportsRead && !x.supportsWrite)(0)
   private val rawWrite =
     rawMem.getPorts.filter((x) => !x.supportsRead && x.supportsWrite)(0)
 
-  private val readBridge = Module(
-    new ReadToRawBridge(
-      ReadToRawBridgeConfig(
-        wAddr,
-        wData,
-        latencyRead,
-        numOutstandingRead
-      )
-    )
-  )
-
-  private val writeBridge = Module(
-    new WriteToRawBridge(
-      WriteToRawBridgeConfig(
-        wAddr,
-        wData,
-        latencyWrite,
-        numOutstandingWrite
-      )
-    )
-  )
+  private val readBridge = Module(new ReadToRawBridge(cfg))
+  private val writeBridge = Module(new WriteToRawBridge(cfg))
 
   // TODO: change <> with a better operator
   read <> readBridge.read
@@ -114,64 +78,21 @@ class SimpleDualPortRAM(
   rawWrite <> writeBridge.raw
 }
 
-class TrueDualPortRAM(
-    wData: Int,
-    wAddr: Int,
-    latencyRead: Int,
-    latencyWrite: Int,
-    numOutstandingRead: Int,
-    numOutstandingWrite: Int
-) extends Module {
+class TrueDualPortRAM(val cfg: MemConfig) extends Module {
   override val desiredName = f"${Target.current.name}TrueDualPortRAM"
 
-  val read1 = IO(new ReadInterface(wAddr, wData))
-  val read2 = IO(new ReadInterface(wAddr, wData))
-  val write1 = IO(new WriteInterface(wAddr, wData))
-  val write2 = IO(new WriteInterface(wAddr, wData))
+  val read1 = IO(new ReadInterface(cfg.wAddr, cfg.wData))
+  val read2 = IO(new ReadInterface(cfg.wAddr, cfg.wData))
+  val write1 = IO(new WriteInterface(cfg.wAddr, cfg.wData))
+  val write2 = IO(new WriteInterface(cfg.wAddr, cfg.wData))
 
-  require(latencyRead >= 1)
-  require(latencyWrite >= 1)
-  require(isPow2(wData))
-
-  private val rawMem = Module(
-    Target.current.createTrueDualPortRawRAM(
-      RawMemConfig(
-        wAddr = wAddr,
-        wData = wData,
-        latencyRead = latencyRead,
-        latencyWrite = latencyWrite
-      )
-    )
-  )
+  private val rawMem = Module(Target.current.createTrueDualPortRawRAM(cfg))
 
   private val raw1 = rawMem.getPorts(0)
   private val raw2 = rawMem.getPorts(1)
 
-  private val bridge1 = Module(
-    new ReadWriteToRawBridge(
-      ReadWriteToRawBridgeConfig(
-        wAddr,
-        wData,
-        latencyRead,
-        latencyWrite,
-        numOutstandingRead,
-        numOutstandingWrite
-      )
-    )
-  )
-
-  private val bridge2 = Module(
-    new ReadWriteToRawBridge(
-      ReadWriteToRawBridgeConfig(
-        wAddr,
-        wData,
-        latencyRead,
-        latencyWrite,
-        numOutstandingRead,
-        numOutstandingWrite
-      )
-    )
-  )
+  private val bridge1 = Module(new ReadWriteToRawBridge(cfg))
+  private val bridge2 = Module(new ReadWriteToRawBridge(cfg))
 
   // TODO: change <> with a better operator
 
@@ -190,17 +111,17 @@ object Emitter extends App {
   Target.setCurrent(xilinx.Target)
 
   emitVerilog(
-    new SimpleDualPortRAM(256, 15, 8, 1, 12, 12),
+    new SimpleDualPortRAM(MemConfig(256, 15, 8, 1, 12, 12)),
     Array("--target-dir", "output/")
   )
 
   emitVerilog(
-    new SinglePortRAM(256, 15, 8, 1, 12, 12),
+    new SinglePortRAM(MemConfig(256, 15, 8, 1, 12, 12)),
     Array("--target-dir", "output/")
   )
 
   emitVerilog(
-    new TrueDualPortRAM(256, 15, 8, 1, 12, 12),
+    new TrueDualPortRAM(MemConfig(256, 15, 8, 1, 12, 12)),
     Array("--target-dir", "output/")
   )
 

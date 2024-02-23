@@ -8,33 +8,33 @@ abstract class OnPacket[Tin <: Data, T <: Data](
     source: ReadyValidIO[Tin],
     sink: ReadyValidIO[T]
 ) extends AffectsChiselPrefix {
-  protected val bits = source.bits
-  protected val sinkBuffered = SinkBuffer.decoupled(sink)
+  private val sinkBuffered_ = SinkBuffer.decoupled(sink)
+  protected val in = source.bits
+  protected val out = sinkBuffered_.bits
+
+  out := DontCare
 
   /** Accepts the current packet, optionally transforming it.
     *
     * @param t
     */
-  protected def accept(t: T = bits.asInstanceOf[T]): Unit = {
+  protected def accept(): Unit = {
     source.ready := true.B
-    sinkBuffered.valid := true.B
-    sinkBuffered.bits := t
+    sinkBuffered_.valid := true.B
   }
 
   /** Does not accept the packet yet. The packet stay as long as not dropped.
     */
   protected def noAccept(): Unit = {
     source.ready := false.B
-    sinkBuffered.valid := false.B
-    sinkBuffered.bits := DontCare
+    sinkBuffered_.valid := false.B
   }
 
   /** Drops the current packet.
     */
   protected def drop(): Unit = {
     source.ready := true.B
-    sinkBuffered.valid := false.B
-    sinkBuffered.bits := DontCare
+    sinkBuffered_.valid := false.B
   }
 
   /** Consumes the current packet from the source.
@@ -47,9 +47,8 @@ abstract class OnPacket[Tin <: Data, T <: Data](
     *
     * @param t
     */
-  protected def produce(t: T): Unit = {
-    sinkBuffered.valid := true.B
-    sinkBuffered.bits := t
+  protected def produce(): Unit = {
+    sinkBuffered_.valid := true.B
   }
 
   /** Called when a packet might be accepted.
@@ -57,7 +56,7 @@ abstract class OnPacket[Tin <: Data, T <: Data](
   protected def onPacket: Unit
 
   noAccept()
-  when(sinkBuffered.ready && source.valid) {
+  when(sinkBuffered_.ready && source.valid) {
     onPacket
   }
 }

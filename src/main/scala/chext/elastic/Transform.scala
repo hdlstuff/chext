@@ -47,7 +47,7 @@ object TransformOp {
 abstract class Transform[SourceT <: Data, SinkT <: Data](
     source: ReadyValidIO[SourceT],
     sink: ReadyValidIO[SinkT]
-) {
+) extends AffectsChiselPrefix {
   protected val in = source.bits
   protected val out = sink.bits
 

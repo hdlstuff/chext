@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental._
 import scala.collection.mutable.ListBuffer
 
-abstract class Fork[T <: Data](source: ReadyValidIO[T]) {
+abstract class Fork[T <: Data](source: ReadyValidIO[T]) extends AffectsChiselPrefix {
   private val sinkList = ListBuffer.empty[ReadyValidIO[Data]]
   protected val in = source.bits
 
