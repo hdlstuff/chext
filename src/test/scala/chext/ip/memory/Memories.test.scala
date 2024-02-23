@@ -17,7 +17,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
 
   val genWriteRequest = new WriteRequest(32, 32)
   def writeRequest(addr: BigInt, data: BigInt) =
-    genWriteRequest.Lit(_.addr -> addr.U, _.data -> data.U, _.wstrb -> 15.U)
+    genWriteRequest.Lit(_.addr -> addr.U, _.data -> data.U, _.strb -> 15.U)
 
   "chext.ip.memory.SinglePortRAMSpec.Basic1" in
     test(new SinglePortRAM(32, 10, 4, 4, 8, 8)) { dut =>
@@ -232,7 +232,7 @@ class SimpleDualPortRAMSpec
 
   val genWriteRequest = new WriteRequest(32, 32)
   def writeRequest(addr: BigInt, data: BigInt) =
-    genWriteRequest.Lit(_.addr -> addr.U, _.data -> data.U, _.wstrb -> 15.U)
+    genWriteRequest.Lit(_.addr -> addr.U, _.data -> data.U, _.strb -> 15.U)
 
   "chext.ip.memory.SimpleDualPortRAMSpec.Basic1" in
     test(new SimpleDualPortRAM(32, 10, 4, 4, 8, 8)) { dut =>

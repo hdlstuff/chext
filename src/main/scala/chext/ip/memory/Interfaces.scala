@@ -42,7 +42,7 @@ class WriteRequest(wAddr: Int, wData: Int) extends Bundle {
 
   val addr = UInt(wAddr.W)
   val data = UInt(wData.W)
-  val wstrb = UInt(wStrobe.W)
+  val strb = UInt(wStrobe.W)
 }
 
 class WriteInterface(wAddr: Int, wData: Int) extends Bundle {

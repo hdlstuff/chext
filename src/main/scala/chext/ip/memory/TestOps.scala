@@ -30,7 +30,7 @@ trait TestOps {
         genWriteRequest.Lit(
           _.addr -> addr.U,
           _.data -> data.U,
-          _.wstrb -> wstrb.U
+          _.strb -> wstrb.U
         )
       )
 

@@ -89,7 +89,7 @@ class WriteToRawBridge(val cfg: WriteToRawBridgeConfig) extends Module {
   when(ctr.notFull && write.req.valid) {
     raw.addr := write.req.bits.addr
     raw.dIn := write.req.bits.data
-    raw.wstrb := write.req.bits.wstrb
+    raw.wstrb := write.req.bits.strb
 
     write.req.deq()
   }
@@ -162,7 +162,7 @@ class ReadWriteToRawBridge(val cfg: ReadWriteToRawBridgeConfig) extends Module {
     }.elsewhen(canAcceptWrite && chooser.choice === 1.U) {
       raw.addr := write.req.bits.addr
       raw.dIn := write.req.bits.data
-      raw.wstrb := write.req.bits.wstrb
+      raw.wstrb := write.req.bits.strb
 
       write.req.deq()
       chooser.updateState
