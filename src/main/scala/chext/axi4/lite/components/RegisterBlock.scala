@@ -60,6 +60,7 @@ class RegisterBlock(
     */
   val s_axil = Wire(axi4.lite.Slave(cfgAxi))
 
+  // NOTE: To avoid valid signal waiting for ready down the line.
   private val s_axil_ = SlaveBuffer(s_axil, axi4.BufferConfig.all(1))
 
   /** @note

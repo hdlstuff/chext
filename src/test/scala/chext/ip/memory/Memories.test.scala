@@ -20,7 +20,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
     genWriteRequest.Lit(_.addr -> addr.U, _.data -> data.U, _.strb -> 15.U)
 
   "chext.ip.memory.SinglePortRAMSpec.Basic1" in
-    test(new SinglePortRAM(MemConfig(32, 10, 4, 4, 8, 8))) { dut =>
+    test(new SinglePortRAM(MemConfig(10, 32, 4, 4, 8, 8))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -59,7 +59,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
     }
 
   "chext.ip.memory.SinglePortRAMSpec.Basic2" in
-    test(new SinglePortRAM(MemConfig(32, 10, 4, 4, 8, 8))) { dut =>
+    test(new SinglePortRAM(MemConfig(10, 32, 4, 4, 8, 8))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -100,7 +100,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
     }
 
   "chext.ip.memory.SinglePortRAMSpec.LongLatency1" in
-    test(new SinglePortRAM(MemConfig(32, 10, 32, 32, 4, 4))) { dut =>
+    test(new SinglePortRAM(MemConfig(10, 32, 32, 32, 4, 4))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -139,7 +139,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
     }
 
   "chext.ip.memory.SinglePortRAMSpec.LongLatency2" in
-    test(new SinglePortRAM(MemConfig(32, 10, 16, 8, 1, 1))) { dut =>
+    test(new SinglePortRAM(MemConfig(32, 32, 16, 8, 1, 1))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -181,7 +181,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
     }
 
   "chext.ip.memory.SinglePortRAMSpec.Interleaved" in
-    test(new SinglePortRAM(MemConfig(32, 10, 1, 1, 8, 8))) { dut =>
+    test(new SinglePortRAM(MemConfig(32, 32, 1, 1, 8, 8))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -233,7 +233,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
     genWriteRequest.Lit(_.addr -> addr.U, _.data -> data.U, _.strb -> 15.U)
 
   "chext.ip.memory.SimpleDualPortRAMSpec.Basic1" in
-    test(new SimpleDualPortRAM(MemConfig(32, 10, 4, 4, 8, 8))) { dut =>
+    test(new SimpleDualPortRAM(MemConfig(10, 32, 4, 4, 8, 8))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -272,7 +272,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
     }
 
   "chext.ip.memory.SimpleDualPortRAMSpec.Basic2" in
-    test(new SimpleDualPortRAM(MemConfig(32, 10, 4, 4, 8, 8))) { dut =>
+    test(new SimpleDualPortRAM(MemConfig(10, 32, 4, 4, 8, 8))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -313,7 +313,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
     }
 
   "chext.ip.memory.SimpleDualPortRAMSpec.LongLatency1" in
-    test(new SimpleDualPortRAM(MemConfig(32, 10, 32, 32, 4, 4))) { dut =>
+    test(new SimpleDualPortRAM(MemConfig(10, 32, 32, 32, 4, 4))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -352,7 +352,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
     }
 
   "chext.ip.memory.SimpleDualPortRAMSpec.LongLatency2" in
-    test(new SimpleDualPortRAM(MemConfig(32, 10, 16, 8, 1, 1))) { dut =>
+    test(new SimpleDualPortRAM(MemConfig(32, 32, 16, 8, 1, 1))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -394,7 +394,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
     }
 
   "chext.ip.memory.SimpleDualPortRAMSpec.Interleaved" in
-    test(new SimpleDualPortRAM(MemConfig(32, 10, 1, 1, 8, 8))) { dut =>
+    test(new SimpleDualPortRAM(MemConfig(32, 32, 1, 1, 8, 8))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)

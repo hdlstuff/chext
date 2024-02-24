@@ -19,7 +19,7 @@ class RawMemConfig(
   require(latencyRead >= 0)
   require(latencyWrite >= 0)
 
-  assert(wData >= 8 && wData % 8 == 0)
+  require(wData >= 8 && wData % 8 == 0)
 }
 
 object RawMemConfig {

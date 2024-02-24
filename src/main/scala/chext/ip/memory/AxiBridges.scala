@@ -8,7 +8,7 @@ import chext.axi4
 
 import axi4.full.components.addrgen._
 
-import elastic.{Fork, Join, Replicate, Transform, SourceBuffer, OnPacket}
+import elastic.{Fork, Join, Replicate, Transform, OnPacket}
 import elastic.ConnectOp._
 import chisel3.experimental.prefix
 
@@ -61,8 +61,7 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
 
     val join1 = new Join(s_axi.r) {
       protected def onJoin: Unit = {
-        // NOTE: We need to have a source buffer to avoid combinational loops
-        val resp = join(SourceBuffer(read.resp))
+        val resp = join(read.resp)
         val id = join(idLast)
 
         out.data := resp
@@ -115,8 +114,7 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
     val join2 = new Join(idLastJoined) {
       protected def onJoin: Unit = {
         out := join(idLast)
-        // NOTE: We need to have a source buffer to avoid combinational loops
-        join(SourceBuffer(write.resp))
+        join(write.resp)
       }
     }
 
