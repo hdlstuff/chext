@@ -17,8 +17,8 @@ import axi4.lite.SlaveBuffer
   *   Register block assumes that the address is always data-width aligned.
   *
   * @note
-  *   If a register with `bitWidth < dataWidth` is mapped, it still occupies a
-  *   `dataWidth` space in the memory space.
+  *   If a register with `bitWidth < dataWidth` is mapped, it still occupies a `dataWidth` space in
+  *   the memory space.
   *
   * @note
   *   Unaligned transfers are ignored by clearing the least significant bits.
@@ -31,8 +31,7 @@ import axi4.lite.SlaveBuffer
   * @param wData
   *   Data width of the AXI4-Lite interface.
   * @param wMask
-  *   Mask width. Determines the size of the assigned address space, which is
-  *   `pow2(wMask)`.
+  *   Mask width. Determines the size of the assigned address space, which is `pow2(wMask)`.
   */
 class RegisterBlock(
     val wAddr: Int = 32,
@@ -92,8 +91,7 @@ class RegisterBlock(
     */
   def nextAddr = lastAddr_
 
-  /** Assigns a new register to the current address and increments the next
-    * address by `addrIncr`.
+  /** Assigns a new register to the current address and increments the next address by `addrIncr`.
     *
     * @param t
     *   Register to assign
@@ -222,10 +220,14 @@ class RegisterBlock(
     wrResp_.enq(resp)
   }
 
+  /** `True` if there is an incoming read request */
   val rdReq: Bool = (rdReq_.valid && rdResp_.ready)
 
+  /** address of the incoming read request */
   val rdAddr: UInt = rdReq_.bits.addr & mask
 
+  /** accepts the incoming read request, returning the default values to the requester.
+    */
   def rdOk(): Unit = {
     val data = Wire(UInt(wData.W))
 
@@ -243,22 +245,34 @@ class RegisterBlock(
     rdOk(data)
   }
 
+  /** accepts the incoming read request, returning the provided data as a response to the requester.
+    *
+    * @param data
+    *   data to return.
+    */
   def rdOk(data: Bits): Unit = {
     do_rdResp(data.asUInt, axi4.ResponseFlag.OKAY)
   }
 
+  /** fails the read request with an error. */
   def rdError(): Unit = {
     do_rdResp((-1).S(wData.W).asUInt, axi4.ResponseFlag.SLVERR)
   }
 
+  /** `True` if there is an incoming write request */
   val wrReq: Bool = wrReq_.valid && wrReqData_.valid && wrResp_.ready
 
+  /** address of the incoming write request */
   val wrAddr: UInt = wrReq_.bits.addr & mask
 
+  /** data corresponding to the incoming write request */
   val wrData: UInt = wrReqData_.bits.data
 
+  /** write strobe of the incoming write request */
   val wrStrb: UInt = wrReqData_.bits.strb
 
+  /** accepts the write request, performing the default action.
+    */
   def wrOk(): Unit = {
     addrMap_.foreach {
       case (addr, _, _, writeFn, _) => {
@@ -270,10 +284,12 @@ class RegisterBlock(
     do_wrResp(axi4.ResponseFlag.OKAY)
   }
 
+  /** accepts the write request, does not do anything. */
   def wrDiscard(): Unit = {
     do_wrResp(axi4.ResponseFlag.OKAY)
   }
 
+  /** fails the write request. */
   def wrError(): Unit = {
     do_wrResp(axi4.ResponseFlag.SLVERR)
   }
