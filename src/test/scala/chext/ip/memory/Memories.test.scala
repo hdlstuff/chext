@@ -15,7 +15,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
   useVerilator()
   enableVcd()
 
-  val genWriteRequest = new WriteRequest(32, 32)
+  val genWriteRequest = new WriteRequest(10, 32)
   def writeRequest(addr: BigInt, data: BigInt) =
     genWriteRequest.Lit(_.addr -> addr.U, _.data -> data.U, _.strb -> 15.U)
 
@@ -139,7 +139,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
     }
 
   "chext.ip.memory.SinglePortRAMSpec.LongLatency2" in
-    test(new SinglePortRAM(MemConfig(32, 32, 16, 8, 1, 1))) { dut =>
+    test(new SinglePortRAM(MemConfig(10, 32, 16, 8, 1, 1))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -181,7 +181,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
     }
 
   "chext.ip.memory.SinglePortRAMSpec.Interleaved" in
-    test(new SinglePortRAM(MemConfig(32, 32, 1, 1, 8, 8))) { dut =>
+    test(new SinglePortRAM(MemConfig(10, 32, 1, 1, 8, 8))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -228,7 +228,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
   useVerilator()
   enableVcd()
 
-  val genWriteRequest = new WriteRequest(32, 32)
+  val genWriteRequest = new WriteRequest(10, 32)
   def writeRequest(addr: BigInt, data: BigInt) =
     genWriteRequest.Lit(_.addr -> addr.U, _.data -> data.U, _.strb -> 15.U)
 
@@ -352,7 +352,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
     }
 
   "chext.ip.memory.SimpleDualPortRAMSpec.LongLatency2" in
-    test(new SimpleDualPortRAM(MemConfig(32, 32, 16, 8, 1, 1))) { dut =>
+    test(new SimpleDualPortRAM(MemConfig(10, 32, 16, 8, 1, 1))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
@@ -394,7 +394,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
     }
 
   "chext.ip.memory.SimpleDualPortRAMSpec.Interleaved" in
-    test(new SimpleDualPortRAM(MemConfig(32, 32, 1, 1, 8, 8))) { dut =>
+    test(new SimpleDualPortRAM(MemConfig(10, 32, 1, 1, 8, 8))) { dut =>
       {
         val testSize = 128;
         val addr = Seq.range(0, testSize)
