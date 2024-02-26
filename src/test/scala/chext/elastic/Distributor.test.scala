@@ -50,8 +50,8 @@ class TestPE extends Module {
     }
   }
 
-  /** Note to myself: do not declare any stateful elements, like registers,
-    * inside new OnPacket { ... } block. These elements confuse Chisel.
+  /** Note to myself: do not declare any stateful elements, like registers, inside new OnPacket {
+    * ... } block. These elements confuse Chisel.
     */
 }
 
@@ -105,9 +105,8 @@ object DistributorTestDevice extends App {
   )
 }
 
-class DistributorSpec
-    extends org.scalatest.freespec.AnyFreeSpec
-    with ChiselScalatestTester {
+class DistributorSpec extends chext.test.FreeSpec {
+  enableVcd()
 
   val genDataLast = new DataLast
   def dataLast(data: BigInt, last: Boolean) =
@@ -115,39 +114,42 @@ class DistributorSpec
 
   "elastic.Distributor Basic functionality" in {
     test(
-      new elastic.Distributor(UInt(32.W), 4, chext.elastic.Chooser.priority)
+      new elastic.Distributor(UInt(32.W), 4, chext.elastic.Chooser.rr)
     ).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
         dut.io.source.initSource()
         dut.io.sinks.foreach { _.initSink() }
         dut.io.select.initSink()
 
+        dut.io.sinks.foreach { _.ready.poke(true) }
+        dut.io.select.ready.poke(true)
+
         fork {
-          dut.io.source.enqueue(0xa0.U)
-          dut.io.source.enqueue(0xa1.U)
-          dut.io.source.enqueue(0xa2.U)
           dut.io.source.enqueue(0xb0.U)
-          dut.io.source.enqueue(0xb1.U)
-          dut.io.source.enqueue(0xb2.U)
           dut.io.source.enqueue(0xc0.U)
-          dut.io.source.enqueue(0xc1.U)
-          dut.io.source.enqueue(0xc2.U)
           dut.io.source.enqueue(0xd0.U)
+          dut.io.source.enqueue(0xa0.U)
+          dut.io.source.enqueue(0xb1.U)
+          dut.io.source.enqueue(0xc1.U)
           dut.io.source.enqueue(0xd1.U)
+          dut.io.source.enqueue(0xa1.U)
+          dut.io.source.enqueue(0xb2.U)
+          dut.io.source.enqueue(0xc2.U)
           dut.io.source.enqueue(0xd2.U)
+          dut.io.source.enqueue(0xa2.U)
         }.fork {
-          dut.io.select.expectDequeue(0x00.U)
-          dut.io.select.expectDequeue(0x00.U)
-          dut.io.select.expectDequeue(0x00.U)
-          dut.io.select.expectDequeue(0x01.U)
-          dut.io.select.expectDequeue(0x01.U)
           dut.io.select.expectDequeue(0x01.U)
           dut.io.select.expectDequeue(0x02.U)
+          dut.io.select.expectDequeue(0x03.U)
+          dut.io.select.expectDequeue(0x00.U)
+          dut.io.select.expectDequeue(0x01.U)
           dut.io.select.expectDequeue(0x02.U)
+          dut.io.select.expectDequeue(0x03.U)
+          dut.io.select.expectDequeue(0x00.U)
+          dut.io.select.expectDequeue(0x01.U)
           dut.io.select.expectDequeue(0x02.U)
           dut.io.select.expectDequeue(0x03.U)
-          dut.io.select.expectDequeue(0x03.U)
-          dut.io.select.expectDequeue(0x03.U)
+          dut.io.select.expectDequeue(0x00.U)
         }.fork {
           dut.io.sinks(0).expectDequeue(0xa0.U)
           dut.io.sinks(0).expectDequeue(0xa1.U)
@@ -175,7 +177,7 @@ class DistributorSpec
       new elastic.Distributor(
         genDataLast,
         4,
-        chext.elastic.Chooser.priority,
+        chext.elastic.Chooser.rr,
         (x: DataLast) => x.last
       )
     ).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
@@ -183,6 +185,8 @@ class DistributorSpec
         dut.io.source.initSource()
         dut.io.sinks.foreach { _.initSink() }
         dut.io.select.initSink()
+
+        dut.io.sinks.foreach { _.ready.poke(true) }
 
         fork {
           dut.io.source.enqueue(dataLast(0xa0, false))
@@ -204,41 +208,51 @@ class DistributorSpec
           dut.io.source.enqueue(dataLast(0xd1, true))
           dut.io.source.enqueue(dataLast(0xd2, false))
           dut.io.source.enqueue(dataLast(0xd3, true))
+
         }.fork {
-          dut.io.select.expectDequeue(0x00.U)
-          dut.io.select.expectDequeue(0x00.U)
-          dut.io.select.expectDequeue(0x01.U)
           dut.io.select.expectDequeue(0x01.U)
           dut.io.select.expectDequeue(0x02.U)
+          dut.io.select.expectDequeue(0x03.U)
+          dut.io.select.expectDequeue(0x00.U)
+
+          dut.io.select.expectDequeue(0x01.U)
           dut.io.select.expectDequeue(0x02.U)
           dut.io.select.expectDequeue(0x03.U)
-          dut.io.select.expectDequeue(0x03.U)
+          dut.io.select.expectDequeue(0x00.U)
+
         }.fork {
-          dut.io.sinks(0).expectDequeue(dataLast(0xa0, false))
-          dut.io.sinks(0).expectDequeue(dataLast(0xa1, true))
-          dut.io.sinks(0).expectDequeue(dataLast(0xa2, false))
-          dut.io.sinks(0).expectDequeue(dataLast(0xa3, true))
+          dut.io.sinks(1).expectDequeue(dataLast(0xa0, false))
+          dut.io.sinks(1).expectDequeue(dataLast(0xa1, true))
+
+          dut.io.sinks(1).expectDequeue(dataLast(0xc0, false))
+          dut.io.sinks(1).expectDequeue(dataLast(0xc1, true))
+
         }.fork {
-          dut.io.sinks(1).expectDequeue(dataLast(0xb0, false))
-          dut.io.sinks(1).expectDequeue(dataLast(0xb1, true))
-          dut.io.sinks(1).expectDequeue(dataLast(0xb2, false))
-          dut.io.sinks(1).expectDequeue(dataLast(0xb3, true))
-        }.fork {
-          dut.io.sinks(2).expectDequeue(dataLast(0xc0, false))
-          dut.io.sinks(2).expectDequeue(dataLast(0xc1, true))
+          dut.io.sinks(2).expectDequeue(dataLast(0xa2, false))
+          dut.io.sinks(2).expectDequeue(dataLast(0xa3, true))
+
           dut.io.sinks(2).expectDequeue(dataLast(0xc2, false))
           dut.io.sinks(2).expectDequeue(dataLast(0xc3, true))
+
         }.fork {
+          dut.io.sinks(3).expectDequeue(dataLast(0xb0, false))
+          dut.io.sinks(3).expectDequeue(dataLast(0xb1, true))
+
           dut.io.sinks(3).expectDequeue(dataLast(0xd0, false))
           dut.io.sinks(3).expectDequeue(dataLast(0xd1, true))
-          dut.io.sinks(3).expectDequeue(dataLast(0xd2, false))
-          dut.io.sinks(3).expectDequeue(dataLast(0xd3, true))
+
+        }.fork {
+          dut.io.sinks(0).expectDequeue(dataLast(0xb2, false))
+          dut.io.sinks(0).expectDequeue(dataLast(0xb3, true))
+
+          dut.io.sinks(0).expectDequeue(dataLast(0xd2, false))
+          dut.io.sinks(0).expectDequeue(dataLast(0xd3, true))
+
         }.join()
       }
     }
   }
 
-  /// !!! Don't run this test
   "elastic.Distributor Burst functionality (randomized)" in {
     val gen = new DataLast
     val rand = scala.util.Random

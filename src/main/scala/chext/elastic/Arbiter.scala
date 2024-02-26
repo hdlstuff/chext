@@ -1,6 +1,7 @@
 package chext.elastic
 
 import chext.elastic
+import elastic.internal
 
 import chisel3._
 import chisel3.util._
@@ -13,7 +14,7 @@ class Arbiter[T <: Data](
     val chooserFn: Chooser.ChooserFn,
     val isLastFn: T => Bool = (_: T) => true.B
 ) extends Module
-    with ChoosingModule {
+    with internal.ChoosingModule {
   require(n > 0)
   override def desiredName: String = "elasticArbiter"
 
@@ -23,23 +24,27 @@ class Arbiter[T <: Data](
     val select = Sink(Irrevocable(genSelect))
   })
 
-  protected val chooser = chooserFn(VecInit(io.sources.map { _.valid }))
+  private val sources = io.sources
+  private val sink = io.sink
+  private val select = io.select
 
-  protected val sourceValid = io.sources(choice).valid
-  protected val sourceLast = isLastFn(io.sources(choice).bits)
+  protected val chooser = chooserFn(VecInit(sources.map { _.valid }))
+
+  protected val sourceValid = sources(choice).valid
+  protected val sourceLast = isLastFn(sources(choice).bits)
   protected val sourceReady = Wire(Bool())
 
-  protected val selectValid = io.select.valid
-  protected val selectReady = io.select.ready
+  protected val selectValid = select.valid
+  protected val selectReady = select.ready
 
-  protected val sinkValid = io.sink.valid
-  protected val sinkReady = io.sink.ready
+  protected val sinkValid = sink.valid
+  protected val sinkReady = sink.ready
 
   protected def implementDataPlane() = {
-    io.sink.bits := io.sources(choice).bits
-    io.select.bits := choice
+    sink.bits := sources(choice).bits
+    select.bits := choice
 
-    io.sources.zipWithIndex.foreach { case (x, i) =>
+    sources.zipWithIndex.foreach { case (x, i) =>
       x.ready := sourceReady && i.U === (choice)
     }
   }

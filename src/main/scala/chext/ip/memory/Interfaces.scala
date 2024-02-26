@@ -15,16 +15,16 @@ class RawInterface(
 
   val wStrobe = (wData >> 3)
 
-  /** @brief Address (index RAM words of size wData) */
+  /** Address (index RAM words of size wData) */
   val addr = Input(UInt(wAddr.W))
 
-  /** @brief Data input */
+  /** Data input */
   val dIn = Input(Bits(wData.W))
 
-  /** @brief Data output */
+  /** Data output */
   val dOut = Output(Bits(wData.W))
 
-  /** @brief Write strobe */
+  /** Write strobe */
   val wstrb = Input(UInt(wStrobe.W))
 }
 

@@ -1,6 +1,7 @@
 package chext.elastic
 
 import chext.elastic
+import elastic.internal
 
 import chisel3._
 import chisel3.util._
@@ -12,7 +13,8 @@ class Distributor[T <: Data](
     val n: Int,
     val chooserFn: Chooser.ChooserFn,
     val isLastFn: T => Bool = (_: T) => true.B
-) extends Module with ChoosingModule {
+) extends Module
+    with internal.ChoosingModule {
   require(n > 0)
   override def desiredName: String = "elasticDistributor"
 
@@ -22,23 +24,36 @@ class Distributor[T <: Data](
     val select = Sink(Irrevocable(genSelect))
   })
 
-  protected val chooser = chooserFn(VecInit(io.sinks.map { _.ready }))
+  private val source = io.source
+  private val sinks = VecInit(io.sinks.map { SinkBuffer(_) })
+  private val select = io.select
 
-  protected val sourceValid = io.source.valid
-  protected val sourceLast = isLastFn(io.source.bits)
-  protected val sourceReady = io.source.ready
+  // NOTE: Distributor employs a SinkBuffer to avoid a combinational
+  // path from ready to valid at sinks [see below, the path happens over
+  // the chooseFn(... ready ...)].
+  // The downside is that the priority chooser does not play
+  // well with this approach, as the high priority one might always
+  // capture the data (in case there is a high-latency operation down stream,
+  // it must be OK).
+  // Is there a better way to implement the distributor?
 
-  protected val selectValid = io.select.valid
-  protected val selectReady = io.select.ready
+  protected val chooser = chooserFn(VecInit(sinks.map { _.ready }))
+
+  protected val sourceValid = source.valid
+  protected val sourceLast = isLastFn(source.bits)
+  protected val sourceReady = source.ready
+
+  protected val selectValid = select.valid
+  protected val selectReady = select.ready
 
   protected val sinkValid = Wire(Bool())
-  protected val sinkReady = io.sinks(choice).ready
+  protected val sinkReady = sinks(choice).ready
 
   protected def implementDataPlane() = {
-    io.sinks.foreach { x => x.bits := io.source.bits }
-    io.select.bits := choice
+    sinks.foreach { x => x.bits := source.bits }
+    select.bits := choice
 
-    io.sinks.zipWithIndex.foreach { case (x, i) =>
+    sinks.zipWithIndex.foreach { case (x, i) =>
       x.valid := sinkValid && i.U === (choice)
     }
   }

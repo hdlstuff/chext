@@ -59,13 +59,13 @@ class AddressGenerator(val wAddr: Int) extends Module {
 
   private val current = source_.bits
 
-  /** @brief Current address to emit (INCR bursts). */
+  /** Current address to emit (INCR bursts). */
   private val addr = Reg(UInt(wAddr.W))
 
-  /** @brief Beat counter. */
+  /** Beat counter. */
   private val ctr = Reg(UInt(8.W))
 
-  /** @brief Flag for generating right now. */
+  /** Flag for generating right now. */
   private val generating = RegInit(false.B)
 
   source_.nodeq()
