@@ -146,7 +146,7 @@ class Packet extends Bundle {
   val dest = UInt(2.W)
 }
 
-class ElasticSplitter extends Module {
+class ElasticRouter extends Module {
   val source = IO(Source(Decoupled(new Packet)))
   val sinks = IO(Vec(4, Sink(Decoupled(UInt(32.W)))))
 
