@@ -8,7 +8,7 @@ import chext.axi4
 
 import axi4.full.components.addrgen._
 
-import elastic.{Fork, Join, Replicate, Transform, OnPacket}
+import elastic.{Fork, Join, Replicate, Transform, Arrival}
 import elastic.ConnectOp._
 import chisel3.experimental.prefix
 
@@ -118,8 +118,8 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
       }
     }
 
-    val packet1 = new OnPacket(idLastJoined, s_axi.b) {
-      protected def onPacket: Unit = {
+    val packet1 = new Arrival(idLastJoined, s_axi.b) {
+      protected def onArrival: Unit = {
         consume()
 
         when(in.last) {

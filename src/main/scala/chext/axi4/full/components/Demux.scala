@@ -15,7 +15,7 @@ import axi4.full.{SlaveBuffer, MasterBuffer, ReadDataChannel, WriteDataChannel}
 
 import bundles._
 
-import elastic.{Chooser, OnPacket, Fork}
+import elastic.{Chooser, Arrival, Fork}
 import chext.axi4.Config
 
 /** Manages (1) the number of outstanding requests, (2) the port that a thread
@@ -194,8 +194,8 @@ class Demux(
       val genArPort = new Bundle2(s_axi_.ar.bits.cloneType, genPort)
       val arPort = Wire(Irrevocable(genArPort))
 
-      new OnPacket(s_axi_.ar, arPort) {
-        override protected def onPacket: Unit = {
+      new Arrival(s_axi_.ar, arPort) {
+        override protected def onArrival: Unit = {
           val id = in.id
           val addr = in.addr
           val port = decodeFn(addr)
@@ -272,8 +272,8 @@ class Demux(
       val genAwPort = new Bundle2(s_axi_.aw.bits.cloneType, genPort)
       val awPort = Wire(Irrevocable(genAwPort))
 
-      new OnPacket(s_axi_.aw, awPort) {
-        protected def onPacket: Unit = {
+      new Arrival(s_axi_.aw, awPort) {
+        protected def onArrival: Unit = {
           val id = in.id
           val addr = in.addr
           val port = decodeFn(addr)

@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
-abstract class OnPacket[Tin <: Data, T <: Data](
+abstract class Arrival[Tin <: Data, T <: Data](
     source: ReadyValidIO[Tin],
     sink: ReadyValidIO[T]
 ) extends AffectsChiselPrefix {
@@ -53,10 +53,10 @@ abstract class OnPacket[Tin <: Data, T <: Data](
 
   /** Called when a packet might be accepted.
     */
-  protected def onPacket: Unit
+  protected def onArrival: Unit
 
   noAccept()
   when(sinkBuffered_.ready && source.valid) {
-    onPacket
+    onArrival
   }
 }

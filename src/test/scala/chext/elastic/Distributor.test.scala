@@ -23,8 +23,8 @@ class TestPE extends Module {
   val isBurst = RegInit(false.B)
   val accumulated = RegInit(0.U(32.W))
 
-  new OnPacket(io.source, io.sink) {
-    protected def onPacket: Unit = {
+  new Arrival(io.source, io.sink) {
+    protected def onArrival: Unit = {
       consume() /* consume the source packet */
 
       when(in.last) {
@@ -50,7 +50,7 @@ class TestPE extends Module {
     }
   }
 
-  /** Note to myself: do not declare any stateful elements, like registers, inside new OnPacket {
+  /** Note to myself: do not declare any stateful elements, like registers, inside new Arrival {
     * ... } block. These elements confuse Chisel.
     */
 }
