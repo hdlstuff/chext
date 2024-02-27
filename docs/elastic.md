@@ -170,4 +170,66 @@ class ElasticRouter extends Module {
 
 ## Arbiter
 
+
+```scala
+import chisel3._
+import chisel3.util._
+import chext.elastic
+
+import elastic._
+
+// Elastic PE performs a very long computation.
+class ElasticPE extends Module {
+  val source = IO(Source(Decoupled(UInt(32.W))))
+  val sink = IO(Sink(Decoupled(UInt(32.W))))
+
+  private val source_ = SourceBuffer.irrevocable(source)
+  private val sink_ = SinkBuffer.irrevocable(sink)
+
+  private val working_ = RegInit(false.B)
+  private val counter_ = RegInit(0.U)
+
+  source_.nodeq()
+  sink_.noenq()
+
+  when (!working_) {
+    when (source_.valid) {
+      working_ := true.B
+      counter_ := 8.U // takes 8 cycles
+    }
+  }.otherwise {
+    when (counter_ === 0.U) {
+      when (sink_.ready) {
+        working_ := false.B
+        sink_.enq(source_.deq() + 10.U /* our complex result */)
+      }
+    }.otherwise {
+      counter_ = counter_ - 1.U
+    }
+  }
+}
+
+class ElasticArbiter extends Module {
+  // multiple sources share the same PE
+  val sources = IO(Vec(4, Source(Decoupled(UInt(32.W)))))
+  val sinks = IO(Vec(4, Sink(Decoupled(UInt(32.W)))))
+
+  private val pe = Module(new ElasticPE)
+  private val select = Wire(Decoupled(UInt(2.W)))
+  
+  Arbiter(
+    sources,
+    pe.source,
+    Chooser.rr,
+    select
+  )
+
+  Demultiplexer(
+    pe.sink,
+    sinks,
+    select
+  )
+}
+```
+
 ## Distributor
