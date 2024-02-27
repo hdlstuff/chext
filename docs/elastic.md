@@ -86,7 +86,7 @@ class ElasticAdder extends Module {
 
   val sink = IO(Sink(Decoupled(UInt(32.W))))
   
-  new Join(sink) {
+  new elastic.Join(sink) {
     protected def onJoin: Unit = {
       // joins sources 1 and 2, and calculates the output
       // by adding the operands
@@ -114,7 +114,7 @@ class ElasticSplitter extends Module {
   val sinkLO = IO(Sink(Decoupled(UInt(16.W))))
   val sink = IO(Sink(Decoupled(UInt(32.W))))
   
-  new Fork(source) {
+  new elastic.Fork(source) {
     protected def onFork: Unit = {
       // extract the high-order bits and connect to `sinkHI`
       fork(in(15, 8)) :=> sinkHI
@@ -130,6 +130,32 @@ class ElasticSplitter extends Module {
 ```
 
 ## Multiplexer
+
+```scala
+import chisel3._
+import chisel3.util._
+import chext.elastic
+
+import elastic._
+
+class WriteRequest extends Bundle {
+  val addr = UInt(32.W)
+  val data = UInt(32.W)
+}
+
+class ElasticMultiplexer extends Module {
+  val portSelSource = IO(Source(Decoupled(UInt(2.W))))
+  val writeRequestSources = IO(Vec(4, Source(Decoupled(new WritePacket))))
+  val writeRequestSink = IO(Sink(Decoupled(new WritePacket)))
+
+  /* choose a write request port and forward it according to select */
+  elastic.Mux(
+    writeRequestSources,
+    writeRequestSink,
+    portSelSource
+  )
+}
+```
 
 ## Demultiplexer
 
@@ -160,7 +186,7 @@ class ElasticRouter extends Module {
     }
   }
 
-  Demultiplexer(
+  elastic.Demux(
     data,
     sinks,
     select
@@ -169,7 +195,6 @@ class ElasticRouter extends Module {
 ```
 
 ## Arbiter
-
 
 ```scala
 import chisel3._
@@ -217,14 +242,14 @@ class ElasticArbiter extends Module {
   private val pe = Module(new ElasticPE)
   private val select = Wire(Decoupled(UInt(2.W)))
   
-  Arbiter(
+  elastic.Arbiter(
     sources,
     pe.source,
     Chooser.rr,
     select
   )
 
-  Demultiplexer(
+  elastic.Demux(
     pe.sink,
     sinks,
     select
@@ -233,3 +258,9 @@ class ElasticArbiter extends Module {
 ```
 
 ## Distributor
+
+## Transform
+
+## Replicate
+
+## Arrival
