@@ -23,26 +23,23 @@ case class IdSerializerConfig(
   *   AXI configuration of the slave interface.
   */
 class IdSerializerZero(
-    val axiCfg: axi4.Config,
+    axiCfg: axi4.Config,
     val idSerializerCfg: IdSerializerConfig = IdSerializerConfig()
 ) extends Module {
   require(!axiCfg.lite)
   require(axiCfg.read || axiCfg.write)
 
-  override def desiredName: String = "axi4FullIdSerializerBasic"
+  override def desiredName: String = "axi4FullIdSerializerZero"
 
   val axiSlaveCfg = axiCfg
   val axiMasterCfg = axiCfg.copy(wId = 0)
 
-  val S_AXI = IO(axi4.Slave(axiSlaveCfg))
-  val M_AXI = IO(axi4.Master(axiMasterCfg))
+  val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
+  val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private val genId = UInt(axiSlaveCfg.wId.W)
 
   private def implRead(): Unit = prefix("read") {
-    val s_axi = S_AXI.asFull
-    val m_axi = M_AXI.asFull
-
     val idQueue = Module(
       new Queue(
         genId,
@@ -51,6 +48,8 @@ class IdSerializerZero(
         pipe = true
       )
     )
+
+    idQueue.io.deq.nodeq()
 
     new Fork(s_axi.ar) {
       protected def onFork: Unit = {
@@ -65,20 +64,19 @@ class IdSerializerZero(
       }
     }
 
-    new Join(s_axi.r) {
-      protected def onJoin: Unit = {
-        val id = join(idQueue.io.deq)
-
-        out := join(m_axi.r)
-        out.id := id
+    new Transform(m_axi.r, s_axi.r) {
+      protected def onTransform: Unit = {
+        out := in
+        out.id := idQueue.io.deq.bits
       }
+    }
+
+    when(s_axi.r.fire) {
+      idQueue.io.deq.deq()
     }
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val s_axi = S_AXI.asFull
-    val m_axi = M_AXI.asFull
-
     val idQueue = Module(
       new Queue(
         genId,

@@ -67,7 +67,7 @@ class Mux(
   val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiCfgSlave)))
   val m_axi = IO(axi4.full.Master(axiCfgMaster))
 
-  val s_axi_ = IdExtend(
+  private val s_axi_ = IdExtend(
     s_axi.map { (x) =>
       SlaveBuffer(x, muxCfg.slaveBuffers)
     },
@@ -75,7 +75,7 @@ class Mux(
     axiCfgMaster
   )
 
-  val m_axi_ = MasterBuffer(m_axi, muxCfg.masterBuffers)
+  private val m_axi_ = MasterBuffer(m_axi, muxCfg.masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {

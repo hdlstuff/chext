@@ -19,7 +19,7 @@ private class IdLastBundle(wId: Int) extends Bundle {
 
 class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
   private val addrShift = log2Ceil(cfg.wData >> 3)
-  private val wWordAddr = cfg.wAddr >> addrShift
+  private val wWordAddr = cfg.wAddr - addrShift
   private val wData = cfg.wData
 
   assert(cfg.read && cfg.write && !cfg.lite)

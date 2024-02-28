@@ -100,7 +100,7 @@ object XilinxEmitter extends App {
 
   Target.setCurrent(xilinx.Target)
 
-  emitVerilog(new Axi4FullBram(8, 32), Array("--target-dir", "outputs/"))
-  emitVerilog(new Axi4FullBram(8, 64), Array("--target-dir", "outputs/"))
-  emitVerilog(new Axi4FullBram(12, 256), Array("--target-dir", "outputs/"))
+  emitVerilog(new Axi4FullBram(8, 32), Array("--target-dir", "output/"))
+  emitVerilog(new Axi4FullBram(8, 64), Array("--target-dir", "output/"))
+  emitVerilog(new Axi4FullBram(12, 256), Array("--target-dir", "output/"))
 }
