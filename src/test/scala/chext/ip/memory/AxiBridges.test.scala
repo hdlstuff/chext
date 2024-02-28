@@ -80,7 +80,7 @@ object XilinxEmitter extends App {
       wAddr = wAddr,
       wData = wData,
       latencyRead = 4,
-      latencyWrite = 2,
+      latencyWrite = 1,
       numOutstandingRead = 4,
       numOutstandingWrite = 4
     )
