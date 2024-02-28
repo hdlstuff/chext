@@ -70,3 +70,37 @@ class Axi4FullToReadWriteBridgeSpec extends chext.test.FreeSpec with chext.test.
     }
   }
 }
+
+object XilinxEmitter extends App {
+  class Axi4FullBram(val wAddr: Int = 8, val wData: Int = 32) extends Module {
+    override val desiredName = f"Axi4FullBram_${wAddr}_${wData}"
+
+    private val axiCfg = axi4.Config(wId = 4, wAddr = wAddr, wData = wData)
+    private val memCfg = MemConfig(
+      wAddr = wAddr,
+      wData = wData,
+      latencyRead = 4,
+      latencyWrite = 2,
+      numOutstandingRead = 4,
+      numOutstandingWrite = 4
+    )
+
+    val s_axi = IO(axi4.Slave(axiCfg))
+    private val s_axi_ = axi4.full.SlaveBuffer(s_axi.asFull, axi4.BufferConfig.all(1))
+
+    private val memory = Module(new SinglePortRAM(memCfg))
+    private val axi4fullBridge = Module(new Axi4FullToReadWriteBridge(axiCfg))
+
+    s_axi_ :=> axi4fullBridge.s_axi
+
+    // TODO: change <> with a better operator
+    axi4fullBridge.read <> memory.read
+    axi4fullBridge.write <> memory.write
+  }
+
+  Target.setCurrent(xilinx.Target)
+
+  emitVerilog(new Axi4FullBram(8, 32), Array("--target-dir", "outputs/"))
+  emitVerilog(new Axi4FullBram(8, 64), Array("--target-dir", "outputs/"))
+  emitVerilog(new Axi4FullBram(12, 256), Array("--target-dir", "outputs/"))
+}
