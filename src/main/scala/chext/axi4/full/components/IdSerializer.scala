@@ -54,7 +54,13 @@ class IdSerializerZero(
 
     new Fork(s_axi.ar) {
       protected def onFork: Unit = {
-        fork(in.id) :=> idQueue.io.enq
+        new Replicate(fork(in), idQueue.io.enq) {
+          protected def onReplicate: Unit = {
+            len := in.len + 1.U
+            out := in.id
+          }
+        }
+
         fork(in) :=> m_axi.ar
       }
     }
