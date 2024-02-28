@@ -14,7 +14,8 @@ import elastic.ConnectOp._
 
 case class IdSerializerConfig(
     val capacityIdQueueR: Int = 4,
-    val capacityIdQueueW: Int = 4
+    val capacityIdQueueW: Int = 4,
+    val wIdSelect: Int = 0
 )
 
 /** Serializes the AXI transactions to a single ID, which is 0.
@@ -24,7 +25,7 @@ case class IdSerializerConfig(
   */
 class IdSerializerZero(
     axiCfg: axi4.Config,
-    val idSerializerCfg: IdSerializerConfig = IdSerializerConfig()
+    val cfg: IdSerializerConfig = IdSerializerConfig()
 ) extends Module {
   require(!axiCfg.lite)
   require(axiCfg.read || axiCfg.write)
@@ -43,7 +44,7 @@ class IdSerializerZero(
     val idQueue = Module(
       new Queue(
         genId,
-        idSerializerCfg.capacityIdQueueR,
+        cfg.capacityIdQueueR,
         flow = true,
         pipe = true
       )
@@ -80,7 +81,7 @@ class IdSerializerZero(
     val idQueue = Module(
       new Queue(
         genId,
-        idSerializerCfg.capacityIdQueueR,
+        cfg.capacityIdQueueR,
         flow = true,
         pipe = true
       )
@@ -103,6 +104,96 @@ class IdSerializerZero(
         out.id := id
       }
     }
+  }
+
+  if (axiSlaveCfg.read) implRead()
+  if (axiSlaveCfg.write) implWrite()
+}
+
+class IdSerializer(
+    axiCfg: axi4.Config,
+    val cfg: IdSerializerConfig = IdSerializerConfig()
+) extends Module {
+  require(!axiCfg.lite)
+  require(axiCfg.read || axiCfg.write)
+
+  override def desiredName: String = "axi4FullIdSerializerZero"
+
+  private val wIdSelect = cfg.wIdSelect
+
+  private val genIdSelect = UInt(wIdSelect.W)
+
+  val axiSlaveCfg = axiCfg
+  val axiMasterCfg = axiCfg.copy(wId = wIdSelect)
+
+  val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
+  val m_axi = IO(axi4.full.Master(axiMasterCfg))
+
+  private val idSerializerZeros = Seq.fill(1 << wIdSelect) {
+    Module(new IdSerializerZero(axiSlaveCfg, cfg))
+  }
+
+  private def implRead(): Unit = prefix("read") {
+    def implAr(): Unit = prefix("ar") {
+      new Fork(s_axi.ar) {
+        protected def onFork: Unit = {
+          val demuxSelect = Wire(Decoupled(genIdSelect))
+
+          elastic.Demux(
+            fork(),
+            idSerializerZeros.map { _.s_axi.ar },
+            demuxSelect
+          )
+
+          new Transform(fork(), demuxSelect) {
+            protected def onTransform: Unit = {
+              // TODO: maybe use a different select function?
+              out := in.id & ((1 << wIdSelect) - 1).U
+            }
+          }
+        }
+      }
+
+      elastic.Arbiter(
+        idSerializerZeros.map { _.m_axi.ar },
+        m_axi.ar,
+        Chooser.rr
+      )
+    }
+
+    def implR(): Unit = prefix("r") {
+      new Fork(m_axi.r) {
+        protected def onFork: Unit = {
+          val demuxSelect = Wire(Decoupled(genIdSelect))
+
+          elastic.Demux(
+            fork(),
+            idSerializerZeros.map { _.m_axi.r },
+            demuxSelect
+          )
+
+          new Transform(fork(), demuxSelect) {
+            protected def onTransform: Unit = {
+              // TODO: maybe use a different select function?
+              out := in.id
+            }
+          }
+        }
+      }
+
+      elastic.Arbiter(
+        idSerializerZeros.map { _.s_axi.r },
+        m_axi.r,
+        Chooser.rr
+      )
+    }
+
+    implAr()
+    implR()
+  }
+
+  private def implWrite(): Unit = prefix("write") {
+    //
   }
 
   if (axiSlaveCfg.read) implRead()
