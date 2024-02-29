@@ -231,16 +231,20 @@ class IdSerializer(
     }
 
     def implW(): Unit = prefix("w") {
+      import axi4.full.WriteDataChannel
+
       elastic.Demux(
         s_axi.w,
         idSerializerZeros.map { _.s_axi.w },
-        selectQueue1.io.deq
+        selectQueue1.io.deq,
+        (x: WriteDataChannel) => x.last
       )
 
       elastic.Mux(
         idSerializerZeros.map { _.m_axi.w },
         m_axi.w,
-        selectQueue2.io.deq
+        selectQueue2.io.deq,
+        (x: WriteDataChannel) => x.last
       )
     }
 
@@ -269,11 +273,4 @@ class IdSerializer(
 
   if (axiSlaveCfg.read) implRead()
   if (axiSlaveCfg.write) implWrite()
-}
-
-object IdSerializerEmitter extends App {
-  emitVerilog(
-    new IdSerializer(axi4.Config(wId = 4), IdSerializerConfig(wIdSelect = 2)),
-    Array("--target-dir", "output/")
-  )
 }
