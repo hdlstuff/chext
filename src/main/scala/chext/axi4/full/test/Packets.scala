@@ -21,7 +21,7 @@ import elastic.test.PacketOps._
 
 case class AddressPacket(
     val id: Int,
-    val addr: Int,
+    val addr: Long,
     val len: Int,
     val size: Int = 7,
     val burst: Int = 1 /* INCR */

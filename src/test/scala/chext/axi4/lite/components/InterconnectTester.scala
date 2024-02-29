@@ -110,7 +110,7 @@ abstract class InterconnectTester[T <: Module](
         )
         logMaster(masterIdx, "waiting for read address")
         val arPacket = master.receiveReadAddress()
-        val threadInfo = threadInfos(arPacket.addr & slaveIdMask)
+        val threadInfo = threadInfos(arPacket.addr.toInt & slaveIdMask)
 
         logMaster(masterIdx, "received read address", arPacket)
 
@@ -159,7 +159,7 @@ abstract class InterconnectTester[T <: Module](
         val awPacket = awPacket_.get
         val wPacket = wPacket_.get
 
-        val threadInfo = threadInfos(awPacket.addr & slaveIdMask)
+        val threadInfo = threadInfos(awPacket.addr.toInt & slaveIdMask)
         Expect.equals(
           (awPacket.addr & slaveIdMask),
           (wPacket.data & slaveIdMask),

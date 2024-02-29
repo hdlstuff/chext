@@ -20,7 +20,7 @@ import elastic.test.{Packet, PacketTag, PacketBridge}
 import elastic.test.PacketOps._
 
 case class AddressPacket(
-    val addr: Int
+    val addr: Long
 ) extends elastic.test.Packet {
   val last: Boolean = true
 }
@@ -234,6 +234,33 @@ trait PacketUtils {
       interface.aw.initSink()
       interface.w.initSink()
       interface.b.initSource()
+    }
+
+    def readRegister(addr: Long): Long = {
+      var resp = Option.empty[ReadDataPacket]
+
+      fork {
+        interface.ar.sendPacket(AddressPacket(addr))
+      }.fork {
+        resp = Some(interface.r.receivePacket[ReadDataPacket]())
+      }.joinAndStep()
+
+      resp.get.data
+    }
+
+    def writeRegister(addr: Long, value: Long): Unit = {
+      @annotation.unused
+      var resp = Option.empty[WriteResponsePacket]
+
+      fork {
+        interface.aw.sendPacket(AddressPacket(addr))
+      }.fork {
+        interface.w.sendPacket(WriteDataPacket(value))
+      }.fork {
+        resp = Some(interface.b.receivePacket[WriteResponsePacket]())
+      }.joinAndStep()
+
+      // maybe return a response later?
     }
   }
 }
