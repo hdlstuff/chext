@@ -186,15 +186,11 @@ class IdSerializer(
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val selectQueue1 = Module(
-      new Queue(genIdSelect, cfg.capacityIdQueueW /* TODO: define a different var */, true, false)
-    )
-
-    val selectQueue2 = Module(
-      new Queue(genIdSelect, cfg.capacityIdQueueW /* TODO: define a different var */, true, false)
-    )
-
     def implAw(): Unit = prefix("aw") {
+      val selectQueue = Module(
+        new Queue(genIdSelect, cfg.capacityIdQueueW /* TODO: define a different var */, true, false)
+      )
+
       new Fork(s_axi.aw) {
         protected def onFork: Unit = {
           val demuxSelect = Wire(Decoupled(genIdSelect))
@@ -206,11 +202,11 @@ class IdSerializer(
           )
 
           fork(in.id(wIdSelect - 1, 0)) :=> demuxSelect
-          fork(in.id(wIdSelect - 1, 0)) :=> selectQueue1.io.enq
+          fork(in.id(wIdSelect - 1, 0)) :=> selectQueue.io.enq
         }
       }
 
-      elastic.Arbiter(
+      elastic.Mux(
         idSerializerZeros
           .map { _.m_axi.aw }
           .zipWithIndex
@@ -225,27 +221,21 @@ class IdSerializer(
             }
           },
         m_axi.aw,
-        Chooser.rr,
-        Some(selectQueue2.io.enq)
+        selectQueue.io.deq
       )
     }
 
     def implW(): Unit = prefix("w") {
       import axi4.full.WriteDataChannel
 
-      elastic.Demux(
-        s_axi.w,
-        idSerializerZeros.map { _.s_axi.w },
-        selectQueue1.io.deq,
-        (x: WriteDataChannel) => x.last
-      )
+      idSerializerZeros.foreach { (x) =>
+        {
+          x.s_axi.w.noenq()
+          x.m_axi.w.nodeq()
+        }
+      }
 
-      elastic.Mux(
-        idSerializerZeros.map { _.m_axi.w },
-        m_axi.w,
-        selectQueue2.io.deq,
-        (x: WriteDataChannel) => x.last
-      )
+      s_axi.w :=> m_axi.w
     }
 
     def implB(): Unit = prefix("b") {
