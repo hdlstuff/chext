@@ -117,10 +117,9 @@ class IdSerializer(
   require(!axiCfg.lite)
   require(axiCfg.read || axiCfg.write)
 
-  override def desiredName: String = "axi4FullIdSerializerZero"
+  override def desiredName: String = "axi4FullIdSerializer"
 
   private val wIdSelect = cfg.wIdSelect
-
   private val genIdSelect = UInt(wIdSelect.W)
 
   val axiSlaveCfg = axiCfg
@@ -137,25 +136,28 @@ class IdSerializer(
     def implAr(): Unit = prefix("ar") {
       new Fork(s_axi.ar) {
         protected def onFork: Unit = {
-          val demuxSelect = Wire(Decoupled(genIdSelect))
-
           elastic.Demux(
             fork(),
             idSerializerZeros.map { _.s_axi.ar },
-            demuxSelect
+            fork(in.id(wIdSelect - 1, 0))
           )
-
-          new Transform(fork(), demuxSelect) {
-            protected def onTransform: Unit = {
-              // TODO: maybe use a different select function?
-              out := in.id & ((1 << wIdSelect) - 1).U
-            }
-          }
         }
       }
 
       elastic.Arbiter(
-        idSerializerZeros.map { _.m_axi.ar },
+        idSerializerZeros
+          .map { _.m_axi.ar }
+          .zipWithIndex
+          .map {
+            case (arSource, idx) => {
+              val arSink = Wire(chiselTypeOf(m_axi.ar))
+
+              arSource :=> arSink
+              arSink.bits.id := idx.U
+
+              arSink
+            }
+          },
         m_axi.ar,
         Chooser.rr
       )
@@ -164,26 +166,17 @@ class IdSerializer(
     def implR(): Unit = prefix("r") {
       new Fork(m_axi.r) {
         protected def onFork: Unit = {
-          val demuxSelect = Wire(Decoupled(genIdSelect))
-
           elastic.Demux(
             fork(),
             idSerializerZeros.map { _.m_axi.r },
-            demuxSelect
+            fork(in.id)
           )
-
-          new Transform(fork(), demuxSelect) {
-            protected def onTransform: Unit = {
-              // TODO: maybe use a different select function?
-              out := in.id
-            }
-          }
         }
       }
 
       elastic.Arbiter(
         idSerializerZeros.map { _.s_axi.r },
-        m_axi.r,
+        s_axi.r,
         Chooser.rr
       )
     }
@@ -193,9 +186,94 @@ class IdSerializer(
   }
 
   private def implWrite(): Unit = prefix("write") {
-    //
+    val selectQueue1 = Module(
+      new Queue(genIdSelect, cfg.capacityIdQueueW /* TODO: define a different var */, true, false)
+    )
+
+    val selectQueue2 = Module(
+      new Queue(genIdSelect, cfg.capacityIdQueueW /* TODO: define a different var */, true, false)
+    )
+
+    def implAw(): Unit = prefix("aw") {
+      new Fork(s_axi.aw) {
+        protected def onFork: Unit = {
+          val demuxSelect = Wire(Decoupled(genIdSelect))
+
+          elastic.Demux(
+            fork(),
+            idSerializerZeros.map { _.s_axi.aw },
+            demuxSelect
+          )
+
+          fork(in.id(wIdSelect - 1, 0)) :=> demuxSelect
+          fork(in.id(wIdSelect - 1, 0)) :=> selectQueue1.io.enq
+        }
+      }
+
+      elastic.Arbiter(
+        idSerializerZeros
+          .map { _.m_axi.aw }
+          .zipWithIndex
+          .map {
+            case (arSource, idx) => {
+              val arSink = Wire(chiselTypeOf(m_axi.aw))
+
+              arSource :=> arSink
+              arSink.bits.id := idx.U
+
+              arSink
+            }
+          },
+        m_axi.aw,
+        Chooser.rr,
+        Some(selectQueue2.io.enq)
+      )
+    }
+
+    def implW(): Unit = prefix("w") {
+      elastic.Demux(
+        s_axi.w,
+        idSerializerZeros.map { _.s_axi.w },
+        selectQueue1.io.deq
+      )
+
+      elastic.Mux(
+        idSerializerZeros.map { _.m_axi.w },
+        m_axi.w,
+        selectQueue2.io.deq
+      )
+    }
+
+    def implB(): Unit = prefix("b") {
+      new Fork(m_axi.b) {
+        protected def onFork: Unit = {
+          elastic.Demux(
+            fork(),
+            idSerializerZeros.map { _.m_axi.b },
+            fork(in.id)
+          )
+        }
+      }
+
+      elastic.Arbiter(
+        idSerializerZeros.map { _.s_axi.b },
+        s_axi.b,
+        Chooser.rr
+      )
+    }
+
+    implAw()
+    implW()
+    implB()
   }
 
   if (axiSlaveCfg.read) implRead()
   if (axiSlaveCfg.write) implWrite()
+}
+
+object IdSerializerEmitter extends App {
+  emitVerilog(
+    new IdSerializer(axi4.Config(wId = 4), IdSerializerConfig(wIdSelect = 2)),
+    Array("--target-dir", "output/")
+  )
 }
