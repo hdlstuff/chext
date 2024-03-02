@@ -18,37 +18,6 @@ case class MuxConfig(
     val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
 )
 
-private[components] object IdExtend {
-  def apply(
-      slaveInterfaces: Seq[axi4.full.Interface],
-      axiCfgSlave: axi4.Config,
-      axiCfgMaster: axi4.Config
-  ): Seq[axi4.full.Interface] = {
-    slaveInterfaces.zipWithIndex.map {
-      case (interface, port) => {
-        val result = Wire(Flipped(axi4.full.Interface(axiCfgMaster)))
-
-        if (interface.cfg.read) {
-          interface.ar :=> result.ar
-          result.r :=> interface.r
-
-          result.ar.bits.id := port.U ## interface.ar.bits.id
-        }
-
-        if (interface.cfg.write) {
-          interface.aw :=> result.aw
-          interface.w :=> result.w
-          result.b :=> interface.b
-
-          result.aw.bits.id := port.U ## interface.aw.bits.id
-        }
-
-        result
-      }
-    }
-  }
-}
-
 class Mux(
     val axiCfgSlave: axi4.Config,
     val numSlaves: Int = 4,
@@ -60,21 +29,28 @@ class Mux(
 
   override def desiredName: String = "axi4FullMux"
 
-  private val wPort = log2Up(numSlaves)
+  private val wPort = log2Ceil(numSlaves)
   private val genPort = UInt(wPort.W)
   val axiCfgMaster = axiCfgSlave.copy(wId = axiCfgSlave.wId + wPort)
 
   val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiCfgSlave)))
   val m_axi = IO(axi4.full.Master(axiCfgMaster))
 
-  private val s_axi_ = IdExtend(
-    s_axi.map { (x) =>
-      SlaveBuffer(x, muxCfg.slaveBuffers)
-    },
-    axiCfgSlave,
-    axiCfgMaster
-  )
+  private val s_axi_ = {
+    val result = Wire(Vec(numSlaves, axi4.full.Interface(axiCfgMaster)))
 
+    val buffered = s_axi.map { (x) =>
+      SlaveBuffer(x, muxCfg.slaveBuffers)
+    }
+
+    if (axiCfgSlave.read)
+      helpers.IdExtend.read(buffered, result)
+
+    if (axiCfgSlave.write)
+      helpers.IdExtend.write(buffered, result)
+
+    result
+  }
   private val m_axi_ = MasterBuffer(m_axi, muxCfg.masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
