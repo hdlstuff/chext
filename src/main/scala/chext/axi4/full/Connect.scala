@@ -4,7 +4,11 @@ import chext.elastic.ConnectOp._
 
 private object connect {
   def apply(master: Interface, slave: Interface): Unit = {
-    assert(master.cfg == slave.cfg)
+    assert(
+      master.cfg.wId <= slave.cfg.wId,
+      "The master interface should have a narrow ID field than the slave interface."
+    )
+    assert(master.cfg.copy(wId = 0) == slave.cfg.copy(wId = 0), "Configurations do not match.")
 
     if (master.cfg.read) {
       master.ar :=> slave.ar
