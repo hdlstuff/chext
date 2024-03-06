@@ -18,7 +18,8 @@ def dc_to_elem(parent: ElementTree.Element, tag: str, dc: Any) -> ElementTree.El
     for field in dataclasses.fields(dc):
         name: str = field.name
 
-        if (isinstance(field.metadata, dict)):
+        # TODO: Make sure that this is correct (i.e., checking if dict-like)
+        if (type(field.metadata).__name__ == "mappingproxy"):
             metadata: Dict = field.metadata
 
             if (metadata.get("skip", False)):

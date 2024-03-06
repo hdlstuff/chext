@@ -166,7 +166,7 @@ class Ellipse(NodeCreator, _RectHelpers):
 
 
 @dataclasses.dataclass
-class Text(NodeCreator):
+class Label(NodeCreator):
     text: str = dc_name("str")
     x: float = 0
     y: float = 0
@@ -175,6 +175,7 @@ class Text(NodeCreator):
     valign: Union[Literal["top"], Literal["middle"],
                   Literal["bottom"]] = "middle"
     vertical: int = 0
+    rotation: float = 0
 
     def create_node(self, parent: ElementTree.Element) -> None:
         dc_to_elem(parent, "text", self)
@@ -325,7 +326,7 @@ __all__ = [
     "Rect",
     "RoundRect",
     "Ellipse",
-    "Text",
+    "Label",
     "FontSize",
     "FontStyle",
     "Save",
