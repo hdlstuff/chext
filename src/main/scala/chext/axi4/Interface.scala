@@ -73,7 +73,7 @@ case class Config(
 /** AXI4 interface that complies with the standard naming convention.
   *
   * This interface is not supposed to be used directly. Please use
-  * `.full[R/W/RW]` and `.lite[R/W/RW]` functions defined in corresponding
+  * `.asFull` and `.asLite` functions defined in corresponding
   * implicit classes.
   *
   * @param cfg
