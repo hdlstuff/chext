@@ -37,6 +37,7 @@ case class ReadDataPacket(
 
 case class WriteDataPacket(
     val data: Long,
+    val strb: Long,
     val last: Boolean
 ) extends Packet
 
@@ -66,7 +67,7 @@ trait PacketUtils {
       def toTester(t: AddressChannel): AddressPacket =
         AddressPacket(
           t.id.litValue.toInt,
-          t.addr.litValue.toInt,
+          t.addr.litValue.toLong,
           t.len.litValue.toInt,
           t.size.litValue.toInt,
           t.burst.litValue.toInt
@@ -93,7 +94,7 @@ trait PacketUtils {
       def toTester(t: ReadDataChannel): ReadDataPacket =
         ReadDataPacket(
           t.id.litValue.toInt,
-          t.data.litValue.toInt,
+          t.data.litValue.toLong,
           t.last.litValue == 1
         )
 
@@ -115,7 +116,8 @@ trait PacketUtils {
     new PacketBridge[WriteDataChannel, WriteDataPacket] {
       def toTester(t: WriteDataChannel): WriteDataPacket =
         WriteDataPacket(
-          t.data.litValue.toInt,
+          t.data.litValue.toLong,
+          t.strb.litValue.toLong,
           t.last.litValue == 1
         )
 
@@ -234,9 +236,6 @@ trait PacketUtils {
     def receiveWriteDataBurst() =
       interface.w.receivePacketBurst[WriteDataPacket]()
 
-    def expectWriteData(data: Long): Unit =
-      expectWriteData(WriteDataPacket(data, true))
-
     def expectWriteData(w: WriteDataPacket): Unit =
       Expect.equals(
         w,
@@ -247,26 +246,11 @@ trait PacketUtils {
     def expectWriteDataBurst(beats: Seq[WriteDataPacket]): Unit =
       interface.w.expectPacketBurst(beats)
 
-    def expectWriteDataBurst(data: Array[Long]): Unit =
-      expectWriteDataBurst(data.toSeq.zipWithIndex.map { case (x, n) =>
-        WriteDataPacket(x, n == data.length - 1)
-      })
-
-    def sendWriteData(data: Long): Unit =
-      sendWriteData(WriteDataPacket(data, true))
-
     def sendWriteData(w: WriteDataPacket): Unit =
       interface.w.sendPacket(w)
 
     def sendWriteDataBurst(beats: Seq[WriteDataPacket]): Unit =
       interface.w.sendPacketBurst(beats)
-
-    def sendWriteDataBurst(data: Array[Long]): Unit =
-      sendWriteDataBurst(data.toSeq.zipWithIndex.map {
-        case (x, n) => {
-          WriteDataPacket(x, n == data.length - 1)
-        }
-      })
 
     def receiveWriteResponse() =
       interface.b.receivePacket[WriteResponsePacket]()

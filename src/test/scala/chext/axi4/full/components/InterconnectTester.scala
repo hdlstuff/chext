@@ -376,6 +376,7 @@ abstract class InterconnectTester[T <: Module](
     threadInfo.wTaskQueue.addOne(Seq.tabulate(len + 1) { (pktIdx) =>
       WriteDataPacket(
         rand.nextInt(0x7fff_ffff),
+        0xf,
         pktIdx == len
       )
     })

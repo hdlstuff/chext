@@ -69,21 +69,21 @@ class IdSerializerZeroSpec extends chext.test.FreeSpec with chext.test.TestMixin
       }.fork {
         s_axi(0).sendWriteDataBurst(
           Seq(
-            WriteDataPacket(0x0_dead, false),
-            WriteDataPacket(0x1_dead, false),
-            WriteDataPacket(0x2_dead, false),
-            WriteDataPacket(0x3_dead, false),
-            WriteDataPacket(0x4_dead, false),
-            WriteDataPacket(0x5_dead, false),
-            WriteDataPacket(0x6_dead, false),
-            WriteDataPacket(0x7_dead, true)
+            WriteDataPacket(0x0_dead, 0xf, false),
+            WriteDataPacket(0x1_dead, 0xf, false),
+            WriteDataPacket(0x2_dead, 0xf, false),
+            WriteDataPacket(0x3_dead, 0xf, false),
+            WriteDataPacket(0x4_dead, 0xf, false),
+            WriteDataPacket(0x5_dead, 0xf, false),
+            WriteDataPacket(0x6_dead, 0xf, false),
+            WriteDataPacket(0x7_dead, 0xf, true)
           )
         )
 
         s_axi(0).sendWriteDataBurst(
           Seq(
-            WriteDataPacket(0x0_beef, false),
-            WriteDataPacket(0x1_beef, true)
+            WriteDataPacket(0x0_beef, 0xf, false),
+            WriteDataPacket(0x1_beef, 0xf, true)
           )
         )
       }.fork {
@@ -174,21 +174,21 @@ class IdSerializerSpec extends chext.test.FreeSpec with chext.test.TestMixin {
       }.fork {
         s_axi(0).sendWriteDataBurst(
           Seq(
-            WriteDataPacket(0x0_dead, false),
-            WriteDataPacket(0x1_dead, false),
-            WriteDataPacket(0x2_dead, false),
-            WriteDataPacket(0x3_dead, false),
-            WriteDataPacket(0x4_dead, false),
-            WriteDataPacket(0x5_dead, false),
-            WriteDataPacket(0x6_dead, false),
-            WriteDataPacket(0x7_dead, true)
+            WriteDataPacket(0x0_dead, 0xf, false),
+            WriteDataPacket(0x1_dead, 0xf, false),
+            WriteDataPacket(0x2_dead, 0xf, false),
+            WriteDataPacket(0x3_dead, 0xf, false),
+            WriteDataPacket(0x4_dead, 0xf, false),
+            WriteDataPacket(0x5_dead, 0xf, false),
+            WriteDataPacket(0x6_dead, 0xf, false),
+            WriteDataPacket(0x7_dead, 0xf, true)
           )
         )
 
         s_axi(0).sendWriteDataBurst(
           Seq(
-            WriteDataPacket(0x0_beef, false),
-            WriteDataPacket(0x1_beef, true)
+            WriteDataPacket(0x0_beef, 0xf, false),
+            WriteDataPacket(0x1_beef, 0xf, true)
           )
         )
       }.fork {

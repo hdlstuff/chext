@@ -53,10 +53,10 @@ class Axi4FullToReadWriteBridgeSpec extends chext.test.FreeSpec with chext.test.
       fork {
         s_axi.sendWriteAddress(AddressPacket(8, 0x0000, 3, 2, 1))
       }.fork {
-        s_axi.sendWriteData(0x0ded_beef)
-        s_axi.sendWriteData(0x1ded_beef)
-        s_axi.sendWriteData(0x2ded_beef)
-        s_axi.sendWriteData(0x3ded_beef)
+        s_axi.sendWriteData(WriteDataPacket(0x0ded_beef, 0xf, false))
+        s_axi.sendWriteData(WriteDataPacket(0x1ded_beef, 0xf, false))
+        s_axi.sendWriteData(WriteDataPacket(0x2ded_beef, 0xf, false))
+        s_axi.sendWriteData(WriteDataPacket(0x3ded_beef, 0xf, true))
       }.fork {
         println(s_axi.receiveWriteResponse())
 
