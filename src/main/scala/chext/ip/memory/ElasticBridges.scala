@@ -39,6 +39,9 @@ class ReadToRawBridge(val cfg: MemConfig) extends Module {
   raw.dIn := DontCare
   raw.wstrb := 0.U
 
+  // TODO: you should improve the rdReq ready logic
+  //  rdReq.ready := ctr.notFull
+
   rdReq.nodeq()
   rdResp.noenq()
 
@@ -120,6 +123,9 @@ class ReadWriteToRawBridge(val cfg: MemConfig) extends Module {
   private val ctrRead = Module(new chext.util.Counter(cfg.numOutstandingRead + 1))
   ctrRead.noInc()
   ctrRead.noDec()
+
+  // TODO: you should improve the rdReq ready logic
+  //  rdReq.ready := ctr.notFull
 
   rdReq.nodeq()
   rdResp.noenq()
