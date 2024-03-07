@@ -128,7 +128,7 @@ trait PacketUtils {
         gen.Lit(
           _.data -> tt.data.U,
           _.last -> tt.last.B,
-          _.strb -> 0xf.U // TODO: make this one data dependent
+          _.strb -> tt.strb.U
         )
 
     }
