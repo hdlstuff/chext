@@ -124,13 +124,13 @@ private class ReadWriteArbiter(maxCount: Int) extends Module {
   })
 
   val stRead = 0
-  val stWrite = 0
+  val stWrite = 1
 
   val rdReq = io.rdReq
   val wrReq = io.wrReq
   val chooseRd = io.chooseRd
 
-  private val state = RegInit(0.U(1.W))
+  private val state = RegInit(stRead.U(1.W))
   private val count = RegInit(0.U(log2Up(maxCount).W))
 
   io.chooseRd := state === stRead.U
@@ -178,7 +178,6 @@ class ReadWriteToRawBridge(val cfg: MemConfig, val arbiterMaxCount: Int = 8) ext
   ctrRead.noInc()
   ctrRead.noDec()
 
-  rdReq.nodeq()
   rdResp.noenq()
 
   private val ctrWrite = Module(new chext.util.Counter(cfg.numOutstandingWrite + 1))
@@ -195,7 +194,6 @@ class ReadWriteToRawBridge(val cfg: MemConfig, val arbiterMaxCount: Int = 8) ext
   raw.dIn := DontCare
   raw.wstrb := 0.U
 
-  wrReq.nodeq()
   wrResp.noenq()
 
   prefix("arbiter") {
@@ -209,7 +207,9 @@ class ReadWriteToRawBridge(val cfg: MemConfig, val arbiterMaxCount: Int = 8) ext
 
     when(rdReq.fire) {
       raw.addr := rdReq.bits
-    }.elsewhen(wrReq.fire) {
+    }
+
+    when(wrReq.fire) {
       raw.addr := wrReq.bits.addr
       raw.dIn := wrReq.bits.data
       raw.wstrb := wrReq.bits.strb

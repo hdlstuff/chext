@@ -38,7 +38,6 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
               stepRandom(16)
             }
           }
-
         }.fork {
           data.foreach { (x) => dut.write.receiveResp() }
         }.join()
