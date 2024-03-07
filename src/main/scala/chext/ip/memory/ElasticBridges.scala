@@ -109,7 +109,61 @@ class WriteToRawBridge(val cfg: MemConfig) extends Module {
   }
 }
 
-class ReadWriteToRawBridge(val cfg: MemConfig) extends Module {
+/** @param maxCount
+  *   Determines when the arbiter decision changes if there is a long burst of reads/writes. Should
+  *   be at least 1.
+  */
+private class ReadWriteArbiter(maxCount: Int) extends Module {
+  require(maxCount > 0)
+
+  val io = IO(new Bundle {
+    val rdReq = Input(Bool())
+    val wrReq = Input(Bool())
+
+    val chooseRd = Output(Bool())
+  })
+
+  val stRead = 0
+  val stWrite = 0
+
+  val rdReq = io.rdReq
+  val wrReq = io.wrReq
+  val chooseRd = io.chooseRd
+
+  private val state = RegInit(0.U(1.W))
+  private val count = RegInit(0.U(log2Up(maxCount).W))
+
+  io.chooseRd := state === stRead.U
+
+  private def switchTo(nextState: Int): Unit = {
+    count := 0.U
+    state := nextState.U
+  }
+
+  when(state === stRead.U) {
+    when(!rdReq) {
+      switchTo(stWrite)
+    }.otherwise {
+      when(count === (maxCount - 1).U) {
+        switchTo(stWrite)
+      }.otherwise {
+        count := count + 1.U
+      }
+    }
+  }.otherwise {
+    when(!wrReq) {
+      switchTo(stRead)
+    }.otherwise {
+      when(count === (maxCount - 1).U) {
+        switchTo(stRead)
+      }.otherwise {
+        count := count + 1.U
+      }
+    }
+  }
+}
+
+class ReadWriteToRawBridge(val cfg: MemConfig, val arbiterMaxCount: Int = 8) extends Module {
   val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
   val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
   val raw = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData, true, true)))
@@ -123,9 +177,6 @@ class ReadWriteToRawBridge(val cfg: MemConfig) extends Module {
   private val ctrRead = Module(new chext.util.Counter(cfg.numOutstandingRead + 1))
   ctrRead.noInc()
   ctrRead.noDec()
-
-  // TODO: you should improve the rdReq ready logic
-  //  rdReq.ready := ctr.notFull
 
   rdReq.nodeq()
   rdResp.noenq()
@@ -148,24 +199,20 @@ class ReadWriteToRawBridge(val cfg: MemConfig) extends Module {
   wrResp.noenq()
 
   prefix("arbiter") {
-    val canAcceptRead = ctrRead.notFull && rdReq.valid
-    val canAcceptWrite = ctrWrite.notFull && wrReq.valid
+    val arbiter = Module(new ReadWriteArbiter(arbiterMaxCount))
 
-    val chooser =
-      chext.elastic.Chooser.rr(VecInit(canAcceptRead, canAcceptWrite))
+    arbiter.wrReq := wrReq.valid
+    arbiter.rdReq := rdReq.valid
 
-    when(canAcceptRead && chooser.choice === 0.U) {
+    rdReq.ready := arbiter.chooseRd && ctrRead.notFull
+    wrReq.ready := !arbiter.chooseRd && ctrWrite.notFull
+
+    when(rdReq.fire) {
       raw.addr := rdReq.bits
-
-      rdReq.deq()
-      chooser.updateState
-    }.elsewhen(canAcceptWrite && chooser.choice === 1.U) {
+    }.elsewhen(wrReq.fire) {
       raw.addr := wrReq.bits.addr
       raw.dIn := wrReq.bits.data
       raw.wstrb := wrReq.bits.strb
-
-      wrReq.deq()
-      chooser.updateState
     }
   }
 
