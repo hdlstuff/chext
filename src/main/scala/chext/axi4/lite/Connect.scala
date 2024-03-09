@@ -4,7 +4,9 @@ import chext.elastic.ConnectOp._
 
 private object connect {
   def apply(master: Interface, slave: Interface): Unit = {
-    assert(master.cfg == slave.cfg)
+    val masterCfg = master.cfg.copy(wAddr = 0)
+    val slaveCfg = slave.cfg.copy(wAddr = 0)
+    assert(masterCfg == slaveCfg)
 
     if (master.cfg.read) {
       master.ar :=> slave.ar

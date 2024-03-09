@@ -8,7 +8,10 @@ private object connect {
       master.cfg.wId <= slave.cfg.wId,
       "The master interface should have a narrow ID field than the slave interface."
     )
-    assert(master.cfg.copy(wId = 0) == slave.cfg.copy(wId = 0), "Configurations do not match.")
+
+    val masterCfg = master.cfg.copy(wId = 0, wAddr = 0)
+    val slaveCfg = slave.cfg.copy(wId = 0, wAddr = 0)
+    assert(masterCfg == slaveCfg, "Configurations do not match.")
 
     if (master.cfg.read) {
       master.ar :=> slave.ar
