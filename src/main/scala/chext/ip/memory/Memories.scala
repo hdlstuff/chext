@@ -9,7 +9,8 @@ class MemConfig(
     override val latencyRead: Int,
     override val latencyWrite: Int,
     val numOutstandingRead: Int,
-    val numOutstandingWrite: Int
+    val numOutstandingWrite: Int,
+    val arbiterFn: () => ReadWriteArbiter = () => new BasicReadWriteArbiter(8)
 ) extends RawMemConfig(wAddr, wData, latencyRead, latencyWrite) {
   assert(numOutstandingRead >= 1)
   assert(numOutstandingWrite >= 1)

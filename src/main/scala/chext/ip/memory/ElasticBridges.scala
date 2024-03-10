@@ -109,31 +109,30 @@ class WriteToRawBridge(val cfg: MemConfig) extends Module {
   }
 }
 
+trait ReadWriteArbiter extends Module {
+  def wrReq: Bool
+  def rdReq: Bool
+  def chooseRd: Bool
+}
+
 /** @param maxCount
   *   Determines when the arbiter decision changes if there is a long burst of reads/writes. Should
   *   be at least 1.
   */
-private class ReadWriteArbiter(maxCount: Int) extends Module {
+private class BasicReadWriteArbiter(maxCount: Int) extends Module with ReadWriteArbiter {
   require(maxCount > 0)
-
-  val io = IO(new Bundle {
-    val rdReq = Input(Bool())
-    val wrReq = Input(Bool())
-
-    val chooseRd = Output(Bool())
-  })
 
   val stRead = 0
   val stWrite = 1
 
-  val rdReq = io.rdReq
-  val wrReq = io.wrReq
-  val chooseRd = io.chooseRd
+  val rdReq = IO(Input(Bool()))
+  val wrReq = IO(Input(Bool()))
+  val chooseRd = IO(Output(Bool()))
 
   private val state = RegInit(stRead.U(1.W))
   private val count = RegInit(0.U(log2Up(maxCount).W))
 
-  io.chooseRd := state === stRead.U
+  chooseRd := state === stRead.U
 
   private def switchTo(nextState: Int): Unit = {
     count := 0.U
@@ -163,7 +162,7 @@ private class ReadWriteArbiter(maxCount: Int) extends Module {
   }
 }
 
-class ReadWriteToRawBridge(val cfg: MemConfig, val arbiterMaxCount: Int = 8) extends Module {
+class ReadWriteToRawBridge(val cfg: MemConfig) extends Module {
   val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
   val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
   val raw = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData, true, true)))
@@ -197,7 +196,7 @@ class ReadWriteToRawBridge(val cfg: MemConfig, val arbiterMaxCount: Int = 8) ext
   wrResp.noenq()
 
   prefix("arbiter") {
-    val arbiter = Module(new ReadWriteArbiter(arbiterMaxCount))
+    val arbiter = Module(cfg.arbiterFn())
 
     arbiter.wrReq := wrReq.valid
     arbiter.rdReq := rdReq.valid
