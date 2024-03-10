@@ -23,7 +23,8 @@ object MemConfig {
       latencyRead: Int = 2,
       latencyWrite: Int = 1,
       numOutstandingRead: Int = 1,
-      numOutstandingWrite: Int = 1
+      numOutstandingWrite: Int = 1,
+      arbiterFn: () => ReadWriteArbiter = () => new BasicReadWriteArbiter(8)
   ) =
     new MemConfig(
       wAddr = wAddr,
@@ -31,7 +32,8 @@ object MemConfig {
       latencyRead = latencyRead,
       latencyWrite = latencyWrite,
       numOutstandingRead = numOutstandingRead,
-      numOutstandingWrite = numOutstandingWrite
+      numOutstandingWrite = numOutstandingWrite,
+      arbiterFn = arbiterFn
     )
 }
 
