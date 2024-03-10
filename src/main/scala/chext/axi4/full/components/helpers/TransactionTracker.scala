@@ -13,9 +13,9 @@ class TransactionTracker(
     val wPort: Int,
     val wOutstanding: Int
 ) extends Module {
-  require(wIdTracked > 0)
-  require(wPort > 0)
-  require(wOutstanding > 0)
+  require(wIdTracked >= 0)
+  require(wPort >= 0)
+  require(wOutstanding >= 0)
 
   class IdCountPort extends Bundle {
     val id = Input(UInt(wIdTracked.W))
