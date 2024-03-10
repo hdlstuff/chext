@@ -34,7 +34,10 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
 
     val fork1 = new Fork(s_axi.ar) {
       protected def onFork: Unit = {
-        val replicate1 = new Replicate(fork(), idLast) {
+        // TODO: determine the size of the replicate in a better way
+        // 4 is good enough for full throughput
+
+        val replicate1 = new Replicate(elastic.SourceBuffer(fork(), 4), idLast) {
           protected def onReplicate: Unit = {
             len := in.len + 1.U
             out.id := in.id
@@ -79,7 +82,8 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
 
     val fork1 = new Fork(s_axi.aw) {
       protected def onFork: Unit = {
-        val replicate1 = new Replicate(fork(), idLast) {
+        // TODO: determine the size of the replicate in a better way
+        val replicate1 = new Replicate(elastic.SourceBuffer(fork(), 4), idLast) {
           protected def onReplicate: Unit = {
             len := in.len + 1.U
             out.id := in.id
