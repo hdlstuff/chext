@@ -11,18 +11,14 @@ object connect {
   import axi4.lite.ConnectOp._
 
   def apply(master: axi4.RawInterface, slave: axi4.full.Interface): Unit = {
-    assert(master.cfg == slave.cfg)
     master.asFull :=> slave
   }
 
   def apply(master: axi4.RawInterface, slave: axi4.lite.Interface): Unit = {
-    assert(master.cfg == slave.cfg)
     master.asLite :=> slave
   }
 
   def apply(master: axi4.RawInterface, slave: axi4.RawInterface): Unit = {
-    assert(master.cfg == slave.cfg)
-
     if (master.cfg.lite)
       master.asLite :=> slave.asLite
     else
