@@ -6,10 +6,10 @@ import chisel3.util._
 case class RawMemConfig(
     val wAddr: Int,
     val wData: Int,
-    val latencyRead: Int,
+    val latencyRead: Int = 1,
 
     /** @note Not used in case of ROM. */
-    val latencyWrite: Int
+    val latencyWrite: Int = 1
 
     /** @note
       *   TODO: To support ROMs, extend this structure with an initial content field. Maybe, it
