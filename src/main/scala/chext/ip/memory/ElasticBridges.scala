@@ -5,9 +5,10 @@ import chisel3.util._
 import chisel3.experimental.prefix
 import chext.elastic.SinkBuffer
 
-class ReadToRawBridge(val cfg: MemConfig) extends Module {
-  val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
-  val raw = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData, true, false)))
+class ReadToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = PortConfig())
+    extends Module {
+  val read = IO(new ReadInterface(rawMemCfg.wAddr, rawMemCfg.wData))
+  val raw = IO(Flipped(new RawInterface(rawMemCfg.wAddr, rawMemCfg.wData, true, false)))
 
   private val rdReq = read.req
 
@@ -16,14 +17,14 @@ class ReadToRawBridge(val cfg: MemConfig) extends Module {
   // loop down the line.
   private val rdResp = SinkBuffer(read.resp)
 
-  private val ctr = Module(new chext.util.Counter(cfg.numOutstandingRead + 1))
+  private val ctr = Module(new chext.util.Counter(portCfg.numOutstandingRead + 1))
   ctr.noInc()
   ctr.noDec()
 
   private val dataQueue = Module(
     new Queue(
       rdResp.bits.cloneType,
-      cfg.numOutstandingRead,
+      portCfg.numOutstandingRead,
       flow = true,
       pipe = true
     )
@@ -54,7 +55,7 @@ class ReadToRawBridge(val cfg: MemConfig) extends Module {
     ctr.inc()
   }
 
-  when(ShiftRegister(rdReq.fire, cfg.latencyRead)) {
+  when(ShiftRegister(rdReq.fire, rawMemCfg.latencyRead)) {
     dataQueueEnq.enq(raw.dOut)
   }
 
@@ -64,18 +65,19 @@ class ReadToRawBridge(val cfg: MemConfig) extends Module {
   }
 }
 
-class WriteToRawBridge(val cfg: MemConfig) extends Module {
-  val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
-  val raw = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData, true, false)))
+class WriteToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = PortConfig())
+    extends Module {
+  val write = IO(new WriteInterface(rawMemCfg.wAddr, rawMemCfg.wData))
+  val raw = IO(Flipped(new RawInterface(rawMemCfg.wAddr, rawMemCfg.wData, true, false)))
 
   private val wrReq = write.req
   private val wrResp = SinkBuffer(write.resp)
 
-  private val ctr = Module(new chext.util.Counter(cfg.numOutstandingWrite + 1))
+  private val ctr = Module(new chext.util.Counter(portCfg.numOutstandingWrite + 1))
   ctr.noInc()
   ctr.noDec()
 
-  private val ctrResp = Module(new chext.util.Counter(cfg.numOutstandingWrite + 1))
+  private val ctrResp = Module(new chext.util.Counter(portCfg.numOutstandingWrite + 1))
   ctrResp.noInc()
   ctrResp.noDec()
 
@@ -98,7 +100,7 @@ class WriteToRawBridge(val cfg: MemConfig) extends Module {
     ctr.inc()
   }
 
-  when(ShiftRegister(wrReq.fire, cfg.latencyWrite)) {
+  when(ShiftRegister(wrReq.fire, rawMemCfg.latencyWrite)) {
     ctrResp.inc()
   }
 
@@ -110,12 +112,12 @@ class WriteToRawBridge(val cfg: MemConfig) extends Module {
 }
 
 class ReadWriteToRawBridge(
-    val cfg: MemConfig,
-    val arbiterFn: ReadWriteArbiter.Func
+    val rawMemCfg: RawMemConfig,
+    val portCfg: PortConfig
 ) extends Module {
-  val read = IO(new ReadInterface(cfg.wAddr, cfg.wData))
-  val write = IO(new WriteInterface(cfg.wAddr, cfg.wData))
-  val raw = IO(Flipped(new RawInterface(cfg.wAddr, cfg.wData, true, true)))
+  val read = IO(new ReadInterface(rawMemCfg.wAddr, rawMemCfg.wData))
+  val write = IO(new WriteInterface(rawMemCfg.wAddr, rawMemCfg.wData))
+  val raw = IO(Flipped(new RawInterface(rawMemCfg.wAddr, rawMemCfg.wData, true, true)))
 
   private val rdReq = read.req
   private val rdResp = SinkBuffer(read.resp)
@@ -123,18 +125,18 @@ class ReadWriteToRawBridge(
   private val wrReq = write.req
   private val wrResp = SinkBuffer(write.resp)
 
-  private val ctrRead = Module(new chext.util.Counter(cfg.numOutstandingRead + 1))
+  private val ctrRead = Module(new chext.util.Counter(portCfg.numOutstandingRead + 1))
   ctrRead.noInc()
   ctrRead.noDec()
 
   rdResp.noenq()
 
-  private val ctrWrite = Module(new chext.util.Counter(cfg.numOutstandingWrite + 1))
+  private val ctrWrite = Module(new chext.util.Counter(portCfg.numOutstandingWrite + 1))
   ctrWrite.noInc()
   ctrWrite.noDec()
 
   private val ctrWriteResp = Module(
-    new chext.util.Counter(cfg.numOutstandingWrite + 1)
+    new chext.util.Counter(portCfg.numOutstandingWrite + 1)
   )
   ctrWriteResp.noInc()
   ctrWriteResp.noDec()
@@ -146,7 +148,7 @@ class ReadWriteToRawBridge(
   wrResp.noenq()
 
   prefix("arbiter") {
-    val arbiter = Module(arbiterFn())
+    val arbiter = Module(portCfg.arbiterFunc())
 
     arbiter.wrReq := wrReq.valid
     arbiter.rdReq := rdReq.valid
@@ -169,7 +171,7 @@ class ReadWriteToRawBridge(
     val dataQueue = Module(
       new Queue(
         rdResp.bits.cloneType,
-        cfg.numOutstandingRead,
+        portCfg.numOutstandingRead,
         flow = true,
         pipe = true
       )
@@ -185,7 +187,7 @@ class ReadWriteToRawBridge(
       ctrRead.inc()
     }
 
-    when(ShiftRegister(rdReq.fire, cfg.latencyRead)) {
+    when(ShiftRegister(rdReq.fire, rawMemCfg.latencyRead)) {
       dataQueueEnq.enq(raw.dOut)
     }
 
@@ -200,7 +202,7 @@ class ReadWriteToRawBridge(
       ctrWrite.inc()
     }
 
-    when(ShiftRegister(wrReq.fire, cfg.latencyWrite)) {
+    when(ShiftRegister(wrReq.fire, rawMemCfg.latencyWrite)) {
       ctrWriteResp.inc()
     }
     when(wrResp.ready && ctrWriteResp.notZero) {

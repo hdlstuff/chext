@@ -37,15 +37,16 @@ class IdSerializerZeroDut extends Module {
   )
   idSerializer.m_axi :=> memBridge.s_axi
 
-  private val memCfg = chext.ip.memory.MemConfig(
+  private val rawMemCfg = chext.ip.memory.RawMemConfig(
     wAddr = memBridge.cfg.wAddr,
     wData = memBridge.cfg.wData,
     latencyRead = 2,
-    latencyWrite = 1,
-    numOutstandingRead = 4,
-    numOutstandingWrite = 4
+    latencyWrite = 1
   )
-  private val mem = Module(new chext.ip.memory.SimpleDualPortRAM(memCfg))
+
+  private val portCfg = chext.ip.memory.PortConfig(numOutstandingRead = 4, numOutstandingWrite = 4)
+
+  private val mem = Module(new chext.ip.memory.SimpleDualPortRAM(rawMemCfg, portCfg))
   memBridge.read <> mem.read
   memBridge.write <> mem.write
 
@@ -141,15 +142,16 @@ class IdSerializerDut extends Module {
   )
   idSerializer.m_axi :=> memBridge.s_axi
 
-  private val memCfg = chext.ip.memory.MemConfig(
+  private val rawMemCfg = chext.ip.memory.RawMemConfig(
     wAddr = memBridge.cfg.wAddr,
     wData = memBridge.cfg.wData,
     latencyRead = 2,
-    latencyWrite = 1,
-    numOutstandingRead = 4,
-    numOutstandingWrite = 4
+    latencyWrite = 1
   )
-  private val mem = Module(new chext.ip.memory.SimpleDualPortRAM(memCfg))
+
+  private val portCfg = chext.ip.memory.PortConfig(numOutstandingRead = 4, numOutstandingWrite = 4)
+
+  private val mem = Module(new chext.ip.memory.SimpleDualPortRAM(rawMemCfg, portCfg))
   memBridge.read <> mem.read
   memBridge.write <> mem.write
 

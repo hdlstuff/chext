@@ -3,7 +3,7 @@ package chext.ip.memory
 import chisel3._
 import chisel3.util._
 
-class RawMemConfig(
+case class RawMemConfig(
     val wAddr: Int,
     val wData: Int,
     val latencyRead: Int,
@@ -20,16 +20,6 @@ class RawMemConfig(
   require(latencyWrite >= 0)
 
   require(wData >= 8 && wData % 8 == 0)
-}
-
-object RawMemConfig {
-  def apply(wAddr: Int = 6, wData: Int = 32, latencyRead: Int = 2, latencyWrite: Int = 1) =
-    new RawMemConfig(
-      wAddr = wAddr,
-      wData = wData,
-      latencyRead = latencyRead,
-      latencyWrite = latencyWrite
-    )
 }
 
 trait RawMem extends Module {

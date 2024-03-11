@@ -15,11 +15,15 @@ class Axi4FullTestModule extends Module {
   val wData = 32
 
   private val axiCfg = axi4.Config(wId = 4, wAddr = wAddr, wData = wData)
-  private val memCfg = MemConfig(
+
+  private val rawMemCfg = RawMemConfig(
     wAddr = wAddr,
     wData = wData,
     latencyRead = 4,
-    latencyWrite = 2,
+    latencyWrite = 2
+  )
+
+  private val portCfg = PortConfig(
     numOutstandingRead = 4,
     numOutstandingWrite = 4
   )
@@ -27,7 +31,7 @@ class Axi4FullTestModule extends Module {
   val s_axi = IO(axi4.full.Slave(axiCfg))
   private val s_axi_ = axi4.full.SlaveBuffer(s_axi, axi4.BufferConfig.all(1))
 
-  private val memory = Module(new SinglePortRAM(memCfg))
+  private val memory = Module(new SinglePortRAM(rawMemCfg, portCfg))
   private val axi4fullBridge = Module(new Axi4FullToReadWriteBridge(axiCfg))
 
   s_axi_ :=> axi4fullBridge.s_axi
@@ -76,11 +80,15 @@ object XilinxEmitter extends App {
     override val desiredName = f"Axi4FullBram_${wAddr}_${wData}"
 
     private val axiCfg = axi4.Config(wId = 4, wAddr = wAddr, wData = wData)
-    private val memCfg = MemConfig(
+
+    private val rawMemCfg = RawMemConfig(
       wAddr = wAddr,
       wData = wData,
       latencyRead = 4,
-      latencyWrite = 1,
+      latencyWrite = 2
+    )
+
+    private val portCfg = PortConfig(
       numOutstandingRead = 4,
       numOutstandingWrite = 4
     )
@@ -88,7 +96,7 @@ object XilinxEmitter extends App {
     val s_axi = IO(axi4.Slave(axiCfg))
     private val s_axi_ = axi4.full.SlaveBuffer(s_axi.asFull, axi4.BufferConfig.all(1))
 
-    private val memory = Module(new SinglePortRAM(memCfg))
+    private val memory = Module(new SinglePortRAM(rawMemCfg, portCfg))
     private val axi4fullBridge = Module(new Axi4FullToReadWriteBridge(axiCfg))
 
     s_axi_ :=> axi4fullBridge.s_axi
