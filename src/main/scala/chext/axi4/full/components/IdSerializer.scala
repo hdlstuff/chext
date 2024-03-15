@@ -56,7 +56,7 @@ class IdSerializerZero(
       protected def onFork: Unit = {
         new Replicate(fork(in), idQueue.io.enq) {
           protected def onReplicate: Unit = {
-            len := in.len + 1.U
+            len := in.len +& 1.U
             out := in.id
           }
         }
