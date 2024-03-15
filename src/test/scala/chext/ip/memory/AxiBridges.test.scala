@@ -44,7 +44,7 @@ class Axi4FullTestModule extends Module {
 class Axi4FullToReadWriteBridgeSpec extends chext.test.FreeSpec with chext.test.TestMixin {
   Target.setCurrent(chisel.Target)
 
-  useVerilator()
+  // useVerilator()
   enableVcd()
 
   "chext.ip.memory.Axi4FullToReadWriteBridge.Basic1" in test(new Axi4FullTestModule) { dut =>

@@ -17,7 +17,7 @@ private class IdLastBundle(wId: Int) extends Bundle {
   val last = Bool()
 }
 
-class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
+class Axi4FullToReadWriteBridge(val cfg: axi4.Config, val idBufferLength: Int = 32) extends Module {
   private val addrShift = log2Ceil(cfg.wData >> 3)
   private val wWordAddr = cfg.wAddr - addrShift
   private val wData = cfg.wData
@@ -37,7 +37,7 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
         // TODO: determine the size of the replicate in a better way
         // 4 is good enough for full throughput
 
-        val replicate1 = new Replicate(elastic.SourceBuffer(fork(), 4), idLast) {
+        val replicate1 = new Replicate(fork(), elastic.SinkBuffer(idLast, idBufferLength)) {
           protected def onReplicate: Unit = {
             len := in.len + 1.U
             out.id := in.id
@@ -83,7 +83,7 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
     val fork1 = new Fork(s_axi.aw) {
       protected def onFork: Unit = {
         // TODO: determine the size of the replicate in a better way
-        val replicate1 = new Replicate(elastic.SourceBuffer(fork(), 4), idLast) {
+        val replicate1 = new Replicate(fork(), elastic.SinkBuffer(idLast, idBufferLength)) {
           protected def onReplicate: Unit = {
             len := in.len + 1.U
             out.id := in.id
