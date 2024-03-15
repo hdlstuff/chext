@@ -148,7 +148,8 @@ class TrueDualPortRawMem(
     readLatencyA = cfg.latencyRead,
     readLatencyB = cfg.latencyRead,
     writeDataWidthA = cfg.wData,
-    writeDataWidthB = cfg.wData
+    writeDataWidthB = cfg.wData,
+    useEmbeddedConstraint = false
   )
 
   private val xpm_mem = Module(new xpm_memory_tdpram(xpm_mem_cfg))
