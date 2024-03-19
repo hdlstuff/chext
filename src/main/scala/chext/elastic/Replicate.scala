@@ -24,7 +24,7 @@ abstract class Replicate[SourceT <: Data, SinkT <: Data](
   protected val out = sinkBuffered_.bits
   protected val len = WireInit(1.U(wIdx.W))
   protected val idx = Wire(UInt(wIdx.W))
-  protected val last = (idx_ === (len - 1.U))
+  protected val last = (idx === (len - 1.U))
 
   protected def onReplicate: Unit
 
@@ -58,5 +58,9 @@ abstract class Replicate[SourceT <: Data, SinkT <: Data](
     }
   }
 
-  idx := idx_
+  when (!generating_) {
+    idx := 0.U
+  }.otherwise {
+    idx := idx_
+  }
 }
