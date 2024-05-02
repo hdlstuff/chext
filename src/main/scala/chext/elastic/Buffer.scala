@@ -50,7 +50,7 @@ object UnsafeCasts {
 
 object SourceBuffer {
   def apply[T <: Data](source: DecoupledIO[T]): DecoupledIO[T] = {
-    decoupled(source, 1)
+    decoupled(source, 2)
   }
 
   def apply[T <: Data](source: DecoupledIO[T], n: Int): DecoupledIO[T] = {
@@ -58,7 +58,7 @@ object SourceBuffer {
   }
 
   def apply[T <: Data](source: IrrevocableIO[T]): IrrevocableIO[T] = {
-    irrevocable(source, 1)
+    irrevocable(source, 2)
   }
 
   def apply[T <: Data](source: IrrevocableIO[T], n: Int): IrrevocableIO[T] = {
@@ -67,14 +67,14 @@ object SourceBuffer {
 
   def decoupled[T <: Data](
       source: ReadyValidIO[T],
-      n: Int = 1
+      n: Int = 2
   ): DecoupledIO[T] = {
     import UnsafeCasts._
     if (n == 0)
       source.asSourceDecoupled
     else {
       val sourceBuffer = Module(
-        new Queue(chiselTypeOf(source.bits), n, pipe = true)
+        new Queue(chiselTypeOf(source.bits), n)
       )
 
       source :=> sourceBuffer.io.enq
@@ -84,14 +84,14 @@ object SourceBuffer {
 
   def irrevocable[T <: Data](
       source: ReadyValidIO[T],
-      n: Int = 1
+      n: Int = 2
   ): IrrevocableIO[T] = {
     import UnsafeCasts._
     if (n == 0)
       source.asSourceIrrevocable
     else {
       val sourceBuffer = Module(
-        new Queue(chiselTypeOf(source.bits), n, pipe = true)
+        new Queue(chiselTypeOf(source.bits), n)
       )
       val result = Wire(new IrrevocableIO(chiselTypeOf(source.bits)))
 
@@ -105,7 +105,7 @@ object SourceBuffer {
 
 object SinkBuffer {
   def apply[T <: Data](sink: DecoupledIO[T]): DecoupledIO[T] = {
-    decoupled(sink, 1)
+    decoupled(sink, 2)
   }
 
   def apply[T <: Data](sink: DecoupledIO[T], n: Int): DecoupledIO[T] = {
@@ -113,7 +113,7 @@ object SinkBuffer {
   }
 
   def apply[T <: Data](sink: IrrevocableIO[T]): IrrevocableIO[T] = {
-    irrevocable(sink, 1)
+    irrevocable(sink, 2)
   }
 
   def apply[T <: Data](sink: IrrevocableIO[T], n: Int): IrrevocableIO[T] = {
@@ -122,14 +122,14 @@ object SinkBuffer {
 
   def decoupled[T <: Data](
       sink: ReadyValidIO[T],
-      n: Int = 1
+      n: Int = 2
   ): DecoupledIO[T] = {
     import UnsafeCasts._
     if (n == 0)
       sink.asSinkDecoupled
     else {
       val sinkBuffer = Module(
-        new Queue(chiselTypeOf(sink.bits), n, pipe = true)
+        new Queue(chiselTypeOf(sink.bits), n)
       )
       
       sinkBuffer.io.deq :=> sink
@@ -139,14 +139,14 @@ object SinkBuffer {
 
   def irrevocable[T <: Data](
       sink: ReadyValidIO[T],
-      n: Int = 1
+      n: Int = 2
   ): IrrevocableIO[T] = {
     import UnsafeCasts._
     if (n == 0)
       sink.asSinkIrrevocable
     else {
       val sinkBuffer = Module(
-        new Queue(chiselTypeOf(sink.bits), n, pipe = true)
+        new Queue(chiselTypeOf(sink.bits), n)
       )
       val result = Wire(new IrrevocableIO(chiselTypeOf(sink.bits)))
 
