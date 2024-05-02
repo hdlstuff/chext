@@ -24,7 +24,7 @@ case class DemuxConfig(
     val numOutstandingRead: Int = 16,
     val numOutstandingWrite: Int = 16,
     val capacityPortQueueW: Int = 8,
-    val slaveBuffers: BufferConfig = BufferConfig.all(1),
+    val slaveBuffers: BufferConfig = BufferConfig.all(2),
     val masterBuffers: BufferConfig = BufferConfig.all(0),
     val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
 ) {

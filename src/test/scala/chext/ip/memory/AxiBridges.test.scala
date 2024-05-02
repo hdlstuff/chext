@@ -29,7 +29,7 @@ class Axi4FullTestModule extends Module {
   )
 
   val s_axi = IO(axi4.full.Slave(axiCfg))
-  private val s_axi_ = axi4.full.SlaveBuffer(s_axi, axi4.BufferConfig.all(1))
+  private val s_axi_ = axi4.full.SlaveBuffer(s_axi, axi4.BufferConfig.all(2))
 
   private val memory = Module(new SinglePortRAM(rawMemCfg, portCfg))
   private val axi4fullBridge = Module(new Axi4FullToReadWriteBridge(axiCfg))
@@ -94,7 +94,7 @@ object XilinxEmitter extends App {
     )
 
     val s_axi = IO(axi4.Slave(axiCfg))
-    private val s_axi_ = axi4.full.SlaveBuffer(s_axi.asFull, axi4.BufferConfig.all(1))
+    private val s_axi_ = axi4.full.SlaveBuffer(s_axi.asFull, axi4.BufferConfig.all(2))
 
     private val memory = Module(new SinglePortRAM(rawMemCfg, portCfg))
     private val axi4fullBridge = Module(new Axi4FullToReadWriteBridge(axiCfg))

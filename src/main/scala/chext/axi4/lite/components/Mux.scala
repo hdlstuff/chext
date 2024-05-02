@@ -17,7 +17,7 @@ case class MuxConfig(
     val capacityPortQueueW: Int = 8,
     val capacityPortQueueB: Int = 8,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
-    val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(1),
+    val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
     val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
 )
 

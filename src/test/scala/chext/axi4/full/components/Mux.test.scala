@@ -23,8 +23,8 @@ class MuxSpec extends chext.test.FreeSpec {
     ),
     numSlaves,
     MuxConfig(
-      slaveBuffers = axi4.BufferConfig.all(1),
-      masterBuffers = axi4.BufferConfig.all(1)
+      slaveBuffers = axi4.BufferConfig.all(2),
+      masterBuffers = axi4.BufferConfig.all(2)
     )
   )
 
