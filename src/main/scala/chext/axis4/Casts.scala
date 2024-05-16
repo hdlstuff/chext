@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental.dataview._
 
 object Casts {
-  implicit class viewInterfaceAs(x: Interface) {
+  implicit class viewAxisInterfaceAs(x: Interface) {
     import FullChannel._
     import BasicChannel._
 
