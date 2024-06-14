@@ -43,7 +43,7 @@ object buffer {
     if (master.cfg.read)
       insertBufferR(master, slave, cfg)
 
-    if (master.cfg.read)
+    if (master.cfg.write)
       insertBufferW(master, slave, cfg)
   }
 }
