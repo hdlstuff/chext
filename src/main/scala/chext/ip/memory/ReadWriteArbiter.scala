@@ -74,5 +74,5 @@ class WriteOnlyArbiter extends Module with ReadWriteArbiter {
   val wrReq = IO(Input(Bool()))
   val chooseRd = IO(Output(Bool()))
 
-  chooseRd := true.B
+  chooseRd := false.B
 }
