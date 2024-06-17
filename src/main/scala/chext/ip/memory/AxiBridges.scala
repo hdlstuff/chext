@@ -123,7 +123,7 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
       }
     }
 
-    val packet1 = new Arrival(idLastJoined, s_axi.b) {
+    val arrival1 = new Arrival(idLastJoined, s_axi.b) {
       protected def onArrival: Unit = {
         consume()
 
@@ -142,19 +142,49 @@ class Axi4FullToReadWriteBridge(val cfg: axi4.Config) extends Module {
 }
 
 class Axi4LiteToReadWriteBridge(cfg: axi4.Config) extends Module {
-  private val wAddr = cfg.wAddr >> (cfg.wStrobe)
+  private val addrShift = log2Ceil(cfg.wData >> 3)
+  private val wWordAddr = cfg.wAddr - addrShift
   private val wData = cfg.wData
 
   assert(cfg.read && cfg.write && cfg.lite)
 
-  val s_axi = IO(axi4.lite.Slave(cfg))
-  val read = IO(Flipped(new ReadInterface(wAddr, wData)))
-  val write = IO(Flipped(new WriteInterface(wAddr, wData)))
+  val s_axil = IO(axi4.lite.Slave(cfg))
+  val read = IO(Flipped(new ReadInterface(wWordAddr, wData)))
+  val write = IO(Flipped(new WriteInterface(wWordAddr, wData)))
 
-  private def implRead() = ???
+  private def implRead() = prefix("read") {
+    val transform1 = new Transform(s_axil.ar, read.req) {
+      protected def onTransform: Unit = {
+        out := in.addr >> addrShift
+      }
+    }
 
-  private def implWrite() = ???
-
+    val transform2 = new Transform(read.resp, s_axil.r) {
+      protected def onTransform: Unit = {
+        out.data := in
+        out.resp := axi4.ResponseFlag.OKAY
+      }
+    }
+  }
   implRead()
+
+  private def implWrite() = prefix("write") {
+    val join1 = new Join(write.req) {
+      protected def onJoin: Unit = {
+        val aw = join(s_axil.aw)
+        val w = join(s_axil.w)
+
+        out.addr := aw.addr >> addrShift
+        out.data := w.data
+        out.strb := w.strb
+      }
+    }
+
+    val transform1 = new Transform(write.resp, s_axil.b) {
+      protected def onTransform: Unit = {
+        out.resp := axi4.ResponseFlag.OKAY
+      }
+    }
+  }
   implWrite()
 }

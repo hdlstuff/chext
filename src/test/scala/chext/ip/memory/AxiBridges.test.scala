@@ -8,7 +8,6 @@ import chiseltest._
 import chext.axi4
 
 import axi4.Ops._
-import axi4.full.test.PacketUtils._
 
 class Axi4FullTestModule extends Module {
   val wAddr = 8
@@ -50,6 +49,7 @@ class Axi4FullToReadWriteBridgeSpec extends chext.test.FreeSpec with chext.test.
   "chext.ip.memory.Axi4FullToReadWriteBridge.Basic1" in test(new Axi4FullTestModule) { dut =>
     {
       import axi4.full.test._
+      import axi4.full.test.PacketUtils._
 
       val s_axi = dut.s_axi
       s_axi.initSlave()
@@ -70,6 +70,83 @@ class Axi4FullToReadWriteBridgeSpec extends chext.test.FreeSpec with chext.test.
         println(s_axi.receiveReadData())
         println(s_axi.receiveReadData())
         println(s_axi.receiveReadData())
+      }.join()
+    }
+  }
+}
+
+class Axi4LiteTestModule extends Module {
+  val wAddr = 8
+  val wData = 32
+
+  private val axiCfg = axi4.Config(wAddr = wAddr, wData = wData, lite = true)
+
+  private val rawMemCfg = RawMemConfig(
+    wAddr = wAddr,
+    wData = wData,
+    latencyRead = 4,
+    latencyWrite = 2
+  )
+
+  private val portCfg = PortConfig(
+    numOutstandingRead = 4,
+    numOutstandingWrite = 4
+  )
+
+  val s_axil = IO(axi4.lite.Slave(axiCfg))
+  private val s_axil_ = axi4.lite.SlaveBuffer(s_axil, axi4.BufferConfig.all(2))
+
+  private val memory = Module(new SinglePortRAM(rawMemCfg, portCfg))
+  private val axi4liteBridge = Module(new Axi4LiteToReadWriteBridge(axiCfg))
+
+  s_axil_ :=> axi4liteBridge.s_axil
+
+  // TODO: change <> with a better operator
+  axi4liteBridge.read <> memory.read
+  axi4liteBridge.write <> memory.write
+}
+
+class Axi4LiteToReadWriteBridgeSpec extends chext.test.FreeSpec with chext.test.TestMixin {
+  Target.setCurrent(chisel.Target)
+
+  // useVerilator()
+  enableVcd()
+
+  "chext.ip.memory.Axi4LiteToReadWriteBridge.Basic1" in test(new Axi4LiteTestModule) { dut =>
+    {
+      import axi4.lite.test._
+      import axi4.lite.test.PacketUtils._
+
+      val s_axil = dut.s_axil
+      s_axil.initSlave()
+
+      fork {
+        s_axil.sendWriteAddress(AddressPacket(0x0000))
+        s_axil.sendWriteAddress(AddressPacket(0x0004))
+        s_axil.sendWriteAddress(AddressPacket(0x0008))
+        s_axil.sendWriteAddress(AddressPacket(0x000c))
+      }.fork {
+        s_axil.sendWriteData(WriteDataPacket(0x0ded_beef))
+        s_axil.sendWriteData(WriteDataPacket(0x1ded_beef))
+        s_axil.sendWriteData(WriteDataPacket(0x2ded_beef))
+        s_axil.sendWriteData(WriteDataPacket(0x3ded_beef))
+      }.fork {
+        println(s_axil.receiveWriteResponse())
+        println(s_axil.receiveWriteResponse())
+        println(s_axil.receiveWriteResponse())
+        println(s_axil.receiveWriteResponse())
+
+        fork {
+          s_axil.sendReadAddress(AddressPacket(0x0000))
+          s_axil.sendReadAddress(AddressPacket(0x0004))
+          s_axil.sendReadAddress(AddressPacket(0x0008))
+          s_axil.sendReadAddress(AddressPacket(0x000c))
+        }.fork {
+          println(s_axil.receiveReadData())
+          println(s_axil.receiveReadData())
+          println(s_axil.receiveReadData())
+          println(s_axil.receiveReadData())
+        }.join()
       }.join()
     }
   }
