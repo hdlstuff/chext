@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import chext.elastic
-import chext.axi4
+import chext.amba.axi4
 
 import axi4.full.components.addrgen._
 

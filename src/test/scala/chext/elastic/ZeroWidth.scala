@@ -1,6 +1,6 @@
 package chext.elastic
 
-import chext.axi4
+import chext.amba.axi4
 import chext.elastic
 
 import chisel3._
@@ -11,7 +11,7 @@ import axi4.Casts._
 
 class TestModule extends Module {
   val io = IO(new Bundle {
-    val S_AXI = chext.axi4.Slave(chext.axi4.Config(wId = 0))
+    val S_AXI = chext.amba.axi4.Slave(chext.amba.axi4.Config(wId = 0))
   })
 
   private val s_axi = io.S_AXI.asFull

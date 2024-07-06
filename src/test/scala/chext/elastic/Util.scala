@@ -1,6 +1,6 @@
 package chext.elastic
 
-import chext.axi4
+import chext.amba.axi4
 import chext.elastic
 
 import chisel3._

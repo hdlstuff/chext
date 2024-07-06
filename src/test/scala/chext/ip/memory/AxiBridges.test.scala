@@ -5,7 +5,7 @@ import chisel3.util._
 
 import chiseltest._
 
-import chext.axi4
+import chext.amba.axi4
 
 import axi4.Ops._
 
