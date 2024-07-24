@@ -25,23 +25,39 @@ object ResponseFlag {
 /** AXI4 interface configuration.
   *
   * @param wId
-  *   identification tag width
+  *   ARID, AWID, RID, and BID field width.
   * @param wAddr
-  *   address width
+  *   ARADDR and AWADDR field width.
   * @param wData
-  *   data bus width
+  *   RDATA and WDATA field width.
   * @param read
-  *   enable read channels
+  *   Enable read channels.
   * @param write
-  *   enable write channels
+  *   Enable write channels.
   * @param lite
-  *   use AXI4-Lite variant
-  * @param wUserReq
-  *   data width for ARUSER and AWUSER (see p. A8-104 in ARM IHI 0022H.c)
-  * @param wUserData
-  *   user data width for RUSER and WUSER (see p. A8-104 in ARM IHI 0022H.c)
-  * @param wUserResp
-  *   user data width for RUSER and BUSER (see p. A8-104 in ARM IHI 0022H.c)
+  *   Disable AXI4 full signals.
+  * @param hasLock
+  *   Enable ARLOCK and AWLOCK.
+  * @param hasCache
+  *   Enable ARCACHE and AWCACHE.
+  * @param hasProt
+  *   Enable ARPROT and AWPROT.
+  * @param hasQos
+  *   Enable ARQOS and AWQOS.
+  * @param hasRegion
+  *   Enable ARREGION and AWREGION.
+  * @param axi3Compat
+  *   AXI3 compatibility: 2 bits of AxLOCK, 4 bits for AxLEN. Note that there still is no WID.
+  * @param wUserAR
+  *   ARUSER field width.
+  * @param wUserR
+  *   RUSER field width.
+  * @param wUserAW
+  *   AWUSER field width.
+  * @param wUserW
+  *   WUSER field width.
+  * @param wUserB
+  *   BUSER field width.
   */
 case class Config(
     // id, addr, data widths
@@ -60,6 +76,9 @@ case class Config(
     val hasProt: Boolean = true,
     val hasQos: Boolean = true,
     val hasRegion: Boolean = true,
+
+    // axi3 compat (2 bits of AxLOCK, 4 bits for AxLEN, still no WID)
+    val axi3Compat: Boolean = true,
 
     // user signals
     val wUserAR: Int = 0,
@@ -83,7 +102,8 @@ case class Config(
 
   private def _maybeZero(p: Boolean, w: Int) = if (p) w else 0
 
-  val wLock = _maybeZero(hasLock, 1)
+  val wLen = if (axi3Compat) 4 else 8
+  val wLock = _maybeZero(hasLock, if (axi3Compat) 2 else 1)
   val wCache = _maybeZero(hasCache, 4)
   val wProt = _maybeZero(hasProt, 3)
   val wQos = _maybeZero(hasQos, 4)
@@ -106,7 +126,7 @@ class RawInterface(val cfg: axi4.Config) extends Bundle {
   val ARID =
     if (cfg.read && !cfg.lite) Some(Output(UInt(cfg.wId.W))) else None
   val ARADDR = if (cfg.read) Some(Output(UInt(cfg.wAddr.W))) else None
-  val ARLEN = if (cfg.read && !cfg.lite) Some(Output(UInt(8.W))) else None
+  val ARLEN = if (cfg.read && !cfg.lite) Some(Output(UInt(cfg.wLen.W))) else None
   val ARSIZE = if (cfg.read && !cfg.lite) Some(Output(UInt(3.W))) else None
   val ARBURST = if (cfg.read && !cfg.lite) Some(Output(UInt(2.W))) else None
   val ARLOCK = if (cfg.read && !cfg.lite) Some(Output(UInt(cfg.wLock.W))) else None
@@ -136,7 +156,7 @@ class RawInterface(val cfg: axi4.Config) extends Bundle {
   val AWID =
     if (cfg.write && !cfg.lite) Some(Output(UInt(cfg.wId.W))) else None
   val AWADDR = if (cfg.write) Some(Output(UInt(cfg.wAddr.W))) else None
-  val AWLEN = if (cfg.write && !cfg.lite) Some(Output(UInt(8.W))) else None
+  val AWLEN = if (cfg.write && !cfg.lite) Some(Output(UInt(cfg.wLen.W))) else None
   val AWSIZE = if (cfg.write && !cfg.lite) Some(Output(UInt(3.W))) else None
   val AWBURST = if (cfg.write && !cfg.lite) Some(Output(UInt(2.W))) else None
   val AWLOCK = if (cfg.write && !cfg.lite) Some(Output(UInt(cfg.wLock.W))) else None

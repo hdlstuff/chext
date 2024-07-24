@@ -22,7 +22,7 @@ abstract class AddressChannel(implicit cfg: axi4.Config) extends Bundle {
   val addr = UInt(cfg.wAddr.W)
 
   /** the exact number of data transfers */
-  val len = UInt(8.W)
+  val len = UInt(cfg.wLen.W)
 
   /** the number of bytes in each data transfer */
   val size = UInt(3.W)
