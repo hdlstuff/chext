@@ -80,7 +80,7 @@ trait PacketUtils {
           _.len -> tt.len.U,
           _.size -> tt.size.U,
           _.burst -> tt.burst.U,
-          _.lock -> false.B,
+          _.lock -> 0.U,
           _.cache -> 0.U,
           _.prot -> 0.U,
           _.qos -> 0.U,

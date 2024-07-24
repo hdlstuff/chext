@@ -44,12 +44,24 @@ object ResponseFlag {
   *   user data width for RUSER and BUSER (see p. A8-104 in ARM IHI 0022H.c)
   */
 case class Config(
+    // id, addr, data widths
     val wId: Int = 0,
     val wAddr: Int = 32,
     val wData: Int = 32,
+
+    // read and write channels, lite flag
     val read: Boolean = true,
     val write: Boolean = true,
     val lite: Boolean = false,
+
+    // optional signals
+    val hasLock: Boolean = true,
+    val hasCache: Boolean = true,
+    val hasProt: Boolean = true,
+    val hasQos: Boolean = true,
+    val hasRegion: Boolean = true,
+
+    // user signals
     val wUserAR: Int = 0,
     val wUserR: Int = 0,
     val wUserAW: Int = 0,
@@ -68,13 +80,21 @@ case class Config(
     *   `(-1).S(wStrobe.W).asUInt` does not work in tests.
     */
   def fullStrobe = ("b" + ("1" * wStrobe)).U(wStrobe.W)
+
+  private def _maybeZero(p: Boolean, w: Int) = if (p) w else 0
+
+  val wLock = _maybeZero(hasLock, 1)
+  val wCache = _maybeZero(hasCache, 4)
+  val wProt = _maybeZero(hasProt, 3)
+  val wQos = _maybeZero(hasQos, 4)
+  val wRegion = _maybeZero(hasRegion, 4)
+
 }
 
 /** AXI4 interface that complies with the standard naming convention.
   *
-  * This interface is not supposed to be used directly. Please use
-  * `.asFull` and `.asLite` functions defined in corresponding
-  * implicit classes.
+  * This interface is not supposed to be used directly. Please use `.asFull` and `.asLite` functions
+  * defined in corresponding implicit classes.
   *
   * @param cfg
   *   configuration
