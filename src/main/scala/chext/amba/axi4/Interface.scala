@@ -109,11 +109,11 @@ class RawInterface(val cfg: axi4.Config) extends Bundle {
   val ARLEN = if (cfg.read && !cfg.lite) Some(Output(UInt(8.W))) else None
   val ARSIZE = if (cfg.read && !cfg.lite) Some(Output(UInt(3.W))) else None
   val ARBURST = if (cfg.read && !cfg.lite) Some(Output(UInt(2.W))) else None
-  val ARLOCK = if (cfg.read && !cfg.lite) Some(Output(Bool())) else None
-  val ARCACHE = if (cfg.read && !cfg.lite) Some(Output(UInt(4.W))) else None
-  val ARPROT = if (cfg.read) Some(Output(UInt(3.W))) else None
-  val ARQOS = if (cfg.read && !cfg.lite) Some(Output(UInt(4.W))) else None
-  val ARREGION = if (cfg.read && !cfg.lite) Some(Output(UInt(4.W))) else None
+  val ARLOCK = if (cfg.read && !cfg.lite) Some(Output(UInt(cfg.wLock.W))) else None
+  val ARCACHE = if (cfg.read && !cfg.lite) Some(Output(UInt(cfg.wCache.W))) else None
+  val ARPROT = if (cfg.read) Some(Output(UInt(cfg.wProt.W))) else None
+  val ARQOS = if (cfg.read && !cfg.lite) Some(Output(UInt(cfg.wQos.W))) else None
+  val ARREGION = if (cfg.read && !cfg.lite) Some(Output(UInt(cfg.wRegion.W))) else None
   val ARUSER =
     if (cfg.read && !cfg.lite)
       Some(Output(Bits(cfg.wUserAR.W)))
@@ -139,11 +139,11 @@ class RawInterface(val cfg: axi4.Config) extends Bundle {
   val AWLEN = if (cfg.write && !cfg.lite) Some(Output(UInt(8.W))) else None
   val AWSIZE = if (cfg.write && !cfg.lite) Some(Output(UInt(3.W))) else None
   val AWBURST = if (cfg.write && !cfg.lite) Some(Output(UInt(2.W))) else None
-  val AWLOCK = if (cfg.write && !cfg.lite) Some(Output(Bool())) else None
-  val AWCACHE = if (cfg.write && !cfg.lite) Some(Output(UInt(4.W))) else None
-  val AWPROT = if (cfg.write) Some(Output(UInt(3.W))) else None
-  val AWQOS = if (cfg.write && !cfg.lite) Some(Output(UInt(4.W))) else None
-  val AWREGION = if (cfg.write && !cfg.lite) Some(Output(UInt(4.W))) else None
+  val AWLOCK = if (cfg.write && !cfg.lite) Some(Output(UInt(cfg.wLock.W))) else None
+  val AWCACHE = if (cfg.write && !cfg.lite) Some(Output(UInt(cfg.wCache.W))) else None
+  val AWPROT = if (cfg.write) Some(Output(UInt(cfg.wProt.W))) else None
+  val AWQOS = if (cfg.write && !cfg.lite) Some(Output(UInt(cfg.wQos.W))) else None
+  val AWREGION = if (cfg.write && !cfg.lite) Some(Output(UInt(cfg.wRegion.W))) else None
   val AWUSER =
     if (cfg.write && !cfg.lite)
       Some(Output(Bits(cfg.wUserAW.W)))
