@@ -19,7 +19,7 @@ class AddressChannel(implicit cfg: axi4.Config) extends Bundle {
   val addr = UInt(cfg.wAddr.W)
 
   /** protection flag */
-  val prot = UInt(3.W)
+  val prot = UInt(cfg.wProt.W)
 }
 
 /** Read data channel. (R)
