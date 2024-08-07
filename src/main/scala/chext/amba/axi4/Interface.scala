@@ -78,7 +78,7 @@ case class Config(
     val hasRegion: Boolean = true,
 
     // axi3 compat (2 bits of AxLOCK, 4 bits for AxLEN, still no WID)
-    val axi3Compat: Boolean = true,
+    val axi3Compat: Boolean = false,
 
     // user signals
     val wUserAR: Int = 0,
