@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import chext.ip.memory
+import chisel3.util.experimental.loadMemoryFromFile
 
 private object unpack {
   def apply(in: UInt, elemWidth: Int): Vec[UInt] = {
@@ -37,6 +38,12 @@ class SinglePortRawRAM(
 
   private val mem =
     SyncReadMem(1 << cfg.wAddr, Vec(numBytes, UInt(8.W)))
+
+  cfg.initialFile match {
+    case Some(path) => loadMemoryFromFile(mem, path)
+    case None       => ()
+  }
+
   private class WrReq(val wAddr: Int, val wData: Int) extends Bundle {
     val wStrobe = (wData >> 3)
 
@@ -97,6 +104,12 @@ class SimpleDualPortRawRAM(
 
   private val mem =
     SyncReadMem(1 << cfg.wAddr, Vec(numBytes, UInt(8.W)))
+
+  cfg.initialFile match {
+    case Some(path) => loadMemoryFromFile(mem, path)
+    case None       => ()
+  }
+
   private class WrReq(val wAddr: Int, val wData: Int) extends Bundle {
     val wStrobe = (wData >> 3)
 
@@ -152,6 +165,12 @@ class TrueDualPortRawRAM(
 
   private val mem =
     SyncReadMem(1 << cfg.wAddr, Vec(numBytes, UInt(8.W)))
+
+  cfg.initialFile match {
+    case Some(path) => loadMemoryFromFile(mem, path)
+    case None       => ()
+  }
+
   private class WrReq(val wAddr: Int, val wData: Int) extends Bundle {
     val wStrobe = (wData >> 3)
 

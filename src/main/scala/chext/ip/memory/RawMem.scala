@@ -9,12 +9,13 @@ case class RawMemConfig(
     val latencyRead: Int = 2,
 
     /** @note Not used in case of ROM. */
-    val latencyWrite: Int = 1
+    val latencyWrite: Int = 1,
 
     /** @note
       *   TODO: To support ROMs, extend this structure with an initial content field. Maybe, it
       *   should be loaded from a file or the contents are given inline?
       */
+    val initialFile: Option[String] = None
 ) {
   require(latencyRead >= 0)
   require(latencyWrite >= 0)
