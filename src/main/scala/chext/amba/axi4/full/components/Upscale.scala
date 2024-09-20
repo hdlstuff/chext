@@ -133,9 +133,9 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
           val addressStrobe = join(addressStrobeQueue.io.deq)
 
           // TODO: the same concern as above
-          out.data := beat.data << (addressStrobe.lowerByteIndex << 3)
+          out.data := (beat.data << (addressStrobe.lowerByteIndex << 3))
 
-          out.strb := beat.strb & addressStrobe.strb
+          out.strb := (beat.strb << addressStrobe.lowerByteIndex) & addressStrobe.strb
           out.last := beat.last
           out.user := beat.user
         }
