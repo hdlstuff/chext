@@ -110,3 +110,22 @@ Chisel uses separate types of Ready/Valid IO, which are identical in functionali
 
 In the newer versions of Chisel, `<>` operator is almost deprecated or its behavior in relation to other components has changed.
 Once you canonicalize the connection APIs, remove all instances of the `<>` operator!
+
+## Naming convention for elastic modules
+
+I am not really sure if source or sink are intuitive names. Compare the following examples:
+
+```scala
+class ElasticModule1[T <: Data](gen: T) extends Module {
+  val source = IO(Source(Decoupled(gen)))
+  val sink = IO(Sink(Decoupled(gen)))
+}
+
+class ElasticModule2[T <: Data](gen: T) extends Module {
+  val input = IO(Input /* ?? */(Decoupled(gen)))
+  val output = IO(Sink /* ?? */(Decoupled(gen)))
+}
+```
+
+- "Input of a module" vs. "Source of a module"
+- "Output of a module" vs. "Sink of a module"

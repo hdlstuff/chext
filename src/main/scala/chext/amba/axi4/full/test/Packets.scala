@@ -31,12 +31,12 @@ case class AddressPacket(
 
 case class ReadDataPacket(
     val id: Int,
-    val data: Long,
+    val data: BigInt,
     val last: Boolean
 ) extends Packet
 
 case class WriteDataPacket(
-    val data: Long,
+    val data: BigInt,
     val strb: Long,
     val last: Boolean
 ) extends Packet
@@ -94,7 +94,7 @@ trait PacketUtils {
       def toTester(t: ReadDataChannel): ReadDataPacket =
         ReadDataPacket(
           t.id.litValue.toInt,
-          t.data.litValue.toLong,
+          t.data.litValue,
           t.last.litValue == 1
         )
 
@@ -116,7 +116,7 @@ trait PacketUtils {
     new PacketBridge[WriteDataChannel, WriteDataPacket] {
       def toTester(t: WriteDataChannel): WriteDataPacket =
         WriteDataPacket(
-          t.data.litValue.toLong,
+          t.data.litValue,
           t.strb.litValue.toLong,
           t.last.litValue == 1
         )
