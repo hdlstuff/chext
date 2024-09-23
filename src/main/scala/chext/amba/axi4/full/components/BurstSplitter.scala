@@ -16,10 +16,12 @@ case class BurstSplitterConfig(
     val arQueueCapacity: Int = 8,
     val awQueueCapacity: Int = 8
 ) {
-  assert(axiCfg.wId == 0, "axiCfg.wId must be zero!")
-  assert(!axiCfg.lite, "axiCfg.lite must be false!")
-  assert(arQueueCapacity >= 2, "AR queue capacity must be >= 2!")
-  assert(awQueueCapacity >= 2, "AW queue capacity must be >= 2!")
+  require(axiCfg.wId == 0, "axiCfg.wId must be zero!")
+  require(!axiCfg.lite, "axiCfg.lite must be false!")
+  require(arQueueCapacity >= 2, "AR queue capacity must be >= 2!")
+  require(awQueueCapacity >= 2, "AW queue capacity must be >= 2!")
+
+  require(axiCfg.wUserB == 0, "user data is not supported on channel B.")
 
   val wAddr = axiCfg.wAddr
   val wData = axiCfg.wData
@@ -78,7 +80,7 @@ class BurstSplitter(val cfg: BurstSplitterConfig) extends Module {
           out.addr := pkt1.addr
           out.len := 0.U
           out.size := pkt1.size
-          out.burst := 1.U
+          out.burst := axi4.BurstType.INCR
           out.lock := pkt0.lock
           out.cache := pkt0.cache
           out.prot := pkt0.prot
@@ -158,7 +160,7 @@ class BurstSplitter(val cfg: BurstSplitterConfig) extends Module {
           out.addr := pkt1.addr
           out.len := 0.U
           out.size := pkt1.size
-          out.burst := 1.U
+          out.burst := axi4.BurstType.INCR
           out.lock := pkt0.lock
           out.cache := pkt0.cache
           out.prot := pkt0.prot

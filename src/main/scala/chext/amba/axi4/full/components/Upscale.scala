@@ -17,12 +17,14 @@ case class UpscaleConfig(
     val readAddressStrobeQueueLength: Int = 16,
     val writeAddressStrobeQueueLength: Int = 16
 ) {
-  assert(axiCfgSlave.wId == 0, "axiCfgSlave.wId must be zero!")
-  assert(!axiCfgSlave.lite, "axiCfgSlave.lite must be false!")
-  assert(wDataMaster > axiCfgSlave.wData, "wDataMaster must be > axiCfgSlave.wData")
+  require(axiCfgSlave.wId == 0, "axiCfgSlave.wId must be zero!")
+  require(!axiCfgSlave.lite, "axiCfgSlave.lite must be false!")
+  require(wDataMaster > axiCfgSlave.wData, "wDataMaster must be > axiCfgSlave.wData")
+
+  require(wDataMaster >= 8)
+  require(isPow2(wDataMaster))
 
   val wAddr = axiCfgSlave.wAddr
-  val wDataSlave = axiCfgSlave.wData
   val axiCfgMaster = axiCfgSlave.copy(wData = wDataMaster)
 }
 
@@ -46,8 +48,6 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
         )
       )
 
-    addressStrobeGenerator.sink :=> addressStrobeQueue.io.enq
-
     def implAR(): Unit = prefix("ar") {
       new elastic.Fork(s_axi.ar) {
         override protected def onFork: Unit = {
@@ -63,6 +63,8 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
           fork() :=> m_axi.ar
         }
       }
+
+      addressStrobeGenerator.sink :=> addressStrobeQueue.io.enq
     }
 
     def implR(): Unit = prefix("r") {
@@ -107,8 +109,6 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
         )
       )
 
-    addressStrobeGenerator.sink :=> addressStrobeQueue.io.enq
-
     def implAW(): Unit = prefix("aw") {
       new elastic.Fork(s_axi.aw) {
         override protected def onFork: Unit = {
@@ -124,6 +124,8 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
           fork() :=> m_axi.aw
         }
       }
+
+      addressStrobeGenerator.sink :=> addressStrobeQueue.io.enq
     }
 
     def implW(): Unit = prefix("w") {
