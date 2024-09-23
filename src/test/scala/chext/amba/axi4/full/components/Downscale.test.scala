@@ -113,9 +113,9 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
         }.join()
 
         println("Read complete.")
-        /*
+
         fork {
-          dut.s_axi_w32.sendReadAddress(AddressPacket(0, 0x0000, 15, 2 /* 4B */))
+          dut.s_axi_w32.sendReadAddress(AddressPacket(0, 0x0000, 15, 2 /* 4B */ ))
         }.fork {
           dut.s_axi_w32.receiveReadDataBurst().zipWithIndex.foreach {
             case (beat, index) => {
@@ -130,26 +130,29 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
           dut.s_axi_w32.sendWriteAddress(AddressPacket(0, 0x0000, 15, 2))
         }.fork {
           for (i <- (0 until 16)) {
-            dut.s_axi_w32.sendWriteData(WriteDataPacket(0x7000_0000 | (0x1000 * i + i), 0xF, i == 15))
+            dut.s_axi_w32.sendWriteData(
+              WriteDataPacket(0x7000_0000 | (0x1000 * i + i), 0xf, i == 15)
+            )
           }
-        }.fork{
+        }.fork {
           dut.s_axi_w32.receiveWriteResponse()
         }.join()
 
         println("Write to narrow bus is complete.")
 
         fork {
-          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 3, 4))
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 0, 4))
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0010, 0, 4))
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0020, 0, 4))
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0030, 0, 4))
         }.fork {
-          dut.s_axi_w128.receiveReadDataBurst().zipWithIndex.foreach {
-            case (beat, index) => {
-              println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
-            }
-          }
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
         }.join()
 
         println("Read complete.")
-         */
       }
     }
 }

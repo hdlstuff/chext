@@ -191,10 +191,10 @@ class BurstSplitter(val cfg: BurstSplitterConfig) extends Module {
 
       val joined = elastic.Zip(m_axi.b, lastReplicated)
 
+      val respReg = RegInit(0.U(2.W))
+
       new elastic.Arrival(joined, s_axi.b) {
         protected def onArrival: Unit = {
-          val respReg = RegInit(0.U(2.W))
-
           out := in._1
 
           // we reduce on the largest value of response

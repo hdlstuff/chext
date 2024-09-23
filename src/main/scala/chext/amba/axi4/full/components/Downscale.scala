@@ -94,11 +94,11 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
     def implR(): Unit = prefix("r") {
       val zipped = elastic.Zip(m_axi.r, addressStrobeQueue.io.deq)
 
+      val dataReg = RegInit(0.U(axiCfgSlave.wData.W))
+      val respReg = RegInit(0.U(2.W))
+
       new elastic.Arrival(zipped, s_axi.r) {
         protected def onArrival: Unit = {
-          val dataReg = RegInit(0.U(axiCfgSlave.wData.W))
-          val respReg = RegInit(0.U(2.W))
-
           // we reduce on the largest value of response
 
           out.id := in._1.id
@@ -111,8 +111,9 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
           }
 
           // TODO: Use a better line steering module
-          out.data := dataReg | (in._1.data << (in._2.lowerByteIndex << 3))
-          dataReg := out.data
+          val outputData = dataReg | (in._1.data << (in._2.lowerByteIndex << 3))
+          out.data := outputData
+          dataReg := outputData
 
           out.last := true.B
 
