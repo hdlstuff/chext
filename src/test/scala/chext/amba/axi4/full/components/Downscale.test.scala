@@ -62,7 +62,7 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
 
         dut.s_axi_w32.initSlave()
         dut.s_axi_w128.initSlave()
-        /*
+
         def writeDataPacket(
             u32_3: BigInt,
             u32_2: BigInt,
@@ -74,35 +74,42 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
         }
 
         fork {
-          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0000, 3, 4))
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0000, 0, 4))
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0010, 0, 4))
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0020, 0, 4))
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0030, 0, 4))
         }.fork {
           dut.s_axi_w128.sendWriteData(
-            writeDataPacket(0x00fe1000, 0x00fe0100, 0x00fe0010, 0x00fe0001, false)
+            writeDataPacket(0x60fe1000, 0x60fe0100, 0x60fe0010, 0x60fe0001, true)
           )
           dut.s_axi_w128.sendWriteData(
-            writeDataPacket(0x01fe1000, 0x01fe0100, 0x01fe0010, 0x01fe0001, false)
+            writeDataPacket(0x61fe1000, 0x61fe0100, 0x61fe0010, 0x61fe0001, true)
           )
           dut.s_axi_w128.sendWriteData(
-            writeDataPacket(0x02fe1000, 0x02fe0100, 0x02fe0010, 0x02fe0001, false)
+            writeDataPacket(0x62fe1000, 0x62fe0100, 0x62fe0010, 0x62fe0001, true)
           )
           dut.s_axi_w128.sendWriteData(
-            writeDataPacket(0x03fe1000, 0x03fe0100, 0x03fe0010, 0x03fe0001, true)
+            writeDataPacket(0x63fe1000, 0x63fe0100, 0x63fe0010, 0x63fe0001, true)
           )
         }.fork {
+          dut.s_axi_w128.receiveWriteResponse()
+          dut.s_axi_w128.receiveWriteResponse()
+          dut.s_axi_w128.receiveWriteResponse()
           dut.s_axi_w128.receiveWriteResponse()
         }.join()
 
         println("Write complete.")
-         */
 
         fork {
           dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 0, 4))
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0010, 0, 4))
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0020, 0, 4))
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0030, 0, 4))
         }.fork {
-          dut.s_axi_w128.receiveReadDataBurst().zipWithIndex.foreach {
-            case (beat, index) => {
-              println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
-            }
-          }
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
         }.join()
 
         println("Read complete.")
@@ -142,7 +149,7 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
         }.join()
 
         println("Read complete.")
-        */
+         */
       }
     }
 }

@@ -25,7 +25,6 @@ case class DownscaleConfig(
   require(isPow2(wDataMaster))
 
   require(axiCfgSlave.wUserR == 0, "user data is not supported on channel R.")
-  require(axiCfgSlave.wUserB == 0, "user data is not supported on channel B.")
 
   val wDataSlave = axiCfgSlave.wData
   val wAddr = axiCfgSlave.wAddr
@@ -103,7 +102,6 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
           // we reduce on the largest value of response
 
           out.id := in._1.id
-          out.data := dataReg
 
           when(in._1.resp > respReg) {
             respReg := in._1.resp
@@ -112,8 +110,9 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
             out.resp := respReg
           }
 
-          // do the lane steering in a better way
+          // TODO: Use a better line steering module
           out.data := dataReg | (in._1.data << (in._2.lowerByteIndex << 3))
+          dataReg := out.data
 
           out.last := true.B
 
@@ -134,17 +133,90 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
+    val addressStrobeGenerator =
+      Module(
+        new addrgen.AddressStrobeGenerator(wAddr, wDataSlave)
+      )
 
-    println("warning: fix these:")
+    val addressStrobeQueue =
+      Module(
+        new Queue(
+          addressStrobeGenerator.genOutput,
+          readAddressStrobeQueueLength
+        )
+      )
 
-    s_axi.aw.nodeq()
-    m_axi.aw.noenq()
+    def implAW(): Unit = prefix("aw") {
+      val awTransformed = Wire(chiselTypeOf(m_axi.aw))
 
-    s_axi.w.nodeq()
-    m_axi.w.noenq()
+      new elastic.Transform(s_axi.aw, awTransformed) {
+        protected def onTransform: Unit = {
+          out := in
 
-    m_axi.b.nodeq()
-    s_axi.b.noenq()
+          out.burst := axi4.BurstType.INCR
+
+          when(in.size <= axsizeMaxMaster.U) {
+            out.size := in.size
+            out.len := 0.U
+          }.otherwise {
+            out.size := axsizeMaxMaster.U
+
+            // TODO: optimize this calculation
+            out.len := (1.U << (in.size - axsizeMaxMaster.U)) - 1.U
+          }
+        }
+      }
+
+      new elastic.Fork(awTransformed) {
+        override protected def onFork: Unit = {
+          new elastic.Transform(fork(), addressStrobeGenerator.source) {
+            override protected def onTransform: Unit = {
+              out.addr := in.addr
+              out.len := in.len
+              out.size := in.size
+              out.burst := in.burst
+            }
+          }
+
+          fork() :=> m_axi.aw
+        }
+      }
+
+      addressStrobeGenerator.sink :=> addressStrobeQueue.io.enq
+    }
+
+    def implW(): Unit = prefix("w") {
+      val addressStrobeDeq = addressStrobeQueue.io.deq
+      addressStrobeDeq.nodeq()
+
+      new elastic.Arrival(s_axi.w, m_axi.w) {
+        protected def onArrival: Unit = {
+          out.data := (in.data >> (addressStrobeDeq.bits.lowerByteIndex << 3))
+
+          // TODO: Lane steering module
+          out.strb := ((in.strb & addressStrobeDeq.bits.strb) >> addressStrobeDeq.bits.lowerByteIndex)
+          out.last := addressStrobeDeq.bits.last
+          out.user := in.user
+
+          when(addressStrobeDeq.valid) {
+            addressStrobeDeq.deq()
+            produce()
+
+            when(addressStrobeDeq.bits.last) {
+              consume()
+            }
+          }
+        }
+      }
+    }
+
+    def implB(): Unit = {
+      m_axi.b :=> s_axi.b
+    }
+
+    implAW()
+    implW()
+    implB()
   }
 
   if (axiCfgSlave.read) implRead()
