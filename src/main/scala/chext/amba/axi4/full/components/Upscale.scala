@@ -19,7 +19,7 @@ case class UpscaleConfig(
 ) {
   assert(axiCfgSlave.wId == 0, "axiCfgSlave.wId must be zero!")
   assert(!axiCfgSlave.lite, "axiCfgSlave.lite must be false!")
-  assert(wDataMaster > axiCfgSlave.wData, "wDataMaster must be >= axiCfgSlave.wData")
+  assert(wDataMaster > axiCfgSlave.wData, "wDataMaster must be > axiCfgSlave.wData")
 
   val wAddr = axiCfgSlave.wAddr
   val wDataSlave = axiCfgSlave.wData
