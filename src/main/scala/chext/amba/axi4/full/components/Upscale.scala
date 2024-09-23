@@ -13,7 +13,7 @@ import axi4.full.components.addrgen
 
 case class UpscaleConfig(
     val axiCfgSlave: axi4.Config,
-    val wDataMaster: Int = 64,
+    val wDataMaster: Int,
     val readAddressStrobeQueueLength: Int = 16,
     val writeAddressStrobeQueueLength: Int = 16
 ) {
