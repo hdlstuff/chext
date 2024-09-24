@@ -6,8 +6,10 @@ import chisel3.experimental.prefix
 
 import chext.amba.axi4
 import chext.elastic
+
 import elastic.ConnectOp._
 import axi4.Ops._
+import chext.util.BitOps._
 
 import axi4.full.components.addrgen
 
@@ -24,11 +26,12 @@ case class UpscaleConfig(
   require(wDataMaster >= 8)
   require(isPow2(wDataMaster))
 
+  val wDataSlave = axiCfgSlave.wData
   val wAddr = axiCfgSlave.wAddr
   val axiCfgMaster = axiCfgSlave.copy(wData = wDataMaster)
 }
 
-class Upscale(val cfg: UpscaleConfig) extends Module {
+class Upscale(val cfg: UpscaleConfig) extends Module with DataWidthConverterLike {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiCfgSlave))
@@ -81,7 +84,8 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
           // Depending on the data widths, addressStrobe.lowerByteIndex is constrained.
           // TODO: create a new module for doing this more optimally.
           //
-          out.data := beat.data >> (addressStrobe.lowerByteIndex << 3)
+          val shiftBytes = addressStrobe.lowerByteIndex.resetLastN(log2Ceil(wDataSlave / 8))
+          out.data := beat.data >> (shiftBytes << 3)
 
           out.id := beat.id // must be zero
           out.resp := beat.resp
@@ -133,11 +137,12 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
         override protected def onJoin: Unit = {
           val beat = join(s_axi.w)
           val addressStrobe = join(addressStrobeQueue.io.deq)
+          val shiftBytes = addressStrobe.lowerByteIndex.resetLastN(log2Ceil(wDataSlave / 8))
 
           // TODO: the same concern as above
-          out.data := (beat.data << (addressStrobe.lowerByteIndex << 3))
+          out.data := beat.data << (shiftBytes << 3)
+          out.strb := (beat.strb << shiftBytes) & addressStrobe.strb
 
-          out.strb := (beat.strb << addressStrobe.lowerByteIndex) & addressStrobe.strb
           out.last := beat.last
           out.user := beat.user
         }
