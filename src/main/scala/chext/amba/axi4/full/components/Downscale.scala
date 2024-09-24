@@ -32,7 +32,7 @@ case class DownscaleConfig(
   val axiCfgMaster = axiCfgSlave.copy(wData = wDataMaster)
 }
 
-class Downscale(val cfg: DownscaleConfig) extends Module {
+class Downscale(val cfg: DownscaleConfig) extends Module with DataWidthConverterLike {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiCfgSlave))
