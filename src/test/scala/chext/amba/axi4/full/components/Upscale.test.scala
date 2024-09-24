@@ -56,7 +56,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
   import axi4.full.test.PacketUtils._
   import axi4.full.test._
 
-  "Upscale Basic Functionality" in test(new UpscaleTestModule)
+  "Upscale basic" in test(new UpscaleTestModule)
     .withAnnotations(Seq(chiseltest.WriteVcdAnnotation)) { dut =>
       {
         dut.s_axi_w32.initSlave()
@@ -217,6 +217,99 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
 
         fork {
           dut.s_axi_w32.sendReadAddress(AddressPacket(0, 0x0003, 15, 2 /* 4B */ ))
+        }.fork {
+          dut.s_axi_w32.receiveReadDataBurst().zipWithIndex.foreach {
+            case (beat, index) => {
+              println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
+            }
+          }
+        }.join()
+
+        println("Read from narrow bus is complete.")
+      }
+    }
+
+  "Upscale narrow bursts" in test(new UpscaleTestModule)
+    .withAnnotations(Seq(chiseltest.WriteVcdAnnotation)) { dut =>
+      {
+        dut.s_axi_w32.initSlave()
+        dut.s_axi_w128.initSlave()
+
+        fork {
+          dut.s_axi_w32.sendWriteAddress(AddressPacket(0, 0x0000, 15, 1 /* 2B */))
+        }.fork {
+          for (i <- (0 until 16)) {
+            dut.s_axi_w32.sendWriteData(
+              WriteDataPacket(0x7099_0f00 | (0x0100_0000 * i + 0x1000 * i + i), 0x3 << ((i % 2) * 2), i == 15)
+            )
+          }
+        }.fork {
+          dut.s_axi_w32.receiveWriteResponse()
+        }.join()
+
+        println("Write to narrow bus is complete.")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 1, 4))
+        }.fork {
+          dut.s_axi_w128.receiveReadDataBurst().zipWithIndex.foreach {
+            case (beat, index) => {
+              println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
+            }
+          }
+        }.join()
+
+        println("Read complete.")
+
+        fork {
+          dut.s_axi_w32.sendReadAddress(AddressPacket(0, 0x0000, 15, 1 /* 2B */ ))
+        }.fork {
+          dut.s_axi_w32.receiveReadDataBurst().zipWithIndex.foreach {
+            case (beat, index) => {
+              println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
+            }
+          }
+        }.join()
+
+        println("Read from narrow bus is complete.")
+      }
+    }
+
+  "Upscale narrow unaligned bursts" in test(new UpscaleTestModule)
+    .withAnnotations(Seq(chiseltest.WriteVcdAnnotation)) { dut =>
+      {
+        dut.s_axi_w32.initSlave()
+        dut.s_axi_w128.initSlave()
+
+        fork {
+          dut.s_axi_w32.sendWriteAddress(AddressPacket(0, 0x0003, 15, 2 /* 2B */))
+        }.fork {
+          for (i <- (0 until 16)) {
+            dut.s_axi_w32.sendWriteData(
+              // + 1 because now things are reverted
+              WriteDataPacket(0x7099_0f00 | (0x0100_0000 * i + 0x1000 * i + i), 0x3 << (((i + 1) % 2) * 2), i == 15)
+            )
+          }
+        }.fork {
+          dut.s_axi_w32.receiveWriteResponse()
+        }.join()
+
+        println("Write to narrow bus is complete.")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 1, 4))
+        }.fork {
+          dut.s_axi_w128.receiveReadDataBurst().zipWithIndex.foreach {
+            case (beat, index) => {
+              println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
+            }
+          }
+        }.join()
+
+        println("Read complete.")
+
+        fork {
+          dut.s_axi_w32.sendReadAddress(AddressPacket(0, 0x0003, 15, 1 /* 2B */ ))
         }.fork {
           dut.s_axi_w32.receiveReadDataBurst().zipWithIndex.foreach {
             case (beat, index) => {
