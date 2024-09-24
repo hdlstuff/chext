@@ -6,8 +6,10 @@ import chisel3.experimental.prefix
 
 import chext.amba.axi4
 import chext.elastic
+
 import elastic.ConnectOp._
 import axi4.Ops._
+import chext.util.BitOps._
 
 import axi4.full.components.addrgen
 
@@ -111,7 +113,9 @@ class Downscale(val cfg: DownscaleConfig) extends Module with DataWidthConverter
           }
 
           // TODO: Use a better line steering module
-          val outputData = dataReg | (in._1.data << (in._2.lowerByteIndex << 3))
+          val shiftBytes = in._2.lowerByteIndex.resetLastN(log2Ceil(wDataMaster / 8))
+          val outputData = dataReg | (in._1.data << (shiftBytes << 3))
+
           out.data := outputData
           dataReg := outputData
 
@@ -192,10 +196,13 @@ class Downscale(val cfg: DownscaleConfig) extends Module with DataWidthConverter
 
       new elastic.Arrival(s_axi.w, m_axi.w) {
         protected def onArrival: Unit = {
-          out.data := (in.data >> (addressStrobeDeq.bits.lowerByteIndex << 3))
+          val shiftBytes =
+            addressStrobeDeq.bits.lowerByteIndex.resetLastN(log2Ceil(wDataMaster / 8))
 
           // TODO: Lane steering module
-          out.strb := ((in.strb & addressStrobeDeq.bits.strb) >> addressStrobeDeq.bits.lowerByteIndex)
+          out.data := (in.data >> (shiftBytes << 3))
+          out.strb := ((in.strb & addressStrobeDeq.bits.strb) >> shiftBytes)
+
           out.last := addressStrobeDeq.bits.last
           out.user := in.user
 

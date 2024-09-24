@@ -11,6 +11,10 @@ import chext.ip.memory
 import axi4.Ops._
 import elastic.ConnectOp._
 
+import chiseltest._
+import axi4.full.test.PacketUtils._
+import axi4.full.test._
+
 class UpscaleTestModule extends Module {
   // (2 ** 10) * 16B = 16 KB of memory (14 bits)
   private val rawMemCfg = memory.RawMemConfig(10, 128, 4, 4)
@@ -52,12 +56,8 @@ class UpscaleTestModule extends Module {
 class UpscaleTest extends test.FreeSpec with test.TestMixin {
   memory.Target.setCurrent(memory.chisel.Target)
 
-  import chiseltest._
-  import axi4.full.test.PacketUtils._
-  import axi4.full.test._
-
   "Upscale basic" in test(new UpscaleTestModule)
-    .withAnnotations(Seq(chiseltest.WriteVcdAnnotation)) { dut =>
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
         dut.s_axi_w32.initSlave()
         dut.s_axi_w128.initSlave()
@@ -89,7 +89,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
           )
         }.fork {
           dut.s_axi_w128.receiveWriteResponse()
-        }.join()
+        }.joinAndStep()
 
         println("Write complete.")
 
@@ -101,7 +101,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read complete.")
 
@@ -113,7 +113,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read from narrow bus is complete.")
 
@@ -127,7 +127,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
           }
         }.fork {
           dut.s_axi_w32.receiveWriteResponse()
-        }.join()
+        }.joinAndStep()
 
         println("Write to narrow bus is complete.")
 
@@ -139,14 +139,14 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read complete.")
       }
     }
 
   "Upscale unaligned bursts" in test(new UpscaleTestModule)
-    .withAnnotations(Seq(chiseltest.WriteVcdAnnotation)) { dut =>
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
         dut.s_axi_w32.initSlave()
         dut.s_axi_w128.initSlave()
@@ -161,7 +161,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
           }
         }.fork {
           dut.s_axi_w32.receiveWriteResponse()
-        }.join()
+        }.joinAndStep()
 
         println("Write to narrow bus is complete.")
 
@@ -173,7 +173,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read complete.")
 
@@ -185,7 +185,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read from narrow bus is complete.")
 
@@ -199,7 +199,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
           }
         }.fork {
           dut.s_axi_w32.receiveWriteResponse()
-        }.join()
+        }.joinAndStep()
 
         println("Write to narrow bus is complete.")
 
@@ -211,7 +211,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read complete.")
 
@@ -223,29 +223,33 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read from narrow bus is complete.")
       }
     }
 
   "Upscale narrow bursts" in test(new UpscaleTestModule)
-    .withAnnotations(Seq(chiseltest.WriteVcdAnnotation)) { dut =>
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
         dut.s_axi_w32.initSlave()
         dut.s_axi_w128.initSlave()
 
         fork {
-          dut.s_axi_w32.sendWriteAddress(AddressPacket(0, 0x0000, 15, 1 /* 2B */))
+          dut.s_axi_w32.sendWriteAddress(AddressPacket(0, 0x0000, 15, 1 /* 2B */ ))
         }.fork {
           for (i <- (0 until 16)) {
             dut.s_axi_w32.sendWriteData(
-              WriteDataPacket(0x7099_0f00 | (0x0100_0000 * i + 0x1000 * i + i), 0x3 << ((i % 2) * 2), i == 15)
+              WriteDataPacket(
+                0x7099_0f00 | (0x0100_0000 * i + 0x1000 * i + i),
+                0x3 << ((i % 2) * 2),
+                i == 15
+              )
             )
           }
         }.fork {
           dut.s_axi_w32.receiveWriteResponse()
-        }.join()
+        }.joinAndStep()
 
         println("Write to narrow bus is complete.")
 
@@ -257,7 +261,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read complete.")
 
@@ -269,32 +273,55 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read from narrow bus is complete.")
       }
     }
 
   "Upscale narrow unaligned bursts" in test(new UpscaleTestModule)
-    .withAnnotations(Seq(chiseltest.WriteVcdAnnotation)) { dut =>
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
         dut.s_axi_w32.initSlave()
         dut.s_axi_w128.initSlave()
 
         fork {
-          dut.s_axi_w32.sendWriteAddress(AddressPacket(0, 0x0003, 15, 2 /* 2B */))
+          dut.s_axi_w32.sendWriteAddress(AddressPacket(0, 0x0003, 15, 2 /* 2B */ ))
         }.fork {
           for (i <- (0 until 16)) {
             dut.s_axi_w32.sendWriteData(
               // + 1 because now things are reverted
-              WriteDataPacket(0x7099_0f00 | (0x0100_0000 * i + 0x1000 * i + i), 0x3 << (((i + 1) % 2) * 2), i == 15)
+              WriteDataPacket(
+                0x7099_0f00 | (0x0100_0000 * i + 0x1000 * i + i),
+                0x3 << (((i + 1) % 2) * 2),
+                i == 15
+              )
             )
           }
         }.fork {
           dut.s_axi_w32.receiveWriteResponse()
-        }.join()
+        }.joinAndStep()
 
         println("Write to narrow bus is complete.")
+
+        fork {
+          dut.s_axi_w32.sendWriteAddress(AddressPacket(0, 0x0003, 15, 2 /* 2B */ ))
+        }.fork {
+          for (i <- (0 until 16)) {
+            dut.s_axi_w32.sendWriteData(
+              // + 1 because now things are reverted
+              WriteDataPacket(
+                0x7099_0f00 | (0x0100_0000 * i + 0x1000 * i + i),
+                0x3 << (((i + 1) % 2) * 2),
+                i == 15
+              )
+            )
+          }
+        }.fork {
+          dut.s_axi_w32.receiveWriteResponse()
+        }.joinAndStep()
+
+        println("Write to narrow bus is complete (second time).")
 
         fork {
           dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 1, 4))
@@ -304,9 +331,21 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read complete.")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 1, 4))
+        }.fork {
+          dut.s_axi_w128.receiveReadDataBurst().zipWithIndex.foreach {
+            case (beat, index) => {
+              println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
+            }
+          }
+        }.joinAndStep()
+
+        println("Read complete (second time).")
 
         fork {
           dut.s_axi_w32.sendReadAddress(AddressPacket(0, 0x0003, 15, 1 /* 2B */ ))
@@ -316,7 +355,7 @@ class UpscaleTest extends test.FreeSpec with test.TestMixin {
               println(f"beatIdx = $index, data = ${beat.data.toString(16)}")
             }
           }
-        }.join()
+        }.joinAndStep()
 
         println("Read from narrow bus is complete.")
       }

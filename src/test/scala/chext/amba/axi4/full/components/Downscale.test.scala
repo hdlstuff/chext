@@ -10,7 +10,10 @@ import chext.ip.memory
 
 import axi4.Ops._
 import elastic.ConnectOp._
-import chiseltest.simulator.WriteVcdAnnotation
+
+import chiseltest._
+import axi4.full.test.PacketUtils._
+import axi4.full.test._
 
 class DownscaleTestModule extends Module {
   // (2 ** 12) * 4B = 16 KB of memory (14 bits)
@@ -53,25 +56,21 @@ class DownscaleTestModule extends Module {
 class DownscaleTest extends test.FreeSpec with test.TestMixin {
   memory.Target.setCurrent(memory.chisel.Target)
 
-  "Downscale Basic Functionality" in test(new DownscaleTestModule)
+  def writeDataPacket(
+      u32_3: BigInt,
+      u32_2: BigInt,
+      u32_1: BigInt,
+      u32_0: BigInt,
+      last: Boolean
+  ) = {
+    WriteDataPacket((u32_3 << 96) | (u32_2 << 64) | (u32_1 << 32) | u32_0, 0xffff, last)
+  }
+
+  "Downscale basic" in test(new DownscaleTestModule)
     .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
-        import chiseltest._
-        import axi4.full.test.PacketUtils._
-        import axi4.full.test._
-
         dut.s_axi_w32.initSlave()
         dut.s_axi_w128.initSlave()
-
-        def writeDataPacket(
-            u32_3: BigInt,
-            u32_2: BigInt,
-            u32_1: BigInt,
-            u32_0: BigInt,
-            last: Boolean
-        ) = {
-          WriteDataPacket((u32_3 << 96) | (u32_2 << 64) | (u32_1 << 32) | u32_0, 0xffff, last)
-        }
 
         fork {
           dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0000, 0, 4))
@@ -155,6 +154,166 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
         println("Read complete.")
       }
     }
+
+  "Downscale unaligned" in test(new DownscaleTestModule)
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      {
+        dut.s_axi_w32.initSlave()
+        dut.s_axi_w128.initSlave()
+
+        fork {
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0003, 0, 4))
+        }.fork {
+          dut.s_axi_w128.sendWriteData(
+            writeDataPacket(0x64f312d1, 0x64f302c1, 0x64f302b1, 0x64f302a1, true)
+          )
+        }.fork {
+          dut.s_axi_w128.receiveWriteResponse()
+        }.joinAndStep()
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 0, 4))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("aligned read complete.")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0003, 0, 4))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("unaligned read complete.")
+      }
+    }
+
+  "Downscale narrow bursts 1" in test(new DownscaleTestModule)
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      {
+        dut.s_axi_w32.initSlave()
+        dut.s_axi_w128.initSlave()
+
+        fork {
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0000, 0, 3))
+        }.fork {
+          dut.s_axi_w128.sendWriteData(
+            writeDataPacket(0x64f312d1, 0x64f302c1, 0x64f302b1, 0x64f302a1, true)
+          )
+        }.fork {
+          dut.s_axi_w128.receiveWriteResponse()
+        }.joinAndStep()
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 0, 4))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("full read complete.")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0003, 0, 3))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("narrow read complete.")
+
+        fork {
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0008, 0, 3))
+        }.fork {
+          dut.s_axi_w128.sendWriteData(
+            writeDataPacket(0x64f312d1, 0x64f302c1, 0x64f302b1, 0x64f302a1, true)
+          )
+        }.fork {
+          dut.s_axi_w128.receiveWriteResponse()
+        }.joinAndStep()
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 0, 4))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("full read complete.")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0008, 0, 3))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("narrow read complete.")
+      }
+    }
+
+  "Downscale narrow bursts 2" in test(new DownscaleTestModule)
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      {
+        dut.s_axi_w32.initSlave()
+        dut.s_axi_w128.initSlave()
+
+        fork {
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0002, 0, 1))
+        }.fork {
+          dut.s_axi_w128.sendWriteData(
+            writeDataPacket(0x64f312d1, 0x64f302c1, 0x64f302b1, 0x64f302a1, true)
+          )
+        }.fork {
+          dut.s_axi_w128.receiveWriteResponse()
+        }.joinAndStep()
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 0, 4))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("full read complete.")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0002, 0, 1))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("narrow read complete.")
+
+        fork {
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x000C, 0, 2))
+        }.fork {
+          dut.s_axi_w128.sendWriteData(
+            writeDataPacket(0x64f312d1, 0x64f302c1, 0x64f302b1, 0x64f302a1, true)
+          )
+        }.fork {
+          dut.s_axi_w128.receiveWriteResponse()
+        }.joinAndStep()
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 0, 4))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("full read complete.")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x000C, 0, 2))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("narrow read complete.")
+      }
+    }
+
+  "Downscale narrow unaligned bursts 1" in test(new DownscaleTestModule)
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut => {} }
+
+  "Downscale narrow unaligned bursts 2" in test(new DownscaleTestModule)
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut => {} }
 }
 
 object EmitDownscaleTest extends App {
