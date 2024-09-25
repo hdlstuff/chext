@@ -8,74 +8,66 @@ import chext.amba.axi4
 import chext.elastic
 
 import elastic.ConnectOp._
+import chext.util.BitOps._
 
 import axi4.full.{
-    AddressChannel,
-    WriteDataChannel,
-    ReadDataChannel,
-    WriteResponseChannel,
-    SlaveBuffer,
-    MasterBuffer
+  AddressChannel,
+  WriteDataChannel,
+  ReadDataChannel,
+  WriteResponseChannel,
+  SlaveBuffer,
+  MasterBuffer
 }
 
 case class IdDemuxConfig(
-    val axiCfg: chext.amba.axi4.Config,
-    val idSelBits: Seq[Int],
-    val demuxCfg: DemuxConfig = DemuxConfig(),
-    val numIdsTrackedRead: Int = 4,
-    val numIdsTrackedWrite: Int = 4,
-    val numOutstandingRead: Int = 16,
-    val numOutstandingWrite: Int = 16,
+    val axiCfgSlave: chext.amba.axi4.Config,
+    val wIdSel: Int,
     val capacityPortQueueW: Int = 8,
-    val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
-    val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
     val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr
 ) {
-  require(!axiCfg.lite)
-  require(axiCfg.read || axiCfg.write)
-  
-  require(numIdsTrackedRead > 0)
-  require(numIdsTrackedWrite > 0)
-  require(numOutstandingRead > 0)
-  require(numOutstandingWrite > 0)
+  require(!axiCfgSlave.lite)
+  require(axiCfgSlave.read || axiCfgSlave.write)
+  require(wIdSel >= 0)
+  require(axiCfgSlave.wId >= wIdSel)
+  require(capacityPortQueueW > 0)
 
-  val numMasters = 1 << idSelBits.length
+  val numMasters = 1 << wIdSel
 
-  val wIdTrackedRead: Int = log2Ceil(numIdsTrackedRead + 1)
-  val wIdTrackedWrite: Int = log2Ceil(numIdsTrackedWrite + 1)
-  val wOutstandingRead: Int = log2Ceil(numOutstandingRead + 1)
-  val wOutstandingWrite: Int = log2Ceil(numOutstandingWrite + 1)
+  val axiCfgMaster = axiCfgSlave.copy(wId = axiCfgSlave.wId - wIdSel)
 }
 
 class IdDemux(val cfg: IdDemuxConfig) extends Module {
   import cfg._
 
-  override def desiredName: String = "axi4FullDemux"
+  override def desiredName: String = "axi4FullIdDemux"
 
-  val s_axi = IO(axi4.full.Slave(axiCfg))
-  val m_axi = IO(Vec(numMasters, axi4.full.Master(axiCfg)))
+  val s_axi = IO(axi4.full.Slave(axiCfgSlave))
+  val m_axi = IO(Vec(numMasters, axi4.full.Master(axiCfgMaster)))
 
-  private val s_axi_ = SlaveBuffer(s_axi, demuxCfg.slaveBuffers)
-  private val m_axi_ = m_axi.map { (x) =>
-    MasterBuffer(x, demuxCfg.masterBuffers)
-  }
+  private val s_axi_ = s_axi
+  private val m_axi_ = m_axi
 
-  private val genSelect = UInt(idSelBits.length.W)
+  private val genSelect = UInt(wIdSel.W)
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      val demuxInput = Wire(Irrevocable(s_axi_.ar.bits.cloneType))
+      val demuxInput = Wire(Irrevocable(axi4.full.ReadAddressChannel(axiCfgMaster)))
       val demuxSelect = Wire(Irrevocable(genSelect))
 
       new elastic.Fork(s_axi_.ar) {
         override protected def onFork = {
-          // TODO
-          fork(in) :=> demuxInput
-          fork(in.id) :=> demuxSelect
+          val sel = in.id.lsb(wIdSel)
+          val ar = Wire(axi4.full.ReadAddressChannel(axiCfgMaster))
+
+          ar := in
+          ar.id := in.id.dropLsb(wIdSel)
+
+          fork(ar) :=> demuxInput
+          fork(sel) :=> demuxSelect
         }
       }
 
-      chext.elastic.Demux(
+      elastic.Demux(
         demuxInput,
         m_axi_.map { _.ar },
         demuxSelect
@@ -84,11 +76,24 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
 
     // TODO: construct the complete ID using the port number
     def rLogic: Unit = {
+      val r = Wire(Vec(numMasters, Irrevocable(axi4.full.ReadDataChannel(axiCfgMaster))))
+
+      m_axi_.map { _.r }.zip(r).zipWithIndex.foreach {
+        case ((source, sink), index) => {
+          new elastic.Transform(source, sink) {
+            protected def onTransform: Unit = {
+              out := in
+              out.id := in.id ## index.U(wIdSel.W)
+            }
+          }
+        }
+      }
+
       // R channel supports burst interleaving, so no isLastFn
-      chext.elastic.Arbiter(
-        m_axi_.map { _.r },
+      elastic.Arbiter(
+        r,
         s_axi_.r,
-        demuxCfg.arbiterPolicy
+        arbiterPolicy
       )
     }
 
@@ -100,36 +105,37 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     val portQueue = Module(
       new Queue(
         genSelect,
-        demuxCfg.capacityPortQueueW,
+        capacityPortQueueW,
         flow = true,
         pipe = true
       )
     )
 
     def awLogic: Unit = {
-      val genAwPort = new chext.bundles.Bundle2(s_axi_.aw.bits.cloneType, genSelect)
-      val awPort = Wire(Irrevocable(genAwPort))
-
-      val demuxInput = Wire(Irrevocable(s_axi_.aw.bits.cloneType))
+      val demuxInput = Wire(Irrevocable(axi4.full.WriteAddressChannel(axiCfgMaster)))
       val demuxSelect = Wire(Irrevocable(genSelect))
 
       new elastic.Fork(s_axi_.aw) {
         override protected def onFork = {
-          fork(in) :=> demuxInput
+          val sel = in.id.lsb(wIdSel)
+          val aw = Wire(axi4.full.WriteAddressChannel(axiCfgMaster))
 
-          // TODO: extract the bits/modify
-          fork(in.id) :=> demuxSelect
-          fork(in.id) :=> portQueue.io.enq
+          aw := in
+          aw.id := in.id.dropLsb(wIdSel)
+
+          fork(aw) :=> demuxInput
+          fork(sel) :=> demuxSelect
+          fork(sel) :=> portQueue.io.enq
         }
       }
 
-      chext.elastic.Demux(demuxInput, m_axi_.map { _.aw }, demuxSelect)
+      elastic.Demux(demuxInput, m_axi_.map { _.aw }, demuxSelect)
     }
 
     def wLogic: Unit = {
       // W channel does not support burst interleaving due to the selection logic
       // so isLastFn
-      chext.elastic.Demux(
+      elastic.Demux(
         s_axi_.w,
         m_axi_.map { _.w },
         portQueue.io.deq,
@@ -137,12 +143,24 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
       )
     }
 
-    // TODO: construct the complete ID using the port number
     def bLogic: Unit = {
-      chext.elastic.Arbiter(
-        m_axi_.map { _.b },
+      val b = Wire(Vec(numMasters, Irrevocable(axi4.full.WriteResponseChannel(axiCfgMaster))))
+
+      m_axi_.map { _.b }.zip(b).zipWithIndex.foreach {
+        case ((source, sink), index) => {
+          new elastic.Transform(source, sink) {
+            protected def onTransform: Unit = {
+              out := in
+              out.id := in.id ## index.U(wIdSel.W)
+            }
+          }
+        }
+      }
+
+      elastic.Arbiter(
+        b,
         s_axi_.b,
-        demuxCfg.arbiterPolicy
+        arbiterPolicy
       )
     }
 
@@ -151,6 +169,6 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     bLogic
   }
 
-  if (axiCfg.read) implRead()
-  if (axiCfg.write) implWrite()
+  if (axiCfgSlave.read) implRead()
+  if (axiCfgSlave.write) implWrite()
 }
