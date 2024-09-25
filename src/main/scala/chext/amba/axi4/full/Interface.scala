@@ -53,8 +53,16 @@ class ReadAddressChannel(implicit cfg: axi4.Config) extends AddressChannel {
   val user = Bits(cfg.wUserAR.W)
 }
 
+object ReadAddressChannel {
+  def apply(cfg: axi4.Config) = new ReadAddressChannel()(cfg)
+}
+
 class WriteAddressChannel(implicit cfg: axi4.Config) extends AddressChannel {
   val user = Bits(cfg.wUserAW.W)
+}
+
+object WriteAddressChannel {
+  def apply(cfg: axi4.Config) = new WriteAddressChannel()(cfg)
 }
 
 /** Read data channel. (R)
@@ -80,6 +88,10 @@ class ReadDataChannel(implicit cfg: axi4.Config) extends Bundle {
   val user = Bits(cfg.wUserR.W)
 }
 
+object ReadDataChannel {
+  def apply(cfg: axi4.Config) = new ReadDataChannel()(cfg)
+}
+
 /** Write data channel. (W)
   *
   * @param cfg
@@ -100,6 +112,10 @@ class WriteDataChannel(implicit cfg: axi4.Config) extends Bundle {
   val user = Bits(cfg.wUserW.W)
 }
 
+object WriteDataChannel {
+  def apply(cfg: axi4.Config) = new WriteDataChannel()(cfg)
+}
+
 /** Write response channel. (B)
   *
   * @param cfg
@@ -115,6 +131,10 @@ class WriteResponseChannel(implicit cfg: axi4.Config) extends Bundle {
 
   /** user-defined data */
   val user = Bits(cfg.wUserB.W)
+}
+
+object WriteResponseChannel {
+  def apply(cfg: axi4.Config) = new WriteResponseChannel()(cfg)
 }
 
 abstract class Interface extends Bundle {

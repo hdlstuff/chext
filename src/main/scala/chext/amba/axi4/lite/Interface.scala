@@ -22,6 +22,10 @@ class AddressChannel(implicit cfg: axi4.Config) extends Bundle {
   val prot = UInt(cfg.wProt.W)
 }
 
+object AddressChannel {
+  def apply(cfg: axi4.Config) = new AddressChannel()(cfg)
+}
+
 /** Read data channel. (R)
   *
   * @param cfg
@@ -34,6 +38,10 @@ class ReadDataChannel(implicit cfg: axi4.Config) extends Bundle {
 
   /** response flag */
   val resp = UInt(2.W)
+}
+
+object ReadDataChannel {
+  def apply(cfg: axi4.Config) = new ReadDataChannel()(cfg)
 }
 
 /** Write data channel. (W)
@@ -50,6 +58,10 @@ class WriteDataChannel(implicit cfg: axi4.Config) extends Bundle {
   val strb = UInt(cfg.wStrobe.W)
 }
 
+object WriteDataChannel {
+  def apply(cfg: axi4.Config) = new WriteDataChannel()(cfg)
+}
+
 /** Write response channel. (B)
   *
   * @param cfg
@@ -59,6 +71,10 @@ class WriteResponseChannel(implicit val cfg: axi4.Config) extends Bundle {
 
   /** response flag */
   val resp = UInt(2.W)
+}
+
+object WriteResponseChannel {
+  def apply(cfg: axi4.Config) = new WriteResponseChannel()(cfg)
 }
 
 abstract class Interface extends Bundle {
@@ -177,8 +193,7 @@ private class WriteInterface(implicit val cfg: axi4.Config) extends Interface {
   override val w = Irrevocable(new WriteDataChannel)
   override val b = Flipped(Irrevocable(new WriteResponseChannel))
 }
-private class ReadWriteInterface(implicit val cfg: axi4.Config)
-    extends Interface {
+private class ReadWriteInterface(implicit val cfg: axi4.Config) extends Interface {
   override val ar = Irrevocable(new AddressChannel)
   override val r = Flipped(Irrevocable(new ReadDataChannel))
   override val aw = Irrevocable(new AddressChannel)
