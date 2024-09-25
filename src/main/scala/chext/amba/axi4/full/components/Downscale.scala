@@ -113,7 +113,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module with DataWidthConverter
           }
 
           // TODO: Use a better line steering module
-          val shiftBytes = in._2.lowerByteIndex.resetLastN(log2Ceil(wDataMaster / 8))
+          val shiftBytes = in._2.lowerByteIndex.resetLsbN(log2Ceil(wDataMaster / 8))
           val outputData = dataReg | (in._1.data << (shiftBytes << 3))
 
           out.data := outputData
@@ -197,7 +197,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module with DataWidthConverter
       new elastic.Arrival(s_axi.w, m_axi.w) {
         protected def onArrival: Unit = {
           val shiftBytes =
-            addressStrobeDeq.bits.lowerByteIndex.resetLastN(log2Ceil(wDataMaster / 8))
+            addressStrobeDeq.bits.lowerByteIndex.resetLsbN(log2Ceil(wDataMaster / 8))
 
           // TODO: Lane steering module
           out.data := (in.data >> (shiftBytes << 3))

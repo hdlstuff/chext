@@ -84,7 +84,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module with DataWidthConverterLike
           // Depending on the data widths, addressStrobe.lowerByteIndex is constrained.
           // TODO: create a new module for doing this more optimally.
           //
-          val shiftBytes = addressStrobe.lowerByteIndex.resetLastN(log2Ceil(wDataSlave / 8))
+          val shiftBytes = addressStrobe.lowerByteIndex.resetLsbN(log2Ceil(wDataSlave / 8))
           out.data := beat.data >> (shiftBytes << 3)
 
           out.id := beat.id // must be zero
@@ -137,7 +137,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module with DataWidthConverterLike
         override protected def onJoin: Unit = {
           val beat = join(s_axi.w)
           val addressStrobe = join(addressStrobeQueue.io.deq)
-          val shiftBytes = addressStrobe.lowerByteIndex.resetLastN(log2Ceil(wDataSlave / 8))
+          val shiftBytes = addressStrobe.lowerByteIndex.resetLsbN(log2Ceil(wDataSlave / 8))
 
           // TODO: the same concern as above
           out.data := beat.data << (shiftBytes << 3)
