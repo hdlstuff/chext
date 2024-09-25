@@ -33,6 +33,7 @@ case class DemuxConfig(
   require(numIdsTrackedWrite > 0)
   require(numOutstandingRead > 0)
   require(numOutstandingWrite > 0)
+  require(capacityPortQueueW > 0)
 
   val wIdTrackedRead: Int = log2Ceil(numIdsTrackedRead + 1)
   val wIdTrackedWrite: Int = log2Ceil(numIdsTrackedWrite + 1)

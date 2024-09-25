@@ -23,7 +23,11 @@ case class DemuxConfig(
     val capacityPortQueueB: Int = 8,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0)
-)
+) {
+  require(capacityPortQueueR > 0)
+  require(capacityPortQueueW > 0)
+  require(capacityPortQueueB > 0)
+}
 
 class Demux(
     val axiCfg: axi4.Config,
