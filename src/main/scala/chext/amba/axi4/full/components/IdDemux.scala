@@ -74,7 +74,6 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
       )
     }
 
-    // TODO: construct the complete ID using the port number
     def rLogic: Unit = {
       val r = Wire(Vec(numMasters, Irrevocable(axi4.full.ReadDataChannel(axiCfgMaster))))
 
