@@ -32,14 +32,11 @@ case class IdDemuxConfig(
   require(capacityPortQueueW > 0)
 
   val numMasters = 1 << wIdSel
-
   val axiCfgMaster = axiCfgSlave.copy(wId = axiCfgSlave.wId - wIdSel)
 }
 
 class IdDemux(val cfg: IdDemuxConfig) extends Module {
   import cfg._
-
-  override def desiredName: String = "axi4FullIdDemux"
 
   val s_axi = IO(axi4.full.Slave(axiCfgSlave))
   val m_axi = IO(Vec(numMasters, axi4.full.Master(axiCfgMaster)))

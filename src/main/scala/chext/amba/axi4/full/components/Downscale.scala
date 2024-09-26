@@ -26,7 +26,8 @@ case class DownscaleConfig(
   require(wDataMaster >= 8)
   require(isPow2(wDataMaster))
 
-  require(axiCfgSlave.wUserR == 0, "user data is not supported on channel R.")
+  require(axiCfgSlave.wUserR == 0, "User data is not supported on channel R.")
+  require(!axiCfgSlave.axi3Compat, "Downscale cannot work in Axi3 compatibility mode!")
 
   val wDataSlave = axiCfgSlave.wData
   val wAddr = axiCfgSlave.wAddr
