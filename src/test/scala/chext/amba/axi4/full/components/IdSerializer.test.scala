@@ -29,11 +29,12 @@ class IdSerializerZeroDut extends Module {
     master :=> slave
   }
 
-  private val idSerializer = Module(new IdSerializerZero(mux.axiCfgMaster))
+  private val idSerializerCfg = IdSerializerConfig(mux.axiCfgMaster)
+  private val idSerializer = Module(new IdSerializer(idSerializerCfg))
   mux.m_axi :=> idSerializer.s_axi
 
   private val memBridge = Module(
-    new chext.ip.memory.Axi4FullToReadWriteBridge(idSerializer.axiMasterCfg)
+    new chext.ip.memory.Axi4FullToReadWriteBridge(idSerializerCfg.axiCfgMaster)
   )
   idSerializer.m_axi :=> memBridge.s_axi
 
@@ -132,13 +133,16 @@ class IdSerializerDut extends Module {
     master :=> slave
   }
 
-  private val idSerializer = Module(
-    new IdSerializer(mux.axiCfgMaster, IdSerializerConfig(wIdSelect = 2))
+  private val protocolConverterCfg = ProtocolConverterConfig(
+    mux.axiCfgMaster,
+    mux.axiCfgMaster.copy(wId = 0)
   )
+  println(protocolConverterCfg)
+  private val idSerializer = Module(new ProtocolConverter(protocolConverterCfg))
   mux.m_axi :=> idSerializer.s_axi
 
   private val memBridge = Module(
-    new chext.ip.memory.Axi4FullToReadWriteBridge(idSerializer.axiMasterCfg)
+    new chext.ip.memory.Axi4FullToReadWriteBridge(protocolConverterCfg.axiCfgMaster)
   )
   idSerializer.m_axi :=> memBridge.s_axi
 
@@ -158,7 +162,7 @@ class IdSerializerDut extends Module {
 }
 
 class IdSerializerSpec extends chext.test.FreeSpec with chext.test.TestMixin {
-  useVerilator()
+  // useVerilator()
   enableVcd()
 
   chext.ip.memory.Target.setCurrent(chext.ip.memory.chisel.Target)
