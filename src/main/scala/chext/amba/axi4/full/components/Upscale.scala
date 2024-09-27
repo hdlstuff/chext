@@ -14,28 +14,28 @@ import chext.util.BitOps._
 import axi4.full.components.addrgen
 
 case class UpscaleConfig(
-    val axiCfgSlave: axi4.Config,
+    val axiSlaveCfg: axi4.Config,
     val wDataMaster: Int,
     val readAddressStrobeQueueLength: Int = 16,
     val writeAddressStrobeQueueLength: Int = 16
 ) {
-  require(axiCfgSlave.wId == 0, "axiCfgSlave.wId must be zero!")
-  require(!axiCfgSlave.lite, "axiCfgSlave.lite must be false!")
-  require(wDataMaster > axiCfgSlave.wData, "wDataMaster must be > axiCfgSlave.wData")
+  require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
+  require(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
+  require(wDataMaster > axiSlaveCfg.wData, "wDataMaster must be > axiSlaveCfg.wData")
 
   require(wDataMaster >= 8)
   require(isPow2(wDataMaster))
 
-  val wDataSlave = axiCfgSlave.wData
-  val wAddr = axiCfgSlave.wAddr
-  val axiCfgMaster = axiCfgSlave.copy(wData = wDataMaster)
+  val wDataSlave = axiSlaveCfg.wData
+  val wAddr = axiSlaveCfg.wAddr
+  val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
 }
 
 class Upscale(val cfg: UpscaleConfig) extends Module {
   import cfg._
 
-  val s_axi = IO(axi4.full.Slave(axiCfgSlave))
-  val m_axi = IO(axi4.full.Master(axiCfgMaster))
+  val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
+  val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private def implRead(): Unit = prefix("read") {
     val addressStrobeGenerator =
@@ -158,6 +158,6 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
     implB()
   }
 
-  if (axiCfgSlave.read) implRead()
-  if (axiCfgSlave.write) implWrite()
+  if (axiSlaveCfg.read) implRead()
+  if (axiSlaveCfg.write) implWrite()
 }

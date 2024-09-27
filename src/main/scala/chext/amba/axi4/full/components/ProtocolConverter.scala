@@ -10,68 +10,68 @@ import elastic.ConnectOp._
 import axi4.Ops._
 
 case class ProtocolConverterConfig(
-    val axiCfgSlave: axi4.Config,
-    val axiCfgMaster: axi4.Config,
+    val axiSlaveCfg: axi4.Config,
+    val axiMasterCfg: axi4.Config,
     val slaveNeverBursts: Boolean = false,
     val desiredName: String = "protocolConverter"
 ) {
 
-  val wDataSlave = axiCfgSlave.wData
-  val wDataMaster = axiCfgMaster.wData
+  val wDataSlave = axiSlaveCfg.wData
+  val wDataMaster = axiMasterCfg.wData
 
   /** Parallelism in the ID dimension. */
-  val wIdEffective = Seq(axiCfgSlave.wId, axiCfgMaster.wId).min
+  val wIdEffective = Seq(axiSlaveCfg.wId, axiMasterCfg.wId).min
 
   val isPassthrough = {
-    val cfg0 = axiCfgSlave.copy(wId = 0, wAddr = 0)
-    val cfg1 = axiCfgMaster.copy(wId = 0, wAddr = 0)
+    val cfg0 = axiSlaveCfg.copy(wId = 0, wAddr = 0)
+    val cfg1 = axiMasterCfg.copy(wId = 0, wAddr = 0)
 
     val cond0 = cfg0 == cfg1
-    val cond1 = axiCfgMaster.wId >= axiCfgSlave.wId
+    val cond1 = axiMasterCfg.wId >= axiSlaveCfg.wId
 
     cond0 && cond1
   }
 
-  val axiCfgSlaveInternal = axiCfgSlave.copy(axi3Compat = false)
-  val axiCfgMasterInternal = axiCfgMaster.copy(axi3Compat = false)
+  val axiSlaveCfgInternal = axiSlaveCfg.copy(axi3Compat = false)
+  val axiMasterCfgInternal = axiMasterCfg.copy(axi3Compat = false)
 
   val idDemuxCfg =
-    if (wIdEffective > 0) Some(IdDemuxConfig(axiCfgSlaveInternal, wIdEffective))
+    if (wIdEffective > 0) Some(IdDemuxConfig(axiSlaveCfgInternal, wIdEffective))
     else None
 
   val idSerializerCfg =
-    if (!isPassthrough && axiCfgSlaveInternal.wId != wIdEffective)
-      Some(IdSerializerConfig(axiCfgSlaveInternal.copy(wId = axiCfgSlave.wId - wIdEffective)))
+    if (!isPassthrough && axiSlaveCfgInternal.wId != wIdEffective)
+      Some(IdSerializerConfig(axiSlaveCfgInternal.copy(wId = axiSlaveCfg.wId - wIdEffective)))
     else
       None
 
   val upscaleCfg =
     if (wDataSlave < wDataMaster)
-      Some(UpscaleConfig(axiCfgSlaveInternal.copy(wId = 0), wDataMaster))
+      Some(UpscaleConfig(axiSlaveCfgInternal.copy(wId = 0), wDataMaster))
     else
       None
 
   val burstSplitter1Cfg =
     if ((wDataSlave > wDataMaster) && !slaveNeverBursts)
-      Some(BurstSplitterConfig(axiCfgSlaveInternal.copy(wId = 0)))
+      Some(BurstSplitterConfig(axiSlaveCfgInternal.copy(wId = 0)))
     else
       None
 
   val downscaleCfg =
     if (wDataSlave > wDataMaster)
-      Some(DownscaleConfig(axiCfgSlaveInternal.copy(wId = 0), wDataMaster))
+      Some(DownscaleConfig(axiSlaveCfgInternal.copy(wId = 0), wDataMaster))
     else
       None
 
   val burstSplitter2Cfg =
-    if (axiCfgMaster.axi3Compat)
-      Some(BurstSplitterConfig(axiCfgSlaveInternal.copy(wId = 0, wData = wDataMaster)))
+    if (axiMasterCfg.axi3Compat)
+      Some(BurstSplitterConfig(axiSlaveCfgInternal.copy(wId = 0, wData = wDataMaster)))
     else
       None
 
   val idMuxCfg =
     if (wIdEffective > 0)
-      Some(IdMuxConfig(axiCfgSlaveInternal.copy(wId = 0, wData = wDataMaster), wIdEffective))
+      Some(IdMuxConfig(axiSlaveCfgInternal.copy(wId = 0, wData = wDataMaster), wIdEffective))
     else
       None
 }
@@ -172,8 +172,8 @@ private class AxiFullStages {
 class ProtocolConverter(cfg: ProtocolConverterConfig) extends Module {
   import cfg._
 
-  val s_axi = IO(axi4.full.Slave(axiCfgSlave))
-  val m_axi = IO(axi4.full.Master(axiCfgMaster))
+  val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
+  val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   override def desiredName: String = cfg.desiredName
 
@@ -182,8 +182,8 @@ class ProtocolConverter(cfg: ProtocolConverterConfig) extends Module {
   } else {
     val stages = new AxiFullStages
 
-    val s_axi_internal = Wire(axi4.full.Interface(axiCfgSlaveInternal))
-    val m_axi_internal = Wire(axi4.full.Interface(axiCfgMasterInternal))
+    val s_axi_internal = Wire(axi4.full.Interface(axiSlaveCfgInternal))
+    val m_axi_internal = Wire(axi4.full.Interface(axiMasterCfgInternal))
 
     // drives the internal wire
     s_axi :=> s_axi_internal

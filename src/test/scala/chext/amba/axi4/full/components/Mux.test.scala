@@ -13,16 +13,16 @@ import axi4.full.components.{InterconnectTester, InterconnectHelper}
 class MuxSpec extends chext.test.FreeSpec {
   val numSlaves = 4
   def moduleFn = new Mux(
-    axi4.Config(
-      wId = 4,
-      wAddr = 32,
-      wData = 32,
-      read = true,
-      write = true,
-      lite = false
-    ),
-    numSlaves,
     MuxConfig(
+      axi4.Config(
+        wId = 4,
+        wAddr = 32,
+        wData = 32,
+        read = true,
+        write = true,
+        lite = false
+      ),
+      numSlaves,
       slaveBuffers = axi4.BufferConfig.all(2),
       masterBuffers = axi4.BufferConfig.all(2)
     )

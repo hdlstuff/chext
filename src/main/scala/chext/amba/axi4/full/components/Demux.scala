@@ -20,6 +20,9 @@ import bundles._
 import elastic.{Chooser, Arrival, Fork}
 
 case class DemuxConfig(
+    val axiSlaveCfg: chext.amba.axi4.Config,
+    val numMasters: Int = 4,
+    val decodeFn: (UInt) => (UInt),
     val numIdsTrackedRead: Int = 4,
     val numIdsTrackedWrite: Int = 4,
     val numOutstandingRead: Int = 16,
@@ -29,6 +32,10 @@ case class DemuxConfig(
     val masterBuffers: BufferConfig = BufferConfig.all(0),
     val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
 ) {
+  require(!axiSlaveCfg.lite)
+  require(axiSlaveCfg.read || axiSlaveCfg.write)
+  require(numMasters > 0)
+
   require(numIdsTrackedRead > 0)
   require(numIdsTrackedWrite > 0)
   require(numOutstandingRead > 0)
@@ -39,37 +46,33 @@ case class DemuxConfig(
   val wIdTrackedWrite: Int = log2Ceil(numIdsTrackedWrite + 1)
   val wOutstandingRead: Int = log2Ceil(numOutstandingRead + 1)
   val wOutstandingWrite: Int = log2Ceil(numOutstandingWrite + 1)
+
+  val wPort = log2Ceil(numMasters)
+
+  val axiMasterCfg = axiSlaveCfg
 }
 
-class Demux(
-    val axiCfg: chext.amba.axi4.Config,
-    val numMasters: Int = 4,
-    val decodeFn: (UInt) => (UInt),
-    val demuxCfg: DemuxConfig = DemuxConfig()
-) extends Module {
-  require(!axiCfg.lite)
-  require(axiCfg.read || axiCfg.write)
-  require(numMasters > 0)
+class Demux(cfg: DemuxConfig) extends Module {
+  import cfg._
 
   override def desiredName: String = "axi4FullDemux"
 
-  val s_axi = IO(axi4.full.Slave(axiCfg))
-  val m_axi = IO(Vec(numMasters, axi4.full.Master(axiCfg)))
+  val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
+  val m_axi = IO(Vec(numMasters, axi4.full.Master(axiMasterCfg)))
 
-  private val s_axi_ = SlaveBuffer(s_axi, demuxCfg.slaveBuffers)
+  private val s_axi_ = SlaveBuffer(s_axi, slaveBuffers)
   private val m_axi_ = m_axi.map { (x) =>
-    MasterBuffer(x, demuxCfg.masterBuffers)
+    MasterBuffer(x, masterBuffers)
   }
 
-  private val wPort = log2Ceil(numMasters)
   private val genPort = UInt(wPort.W)
 
   private def implRead(): Unit = prefix("read") {
     val transactionTracker = Module(
       new helpers.TransactionTracker(
-        demuxCfg.wIdTrackedRead,
+        wIdTrackedRead,
         wPort,
-        demuxCfg.wOutstandingRead
+        wOutstandingRead
       )
     )
 
@@ -121,7 +124,7 @@ class Demux(
       chext.elastic.Arbiter(
         m_axi_.map { _.r },
         s_axi_.r,
-        demuxCfg.arbiterPolicy
+        arbiterPolicy
       )
 
       when(s_axi_.r.fire && s_axi_.r.bits.last) {
@@ -136,9 +139,9 @@ class Demux(
   private def implWrite(): Unit = prefix("write") {
     val transactionTracker = Module(
       new helpers.TransactionTracker(
-        demuxCfg.wIdTrackedRead,
+        wIdTrackedRead,
         wPort,
-        demuxCfg.wOutstandingRead
+        wOutstandingRead
       )
     )
 
@@ -149,7 +152,7 @@ class Demux(
     val portQueue = Module(
       new Queue(
         genPort,
-        demuxCfg.capacityPortQueueW,
+        capacityPortQueueW,
         flow = true,
         pipe = true
       )
@@ -206,7 +209,7 @@ class Demux(
       chext.elastic.Arbiter(
         m_axi_.map { _.b },
         s_axi_.b,
-        demuxCfg.arbiterPolicy
+        arbiterPolicy
       )
 
       when(s_axi_.b.fire) {
@@ -219,22 +222,24 @@ class Demux(
     bLogic
   }
 
-  if (axiCfg.read) implRead()
-  if (axiCfg.write) implWrite()
+  if (axiSlaveCfg.read) implRead()
+  if (axiSlaveCfg.write) implWrite()
 }
 
 object DemuxEmitter extends App {
   def demuxModule = new Demux(
-    chext.amba.axi4.Config(
-      wId = 4,
-      wAddr = 32,
-      wData = 256,
-      read = true,
-      write = true,
-      lite = false
-    ),
-    numMasters = 8,
-    decodeFn = (_ >> 8)
+    DemuxConfig(
+      chext.amba.axi4.Config(
+        wId = 4,
+        wAddr = 32,
+        wData = 256,
+        read = true,
+        write = true,
+        lite = false
+      ),
+      8,
+      (_ >> 8)
+    )
   )
 
   emitVerilog(demuxModule, Array("--target-dir", "output/"))

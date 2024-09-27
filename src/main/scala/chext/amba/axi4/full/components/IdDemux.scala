@@ -20,26 +20,26 @@ import axi4.full.{
 }
 
 case class IdDemuxConfig(
-    val axiCfgSlave: chext.amba.axi4.Config,
+    val axiSlaveCfg: chext.amba.axi4.Config,
     val wIdSel: Int,
     val capacityPortQueueW: Int = 8,
     val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr
 ) {
-  require(!axiCfgSlave.lite)
-  require(axiCfgSlave.read || axiCfgSlave.write)
+  require(!axiSlaveCfg.lite)
+  require(axiSlaveCfg.read || axiSlaveCfg.write)
   require(wIdSel >= 0)
-  require(axiCfgSlave.wId >= wIdSel)
+  require(axiSlaveCfg.wId >= wIdSel)
   require(capacityPortQueueW > 0)
 
   val numMasters = 1 << wIdSel
-  val axiCfgMaster = axiCfgSlave.copy(wId = axiCfgSlave.wId - wIdSel)
+  val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId - wIdSel)
 }
 
 class IdDemux(val cfg: IdDemuxConfig) extends Module {
   import cfg._
 
-  val s_axi = IO(axi4.full.Slave(axiCfgSlave))
-  val m_axi = IO(Vec(numMasters, axi4.full.Master(axiCfgMaster)))
+  val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
+  val m_axi = IO(Vec(numMasters, axi4.full.Master(axiMasterCfg)))
 
   private val s_axi_ = s_axi
   private val m_axi_ = m_axi
@@ -48,13 +48,13 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      val demuxInput = Wire(Irrevocable(axi4.full.ReadAddressChannel(axiCfgMaster)))
+      val demuxInput = Wire(Irrevocable(axi4.full.ReadAddressChannel(axiMasterCfg)))
       val demuxSelect = Wire(Irrevocable(genSelect))
 
       new elastic.Fork(s_axi_.ar) {
         override protected def onFork = {
           val sel = in.id.lsb(wIdSel)
-          val ar = Wire(axi4.full.ReadAddressChannel(axiCfgMaster))
+          val ar = Wire(axi4.full.ReadAddressChannel(axiMasterCfg))
 
           ar := in
           ar.id := in.id.dropLsb(wIdSel)
@@ -72,7 +72,7 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     }
 
     def rLogic: Unit = {
-      val r = Wire(Vec(numMasters, Irrevocable(axi4.full.ReadDataChannel(axiCfgMaster))))
+      val r = Wire(Vec(numMasters, Irrevocable(axi4.full.ReadDataChannel(axiMasterCfg))))
 
       m_axi_.map { _.r }.zip(r).zipWithIndex.foreach {
         case ((source, sink), index) => {
@@ -108,13 +108,13 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     )
 
     def awLogic: Unit = {
-      val demuxInput = Wire(Irrevocable(axi4.full.WriteAddressChannel(axiCfgMaster)))
+      val demuxInput = Wire(Irrevocable(axi4.full.WriteAddressChannel(axiMasterCfg)))
       val demuxSelect = Wire(Irrevocable(genSelect))
 
       new elastic.Fork(s_axi_.aw) {
         override protected def onFork = {
           val sel = in.id.lsb(wIdSel)
-          val aw = Wire(axi4.full.WriteAddressChannel(axiCfgMaster))
+          val aw = Wire(axi4.full.WriteAddressChannel(axiMasterCfg))
 
           aw := in
           aw.id := in.id.dropLsb(wIdSel)
@@ -140,7 +140,7 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     }
 
     def bLogic: Unit = {
-      val b = Wire(Vec(numMasters, Irrevocable(axi4.full.WriteResponseChannel(axiCfgMaster))))
+      val b = Wire(Vec(numMasters, Irrevocable(axi4.full.WriteResponseChannel(axiMasterCfg))))
 
       m_axi_.map { _.b }.zip(b).zipWithIndex.foreach {
         case ((source, sink), index) => {
@@ -165,6 +165,6 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     bLogic
   }
 
-  if (axiCfgSlave.read) implRead()
-  if (axiCfgSlave.write) implWrite()
+  if (axiSlaveCfg.read) implRead()
+  if (axiSlaveCfg.write) implWrite()
 }

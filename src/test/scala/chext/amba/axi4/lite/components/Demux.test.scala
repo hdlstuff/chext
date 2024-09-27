@@ -20,15 +20,17 @@ class DemuxSpec extends chext.test.FreeSpec {
   }
 
   def moduleFn = new Demux(
-    chext.amba.axi4.Config(
-      wAddr = 32,
-      wData = 32,
-      read = true,
-      write = true,
-      lite = true
-    ),
-    numMasters,
-    decodeFn
+    DemuxConfig(
+      chext.amba.axi4.Config(
+        wAddr = 32,
+        wData = 32,
+        read = true,
+        write = true,
+        lite = true
+      ),
+      numMasters,
+      decodeFn
+    )
   )
 
   enableVcd()

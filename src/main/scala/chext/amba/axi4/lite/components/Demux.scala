@@ -18,45 +18,48 @@ import axi4.lite.{SlaveBuffer, MasterBuffer}
 import chext.bundles._
 
 case class DemuxConfig(
+    val axiSlaveCfg: axi4.Config,
+    val numMasters: Int = 4,
+    val decodeFn: (UInt) => (UInt),
     val capacityPortQueueR: Int = 8,
     val capacityPortQueueW: Int = 8,
     val capacityPortQueueB: Int = 8,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0)
 ) {
+  require(axiSlaveCfg.lite, "should use AXI4 lite")
+  require(axiSlaveCfg.read || axiSlaveCfg.write, "must be at least read or write")
+  require(numMasters > 0, "number of masters must be positive")
+
   require(capacityPortQueueR > 0)
   require(capacityPortQueueW > 0)
   require(capacityPortQueueB > 0)
+
+  val wPort = log2Up(numMasters)
+
+  val axiMasterCfg = axiSlaveCfg
 }
 
-class Demux(
-    val axiCfg: axi4.Config,
-    val numMasters: Int = 4,
-    val decodeFn: (UInt) => (UInt),
-    val demuxCfg: DemuxConfig = DemuxConfig()
-) extends Module {
-  require(axiCfg.lite, "should use AXI4 lite")
-  require(axiCfg.read || axiCfg.write, "must be at least read or write")
-  require(numMasters > 0, "number of masters must be positive")
+class Demux(val cfg: DemuxConfig) extends Module {
+  import cfg._
 
   override def desiredName: String = "axi4LiteDemux"
 
-  val s_axil = IO(axi4.lite.Slave(axiCfg))
-  val m_axil = IO(Vec(numMasters, axi4.lite.Master(axiCfg)))
+  val s_axil = IO(axi4.lite.Slave(axiSlaveCfg))
+  val m_axil = IO(Vec(numMasters, axi4.lite.Master(axiMasterCfg)))
 
-  private val wPort = log2Up(numMasters)
   private val genPort = UInt(wPort.W)
 
-  val s_axil_ = SlaveBuffer(s_axil, demuxCfg.slaveBuffers)
-  val m_axil_ = m_axil.map { (x) =>
-    MasterBuffer(x, demuxCfg.masterBuffers)
+  private val s_axil_ = SlaveBuffer(s_axil, slaveBuffers)
+  private val m_axil_ = m_axil.map { (x) =>
+    MasterBuffer(x, masterBuffers)
   }
 
   private def implRead(): Unit = prefix("read") {
     val portQueue = Module(
       new Queue(
         genPort,
-        demuxCfg.capacityPortQueueR,
+        capacityPortQueueR,
         flow = true,
         pipe = true
       )
@@ -100,7 +103,7 @@ class Demux(
     val portQueueW = Module(
       new Queue(
         genPort,
-        demuxCfg.capacityPortQueueW,
+        capacityPortQueueW,
         flow = true,
         pipe = true
       )
@@ -109,7 +112,7 @@ class Demux(
     val portQueueB = Module(
       new Queue(
         genPort,
-        demuxCfg.capacityPortQueueB,
+        capacityPortQueueB,
         flow = true,
         pipe = true
       )
@@ -156,6 +159,6 @@ class Demux(
     bLogic
   }
 
-  if (axiCfg.read) implRead()
-  if (axiCfg.write) implWrite()
+  if (axiSlaveCfg.read) implRead()
+  if (axiSlaveCfg.write) implWrite()
 }

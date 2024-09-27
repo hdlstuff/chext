@@ -14,15 +14,15 @@ import elastic.TransformOp._
 import elastic.ConnectOp._
 
 case class IdSerializerConfig(
-    val axiCfgSlave: axi4.Config,
+    val axiSlaveCfg: axi4.Config,
     val capacityIdQueueR: Int = 4,
     val capacityIdQueueW: Int = 4,
     val wIdSelect: Int = 0
 ) {
-  require(!axiCfgSlave.lite)
-  require(axiCfgSlave.read || axiCfgSlave.write)
+  require(!axiSlaveCfg.lite)
+  require(axiSlaveCfg.read || axiSlaveCfg.write)
 
-  val axiCfgMaster = axiCfgSlave.copy(wId = 0)
+  val axiMasterCfg = axiSlaveCfg.copy(wId = 0)
 }
 
 /** Serializes the AXI transactions to a single ID, which is 0.
@@ -35,10 +35,10 @@ class IdSerializer(val cfg: IdSerializerConfig) extends Module {
 
   override def desiredName: String = "axi4FullIdSerializerZero"
 
-  val s_axi = IO(axi4.full.Slave(axiCfgSlave))
-  val m_axi = IO(axi4.full.Master(axiCfgMaster))
+  val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
+  val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
-  private val genId = UInt(axiCfgSlave.wId.W)
+  private val genId = UInt(axiSlaveCfg.wId.W)
 
   private def implRead(): Unit = prefix("read") {
     val idQueue = Module(
@@ -106,6 +106,6 @@ class IdSerializer(val cfg: IdSerializerConfig) extends Module {
     }
   }
 
-  if (axiCfgSlave.read) implRead()
-  if (axiCfgMaster.write) implWrite()
+  if (axiSlaveCfg.read) implRead()
+  if (axiMasterCfg.write) implWrite()
 }

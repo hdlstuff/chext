@@ -14,31 +14,31 @@ import axi4.Casts._
 import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
 
 case class IdMuxConfig(
-    val axiCfgSlave: axi4.Config,
+    val axiSlaveCfg: axi4.Config,
     val wIdSel: Int,
     val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
 ) {
-  require(!axiCfgSlave.lite)
-  require(axiCfgSlave.read || axiCfgSlave.write)
+  require(!axiSlaveCfg.lite)
+  require(axiSlaveCfg.read || axiSlaveCfg.write)
   require(wIdSel >= 0)
 
   val numSlaves = 1 << wIdSel
-  val axiCfgMaster = axiCfgSlave.copy(wId = axiCfgSlave.wId + wIdSel)
+  val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId + wIdSel)
 }
 
 class IdMux(val cfg: IdMuxConfig) extends Module {
   import cfg._
 
-  val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiCfgSlave)))
-  val m_axi = IO(axi4.full.Master(axiCfgMaster))
+  val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiSlaveCfg)))
+  val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private val s_axi_ = {
-    val result = Wire(Vec(numSlaves, axi4.full.Interface(axiCfgMaster)))
+    val result = Wire(Vec(numSlaves, axi4.full.Interface(axiMasterCfg)))
 
-    if (axiCfgSlave.read)
+    if (axiSlaveCfg.read)
       helpers.IdExtend.read(s_axi, result)
 
-    if (axiCfgSlave.write)
+    if (axiSlaveCfg.write)
       helpers.IdExtend.write(s_axi, result)
 
     result
@@ -59,7 +59,7 @@ class IdMux(val cfg: IdMuxConfig) extends Module {
       new Fork(m_axi_.r) {
         protected def onFork: Unit = {
           fork { in } :=> demuxInput
-          fork { in.id >> axiCfgSlave.wId } :=> demuxSelect
+          fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
         }
       }
 
@@ -101,7 +101,7 @@ class IdMux(val cfg: IdMuxConfig) extends Module {
       new Fork(m_axi_.b) {
         protected def onFork: Unit = {
           fork { in } :=> demuxInput
-          fork { in.id >> axiCfgSlave.wId } :=> demuxSelect
+          fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
         }
       }
 
@@ -113,6 +113,6 @@ class IdMux(val cfg: IdMuxConfig) extends Module {
     bLogic
   }
 
-  if (axiCfgSlave.read) implRead()
-  if (axiCfgSlave.write) implWrite()
+  if (axiSlaveCfg.read) implRead()
+  if (axiSlaveCfg.write) implWrite()
 }

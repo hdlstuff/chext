@@ -20,16 +20,18 @@ class DemuxSpec extends chext.test.FreeSpec {
   }
 
   def moduleFn = new Demux(
-    axi4.Config(
-      wId = 4,
-      wAddr = 32,
-      wData = 32,
-      read = true,
-      write = true,
-      lite = false
-    ),
-    numMasters,
-    decodeFn
+    DemuxConfig(
+      axi4.Config(
+        wId = 4,
+        wAddr = 32,
+        wData = 32,
+        read = true,
+        write = true,
+        lite = false
+      ),
+      numMasters,
+      decodeFn
+    )
   )
 
   enableVcd()
@@ -48,9 +50,9 @@ class DemuxSpec extends chext.test.FreeSpec {
 
     /** The expected test failure behavior is a deadlock.
       *
-      * If a deadlock happens, you can enable logging for debugging. Note that
-      * VSCode "Debug Console" stops printing log messages after some time, so
-      * to make sure that every event is visible, use `sbt Test`.
+      * If a deadlock happens, you can enable logging for debugging. Note that VSCode "Debug
+      * Console" stops printing log messages after some time, so to make sure that every event is
+      * visible, use `sbt Test`.
       */
     new InterconnectTester(_, true) {
       protected def createTasks(): Unit = {

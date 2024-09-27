@@ -14,49 +14,50 @@ import axi4.Casts._
 import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
 
 case class MuxConfig(
+    val axiSlaveCfg: axi4.Config,
+    val numSlaves: Int = 4,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
     val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
-)
-
-class Mux(
-    val axiCfgSlave: axi4.Config,
-    val numSlaves: Int = 4,
-    val muxCfg: MuxConfig = MuxConfig()
-) extends Module {
-  require(!axiCfgSlave.lite)
-  require(axiCfgSlave.read || axiCfgSlave.write)
+) {
+  require(!axiSlaveCfg.lite)
+  require(axiSlaveCfg.read || axiSlaveCfg.write)
   require(numSlaves > 0)
+
+  val wPort = log2Ceil(numSlaves)
+  val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId + wPort)
+}
+
+class Mux(val cfg: MuxConfig) extends Module {
+  import cfg._
 
   override def desiredName: String = "axi4FullMux"
 
-  private val wPort = log2Ceil(numSlaves)
   private val genPort = UInt(wPort.W)
-  val axiCfgMaster = axiCfgSlave.copy(wId = axiCfgSlave.wId + wPort)
 
-  val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiCfgSlave)))
-  val m_axi = IO(axi4.full.Master(axiCfgMaster))
+  val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiSlaveCfg)))
+  val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private val s_axi_ = {
-    val result = Wire(Vec(numSlaves, axi4.full.Interface(axiCfgMaster)))
+    val result = Wire(Vec(numSlaves, axi4.full.Interface(axiMasterCfg)))
 
     val buffered = s_axi.map { (x) =>
-      SlaveBuffer(x, muxCfg.slaveBuffers)
+      SlaveBuffer(x, slaveBuffers)
     }
 
-    if (axiCfgSlave.read)
+    if (axiSlaveCfg.read)
       helpers.IdExtend.read(buffered, result)
 
-    if (axiCfgSlave.write)
+    if (axiSlaveCfg.write)
       helpers.IdExtend.write(buffered, result)
 
     result
   }
-  private val m_axi_ = MasterBuffer(m_axi, muxCfg.masterBuffers)
+  private val m_axi_ = MasterBuffer(m_axi, masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      elastic.Arbiter(s_axi_.map { _.ar }, m_axi_.ar, muxCfg.arbiterPolicy)
+      elastic.Arbiter(s_axi_.map { _.ar }, m_axi_.ar, arbiterPolicy)
     }
 
     def rLogic: Unit = {
@@ -66,7 +67,7 @@ class Mux(
       new Fork(m_axi_.r) {
         protected def onFork: Unit = {
           fork { in } :=> demuxInput
-          fork { in.id >> axiCfgSlave.wId } :=> demuxSelect
+          fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
         }
       }
 
@@ -85,7 +86,7 @@ class Mux(
       elastic.Arbiter(
         s_axi_.map { _.aw },
         m_axi_.aw,
-        muxCfg.arbiterPolicy,
+        arbiterPolicy,
         Some(portQueue.io.enq)
       )
     }
@@ -108,7 +109,7 @@ class Mux(
       new Fork(m_axi_.b) {
         protected def onFork: Unit = {
           fork { in } :=> demuxInput
-          fork { in.id >> axiCfgSlave.wId } :=> demuxSelect
+          fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
         }
       }
 
@@ -120,21 +121,23 @@ class Mux(
     bLogic
   }
 
-  if (axiCfgSlave.read) implRead()
-  if (axiCfgSlave.write) implWrite()
+  if (axiSlaveCfg.read) implRead()
+  if (axiSlaveCfg.write) implWrite()
 }
 
 object MuxEmitter extends App {
   def muxModule = new Mux(
-    axi4.Config(
-      wId = 4,
-      wAddr = 32,
-      wData = 256,
-      read = true,
-      write = true,
-      lite = false
-    ),
-    numSlaves = 8
+    MuxConfig(
+      axi4.Config(
+        wId = 4,
+        wAddr = 32,
+        wData = 256,
+        read = true,
+        write = true,
+        lite = false
+      ),
+      numSlaves = 8
+    )
   )
 
   emitVerilog(muxModule, Array("--target-dir", "output/"))

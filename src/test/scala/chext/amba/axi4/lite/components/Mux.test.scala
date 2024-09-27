@@ -12,14 +12,16 @@ import axi4.lite.components.{InterconnectTester, InterconnectHelper}
 
 class MuxSpec extends chext.test.FreeSpec {
   def moduleFn = new Mux(
-    axi4.Config(
-      wAddr = 32,
-      wData = 32,
-      read = true,
-      write = true,
-      lite = true
-    ),
-    8
+    MuxConfig(
+      axi4.Config(
+        wAddr = 32,
+        wData = 32,
+        read = true,
+        write = true,
+        lite = true
+      ),
+      8
+    )
   )
 
   enableVcd()

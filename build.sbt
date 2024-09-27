@@ -1,7 +1,7 @@
 // See README.md for license details.
 
 ThisBuild / scalaVersion := "2.13.12"
-ThisBuild / version := "0.1.0"
+ThisBuild / version := "0.1.1"
 ThisBuild / organization := "hdlstuff"
 
 val chiselVersion = "6.0.0"
@@ -12,7 +12,8 @@ lazy val root = (project in file("."))
     name := "chext",
     libraryDependencies ++= Seq(
       "org.chipsalliance" %% "chisel" % chiselVersion,
-      "edu.berkeley.cs" %% "chiseltest" % chiseltestVersion
+      "edu.berkeley.cs" %% "chiseltest" % chiseltestVersion,
+      "hdlstuff" %% "hdlinfo" % "0.1.0"
     ),
     scalacOptions ++= Seq(
       "-language:reflectiveCalls",

@@ -14,6 +14,8 @@ import axi4.Casts._
 import axi4.lite.{SlaveBuffer, MasterBuffer}
 
 case class MuxConfig(
+    val axiSlaveCfg: axi4.Config,
+    val numSlaves: Int = 4,
     val capacityPortQueueR: Int = 8,
     val capacityPortQueueW: Int = 8,
     val capacityPortQueueB: Int = 8,
@@ -21,38 +23,39 @@ case class MuxConfig(
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
     val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
 ) {
+  require(axiSlaveCfg.lite, "should use AXI4 lite")
+  require(axiSlaveCfg.read || axiSlaveCfg.write, "must be at least read or write")
+  require(numSlaves > 0, "number of slaves must be positive")
+
   require(capacityPortQueueR > 0)
   require(capacityPortQueueW > 0)
   require(capacityPortQueueB > 0)
+
+  val wPort = log2Up(numSlaves)
+
+  val axiMasterCfg = axiSlaveCfg
 }
 
-class Mux(
-    val axiCfg: axi4.Config,
-    val numSlaves: Int = 4,
-    val muxCfg: MuxConfig = MuxConfig()
-) extends Module {
-  require(axiCfg.lite, "should use AXI4 lite")
-  require(axiCfg.read || axiCfg.write, "must be at least read or write")
-  require(numSlaves > 0, "number of slaves must be positive")
+class Mux(val cfg: MuxConfig) extends Module {
+  import cfg._
 
   override def desiredName: String = "axi4LiteMux"
 
-  val s_axil = IO(Vec(numSlaves, axi4.lite.Slave(axiCfg)))
-  val m_axil = IO(axi4.lite.Master(axiCfg))
+  val s_axil = IO(Vec(numSlaves, axi4.lite.Slave(axiSlaveCfg)))
+  val m_axil = IO(axi4.lite.Master(axiMasterCfg))
 
-  private val wPort = log2Up(numSlaves)
   private val genPort = UInt(wPort.W)
 
-  val s_axil_ = s_axil.map { (x) =>
-    SlaveBuffer(x, muxCfg.slaveBuffers)
+  private val s_axil_ = s_axil.map { (x) =>
+    SlaveBuffer(x, slaveBuffers)
   }
-  val m_axil_ = MasterBuffer(m_axil, muxCfg.masterBuffers)
+  private val m_axil_ = MasterBuffer(m_axil, masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
     val portQueue = Module(
       new Queue(
         genPort,
-        muxCfg.capacityPortQueueR,
+        capacityPortQueueR,
         flow = true,
         pipe = true
       )
@@ -62,7 +65,7 @@ class Mux(
       chext.elastic.Arbiter(
         s_axil_.map { _.ar },
         m_axil_.ar,
-        muxCfg.arbiterPolicy,
+        arbiterPolicy,
         Some(portQueue.io.enq)
       )
     }
@@ -79,7 +82,7 @@ class Mux(
     val portQueueW = Module(
       new Queue(
         genPort,
-        muxCfg.capacityPortQueueW,
+        capacityPortQueueW,
         flow = true,
         pipe = true
       )
@@ -88,7 +91,7 @@ class Mux(
     val portQueueB = Module(
       new Queue(
         genPort,
-        muxCfg.capacityPortQueueB,
+        capacityPortQueueB,
         flow = true,
         pipe = true
       )
@@ -100,7 +103,7 @@ class Mux(
       chext.elastic.Arbiter(
         s_axil_.map { _.aw },
         m_axil_.aw,
-        muxCfg.arbiterPolicy,
+        arbiterPolicy,
         Some(arbiterSelect)
       )
 
@@ -125,6 +128,6 @@ class Mux(
     bLogic
   }
 
-  if (axiCfg.read) implRead()
-  if (axiCfg.write) implWrite()
+  if (axiSlaveCfg.read) implRead()
+  if (axiSlaveCfg.write) implWrite()
 }

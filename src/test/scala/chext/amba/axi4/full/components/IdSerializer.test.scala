@@ -19,22 +19,19 @@ class IdSerializerZeroDut extends Module {
 
   val s_axi = IO(Vec(4, axi4.full.Slave(axiCfg)))
 
-  private val mux = Module(
-    new axi4.full.components.Mux(
-      axiCfg,
-      4
-    )
-  )
+  import axi4.full.components.{Mux, MuxConfig}
+
+  private val mux = Module(new Mux(MuxConfig(axiCfg, 4)))
   s_axi.zip(mux.s_axi).foreach { case (master, slave) =>
     master :=> slave
   }
 
-  private val idSerializerCfg = IdSerializerConfig(mux.axiCfgMaster)
+  private val idSerializerCfg = IdSerializerConfig(mux.cfg.axiMasterCfg)
   private val idSerializer = Module(new IdSerializer(idSerializerCfg))
   mux.m_axi :=> idSerializer.s_axi
 
   private val memBridge = Module(
-    new chext.ip.memory.Axi4FullToReadWriteBridge(idSerializerCfg.axiCfgMaster)
+    new chext.ip.memory.Axi4FullToReadWriteBridge(idSerializerCfg.axiMasterCfg)
   )
   idSerializer.m_axi :=> memBridge.s_axi
 
@@ -123,26 +120,21 @@ class IdSerializerDut extends Module {
 
   val s_axi = IO(Vec(4, axi4.full.Slave(axiCfg)))
 
-  private val mux = Module(
-    new axi4.full.components.Mux(
-      axiCfg,
-      4
-    )
-  )
+  private val mux = Module(new Mux(MuxConfig(axiCfg, 4)))
   s_axi.zip(mux.s_axi).foreach { case (master, slave) =>
     master :=> slave
   }
 
   private val protocolConverterCfg = ProtocolConverterConfig(
-    mux.axiCfgMaster,
-    mux.axiCfgMaster.copy(wId = 0)
+    mux.cfg.axiMasterCfg,
+    mux.cfg.axiMasterCfg.copy(wId = 0)
   )
   println(protocolConverterCfg)
   private val idSerializer = Module(new ProtocolConverter(protocolConverterCfg))
   mux.m_axi :=> idSerializer.s_axi
 
   private val memBridge = Module(
-    new chext.ip.memory.Axi4FullToReadWriteBridge(protocolConverterCfg.axiCfgMaster)
+    new chext.ip.memory.Axi4FullToReadWriteBridge(protocolConverterCfg.axiMasterCfg)
   )
   idSerializer.m_axi :=> memBridge.s_axi
 

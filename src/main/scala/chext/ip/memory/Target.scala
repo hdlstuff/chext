@@ -21,5 +21,5 @@ object Target {
 
   def setCurrent(target: Target): Unit = current_ = Some(target)
 
-  private var current_ = Option.empty[Target]
+  private var current_ = Some(chisel.Target): Option[Target]
 }
