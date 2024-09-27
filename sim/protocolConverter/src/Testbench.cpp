@@ -56,10 +56,10 @@ void Testbench::thread() {
     auto& sgdma0 = (*sgdmaMulti_)[0];
     SgdmaDesc descs[2] = {
         SgdmaDesc::genAR(0x0000, 255),
-        SgdmaDesc::genAW(0x1000, 15)
+        SgdmaDesc::genAW(0x1000, 255)
     };
     sgdma0.copyDesc(descs, 2);
-    sgdma0.sgdmaTask(0, 2, true);
+    sgdma0.sgdmaTask(0, 2, false);
     sgdma0.start();
     sgdma0.waitUntilComplete();
 

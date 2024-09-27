@@ -3,6 +3,9 @@ cmake_policy(SET CMP0144 OLD)
 
 project(protocolConverter)
 
+# NOTE: This is a quick hack, remove later
+add_compile_definitions(SC_DISABLE_API_VERSION_CHECK)
+
 find_package(SystemCLanguage REQUIRED)
 find_package(fmt REQUIRED)
 find_package(verilator REQUIRED)

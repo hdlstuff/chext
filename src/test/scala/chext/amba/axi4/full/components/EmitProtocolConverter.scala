@@ -31,7 +31,7 @@ object EmitProtocolConverterTop extends App {
       val axiMemCfg: axi4.Config = axi4.Config(),
       val desiredName: String = "ProtocolConverterTop"
   ) {
-    val sgdmaCfg = SgdmaConfig(axiCfg1, 14)
+    val sgdmaCfg = SgdmaConfig(axiCfg1, 14, writeBufferCfg = None)
 
     val sgdmaMultiCfg = SgdmaMultiConfig(numSgdma, sgdmaCfg)
 
@@ -122,14 +122,14 @@ object EmitProtocolConverterTop extends App {
     private val bridge1 = Module(new Axi4FullToReadWriteBridge(axiMemCfg))
     private val bridge2 = Module(new Axi4FullToReadWriteBridge(axiMemCfg))
 
-    bridge1.read.req :=> mem.read1.req
-    mem.read1.resp :=> bridge1.read.resp
+    bridge1.read.req :=> mem.read2.req
+    mem.read2.resp :=> bridge1.read.resp
 
     bridge1.write.req :=> mem.write1.req
     mem.write1.resp :=> bridge1.write.resp
 
-    bridge2.read.req :=> mem.read2.req
-    mem.read2.resp :=> bridge2.read.resp
+    bridge2.read.req :=> mem.read1.req
+    mem.read1.resp :=> bridge2.read.resp
 
     bridge2.write.req :=> mem.write2.req
     mem.write2.resp :=> bridge2.write.resp

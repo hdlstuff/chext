@@ -173,7 +173,7 @@ module mem_8192x64(	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:1
 endmodule
 
 module ChiselSimpleDualPortMem(	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:134:7
-  input         clock,	// <stdin>:4182:11
+  input         clock,	// <stdin>:4162:11
   input  [12:0] raw1_addr,	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:143:16
   input  [63:0] raw1_dIn,	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:143:16
   output [63:0] raw1_dOut,	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:143:16
@@ -188,7 +188,7 @@ module ChiselSimpleDualPortMem(	// src/main/scala/chext/ip/memory/chisel/RawMemo
   wire [63:0] _mem_ext_R1_data;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:154:16
   reg  [63:0] raw1_dOut_r;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:184:45
   reg  [63:0] raw2_dOut_r;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:184:45
-  always @(posedge clock) begin	// <stdin>:4182:11
+  always @(posedge clock) begin	// <stdin>:4162:11
     raw1_dOut_r <= _mem_ext_R1_data;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:154:16, :184:45
     raw2_dOut_r <= _mem_ext_R0_data;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:154:16, :184:45
   end // always @(posedge)
@@ -272,8 +272,8 @@ module ram_2x64(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:4316:11, :4704:11, :7658:11, :8046:11, :11909:11, :12297:11, :16160:11, :16548:11, :20411:11, :20799:11
-                reset,	// <stdin>:4317:11, :4705:11, :7659:11, :8047:11, :11910:11, :12298:11, :16161:11, :16549:11, :20412:11, :20800:11
+  input         clock,	// <stdin>:4296:11, :4684:11, :7294:11, :7682:11, :11179:11, :11567:11, :15064:11, :15452:11, :18949:11, :19337:11
+                reset,	// <stdin>:4297:11, :4685:11, :7295:11, :7683:11, :11180:11, :11568:11, :15065:11, :15453:11, :18950:11, :19338:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [63:0] io_enq_bits,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -289,13 +289,13 @@ module Queue2_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:4316:11, :4704:11, :7658:11, :8046:11, :11909:11, :12297:11, :16160:11, :16548:11, :20411:11, :20799:11
-    if (reset) begin	// <stdin>:4316:11, :4704:11, :7658:11, :8046:11, :11909:11, :12297:11, :16160:11, :16548:11, :20411:11, :20799:11
+  always @(posedge clock) begin	// <stdin>:4296:11, :4684:11, :7294:11, :7682:11, :11179:11, :11567:11, :15064:11, :15452:11, :18949:11, :19337:11
+    if (reset) begin	// <stdin>:4296:11, :4684:11, :7294:11, :7682:11, :11179:11, :11567:11, :15064:11, :15452:11, :18949:11, :19337:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:4316:11, :4704:11, :7658:11, :8046:11, :11909:11, :12297:11, :16160:11, :16548:11, :20411:11, :20799:11
+    else begin	// <stdin>:4296:11, :4684:11, :7294:11, :7682:11, :11179:11, :11567:11, :15064:11, :15452:11, :18949:11, :19337:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -340,8 +340,8 @@ module Queue2_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
 endmodule
 
 module Queue2_UInt0(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input  clock,	// <stdin>:4367:11, :4755:11, :7709:11, :8097:11, :11960:11, :12348:11, :16211:11, :16599:11, :20462:11, :20850:11
-         reset,	// <stdin>:4368:11, :4756:11, :7710:11, :8098:11, :11961:11, :12349:11, :16212:11, :16600:11, :20463:11, :20851:11
+  input  clock,	// <stdin>:4347:11, :4735:11, :7345:11, :7733:11, :11230:11, :11618:11, :15115:11, :15503:11, :19000:11, :19388:11
+         reset,	// <stdin>:4348:11, :4736:11, :7346:11, :7734:11, :11231:11, :11619:11, :15116:11, :15504:11, :19001:11, :19389:11
   output io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
          io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -354,13 +354,13 @@ module Queue2_UInt0(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire ptr_match = wrap == wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
   wire empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
-  always @(posedge clock) begin	// <stdin>:4367:11, :4755:11, :7709:11, :8097:11, :11960:11, :12348:11, :16211:11, :16599:11, :20462:11, :20850:11
-    if (reset) begin	// <stdin>:4367:11, :4755:11, :7709:11, :8097:11, :11960:11, :12348:11, :16211:11, :16599:11, :20462:11, :20850:11
+  always @(posedge clock) begin	// <stdin>:4347:11, :4735:11, :7345:11, :7733:11, :11230:11, :11618:11, :15115:11, :15503:11, :19000:11, :19388:11
+    if (reset) begin	// <stdin>:4347:11, :4735:11, :7345:11, :7733:11, :11230:11, :11618:11, :15115:11, :15503:11, :19000:11, :19388:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:4367:11, :4755:11, :7709:11, :8097:11, :11960:11, :12348:11, :16211:11, :16599:11, :20462:11, :20850:11
+    else begin	// <stdin>:4347:11, :4735:11, :7345:11, :7733:11, :11230:11, :11618:11, :15115:11, :15503:11, :19000:11, :19388:11
       automatic logic do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
@@ -397,8 +397,8 @@ module Queue2_UInt0(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
 endmodule
 
 module Counter(	// src/main/scala/chext/util/Counter.scala:6:7
-  input  clock,	// <stdin>:4418:11, :4442:11, :4466:11, :4806:11, :4830:11, :4854:11
-         reset,	// <stdin>:4419:11, :4443:11, :4467:11, :4807:11, :4831:11, :4855:11
+  input  clock,	// <stdin>:4398:11, :4422:11, :4446:11, :4786:11, :4810:11, :4834:11
+         reset,	// <stdin>:4399:11, :4423:11, :4447:11, :4787:11, :4811:11, :4835:11
          io_incEn,	// src/main/scala/chext/util/Counter.scala:7:14
          io_decEn,	// src/main/scala/chext/util/Counter.scala:7:14
   output io_empty,	// src/main/scala/chext/util/Counter.scala:7:14
@@ -406,8 +406,8 @@ module Counter(	// src/main/scala/chext/util/Counter.scala:6:7
 );
 
   reg [4:0] rCounter;	// src/main/scala/chext/util/Counter.scala:16:33
-  always @(posedge clock) begin	// <stdin>:4418:11, :4442:11, :4466:11, :4806:11, :4830:11, :4854:11
-    if (reset)	// <stdin>:4418:11, :4442:11, :4466:11, :4806:11, :4830:11, :4854:11
+  always @(posedge clock) begin	// <stdin>:4398:11, :4422:11, :4446:11, :4786:11, :4810:11, :4834:11
+    if (reset)	// <stdin>:4398:11, :4422:11, :4446:11, :4786:11, :4810:11, :4834:11
       rCounter <= 5'h0;	// src/main/scala/chext/util/Counter.scala:16:33
     else if (~(io_incEn & io_decEn)) begin	// src/main/scala/chext/util/Counter.scala:18:17
       if (io_incEn)	// src/main/scala/chext/util/Counter.scala:7:14
@@ -439,8 +439,8 @@ module Counter(	// src/main/scala/chext/util/Counter.scala:6:7
 endmodule
 
 module BasicReadWriteArbiter(	// src/main/scala/chext/ip/memory/ReadWriteArbiter.scala:21:7
-  input  clock,	// <stdin>:4490:11, :4878:11, :7832:11, :12083:11, :16334:11, :20585:11
-         reset,	// <stdin>:4491:11, :4879:11, :7833:11, :12084:11, :16335:11, :20586:11
+  input  clock,	// <stdin>:4470:11, :4858:11, :7468:11, :11353:11, :15238:11, :19123:11
+         reset,	// <stdin>:4471:11, :4859:11, :7469:11, :11354:11, :15239:11, :19124:11
          rdReq,	// src/main/scala/chext/ip/memory/ReadWriteArbiter.scala:27:17
          wrReq,	// src/main/scala/chext/ip/memory/ReadWriteArbiter.scala:28:17
   output chooseRd	// src/main/scala/chext/ip/memory/ReadWriteArbiter.scala:29:20
@@ -448,8 +448,8 @@ module BasicReadWriteArbiter(	// src/main/scala/chext/ip/memory/ReadWriteArbiter
 
   reg       state;	// src/main/scala/chext/ip/memory/ReadWriteArbiter.scala:31:30
   reg [2:0] count;	// src/main/scala/chext/ip/memory/ReadWriteArbiter.scala:32:30
-  always @(posedge clock) begin	// <stdin>:4490:11, :4878:11, :7832:11, :12083:11, :16334:11, :20585:11
-    if (reset) begin	// <stdin>:4490:11, :4878:11, :7832:11, :12083:11, :16334:11, :20585:11
+  always @(posedge clock) begin	// <stdin>:4470:11, :4858:11, :7468:11, :11353:11, :15238:11, :19123:11
+    if (reset) begin	// <stdin>:4470:11, :4858:11, :7468:11, :11353:11, :15238:11, :19123:11
       state <= 1'h0;	// src/main/scala/chext/ip/memory/ReadWriteArbiter.scala:21:7, :31:30
       count <= 3'h0;	// src/main/scala/chext/ip/memory/ReadWriteArbiter.scala:32:30
     end
@@ -529,8 +529,8 @@ module ram_16x64(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue16_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:4532:11, :4920:11
-                reset,	// <stdin>:4533:11, :4921:11
+  input         clock,	// <stdin>:4512:11, :4900:11
+                reset,	// <stdin>:4513:11, :4901:11
                 io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [63:0] io_enq_bits,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -549,13 +549,13 @@ module Queue16_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire        do_deq = ~empty & io_deq_ready & io_deq_valid_0;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :264:27, :285:16, :297:{24,39}, :298:17, :300:14
   wire        do_enq = ~(empty & io_deq_ready) & io_enq_ready & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :263:27, :286:16, :298:17, :301:{26,35}, :306:{24,39}
   assign io_enq_ready = io_deq_ready | ~(ptr_match & maybe_full);	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24, :286:{16,19}, :306:{24,39}
-  always @(posedge clock) begin	// <stdin>:4532:11, :4920:11
-    if (reset) begin	// <stdin>:4532:11, :4920:11
+  always @(posedge clock) begin	// <stdin>:4512:11, :4900:11
+    if (reset) begin	// <stdin>:4512:11, :4900:11
       enq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:4532:11, :4920:11
+    else begin	// <stdin>:4512:11, :4900:11
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:263:27, :298:17, :301:{26,35}
         enq_ptr_value <= enq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:264:27, :298:17, :300:14
@@ -599,8 +599,8 @@ module Queue16_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
 endmodule
 
 module ReadWriteToRawBridge(	// src/main/scala/chext/ip/memory/ElasticBridges.scala:114:7
-  input         clock,	// <stdin>:4592:11, :4980:11
-                reset,	// <stdin>:4593:11, :4981:11
+  input         clock,	// <stdin>:4572:11, :4960:11
+                reset,	// <stdin>:4573:11, :4961:11
   output        read_req_ready,	// src/main/scala/chext/ip/memory/ElasticBridges.scala:118:16
   input         read_req_valid,	// src/main/scala/chext/ip/memory/ElasticBridges.scala:118:16
   input  [12:0] read_req_bits,	// src/main/scala/chext/ip/memory/ElasticBridges.scala:118:16
@@ -638,7 +638,7 @@ module ReadWriteToRawBridge(	// src/main/scala/chext/ip/memory/ElasticBridges.sc
     _rdResp_sinkBuffer_io_enq_ready & _read_dataQueue_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/ip/memory/ElasticBridges.scala:171:27, :194:23
   reg         write_r;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:205:23
   wire        wrResp_valid = _wrResp_sinkBuffer_io_enq_ready & ~_ctrWriteResp_io_empty;	// src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/ip/memory/ElasticBridges.scala:138:36, :208:23, src/main/scala/chext/util/Counter.scala:30:17
-  always @(posedge clock) begin	// <stdin>:4592:11, :4980:11
+  always @(posedge clock) begin	// <stdin>:4572:11, :4960:11
     read_r <= _read_T_1;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:190:23, src/main/scala/chisel3/util/Decoupled.scala:51:35
     read_r_1 <= read_r;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:190:23
     write_r <= _write_T_1;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:205:23, src/main/scala/chisel3/util/Decoupled.scala:51:35
@@ -729,8 +729,8 @@ module ReadWriteToRawBridge(	// src/main/scala/chext/ip/memory/ElasticBridges.sc
 endmodule
 
 module ChiselTrueDualPortRAM(	// src/main/scala/chext/ip/memory/RAM.scala:70:7
-  input         clock,	// <stdin>:5092:11
-                reset,	// <stdin>:5093:11
+  input         clock,	// <stdin>:5072:11
+                reset,	// <stdin>:5073:11
   output        read1_req_ready,	// src/main/scala/chext/ip/memory/RAM.scala:79:17
   input         read1_req_valid,	// src/main/scala/chext/ip/memory/RAM.scala:79:17
   input  [12:0] read1_req_bits,	// src/main/scala/chext/ip/memory/RAM.scala:79:17
@@ -855,8 +855,8 @@ module ram_2x29(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_AddrLenSizeBurstBundle(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:5128:11, :5436:11, :6154:11, :6462:11, :29157:11, :29645:11, :30623:11, :31060:11, :31898:11, :32386:11, :33364:11, :33801:11, :34639:11, :35127:11, :36105:11, :36542:11, :37380:11, :37868:11, :38846:11, :39283:11, :42027:11, :42373:11, :42880:11, :43226:11, :43733:11, :44079:11, :44586:11, :44932:11
-                reset,	// <stdin>:5129:11, :5437:11, :6155:11, :6463:11, :29158:11, :29646:11, :30624:11, :31061:11, :31899:11, :32387:11, :33365:11, :33802:11, :34640:11, :35128:11, :36106:11, :36543:11, :37381:11, :37869:11, :38847:11, :39284:11, :42028:11, :42374:11, :42881:11, :43227:11, :43734:11, :44080:11, :44587:11, :44933:11
+  input         clock,	// <stdin>:5108:11, :5416:11, :6134:11, :6442:11, :27673:11, :28161:11, :29139:11, :29576:11, :30414:11, :30902:11, :31880:11, :32317:11, :33155:11, :33643:11, :34621:11, :35058:11, :35896:11, :36384:11, :37362:11, :37799:11, :41563:11, :41909:11, :42416:11, :42762:11, :43269:11, :43615:11, :44122:11, :44468:11
+                reset,	// <stdin>:5109:11, :5417:11, :6135:11, :6443:11, :27674:11, :28162:11, :29140:11, :29577:11, :30415:11, :30903:11, :31881:11, :32318:11, :33156:11, :33644:11, :34622:11, :35059:11, :35897:11, :36385:11, :37363:11, :37800:11, :41564:11, :41910:11, :42417:11, :42763:11, :43270:11, :43616:11, :44123:11, :44469:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [15:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -879,13 +879,13 @@ module Queue2_AddrLenSizeBurstBundle(	// src/main/scala/chisel3/util/Decoupled.s
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:5128:11, :5436:11, :6154:11, :6462:11, :29157:11, :29645:11, :30623:11, :31060:11, :31898:11, :32386:11, :33364:11, :33801:11, :34639:11, :35127:11, :36105:11, :36542:11, :37380:11, :37868:11, :38846:11, :39283:11, :42027:11, :42373:11, :42880:11, :43226:11, :43733:11, :44079:11, :44586:11, :44932:11
-    if (reset) begin	// <stdin>:5128:11, :5436:11, :6154:11, :6462:11, :29157:11, :29645:11, :30623:11, :31060:11, :31898:11, :32386:11, :33364:11, :33801:11, :34639:11, :35127:11, :36105:11, :36542:11, :37380:11, :37868:11, :38846:11, :39283:11, :42027:11, :42373:11, :42880:11, :43226:11, :43733:11, :44079:11, :44586:11, :44932:11
+  always @(posedge clock) begin	// <stdin>:5108:11, :5416:11, :6134:11, :6442:11, :27673:11, :28161:11, :29139:11, :29576:11, :30414:11, :30902:11, :31880:11, :32317:11, :33155:11, :33643:11, :34621:11, :35058:11, :35896:11, :36384:11, :37362:11, :37799:11, :41563:11, :41909:11, :42416:11, :42762:11, :43269:11, :43615:11, :44122:11, :44468:11
+    if (reset) begin	// <stdin>:5108:11, :5416:11, :6134:11, :6442:11, :27673:11, :28161:11, :29139:11, :29576:11, :30414:11, :30902:11, :31880:11, :32317:11, :33155:11, :33643:11, :34621:11, :35058:11, :35896:11, :36384:11, :37362:11, :37799:11, :41563:11, :41909:11, :42416:11, :42762:11, :43269:11, :43615:11, :44122:11, :44468:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:5128:11, :5436:11, :6154:11, :6462:11, :29157:11, :29645:11, :30623:11, :31060:11, :31898:11, :32386:11, :33364:11, :33801:11, :34639:11, :35127:11, :36105:11, :36542:11, :37380:11, :37868:11, :38846:11, :39283:11, :42027:11, :42373:11, :42880:11, :43226:11, :43733:11, :44079:11, :44586:11, :44932:11
+    else begin	// <stdin>:5108:11, :5416:11, :6134:11, :6442:11, :27673:11, :28161:11, :29139:11, :29576:11, :30414:11, :30902:11, :31880:11, :32317:11, :33155:11, :33643:11, :34621:11, :35058:11, :35896:11, :36384:11, :37362:11, :37799:11, :41563:11, :41909:11, :42416:11, :42762:11, :43269:11, :43615:11, :44122:11, :44468:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -966,8 +966,8 @@ module ram_2x20(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_AddrSizeLastBundle(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:5179:11, :5487:11, :6205:11, :6513:11, :29208:11, :29696:11, :30674:11, :31111:11, :31949:11, :32437:11, :33415:11, :33852:11, :34690:11, :35178:11, :36156:11, :36593:11, :37431:11, :37919:11, :38897:11, :39334:11, :42078:11, :42424:11, :42931:11, :43277:11, :43784:11, :44130:11, :44637:11, :44983:11
-                reset,	// <stdin>:5180:11, :5488:11, :6206:11, :6514:11, :29209:11, :29697:11, :30675:11, :31112:11, :31950:11, :32438:11, :33416:11, :33853:11, :34691:11, :35179:11, :36157:11, :36594:11, :37432:11, :37920:11, :38898:11, :39335:11, :42079:11, :42425:11, :42932:11, :43278:11, :43785:11, :44131:11, :44638:11, :44984:11
+  input         clock,	// <stdin>:5159:11, :5467:11, :6185:11, :6493:11, :27724:11, :28212:11, :29190:11, :29627:11, :30465:11, :30953:11, :31931:11, :32368:11, :33206:11, :33694:11, :34672:11, :35109:11, :35947:11, :36435:11, :37413:11, :37850:11, :41614:11, :41960:11, :42467:11, :42813:11, :43320:11, :43666:11, :44173:11, :44519:11
+                reset,	// <stdin>:5160:11, :5468:11, :6186:11, :6494:11, :27725:11, :28213:11, :29191:11, :29628:11, :30466:11, :30954:11, :31932:11, :32369:11, :33207:11, :33695:11, :34673:11, :35110:11, :35948:11, :36436:11, :37414:11, :37851:11, :41615:11, :41961:11, :42468:11, :42814:11, :43321:11, :43667:11, :44174:11, :44520:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [15:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -988,13 +988,13 @@ module Queue2_AddrSizeLastBundle(	// src/main/scala/chisel3/util/Decoupled.scala
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:5179:11, :5487:11, :6205:11, :6513:11, :29208:11, :29696:11, :30674:11, :31111:11, :31949:11, :32437:11, :33415:11, :33852:11, :34690:11, :35178:11, :36156:11, :36593:11, :37431:11, :37919:11, :38897:11, :39334:11, :42078:11, :42424:11, :42931:11, :43277:11, :43784:11, :44130:11, :44637:11, :44983:11
-    if (reset) begin	// <stdin>:5179:11, :5487:11, :6205:11, :6513:11, :29208:11, :29696:11, :30674:11, :31111:11, :31949:11, :32437:11, :33415:11, :33852:11, :34690:11, :35178:11, :36156:11, :36593:11, :37431:11, :37919:11, :38897:11, :39334:11, :42078:11, :42424:11, :42931:11, :43277:11, :43784:11, :44130:11, :44637:11, :44983:11
+  always @(posedge clock) begin	// <stdin>:5159:11, :5467:11, :6185:11, :6493:11, :27724:11, :28212:11, :29190:11, :29627:11, :30465:11, :30953:11, :31931:11, :32368:11, :33206:11, :33694:11, :34672:11, :35109:11, :35947:11, :36435:11, :37413:11, :37850:11, :41614:11, :41960:11, :42467:11, :42813:11, :43320:11, :43666:11, :44173:11, :44519:11
+    if (reset) begin	// <stdin>:5159:11, :5467:11, :6185:11, :6493:11, :27724:11, :28212:11, :29190:11, :29627:11, :30465:11, :30953:11, :31931:11, :32368:11, :33206:11, :33694:11, :34672:11, :35109:11, :35947:11, :36435:11, :37413:11, :37850:11, :41614:11, :41960:11, :42467:11, :42813:11, :43320:11, :43666:11, :44173:11, :44519:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:5179:11, :5487:11, :6205:11, :6513:11, :29208:11, :29696:11, :30674:11, :31111:11, :31949:11, :32437:11, :33415:11, :33852:11, :34690:11, :35178:11, :36156:11, :36593:11, :37431:11, :37919:11, :38897:11, :39334:11, :42078:11, :42424:11, :42931:11, :43277:11, :43784:11, :44130:11, :44637:11, :44983:11
+    else begin	// <stdin>:5159:11, :5467:11, :6185:11, :6493:11, :27724:11, :28212:11, :29190:11, :29627:11, :30465:11, :30953:11, :31931:11, :32368:11, :33206:11, :33694:11, :34672:11, :35109:11, :35947:11, :36435:11, :37413:11, :37850:11, :41614:11, :41960:11, :42467:11, :42813:11, :43320:11, :43666:11, :44173:11, :44519:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -1042,8 +1042,8 @@ module Queue2_AddrSizeLastBundle(	// src/main/scala/chisel3/util/Decoupled.scala
 endmodule
 
 module AddressGenerator(	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-  input         clock,	// <stdin>:5230:11, :5538:11, :6256:11, :6564:11, :29259:11, :29747:11, :30725:11, :31162:11, :32000:11, :32488:11, :33466:11, :33903:11, :34741:11, :35229:11, :36207:11, :36644:11, :37482:11, :37970:11, :38948:11, :39385:11, :42129:11, :42475:11, :42982:11, :43328:11, :43835:11, :44181:11, :44688:11, :45034:11
-                reset,	// <stdin>:5231:11, :5539:11, :6257:11, :6565:11, :29260:11, :29748:11, :30726:11, :31163:11, :32001:11, :32489:11, :33467:11, :33904:11, :34742:11, :35230:11, :36208:11, :36645:11, :37483:11, :37971:11, :38949:11, :39386:11, :42130:11, :42476:11, :42983:11, :43329:11, :43836:11, :44182:11, :44689:11, :45035:11
+  input         clock,	// <stdin>:5210:11, :5518:11, :6236:11, :6544:11, :27775:11, :28263:11, :29241:11, :29678:11, :30516:11, :31004:11, :31982:11, :32419:11, :33257:11, :33745:11, :34723:11, :35160:11, :35998:11, :36486:11, :37464:11, :37901:11, :41665:11, :42011:11, :42518:11, :42864:11, :43371:11, :43717:11, :44224:11, :44570:11
+                reset,	// <stdin>:5211:11, :5519:11, :6237:11, :6545:11, :27776:11, :28264:11, :29242:11, :29679:11, :30517:11, :31005:11, :31983:11, :32420:11, :33258:11, :33746:11, :34724:11, :35161:11, :35999:11, :36487:11, :37465:11, :37902:11, :41666:11, :42012:11, :42519:11, :42865:11, :43372:11, :43718:11, :44225:11, :44571:11
   output        source_ready,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
   input         source_valid,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
   input  [15:0] source_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
@@ -1071,7 +1071,7 @@ module AddressGenerator(	// src/main/scala/chext/amba/axi4/full/components/Addre
   wire        last = ctr == 8'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:67:24, :77:22
   wire [22:0] _result_addr_T = {7'h0, addr} << _source__sourceBuffer_io_deq_bits_size;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:64:25, :108:31, src/main/scala/chext/elastic/Buffer.scala:93:32
   wire        last_1 = _source__sourceBuffer_io_deq_bits_len == 8'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:77:22, :116:30, src/main/scala/chext/elastic/Buffer.scala:93:32
-  always @(posedge clock) begin	// <stdin>:5230:11, :5538:11, :6256:11, :6564:11, :29259:11, :29747:11, :30725:11, :31162:11, :32000:11, :32488:11, :33466:11, :33903:11, :34741:11, :35229:11, :36207:11, :36644:11, :37482:11, :37970:11, :38948:11, :39385:11, :42129:11, :42475:11, :42982:11, :43328:11, :43835:11, :44181:11, :44688:11, :45034:11
+  always @(posedge clock) begin	// <stdin>:5210:11, :5518:11, :6236:11, :6544:11, :27775:11, :28263:11, :29241:11, :29678:11, :30516:11, :31004:11, :31982:11, :32419:11, :33257:11, :33745:11, :34723:11, :35160:11, :35998:11, :36486:11, :37464:11, :37901:11, :41665:11, :42011:11, :42518:11, :42864:11, :43371:11, :43717:11, :44224:11, :44570:11
     if (sink__valid) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:22
       if (generating) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35
         if (~last) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35, :77:22, :79:18, :80:20
@@ -1091,7 +1091,7 @@ module AddressGenerator(	// src/main/scala/chext/amba/axi4/full/components/Addre
         ctr <= _source__sourceBuffer_io_deq_bits_len - 8'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:67:24, :123:28, src/main/scala/chext/elastic/Buffer.scala:93:32
       end
     end
-    if (reset)	// <stdin>:5230:11, :5538:11, :6256:11, :6564:11, :29259:11, :29747:11, :30725:11, :31162:11, :32000:11, :32488:11, :33466:11, :33903:11, :34741:11, :35229:11, :36207:11, :36644:11, :37482:11, :37970:11, :38948:11, :39385:11, :42129:11, :42475:11, :42982:11, :43328:11, :43835:11, :44181:11, :44688:11, :45034:11
+    if (reset)	// <stdin>:5210:11, :5518:11, :6236:11, :6544:11, :27775:11, :28263:11, :29241:11, :29678:11, :30516:11, :31004:11, :31982:11, :32419:11, :33257:11, :33745:11, :34723:11, :35160:11, :35998:11, :36486:11, :37464:11, :37901:11, :41665:11, :42011:11, :42518:11, :42864:11, :43371:11, :43717:11, :44224:11, :44570:11
       generating <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7, :70:35
     else if (sink__valid) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:22
       if (generating)	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35
@@ -1188,8 +1188,8 @@ module ram_4x3(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue4_IdLastBundle(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:5334:11, :5731:11, :6360:11, :6757:11
-               reset,	// <stdin>:5335:11, :5732:11, :6361:11, :6758:11
+  input        clock,	// <stdin>:5314:11, :5711:11, :6340:11, :6737:11
+               reset,	// <stdin>:5315:11, :5712:11, :6341:11, :6738:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0] io_enq_bits_id,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -1208,13 +1208,13 @@ module Queue4_IdLastBundle(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire       empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire       full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire       do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:5334:11, :5731:11, :6360:11, :6757:11
-    if (reset) begin	// <stdin>:5334:11, :5731:11, :6360:11, :6757:11
+  always @(posedge clock) begin	// <stdin>:5314:11, :5711:11, :6340:11, :6737:11
+    if (reset) begin	// <stdin>:5314:11, :5711:11, :6340:11, :6737:11
       enq_ptr_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:5334:11, :5731:11, :6360:11, :6757:11
+    else begin	// <stdin>:5314:11, :5711:11, :6340:11, :6737:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         enq_ptr_value <= enq_ptr_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -1293,8 +1293,8 @@ module ram_2x3(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_IdLastBundle(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:5385:11, :5782:11, :6411:11, :6808:11
-               reset,	// <stdin>:5386:11, :5783:11, :6412:11, :6809:11
+  input        clock,	// <stdin>:5365:11, :5762:11, :6391:11, :6788:11
+               reset,	// <stdin>:5366:11, :5763:11, :6392:11, :6789:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0] io_enq_bits_id,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -1313,13 +1313,13 @@ module Queue2_IdLastBundle(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire       empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire       full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire       do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:5385:11, :5782:11, :6411:11, :6808:11
-    if (reset) begin	// <stdin>:5385:11, :5782:11, :6411:11, :6808:11
+  always @(posedge clock) begin	// <stdin>:5365:11, :5762:11, :6391:11, :6788:11
+    if (reset) begin	// <stdin>:5365:11, :5762:11, :6391:11, :6788:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:5385:11, :5782:11, :6411:11, :6808:11
+    else begin	// <stdin>:5365:11, :5762:11, :6391:11, :6788:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -1403,8 +1403,8 @@ module StrobeGenerator(	// src/main/scala/chext/amba/axi4/full/components/Addres
 endmodule
 
 module AddressStrobeGenerator(	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:176:7
-  input         clock,	// <stdin>:5704:11, :6730:11, :42295:11, :42641:11, :43148:11, :43494:11, :44001:11, :44347:11, :44854:11, :45200:11
-                reset,	// <stdin>:5705:11, :6731:11, :42296:11, :42642:11, :43149:11, :43495:11, :44002:11, :44348:11, :44855:11, :45201:11
+  input         clock,	// <stdin>:5684:11, :6710:11, :41831:11, :42177:11, :42684:11, :43030:11, :43537:11, :43883:11, :44390:11, :44736:11
+                reset,	// <stdin>:5685:11, :6711:11, :41832:11, :42178:11, :42685:11, :43031:11, :43538:11, :43884:11, :44391:11, :44737:11
   output        source_ready,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:183:18
   input         source_valid,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:183:18
   input  [15:0] source_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:183:18
@@ -1491,8 +1491,8 @@ module ram_2x4(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:5833:11, :6859:11, :40325:11
-               reset,	// <stdin>:5834:11, :6860:11, :40326:11
+  input        clock,	// <stdin>:5813:11, :6839:11, :39861:11
+               reset,	// <stdin>:5814:11, :6840:11, :39862:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0] io_enq_bits_id,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -1511,13 +1511,13 @@ module Queue2_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.sca
   wire       empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire       full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire       do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:5833:11, :6859:11, :40325:11
-    if (reset) begin	// <stdin>:5833:11, :6859:11, :40325:11
+  always @(posedge clock) begin	// <stdin>:5813:11, :6839:11, :39861:11
+    if (reset) begin	// <stdin>:5813:11, :6839:11, :39861:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:5833:11, :6859:11, :40325:11
+    else begin	// <stdin>:5813:11, :6839:11, :39861:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -1564,8 +1564,8 @@ module Queue2_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.sca
 endmodule
 
 module Axi4FullToReadWriteBridge(	// src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
-  input         clock,	// <stdin>:5884:11, :6910:11
-                reset,	// <stdin>:5885:11, :6911:11
+  input         clock,	// <stdin>:5864:11, :6890:11
+                reset,	// <stdin>:5865:11, :6891:11
   output        s_axi_ar_ready,	// src/main/scala/chext/ip/memory/AxiBridges.scala:28:17
   input         s_axi_ar_valid,	// src/main/scala/chext/ip/memory/AxiBridges.scala:28:17
   input  [1:0]  s_axi_ar_bits_id,	// src/main/scala/chext/ip/memory/AxiBridges.scala:28:17
@@ -1697,8 +1697,8 @@ module Axi4FullToReadWriteBridge(	// src/main/scala/chext/ip/memory/AxiBridges.s
   wire        write_resp_ready_0 = write_idLastJoined_ready & write_idLastJoined_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Join.scala:41:55, :42:29
   assign write_idLastJoined_ready =
     _write_arrival1_sinkBuffered__sinkBuffer_io_enq_ready & write_idLastJoined_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/elastic/Join.scala:41:55
-  always @(posedge clock) begin	// <stdin>:5884:11, :6910:11
-    if (reset) begin	// <stdin>:5884:11, :6910:11
+  always @(posedge clock) begin	// <stdin>:5864:11, :6890:11
+    if (reset) begin	// <stdin>:5864:11, :6890:11
       read_fork1_replicate1_generating_ <= 1'h0;	// src/main/scala/chext/elastic/Replicate.scala:20:36, src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
       read_fork1_replicate1_idx_ <= 16'h0;	// src/main/scala/chext/elastic/Replicate.scala:21:29
       read_fork1_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/elastic/Fork.scala:75:25, src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
@@ -1708,7 +1708,7 @@ module Axi4FullToReadWriteBridge(	// src/main/scala/chext/ip/memory/AxiBridges.s
       write_fork1_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/elastic/Fork.scala:75:25, src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
       write_fork1_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/elastic/Fork.scala:75:25, src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
     end
-    else begin	// <stdin>:5884:11, :6910:11
+    else begin	// <stdin>:5864:11, :6890:11
       if (_read_fork1_replicate1_T) begin	// src/main/scala/chext/elastic/Replicate.scala:36:21
         if (read_fork1_replicate1_generating_) begin	// src/main/scala/chext/elastic/Replicate.scala:20:36
           read_fork1_replicate1_generating_ <=
@@ -1888,551 +1888,6 @@ module Axi4FullToReadWriteBridge(	// src/main/scala/chext/ip/memory/AxiBridges.s
   assign write_resp_ready = write_resp_ready_0;	// src/main/scala/chext/elastic/Join.scala:42:29, src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
 endmodule
 
-module Counter_6(	// src/main/scala/chext/util/Counter.scala:6:7
-  input  clock,	// <stdin>:7180:11, :11431:11, :15682:11, :19933:11
-         reset,	// <stdin>:7181:11, :11432:11, :15683:11, :19934:11
-         io_incEn,	// src/main/scala/chext/util/Counter.scala:7:14
-         io_decEn,	// src/main/scala/chext/util/Counter.scala:7:14
-  output io_empty,	// src/main/scala/chext/util/Counter.scala:7:14
-         io_full	// src/main/scala/chext/util/Counter.scala:7:14
-);
-
-  reg [6:0] rCounter;	// src/main/scala/chext/util/Counter.scala:16:33
-  always @(posedge clock) begin	// <stdin>:7180:11, :11431:11, :15682:11, :19933:11
-    if (reset)	// <stdin>:7180:11, :11431:11, :15682:11, :19933:11
-      rCounter <= 7'h0;	// src/main/scala/chext/util/Counter.scala:16:33
-    else if (~(io_incEn & io_decEn)) begin	// src/main/scala/chext/util/Counter.scala:18:17
-      if (io_incEn)	// src/main/scala/chext/util/Counter.scala:7:14
-        rCounter <= rCounter + 7'h1;	// src/main/scala/chext/util/Counter.scala:16:33, :20:28
-      else if (io_decEn)	// src/main/scala/chext/util/Counter.scala:7:14
-        rCounter <= rCounter - 7'h1;	// src/main/scala/chext/util/Counter.scala:16:33, :23:28
-    end
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chext/util/Counter.scala:6:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/util/Counter.scala:6:7
-      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/util/Counter.scala:6:7
-    `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// src/main/scala/chext/util/Counter.scala:6:7
-      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chext/util/Counter.scala:6:7
-      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chext/util/Counter.scala:6:7
-        `INIT_RANDOM_PROLOG_	// src/main/scala/chext/util/Counter.scala:6:7
-      `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chext/util/Counter.scala:6:7
-        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chext/util/Counter.scala:6:7
-        rCounter = _RANDOM[/*Zero width*/ 1'b0][6:0];	// src/main/scala/chext/util/Counter.scala:6:7, :16:33
-      `endif // RANDOMIZE_REG_INIT
-    end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chext/util/Counter.scala:6:7
-      `FIRRTL_AFTER_INITIAL	// src/main/scala/chext/util/Counter.scala:6:7
-    `endif // FIRRTL_AFTER_INITIAL
-  `endif // ENABLE_INITIAL_REG_
-  assign io_empty = rCounter == 7'h0;	// src/main/scala/chext/util/Counter.scala:6:7, :16:33, :26:24
-  assign io_full = rCounter == 7'h40;	// src/main/scala/chext/util/Counter.scala:6:7, :16:33, :27:23
-endmodule
-
-// VCS coverage exclude_file
-module ram_64x145(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  input  [5:0]   R0_addr,
-  input          R0_en,
-                 R0_clk,
-  output [144:0] R0_data,
-  input  [5:0]   W0_addr,
-  input          W0_en,
-                 W0_clk,
-  input  [144:0] W0_data
-);
-
-  reg [144:0] Memory[0:63];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  always @(posedge W0_clk) begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    if (W0_en & 1'h1)	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      Memory[W0_addr] <= W0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    reg [159:0] _RANDOM_MEM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-        for (logic [6:0] i = 7'h0; i < 7'h40; i += 7'h1) begin
-          for (logic [7:0] j = 8'h0; j < 8'hA0; j += 8'h20) begin
-            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          Memory[i[5:0]] = _RANDOM_MEM[144:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-        end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `endif // RANDOMIZE_MEM_INIT
-    end // initial
-  `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 145'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-endmodule
-
-module Queue64_WriteDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input          clock,	// <stdin>:7204:11, :11455:11, :15706:11, :19957:11
-                 reset,	// <stdin>:7205:11, :11456:11, :15707:11, :19958:11
-  output         io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input          io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [127:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [15:0]  io_enq_bits_strb,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input          io_enq_bits_last,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-                 io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output         io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [127:0] io_deq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [15:0]  io_deq_bits_strb,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output         io_deq_bits_last	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-);
-
-  wire [144:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  reg  [5:0]   enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [5:0]   deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg          maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
-  wire         ptr_match = enq_ptr_value == deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
-  wire         empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
-  wire         full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
-  wire         do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:7204:11, :11455:11, :15706:11, :19957:11
-    if (reset) begin	// <stdin>:7204:11, :11455:11, :15706:11, :19957:11
-      enq_ptr_value <= 6'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      deq_ptr_value <= 6'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
-    end
-    else begin	// <stdin>:7204:11, :11455:11, :15706:11, :19957:11
-      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
-      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        enq_ptr_value <= enq_ptr_value + 6'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        deq_ptr_value <= deq_ptr_value + 6'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
-        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
-    end
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][5:0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][11:6];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        maybe_full = _RANDOM[/*Zero width*/ 1'b0][12];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
-      `endif // RANDOMIZE_REG_INIT
-    end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `endif // FIRRTL_AFTER_INITIAL
-  `endif // ENABLE_INITIAL_REG_
-  ram_64x145 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    .R0_addr (deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    .R0_clk  (clock),
-    .R0_data (_ram_ext_R0_data),
-    .W0_addr (enq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .W0_clk  (clock),
-    .W0_data ({io_enq_bits_last, io_enq_bits_strb, io_enq_bits_data})	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  );
-  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
-  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
-  assign io_deq_bits_data = _ram_ext_R0_data[127:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_strb = _ram_ext_R0_data[143:128];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_last = _ram_ext_R0_data[144];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-endmodule
-
-// VCS coverage exclude_file
-module ram_2x145(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  input          R0_addr,
-                 R0_en,
-                 R0_clk,
-  output [144:0] R0_data,
-  input          W0_addr,
-                 W0_en,
-                 W0_clk,
-  input  [144:0] W0_data
-);
-
-  reg [144:0] Memory[0:1];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  always @(posedge W0_clk) begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    if (W0_en & 1'h1)	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      Memory[W0_addr] <= W0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    reg [159:0] _RANDOM_MEM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-        for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
-          for (logic [7:0] j = 8'h0; j < 8'hA0; j += 8'h20) begin
-            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          Memory[i[0]] = _RANDOM_MEM[144:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-        end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `endif // RANDOMIZE_MEM_INIT
-    end // initial
-  `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 145'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-endmodule
-
-module Queue2_WriteDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input          clock,	// <stdin>:7255:11, :10050:11, :11506:11, :14301:11, :15757:11, :18552:11, :20008:11, :22803:11
-                 reset,	// <stdin>:7256:11, :10051:11, :11507:11, :14302:11, :15758:11, :18553:11, :20009:11, :22804:11
-  output         io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input          io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [127:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [15:0]  io_enq_bits_strb,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input          io_enq_bits_last,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-                 io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output         io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [127:0] io_deq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [15:0]  io_deq_bits_strb,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output         io_deq_bits_last	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-);
-
-  wire [144:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  reg          wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg          wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg          maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
-  wire         ptr_match = wrap == wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
-  wire         empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
-  wire         full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
-  wire         do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:7255:11, :10050:11, :11506:11, :14301:11, :15757:11, :18552:11, :20008:11, :22803:11
-    if (reset) begin	// <stdin>:7255:11, :10050:11, :11506:11, :14301:11, :15757:11, :18552:11, :20008:11, :22803:11
-      wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-      wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
-    end
-    else begin	// <stdin>:7255:11, :10050:11, :11506:11, :14301:11, :15757:11, :18552:11, :20008:11, :22803:11
-      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
-      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        wrap_1 <= wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
-        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
-    end
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        wrap = _RANDOM[/*Zero width*/ 1'b0][0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        wrap_1 = _RANDOM[/*Zero width*/ 1'b0][1];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        maybe_full = _RANDOM[/*Zero width*/ 1'b0][2];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
-      `endif // RANDOMIZE_REG_INIT
-    end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `endif // FIRRTL_AFTER_INITIAL
-  `endif // ENABLE_INITIAL_REG_
-  ram_2x145 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    .R0_addr (wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    .R0_clk  (clock),
-    .R0_data (_ram_ext_R0_data),
-    .W0_addr (wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .W0_clk  (clock),
-    .W0_data ({io_enq_bits_last, io_enq_bits_strb, io_enq_bits_data})	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  );
-  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
-  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
-  assign io_deq_bits_data = _ram_ext_R0_data[127:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_strb = _ram_ext_R0_data[143:128];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_last = _ram_ext_R0_data[144];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-endmodule
-
-// VCS coverage exclude_file
-module ram_2x45(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  input         R0_addr,
-                R0_en,
-                R0_clk,
-  output [44:0] R0_data,
-  input         W0_addr,
-                W0_en,
-                W0_clk,
-  input  [44:0] W0_data
-);
-
-  reg [44:0] Memory[0:1];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  always @(posedge W0_clk) begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    if (W0_en & 1'h1)	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      Memory[W0_addr] <= W0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    reg [63:0] _RANDOM_MEM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-        for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
-          for (logic [6:0] j = 7'h0; j < 7'h40; j += 7'h20) begin
-            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          Memory[i[0]] = _RANDOM_MEM[44:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-        end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `endif // RANDOMIZE_MEM_INIT
-    end // initial
-  `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 45'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-endmodule
-
-module Queue2_WriteAddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:7306:11, :7357:11, :11557:11, :11608:11, :15808:11, :15859:11, :20059:11, :20110:11, :30031:11, :32772:11, :35513:11, :38254:11
-                reset,	// <stdin>:7307:11, :7358:11, :11558:11, :11609:11, :15809:11, :15860:11, :20060:11, :20111:11, :30032:11, :32773:11, :35514:11, :38255:11
-  output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [15:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [7:0]  io_enq_bits_len,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [2:0]  io_enq_bits_size,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [1:0]  io_enq_bits_burst,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input         io_enq_bits_lock,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [3:0]  io_enq_bits_cache,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [2:0]  io_enq_bits_prot,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [3:0]  io_enq_bits_qos,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-                io_enq_bits_region,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input         io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output        io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [15:0] io_deq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [7:0]  io_deq_bits_len,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [2:0]  io_deq_bits_size,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [1:0]  io_deq_bits_burst,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output        io_deq_bits_lock,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [3:0]  io_deq_bits_cache,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [2:0]  io_deq_bits_prot,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [3:0]  io_deq_bits_qos,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-                io_deq_bits_region	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-);
-
-  wire [44:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  reg         wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
-  wire        ptr_match = wrap == wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
-  wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
-  wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
-  wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:7306:11, :7357:11, :11557:11, :11608:11, :15808:11, :15859:11, :20059:11, :20110:11, :30031:11, :32772:11, :35513:11, :38254:11
-    if (reset) begin	// <stdin>:7306:11, :7357:11, :11557:11, :11608:11, :15808:11, :15859:11, :20059:11, :20110:11, :30031:11, :32772:11, :35513:11, :38254:11
-      wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-      wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
-    end
-    else begin	// <stdin>:7306:11, :7357:11, :11557:11, :11608:11, :15808:11, :15859:11, :20059:11, :20110:11, :30031:11, :32772:11, :35513:11, :38254:11
-      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
-      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        wrap_1 <= wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
-        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
-    end
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        wrap = _RANDOM[/*Zero width*/ 1'b0][0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        wrap_1 = _RANDOM[/*Zero width*/ 1'b0][1];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        maybe_full = _RANDOM[/*Zero width*/ 1'b0][2];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
-      `endif // RANDOMIZE_REG_INIT
-    end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `endif // FIRRTL_AFTER_INITIAL
-  `endif // ENABLE_INITIAL_REG_
-  ram_2x45 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    .R0_addr (wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    .R0_clk  (clock),
-    .R0_data (_ram_ext_R0_data),
-    .W0_addr (wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .W0_clk  (clock),
-    .W0_data
-      ({io_enq_bits_region,
-        io_enq_bits_qos,
-        io_enq_bits_prot,
-        io_enq_bits_cache,
-        io_enq_bits_lock,
-        io_enq_bits_burst,
-        io_enq_bits_size,
-        io_enq_bits_len,
-        io_enq_bits_addr})	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  );
-  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
-  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
-  assign io_deq_bits_addr = _ram_ext_R0_data[15:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_len = _ram_ext_R0_data[23:16];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_size = _ram_ext_R0_data[26:24];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_burst = _ram_ext_R0_data[28:27];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_lock = _ram_ext_R0_data[29];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_cache = _ram_ext_R0_data[33:30];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_prot = _ram_ext_R0_data[36:34];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_qos = _ram_ext_R0_data[40:37];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_region = _ram_ext_R0_data[44:41];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-endmodule
-
-module WriteBuffer(	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:15:7
-  input          clock,	// <stdin>:7408:11, :11659:11, :15910:11, :20161:11
-                 reset,	// <stdin>:7409:11, :11660:11, :15911:11, :20162:11
-  output         source_aw_ready,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-  input          source_aw_valid,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-  input  [15:0]  source_aw_bits_addr,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-  input  [7:0]   source_aw_bits_len,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-  output         source_w_ready,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-  input          source_w_valid,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-  input  [127:0] source_w_bits_data,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-  input  [15:0]  source_w_bits_strb,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-  input          source_w_bits_last,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-                 sink_aw_ready,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output         sink_aw_valid,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output [15:0]  sink_aw_bits_addr,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output [7:0]   sink_aw_bits_len,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output [2:0]   sink_aw_bits_size,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output [1:0]   sink_aw_bits_burst,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output         sink_aw_bits_lock,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output [3:0]   sink_aw_bits_cache,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output [2:0]   sink_aw_bits_prot,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output [3:0]   sink_aw_bits_qos,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-                 sink_aw_bits_region,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  input          sink_w_ready,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output         sink_w_valid,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output [127:0] sink_w_bits_data,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output [15:0]  sink_w_bits_strb,	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-  output         sink_w_bits_last	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:28:16
-);
-
-  wire         _arrival2_sinkBuffered__sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _arrival2_sourceBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [15:0]  _arrival2_sourceBuffer_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [7:0]   _arrival2_sourceBuffer_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [2:0]   _arrival2_sourceBuffer_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [1:0]   _arrival2_sourceBuffer_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire         _arrival2_sourceBuffer_io_deq_bits_lock;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [3:0]   _arrival2_sourceBuffer_io_deq_bits_cache;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [2:0]   _arrival2_sourceBuffer_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [3:0]   _arrival2_sourceBuffer_io_deq_bits_qos;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [3:0]   _arrival2_sourceBuffer_io_deq_bits_region;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire         _arrival1_sinkBuffered__sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _arrival1_sinkBuffered__sinkBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire [127:0] _arrival1_sinkBuffered__sinkBuffer_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire [15:0]  _arrival1_sinkBuffered__sinkBuffer_io_deq_bits_strb;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _arrival1_sinkBuffered__sinkBuffer_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _arrival1_sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
-  wire         _ctrAddr_io_empty;	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:33:31
-  wire         _ctrAddr_io_full;	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:33:31
-  wire         _arrival1_T =
-    _arrival1_sinkBuffered__sinkBuffer_io_enq_ready & source_w_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         source_w_ready_0 = _arrival1_T & (~source_w_bits_last | ~_ctrAddr_io_full);	// src/main/scala/chext/elastic/Arrival.scala:28:18, :35:18, :65:{28,45}, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:33:31, :43:23, :44:33, src/main/scala/chext/util/Counter.scala:33:17
-  wire         arrival2_result_ready =
-    _arrival2_sinkBuffered__sinkBuffer_io_enq_ready & _arrival2_sourceBuffer_io_deq_valid
-    & ~_ctrAddr_io_empty;	// src/main/scala/chext/elastic/Arrival.scala:65:45, src/main/scala/chext/elastic/Buffer.scala:93:32, :131:30, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:33:31, :61:31, src/main/scala/chext/util/Counter.scala:30:17, :38:26
-  Counter_6 ctrAddr (	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:33:31
-    .clock    (clock),
-    .reset    (reset),
-    .io_incEn (_arrival1_T & source_w_bits_last & ~_ctrAddr_io_full),	// src/main/scala/chext/elastic/Arrival.scala:65:{28,45}, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:33:31, :43:23, :44:33, src/main/scala/chext/util/Counter.scala:33:17, :35:26
-    .io_decEn (arrival2_result_ready),	// src/main/scala/chext/elastic/Arrival.scala:65:45, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:61:31, src/main/scala/chext/util/Counter.scala:38:26
-    .io_empty (_ctrAddr_io_empty),
-    .io_full  (_ctrAddr_io_full)
-  );
-  Queue64_WriteDataChannel arrival1_sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:148:30
-    .clock            (clock),
-    .reset            (reset),
-    .io_enq_ready     (_arrival1_sinkBuffer_io_enq_ready),
-    .io_enq_valid     (_arrival1_sinkBuffered__sinkBuffer_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:131:30
-    .io_enq_bits_data (_arrival1_sinkBuffered__sinkBuffer_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:131:30
-    .io_enq_bits_strb (_arrival1_sinkBuffered__sinkBuffer_io_deq_bits_strb),	// src/main/scala/chext/elastic/Buffer.scala:131:30
-    .io_enq_bits_last (_arrival1_sinkBuffered__sinkBuffer_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:131:30
-    .io_deq_ready     (sink_w_ready),
-    .io_deq_valid     (sink_w_valid),
-    .io_deq_bits_data (sink_w_bits_data),
-    .io_deq_bits_strb (sink_w_bits_strb),
-    .io_deq_bits_last (sink_w_bits_last)
-  );
-  Queue2_WriteDataChannel arrival1_sinkBuffered__sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:131:30
-    .clock            (clock),
-    .reset            (reset),
-    .io_enq_ready     (_arrival1_sinkBuffered__sinkBuffer_io_enq_ready),
-    .io_enq_valid     (source_w_ready_0),	// src/main/scala/chext/elastic/Arrival.scala:35:18, :65:45, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:43:23
-    .io_enq_bits_data (source_w_bits_data),
-    .io_enq_bits_strb (source_w_bits_strb),
-    .io_enq_bits_last (source_w_bits_last),
-    .io_deq_ready     (_arrival1_sinkBuffer_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:148:30
-    .io_deq_valid     (_arrival1_sinkBuffered__sinkBuffer_io_deq_valid),
-    .io_deq_bits_data (_arrival1_sinkBuffered__sinkBuffer_io_deq_bits_data),
-    .io_deq_bits_strb (_arrival1_sinkBuffered__sinkBuffer_io_deq_bits_strb),
-    .io_deq_bits_last (_arrival1_sinkBuffered__sinkBuffer_io_deq_bits_last)
-  );
-  Queue2_WriteAddressChannel arrival2_sourceBuffer (	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .clock              (clock),
-    .reset              (reset),
-    .io_enq_ready       (source_aw_ready),
-    .io_enq_valid       (source_aw_valid),
-    .io_enq_bits_addr   (source_aw_bits_addr),
-    .io_enq_bits_len    (source_aw_bits_len),
-    .io_enq_bits_size   (3'h4),	// src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-    .io_enq_bits_burst  (2'h1),	// src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-    .io_enq_bits_lock   (1'h0),	// src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-    .io_enq_bits_cache  (4'h0),	// src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-    .io_enq_bits_prot   (3'h0),	// src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-    .io_enq_bits_qos    (4'h0),	// src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-    .io_enq_bits_region (4'h0),	// src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:23:18
-    .io_deq_ready       (arrival2_result_ready),	// src/main/scala/chext/elastic/Arrival.scala:65:45, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:61:31, src/main/scala/chext/util/Counter.scala:38:26
-    .io_deq_valid       (_arrival2_sourceBuffer_io_deq_valid),
-    .io_deq_bits_addr   (_arrival2_sourceBuffer_io_deq_bits_addr),
-    .io_deq_bits_len    (_arrival2_sourceBuffer_io_deq_bits_len),
-    .io_deq_bits_size   (_arrival2_sourceBuffer_io_deq_bits_size),
-    .io_deq_bits_burst  (_arrival2_sourceBuffer_io_deq_bits_burst),
-    .io_deq_bits_lock   (_arrival2_sourceBuffer_io_deq_bits_lock),
-    .io_deq_bits_cache  (_arrival2_sourceBuffer_io_deq_bits_cache),
-    .io_deq_bits_prot   (_arrival2_sourceBuffer_io_deq_bits_prot),
-    .io_deq_bits_qos    (_arrival2_sourceBuffer_io_deq_bits_qos),
-    .io_deq_bits_region (_arrival2_sourceBuffer_io_deq_bits_region)
-  );
-  Queue2_WriteAddressChannel arrival2_sinkBuffered__sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:131:30
-    .clock              (clock),
-    .reset              (reset),
-    .io_enq_ready       (_arrival2_sinkBuffered__sinkBuffer_io_enq_ready),
-    .io_enq_valid       (arrival2_result_ready),	// src/main/scala/chext/elastic/Arrival.scala:65:45, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:61:31, src/main/scala/chext/util/Counter.scala:38:26
-    .io_enq_bits_addr   (_arrival2_sourceBuffer_io_deq_bits_addr),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_enq_bits_len    (_arrival2_sourceBuffer_io_deq_bits_len),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_enq_bits_size   (_arrival2_sourceBuffer_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_enq_bits_burst  (_arrival2_sourceBuffer_io_deq_bits_burst),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_enq_bits_lock   (_arrival2_sourceBuffer_io_deq_bits_lock),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_enq_bits_cache  (_arrival2_sourceBuffer_io_deq_bits_cache),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_enq_bits_prot   (_arrival2_sourceBuffer_io_deq_bits_prot),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_enq_bits_qos    (_arrival2_sourceBuffer_io_deq_bits_qos),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_enq_bits_region (_arrival2_sourceBuffer_io_deq_bits_region),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_deq_ready       (sink_aw_ready),
-    .io_deq_valid       (sink_aw_valid),
-    .io_deq_bits_addr   (sink_aw_bits_addr),
-    .io_deq_bits_len    (sink_aw_bits_len),
-    .io_deq_bits_size   (sink_aw_bits_size),
-    .io_deq_bits_burst  (sink_aw_bits_burst),
-    .io_deq_bits_lock   (sink_aw_bits_lock),
-    .io_deq_bits_cache  (sink_aw_bits_cache),
-    .io_deq_bits_prot   (sink_aw_bits_prot),
-    .io_deq_bits_qos    (sink_aw_bits_qos),
-    .io_deq_bits_region (sink_aw_bits_region)
-  );
-  assign source_w_ready = source_w_ready_0;	// src/main/scala/chext/elastic/Arrival.scala:35:18, :65:45, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:15:7, :43:23
-endmodule
-
 // VCS coverage exclude_file
 module mem_16384x64(	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:154:16
   input  [13:0] R0_addr,
@@ -2510,7 +1965,7 @@ module mem_16384x64(	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:
 endmodule
 
 module ChiselSimpleDualPortMem_1(	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:134:7
-  input         clock,	// <stdin>:7524:11, :11775:11, :16026:11, :20277:11
+  input         clock,	// <stdin>:7160:11, :11045:11, :14930:11, :18815:11
   input  [13:0] raw1_addr,	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:143:16
   input  [63:0] raw1_dIn,	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:143:16
   output [63:0] raw1_dOut,	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:143:16
@@ -2523,7 +1978,7 @@ module ChiselSimpleDualPortMem_1(	// src/main/scala/chext/ip/memory/chisel/RawMe
   wire [63:0] _mem_ext_R1_data;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:154:16
   reg  [63:0] raw1_dOut_r;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:184:45
   reg  [63:0] raw2_dOut_r;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:184:45
-  always @(posedge clock) begin	// <stdin>:7524:11, :11775:11, :16026:11, :20277:11
+  always @(posedge clock) begin	// <stdin>:7160:11, :11045:11, :14930:11, :18815:11
     raw1_dOut_r <= _mem_ext_R1_data;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:154:16, :184:45
     raw2_dOut_r <= _mem_ext_R0_data;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:154:16, :184:45
   end // always @(posedge)
@@ -2567,17 +2022,17 @@ module ChiselSimpleDualPortMem_1(	// src/main/scala/chext/ip/memory/chisel/RawMe
   assign raw2_dOut = raw2_dOut_r;	// src/main/scala/chext/ip/memory/chisel/RawMemories.scala:134:7, :184:45
 endmodule
 
-module Counter_7(	// src/main/scala/chext/util/Counter.scala:6:7
-  input  clock,	// <stdin>:7760:11, :8148:11, :12011:11, :12399:11, :16262:11, :16650:11, :20513:11, :20901:11
-         reset,	// <stdin>:7761:11, :8149:11, :12012:11, :12400:11, :16263:11, :16651:11, :20514:11, :20902:11
+module Counter_6(	// src/main/scala/chext/util/Counter.scala:6:7
+  input  clock,	// <stdin>:7396:11, :7784:11, :11281:11, :11669:11, :15166:11, :15554:11, :19051:11, :19439:11
+         reset,	// <stdin>:7397:11, :7785:11, :11282:11, :11670:11, :15167:11, :15555:11, :19052:11, :19440:11
          io_incEn,	// src/main/scala/chext/util/Counter.scala:7:14
          io_decEn,	// src/main/scala/chext/util/Counter.scala:7:14
   output io_full	// src/main/scala/chext/util/Counter.scala:7:14
 );
 
   reg [2:0] rCounter;	// src/main/scala/chext/util/Counter.scala:16:33
-  always @(posedge clock) begin	// <stdin>:7760:11, :8148:11, :12011:11, :12399:11, :16262:11, :16650:11, :20513:11, :20901:11
-    if (reset)	// <stdin>:7760:11, :8148:11, :12011:11, :12399:11, :16262:11, :16650:11, :20513:11, :20901:11
+  always @(posedge clock) begin	// <stdin>:7396:11, :7784:11, :11281:11, :11669:11, :15166:11, :15554:11, :19051:11, :19439:11
+    if (reset)	// <stdin>:7396:11, :7784:11, :11281:11, :11669:11, :15166:11, :15554:11, :19051:11, :19439:11
       rCounter <= 3'h0;	// src/main/scala/chext/util/Counter.scala:16:33
     else if (~(io_incEn & io_decEn)) begin	// src/main/scala/chext/util/Counter.scala:18:17
       if (io_incEn)	// src/main/scala/chext/util/Counter.scala:7:14
@@ -2607,9 +2062,9 @@ module Counter_7(	// src/main/scala/chext/util/Counter.scala:6:7
   assign io_full = rCounter == 3'h4;	// src/main/scala/chext/util/Counter.scala:6:7, :16:33, :27:23
 endmodule
 
-module Counter_8(	// src/main/scala/chext/util/Counter.scala:6:7
-  input  clock,	// <stdin>:7784:11, :7808:11, :8172:11, :8196:11, :12035:11, :12059:11, :12423:11, :12447:11, :16286:11, :16310:11, :16674:11, :16698:11, :20537:11, :20561:11, :20925:11, :20949:11
-         reset,	// <stdin>:7785:11, :7809:11, :8173:11, :8197:11, :12036:11, :12060:11, :12424:11, :12448:11, :16287:11, :16311:11, :16675:11, :16699:11, :20538:11, :20562:11, :20926:11, :20950:11
+module Counter_7(	// src/main/scala/chext/util/Counter.scala:6:7
+  input  clock,	// <stdin>:7420:11, :7444:11, :7808:11, :7832:11, :11305:11, :11329:11, :11693:11, :11717:11, :15190:11, :15214:11, :15578:11, :15602:11, :19075:11, :19099:11, :19463:11, :19487:11
+         reset,	// <stdin>:7421:11, :7445:11, :7809:11, :7833:11, :11306:11, :11330:11, :11694:11, :11718:11, :15191:11, :15215:11, :15579:11, :15603:11, :19076:11, :19100:11, :19464:11, :19488:11
          io_incEn,	// src/main/scala/chext/util/Counter.scala:7:14
          io_decEn,	// src/main/scala/chext/util/Counter.scala:7:14
   output io_empty,	// src/main/scala/chext/util/Counter.scala:7:14
@@ -2617,8 +2072,8 @@ module Counter_8(	// src/main/scala/chext/util/Counter.scala:6:7
 );
 
   reg [1:0] rCounter;	// src/main/scala/chext/util/Counter.scala:16:33
-  always @(posedge clock) begin	// <stdin>:7784:11, :7808:11, :8172:11, :8196:11, :12035:11, :12059:11, :12423:11, :12447:11, :16286:11, :16310:11, :16674:11, :16698:11, :20537:11, :20561:11, :20925:11, :20949:11
-    if (reset)	// <stdin>:7784:11, :7808:11, :8172:11, :8196:11, :12035:11, :12059:11, :12423:11, :12447:11, :16286:11, :16310:11, :16674:11, :16698:11, :20537:11, :20561:11, :20925:11, :20949:11
+  always @(posedge clock) begin	// <stdin>:7420:11, :7444:11, :7808:11, :7832:11, :11305:11, :11329:11, :11693:11, :11717:11, :15190:11, :15214:11, :15578:11, :15602:11, :19075:11, :19099:11, :19463:11, :19487:11
+    if (reset)	// <stdin>:7420:11, :7444:11, :7808:11, :7832:11, :11305:11, :11329:11, :11693:11, :11717:11, :15190:11, :15214:11, :15578:11, :15602:11, :19075:11, :19099:11, :19463:11, :19487:11
       rCounter <= 2'h0;	// src/main/scala/chext/util/Counter.scala:16:33
     else if (~(io_incEn & io_decEn)) begin	// src/main/scala/chext/util/Counter.scala:18:17
       if (io_incEn)	// src/main/scala/chext/util/Counter.scala:7:14
@@ -2684,8 +2139,8 @@ module ram_4x64(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue4_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:7874:11, :8229:11, :12125:11, :12480:11, :16376:11, :16731:11, :20627:11, :20982:11
-                reset,	// <stdin>:7875:11, :8230:11, :12126:11, :12481:11, :16377:11, :16732:11, :20628:11, :20983:11
+  input         clock,	// <stdin>:7510:11, :7865:11, :11395:11, :11750:11, :15280:11, :15635:11, :19165:11, :19520:11
+                reset,	// <stdin>:7511:11, :7866:11, :11396:11, :11751:11, :15281:11, :15636:11, :19166:11, :19521:11
                 io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [63:0] io_enq_bits,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -2704,13 +2159,13 @@ module Queue4_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire        do_deq = ~empty & io_deq_ready & io_deq_valid_0;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :264:27, :285:16, :297:{24,39}, :298:17, :300:14
   wire        do_enq = ~(empty & io_deq_ready) & io_enq_ready & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :263:27, :286:16, :298:17, :301:{26,35}, :306:{24,39}
   assign io_enq_ready = io_deq_ready | ~(ptr_match & maybe_full);	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24, :286:{16,19}, :306:{24,39}
-  always @(posedge clock) begin	// <stdin>:7874:11, :8229:11, :12125:11, :12480:11, :16376:11, :16731:11, :20627:11, :20982:11
-    if (reset) begin	// <stdin>:7874:11, :8229:11, :12125:11, :12480:11, :16376:11, :16731:11, :20627:11, :20982:11
+  always @(posedge clock) begin	// <stdin>:7510:11, :7865:11, :11395:11, :11750:11, :15280:11, :15635:11, :19165:11, :19520:11
+    if (reset) begin	// <stdin>:7510:11, :7865:11, :11395:11, :11750:11, :15280:11, :15635:11, :19165:11, :19520:11
       enq_ptr_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:7874:11, :8229:11, :12125:11, :12480:11, :16376:11, :16731:11, :20627:11, :20982:11
+    else begin	// <stdin>:7510:11, :7865:11, :11395:11, :11750:11, :15280:11, :15635:11, :19165:11, :19520:11
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:263:27, :298:17, :301:{26,35}
         enq_ptr_value <= enq_ptr_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:264:27, :298:17, :300:14
@@ -2754,8 +2209,8 @@ module Queue4_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
 endmodule
 
 module ReadWriteToRawBridge_2(	// src/main/scala/chext/ip/memory/ElasticBridges.scala:114:7
-  input         clock,	// <stdin>:7934:11, :12185:11, :16436:11, :20687:11
-                reset,	// <stdin>:7935:11, :12186:11, :16437:11, :20688:11
+  input         clock,	// <stdin>:7570:11, :11455:11, :15340:11, :19225:11
+                reset,	// <stdin>:7571:11, :11456:11, :15341:11, :19226:11
   output        read_req_ready,	// src/main/scala/chext/ip/memory/ElasticBridges.scala:118:16
   input         read_req_valid,	// src/main/scala/chext/ip/memory/ElasticBridges.scala:118:16
   input  [13:0] read_req_bits,	// src/main/scala/chext/ip/memory/ElasticBridges.scala:118:16
@@ -2793,7 +2248,7 @@ module ReadWriteToRawBridge_2(	// src/main/scala/chext/ip/memory/ElasticBridges.
     _rdResp_sinkBuffer_io_enq_ready & _read_dataQueue_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/ip/memory/ElasticBridges.scala:171:27, :194:23
   reg         write_r;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:205:23
   wire        wrResp_valid = _wrResp_sinkBuffer_io_enq_ready & ~_ctrWriteResp_io_empty;	// src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/ip/memory/ElasticBridges.scala:138:36, :208:23, src/main/scala/chext/util/Counter.scala:30:17
-  always @(posedge clock) begin	// <stdin>:7934:11, :12185:11, :16436:11, :20687:11
+  always @(posedge clock) begin	// <stdin>:7570:11, :11455:11, :15340:11, :19225:11
     read_r <= _read_T_1;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:190:23, src/main/scala/chisel3/util/Decoupled.scala:51:35
     read_r_1 <= read_r;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:190:23
     write_r <= _write_T_1;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:205:23, src/main/scala/chisel3/util/Decoupled.scala:51:35
@@ -2836,14 +2291,14 @@ module ReadWriteToRawBridge_2(	// src/main/scala/chext/ip/memory/ElasticBridges.
     .io_deq_ready (write_resp_ready),
     .io_deq_valid (write_resp_valid)
   );
-  Counter_7 ctrRead (	// src/main/scala/chext/ip/memory/ElasticBridges.scala:128:31
+  Counter_6 ctrRead (	// src/main/scala/chext/ip/memory/ElasticBridges.scala:128:31
     .clock    (clock),
     .reset    (reset),
     .io_incEn (_read_T_1),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .io_decEn (rdResp_valid),	// src/main/scala/chext/ip/memory/ElasticBridges.scala:194:23
     .io_full  (_ctrRead_io_full)
   );
-  Counter_8 ctrWrite (	// src/main/scala/chext/ip/memory/ElasticBridges.scala:134:32
+  Counter_7 ctrWrite (	// src/main/scala/chext/ip/memory/ElasticBridges.scala:134:32
     .clock    (clock),
     .reset    (reset),
     .io_incEn (_write_T_1),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
@@ -2851,7 +2306,7 @@ module ReadWriteToRawBridge_2(	// src/main/scala/chext/ip/memory/ElasticBridges.
     .io_empty (/* unused */),
     .io_full  (_ctrWrite_io_full)
   );
-  Counter_8 ctrWriteResp (	// src/main/scala/chext/ip/memory/ElasticBridges.scala:138:36
+  Counter_7 ctrWriteResp (	// src/main/scala/chext/ip/memory/ElasticBridges.scala:138:36
     .clock    (clock),
     .reset    (reset),
     .io_incEn (write_r),	// src/main/scala/chext/ip/memory/ElasticBridges.scala:205:23
@@ -2883,8 +2338,8 @@ module ReadWriteToRawBridge_2(	// src/main/scala/chext/ip/memory/ElasticBridges.
 endmodule
 
 module ReadWriteToRawBridge_3(	// src/main/scala/chext/ip/memory/ElasticBridges.scala:114:7
-  input         clock,	// <stdin>:8289:11, :12540:11, :16791:11, :21042:11
-                reset,	// <stdin>:8290:11, :12541:11, :16792:11, :21043:11
+  input         clock,	// <stdin>:7925:11, :11810:11, :15695:11, :19580:11
+                reset,	// <stdin>:7926:11, :11811:11, :15696:11, :19581:11
   output        read_req_ready,	// src/main/scala/chext/ip/memory/ElasticBridges.scala:118:16
   input         read_req_valid,	// src/main/scala/chext/ip/memory/ElasticBridges.scala:118:16
   input  [13:0] read_req_bits,	// src/main/scala/chext/ip/memory/ElasticBridges.scala:118:16
@@ -2904,7 +2359,7 @@ module ReadWriteToRawBridge_3(	// src/main/scala/chext/ip/memory/ElasticBridges.
   reg         read_r_1;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:190:23
   wire        rdResp_valid =
     _rdResp_sinkBuffer_io_enq_ready & _read_dataQueue_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/ip/memory/ElasticBridges.scala:171:27, :194:23
-  always @(posedge clock) begin	// <stdin>:8289:11, :12540:11, :16791:11, :21042:11
+  always @(posedge clock) begin	// <stdin>:7925:11, :11810:11, :15695:11, :19580:11
     read_r <= _read_T_1;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:190:23, src/main/scala/chisel3/util/Decoupled.scala:51:35
     read_r_1 <= read_r;	// src/main/scala/chext/ip/memory/ElasticBridges.scala:190:23
   end // always @(posedge)
@@ -2937,7 +2392,7 @@ module ReadWriteToRawBridge_3(	// src/main/scala/chext/ip/memory/ElasticBridges.
     .io_deq_valid (read_resp_valid),
     .io_deq_bits  (read_resp_bits)
   );
-  Counter_7 ctrRead (	// src/main/scala/chext/ip/memory/ElasticBridges.scala:128:31
+  Counter_6 ctrRead (	// src/main/scala/chext/ip/memory/ElasticBridges.scala:128:31
     .clock    (clock),
     .reset    (reset),
     .io_incEn (_read_T_1),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
@@ -2958,8 +2413,8 @@ module ReadWriteToRawBridge_3(	// src/main/scala/chext/ip/memory/ElasticBridges.
 endmodule
 
 module ChiselTrueDualPortRAM_1(	// src/main/scala/chext/ip/memory/RAM.scala:70:7
-  input         clock,	// <stdin>:8401:11, :12652:11, :16903:11, :21154:11
-                reset,	// <stdin>:8402:11, :12653:11, :16904:11, :21155:11
+  input         clock,	// <stdin>:8037:11, :11922:11, :15807:11, :19692:11
+                reset,	// <stdin>:8038:11, :11923:11, :15808:11, :19693:11
   output        read1_req_ready,	// src/main/scala/chext/ip/memory/RAM.scala:79:17
   input         read1_req_valid,	// src/main/scala/chext/ip/memory/RAM.scala:79:17
   input  [13:0] read1_req_bits,	// src/main/scala/chext/ip/memory/RAM.scala:79:17
@@ -3064,8 +2519,8 @@ module ram_2x30(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_AddrLenSizeBurstBundle_4(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:8437:11, :8745:11, :12688:11, :12996:11, :16939:11, :17247:11, :21190:11, :21498:11
-                reset,	// <stdin>:8438:11, :8746:11, :12689:11, :12997:11, :16940:11, :17248:11, :21191:11, :21499:11
+  input         clock,	// <stdin>:8073:11, :8381:11, :11958:11, :12266:11, :15843:11, :16151:11, :19728:11, :20036:11
+                reset,	// <stdin>:8074:11, :8382:11, :11959:11, :12267:11, :15844:11, :16152:11, :19729:11, :20037:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [16:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -3088,13 +2543,13 @@ module Queue2_AddrLenSizeBurstBundle_4(	// src/main/scala/chisel3/util/Decoupled
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:8437:11, :8745:11, :12688:11, :12996:11, :16939:11, :17247:11, :21190:11, :21498:11
-    if (reset) begin	// <stdin>:8437:11, :8745:11, :12688:11, :12996:11, :16939:11, :17247:11, :21190:11, :21498:11
+  always @(posedge clock) begin	// <stdin>:8073:11, :8381:11, :11958:11, :12266:11, :15843:11, :16151:11, :19728:11, :20036:11
+    if (reset) begin	// <stdin>:8073:11, :8381:11, :11958:11, :12266:11, :15843:11, :16151:11, :19728:11, :20036:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:8437:11, :8745:11, :12688:11, :12996:11, :16939:11, :17247:11, :21190:11, :21498:11
+    else begin	// <stdin>:8073:11, :8381:11, :11958:11, :12266:11, :15843:11, :16151:11, :19728:11, :20036:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -3143,8 +2598,8 @@ module Queue2_AddrLenSizeBurstBundle_4(	// src/main/scala/chisel3/util/Decoupled
 endmodule
 
 module Queue2_AddrSizeLastBundle_4(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:8488:11, :8796:11, :12739:11, :13047:11, :16990:11, :17298:11, :21241:11, :21549:11
-                reset,	// <stdin>:8489:11, :8797:11, :12740:11, :13048:11, :16991:11, :17299:11, :21242:11, :21550:11
+  input         clock,	// <stdin>:8124:11, :8432:11, :12009:11, :12317:11, :15894:11, :16202:11, :19779:11, :20087:11
+                reset,	// <stdin>:8125:11, :8433:11, :12010:11, :12318:11, :15895:11, :16203:11, :19780:11, :20088:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [16:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -3164,13 +2619,13 @@ module Queue2_AddrSizeLastBundle_4(	// src/main/scala/chisel3/util/Decoupled.sca
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:8488:11, :8796:11, :12739:11, :13047:11, :16990:11, :17298:11, :21241:11, :21549:11
-    if (reset) begin	// <stdin>:8488:11, :8796:11, :12739:11, :13047:11, :16990:11, :17298:11, :21241:11, :21549:11
+  always @(posedge clock) begin	// <stdin>:8124:11, :8432:11, :12009:11, :12317:11, :15894:11, :16202:11, :19779:11, :20087:11
+    if (reset) begin	// <stdin>:8124:11, :8432:11, :12009:11, :12317:11, :15894:11, :16202:11, :19779:11, :20087:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:8488:11, :8796:11, :12739:11, :13047:11, :16990:11, :17298:11, :21241:11, :21549:11
+    else begin	// <stdin>:8124:11, :8432:11, :12009:11, :12317:11, :15894:11, :16202:11, :19779:11, :20087:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -3217,8 +2672,8 @@ module Queue2_AddrSizeLastBundle_4(	// src/main/scala/chisel3/util/Decoupled.sca
 endmodule
 
 module AddressGenerator_4(	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-  input         clock,	// <stdin>:8539:11, :8847:11, :12790:11, :13098:11, :17041:11, :17349:11, :21292:11, :21600:11
-                reset,	// <stdin>:8540:11, :8848:11, :12791:11, :13099:11, :17042:11, :17350:11, :21293:11, :21601:11
+  input         clock,	// <stdin>:8175:11, :8483:11, :12060:11, :12368:11, :15945:11, :16253:11, :19830:11, :20138:11
+                reset,	// <stdin>:8176:11, :8484:11, :12061:11, :12369:11, :15946:11, :16254:11, :19831:11, :20139:11
   output        source_ready,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
   input         source_valid,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
   input  [16:0] source_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
@@ -3245,7 +2700,7 @@ module AddressGenerator_4(	// src/main/scala/chext/amba/axi4/full/components/Add
   wire        last = ctr == 8'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:67:24, :77:22
   wire [23:0] _result_addr_T = {7'h0, addr} << _source__sourceBuffer_io_deq_bits_size;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:64:25, :108:31, src/main/scala/chext/elastic/Buffer.scala:93:32
   wire        last_1 = _source__sourceBuffer_io_deq_bits_len == 8'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:77:22, :116:30, src/main/scala/chext/elastic/Buffer.scala:93:32
-  always @(posedge clock) begin	// <stdin>:8539:11, :8847:11, :12790:11, :13098:11, :17041:11, :17349:11, :21292:11, :21600:11
+  always @(posedge clock) begin	// <stdin>:8175:11, :8483:11, :12060:11, :12368:11, :15945:11, :16253:11, :19830:11, :20138:11
     if (sink__valid) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:22
       if (generating) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35
         if (~last) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35, :77:22, :79:18, :80:20
@@ -3265,7 +2720,7 @@ module AddressGenerator_4(	// src/main/scala/chext/amba/axi4/full/components/Add
         ctr <= _source__sourceBuffer_io_deq_bits_len - 8'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:67:24, :123:28, src/main/scala/chext/elastic/Buffer.scala:93:32
       end
     end
-    if (reset)	// <stdin>:8539:11, :8847:11, :12790:11, :13098:11, :17041:11, :17349:11, :21292:11, :21600:11
+    if (reset)	// <stdin>:8175:11, :8483:11, :12060:11, :12368:11, :15945:11, :16253:11, :19830:11, :20138:11
       generating <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7, :70:35
     else if (sink__valid) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:22
       if (generating)	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35
@@ -3361,8 +2816,8 @@ module ram_4x1(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue4_IdLastBundle_4(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input  clock,	// <stdin>:8643:11, :9040:11, :12894:11, :13291:11, :17145:11, :17542:11, :21396:11, :21793:11
-         reset,	// <stdin>:8644:11, :9041:11, :12895:11, :13292:11, :17146:11, :17543:11, :21397:11, :21794:11
+  input  clock,	// <stdin>:8279:11, :8676:11, :12164:11, :12561:11, :16049:11, :16446:11, :19934:11, :20331:11
+         reset,	// <stdin>:8280:11, :8677:11, :12165:11, :12562:11, :16050:11, :16447:11, :19935:11, :20332:11
   output io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
          io_enq_bits_last,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -3378,13 +2833,13 @@ module Queue4_IdLastBundle_4(	// src/main/scala/chisel3/util/Decoupled.scala:243
   wire       empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire       full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire       do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:8643:11, :9040:11, :12894:11, :13291:11, :17145:11, :17542:11, :21396:11, :21793:11
-    if (reset) begin	// <stdin>:8643:11, :9040:11, :12894:11, :13291:11, :17145:11, :17542:11, :21396:11, :21793:11
+  always @(posedge clock) begin	// <stdin>:8279:11, :8676:11, :12164:11, :12561:11, :16049:11, :16446:11, :19934:11, :20331:11
+    if (reset) begin	// <stdin>:8279:11, :8676:11, :12164:11, :12561:11, :16049:11, :16446:11, :19934:11, :20331:11
       enq_ptr_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:8643:11, :9040:11, :12894:11, :13291:11, :17145:11, :17542:11, :21396:11, :21793:11
+    else begin	// <stdin>:8279:11, :8676:11, :12164:11, :12561:11, :16049:11, :16446:11, :19934:11, :20331:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         enq_ptr_value <= enq_ptr_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -3461,8 +2916,8 @@ module ram_2x1(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_IdLastBundle_4(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input  clock,	// <stdin>:8694:11, :9091:11, :12945:11, :13342:11, :17196:11, :17593:11, :21447:11, :21844:11
-         reset,	// <stdin>:8695:11, :9092:11, :12946:11, :13343:11, :17197:11, :17594:11, :21448:11, :21845:11
+  input  clock,	// <stdin>:8330:11, :8727:11, :12215:11, :12612:11, :16100:11, :16497:11, :19985:11, :20382:11
+         reset,	// <stdin>:8331:11, :8728:11, :12216:11, :12613:11, :16101:11, :16498:11, :19986:11, :20383:11
   output io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
          io_enq_bits_last,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -3478,13 +2933,13 @@ module Queue2_IdLastBundle_4(	// src/main/scala/chisel3/util/Decoupled.scala:243
   wire empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:8694:11, :9091:11, :12945:11, :13342:11, :17196:11, :17593:11, :21447:11, :21844:11
-    if (reset) begin	// <stdin>:8694:11, :9091:11, :12945:11, :13342:11, :17196:11, :17593:11, :21447:11, :21844:11
+  always @(posedge clock) begin	// <stdin>:8330:11, :8727:11, :12215:11, :12612:11, :16100:11, :16497:11, :19985:11, :20382:11
+    if (reset) begin	// <stdin>:8330:11, :8727:11, :12215:11, :12612:11, :16100:11, :16497:11, :19985:11, :20382:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:8694:11, :9091:11, :12945:11, :13342:11, :17196:11, :17593:11, :21447:11, :21844:11
+    else begin	// <stdin>:8330:11, :8727:11, :12215:11, :12612:11, :16100:11, :16497:11, :19985:11, :20382:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -3557,8 +3012,8 @@ module StrobeGenerator_2(	// src/main/scala/chext/amba/axi4/full/components/Addr
 endmodule
 
 module AddressStrobeGenerator_2(	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:176:7
-  input         clock,	// <stdin>:9013:11, :13264:11, :17515:11, :21766:11
-                reset,	// <stdin>:9014:11, :13265:11, :17516:11, :21767:11
+  input         clock,	// <stdin>:8649:11, :12534:11, :16419:11, :20304:11
+                reset,	// <stdin>:8650:11, :12535:11, :16420:11, :20305:11
   output        source_ready,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:183:18
   input         source_valid,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:183:18
   input  [16:0] source_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:183:18
@@ -3634,8 +3089,8 @@ module ram_2x2(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_WriteResponseChannel_2(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:9142:11, :13393:11, :17644:11, :21895:11, :26008:11, :30133:11, :32874:11, :35615:11, :38356:11
-               reset,	// <stdin>:9143:11, :13394:11, :17645:11, :21896:11, :26009:11, :30134:11, :32875:11, :35616:11, :38357:11
+  input        clock,	// <stdin>:8778:11, :12663:11, :16548:11, :20433:11, :24524:11, :28649:11, :31390:11, :34131:11, :36872:11
+               reset,	// <stdin>:8779:11, :12664:11, :16549:11, :20434:11, :24525:11, :28650:11, :31391:11, :34132:11, :36873:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0] io_enq_bits_resp,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -3651,13 +3106,13 @@ module Queue2_WriteResponseChannel_2(	// src/main/scala/chisel3/util/Decoupled.s
   wire empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:9142:11, :13393:11, :17644:11, :21895:11, :26008:11, :30133:11, :32874:11, :35615:11, :38356:11
-    if (reset) begin	// <stdin>:9142:11, :13393:11, :17644:11, :21895:11, :26008:11, :30133:11, :32874:11, :35615:11, :38356:11
+  always @(posedge clock) begin	// <stdin>:8778:11, :12663:11, :16548:11, :20433:11, :24524:11, :28649:11, :31390:11, :34131:11, :36872:11
+    if (reset) begin	// <stdin>:8778:11, :12663:11, :16548:11, :20433:11, :24524:11, :28649:11, :31390:11, :34131:11, :36872:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:9142:11, :13393:11, :17644:11, :21895:11, :26008:11, :30133:11, :32874:11, :35615:11, :38356:11
+    else begin	// <stdin>:8778:11, :12663:11, :16548:11, :20433:11, :24524:11, :28649:11, :31390:11, :34131:11, :36872:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -3702,8 +3157,8 @@ module Queue2_WriteResponseChannel_2(	// src/main/scala/chisel3/util/Decoupled.s
 endmodule
 
 module Axi4FullToReadWriteBridge_2(	// src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
-  input         clock,	// <stdin>:9193:11, :13444:11, :17695:11, :21946:11
-                reset,	// <stdin>:9194:11, :13445:11, :17696:11, :21947:11
+  input         clock,	// <stdin>:8829:11, :12714:11, :16599:11, :20484:11
+                reset,	// <stdin>:8830:11, :12715:11, :16600:11, :20485:11
   output        s_axi_ar_ready,	// src/main/scala/chext/ip/memory/AxiBridges.scala:28:17
   input         s_axi_ar_valid,	// src/main/scala/chext/ip/memory/AxiBridges.scala:28:17
   input  [16:0] s_axi_ar_bits_addr,	// src/main/scala/chext/ip/memory/AxiBridges.scala:28:17
@@ -3828,8 +3283,8 @@ module Axi4FullToReadWriteBridge_2(	// src/main/scala/chext/ip/memory/AxiBridges
   wire        write_resp_ready_0 = write_idLastJoined_ready & write_idLastJoined_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Join.scala:41:55, :42:29
   assign write_idLastJoined_ready =
     _write_arrival1_sinkBuffered__sinkBuffer_io_enq_ready & write_idLastJoined_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/elastic/Join.scala:41:55
-  always @(posedge clock) begin	// <stdin>:9193:11, :13444:11, :17695:11, :21946:11
-    if (reset) begin	// <stdin>:9193:11, :13444:11, :17695:11, :21946:11
+  always @(posedge clock) begin	// <stdin>:8829:11, :12714:11, :16599:11, :20484:11
+    if (reset) begin	// <stdin>:8829:11, :12714:11, :16599:11, :20484:11
       read_fork1_replicate1_generating_ <= 1'h0;	// src/main/scala/chext/elastic/Replicate.scala:20:36, src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
       read_fork1_replicate1_idx_ <= 16'h0;	// src/main/scala/chext/elastic/Replicate.scala:21:29
       read_fork1_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/elastic/Fork.scala:75:25, src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
@@ -3839,7 +3294,7 @@ module Axi4FullToReadWriteBridge_2(	// src/main/scala/chext/ip/memory/AxiBridges
       write_fork1_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/elastic/Fork.scala:75:25, src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
       write_fork1_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/elastic/Fork.scala:75:25, src/main/scala/chext/ip/memory/AxiBridges.scala:20:7
     end
-    else begin	// <stdin>:9193:11, :13444:11, :17695:11, :21946:11
+    else begin	// <stdin>:8829:11, :12714:11, :16599:11, :20484:11
       if (_read_fork1_replicate1_T) begin	// src/main/scala/chext/elastic/Replicate.scala:36:21
         if (read_fork1_replicate1_generating_) begin	// src/main/scala/chext/elastic/Replicate.scala:20:36
           read_fork1_replicate1_generating_ <=
@@ -4037,8 +3492,8 @@ module ram_2x11(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_AddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:9463:11, :9565:11, :13714:11, :13816:11, :17965:11, :18067:11, :22216:11, :22318:11, :24184:11, :24286:11
-               reset,	// <stdin>:9464:11, :9566:11, :13715:11, :13817:11, :17966:11, :18068:11, :22217:11, :22319:11, :24185:11, :24287:11
+  input        clock,	// <stdin>:9099:11, :9201:11, :12984:11, :13086:11, :16869:11, :16971:11, :20754:11, :20856:11, :22700:11, :22802:11
+               reset,	// <stdin>:9100:11, :9202:11, :12985:11, :13087:11, :16870:11, :16972:11, :20755:11, :20857:11, :22701:11, :22803:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [7:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -4057,13 +3512,13 @@ module Queue2_AddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:9463:11, :9565:11, :13714:11, :13816:11, :17965:11, :18067:11, :22216:11, :22318:11, :24184:11, :24286:11
-    if (reset) begin	// <stdin>:9463:11, :9565:11, :13714:11, :13816:11, :17965:11, :18067:11, :22216:11, :22318:11, :24184:11, :24286:11
+  always @(posedge clock) begin	// <stdin>:9099:11, :9201:11, :12984:11, :13086:11, :16869:11, :16971:11, :20754:11, :20856:11, :22700:11, :22802:11
+    if (reset) begin	// <stdin>:9099:11, :9201:11, :12984:11, :13086:11, :16869:11, :16971:11, :20754:11, :20856:11, :22700:11, :22802:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:9463:11, :9565:11, :13714:11, :13816:11, :17965:11, :18067:11, :22216:11, :22318:11, :24184:11, :24286:11
+    else begin	// <stdin>:9099:11, :9201:11, :12984:11, :13086:11, :16869:11, :16971:11, :20754:11, :20856:11, :22700:11, :22802:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -4144,8 +3599,8 @@ module ram_2x34(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_ReadDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:9514:11, :13765:11, :18016:11, :22267:11, :24235:11, :24720:11, :27298:11
-                reset,	// <stdin>:9515:11, :13766:11, :18017:11, :22268:11, :24236:11, :24721:11, :27299:11
+  input         clock,	// <stdin>:9150:11, :13035:11, :16920:11, :20805:11, :22751:11, :23236:11, :25814:11
+                reset,	// <stdin>:9151:11, :13036:11, :16921:11, :20806:11, :22752:11, :23237:11, :25815:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [31:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -4164,13 +3619,13 @@ module Queue2_ReadDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:24
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:9514:11, :13765:11, :18016:11, :22267:11, :24235:11, :24720:11, :27298:11
-    if (reset) begin	// <stdin>:9514:11, :13765:11, :18016:11, :22267:11, :24235:11, :24720:11, :27298:11
+  always @(posedge clock) begin	// <stdin>:9150:11, :13035:11, :16920:11, :20805:11, :22751:11, :23236:11, :25814:11
+    if (reset) begin	// <stdin>:9150:11, :13035:11, :16920:11, :20805:11, :22751:11, :23236:11, :25814:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:9514:11, :13765:11, :18016:11, :22267:11, :24235:11, :24720:11, :27298:11
+    else begin	// <stdin>:9150:11, :13035:11, :16920:11, :20805:11, :22751:11, :23236:11, :25814:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -4250,9 +3705,9 @@ module ram_2x36(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   assign R0_data = R0_en ? Memory[R0_addr] : 36'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
-module Queue2_WriteDataChannel_1(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:9616:11, :13867:11, :18118:11, :22369:11, :24337:11, :24822:11, :27400:11
-                reset,	// <stdin>:9617:11, :13868:11, :18119:11, :22370:11, :24338:11, :24823:11, :27401:11
+module Queue2_WriteDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input         clock,	// <stdin>:9252:11, :13137:11, :17022:11, :20907:11, :22853:11, :23338:11, :25916:11
+                reset,	// <stdin>:9253:11, :13138:11, :17023:11, :20908:11, :22854:11, :23339:11, :25917:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [31:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -4271,13 +3726,13 @@ module Queue2_WriteDataChannel_1(	// src/main/scala/chisel3/util/Decoupled.scala
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:9616:11, :13867:11, :18118:11, :22369:11, :24337:11, :24822:11, :27400:11
-    if (reset) begin	// <stdin>:9616:11, :13867:11, :18118:11, :22369:11, :24337:11, :24822:11, :27400:11
+  always @(posedge clock) begin	// <stdin>:9252:11, :13137:11, :17022:11, :20907:11, :22853:11, :23338:11, :25916:11
+    if (reset) begin	// <stdin>:9252:11, :13137:11, :17022:11, :20907:11, :22853:11, :23338:11, :25916:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:9616:11, :13867:11, :18118:11, :22369:11, :24337:11, :24822:11, :27400:11
+    else begin	// <stdin>:9252:11, :13137:11, :17022:11, :20907:11, :22853:11, :23338:11, :25916:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -4324,8 +3779,8 @@ module Queue2_WriteDataChannel_1(	// src/main/scala/chisel3/util/Decoupled.scala
 endmodule
 
 module Queue2_WriteResponseChannel_3(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:9667:11, :13918:11, :18169:11, :22420:11, :24388:11, :24873:11, :27451:11
-               reset,	// <stdin>:9668:11, :13919:11, :18170:11, :22421:11, :24389:11, :24874:11, :27452:11
+  input        clock,	// <stdin>:9303:11, :13188:11, :17073:11, :20958:11, :22904:11, :23389:11, :25967:11
+               reset,	// <stdin>:9304:11, :13189:11, :17074:11, :20959:11, :22905:11, :23390:11, :25968:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0] io_enq_bits_resp,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -4341,13 +3796,13 @@ module Queue2_WriteResponseChannel_3(	// src/main/scala/chisel3/util/Decoupled.s
   wire empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:9667:11, :13918:11, :18169:11, :22420:11, :24388:11, :24873:11, :27451:11
-    if (reset) begin	// <stdin>:9667:11, :13918:11, :18169:11, :22420:11, :24388:11, :24873:11, :27451:11
+  always @(posedge clock) begin	// <stdin>:9303:11, :13188:11, :17073:11, :20958:11, :22904:11, :23389:11, :25967:11
+    if (reset) begin	// <stdin>:9303:11, :13188:11, :17073:11, :20958:11, :22904:11, :23389:11, :25967:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:9667:11, :13918:11, :18169:11, :22420:11, :24388:11, :24873:11, :27451:11
+    else begin	// <stdin>:9303:11, :13188:11, :17073:11, :20958:11, :22904:11, :23389:11, :25967:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -4392,8 +3847,8 @@ module Queue2_WriteResponseChannel_3(	// src/main/scala/chisel3/util/Decoupled.s
 endmodule
 
 module Queue1_AddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:9718:11, :9810:11, :13969:11, :14061:11, :18220:11, :18312:11, :22471:11, :22563:11, :24439:11, :24531:11
-               reset,	// <stdin>:9719:11, :9811:11, :13970:11, :14062:11, :18221:11, :18313:11, :22472:11, :22564:11, :24440:11, :24532:11
+  input        clock,	// <stdin>:9354:11, :9446:11, :13239:11, :13331:11, :17124:11, :17216:11, :21009:11, :21101:11, :22955:11, :23047:11
+               reset,	// <stdin>:9355:11, :9447:11, :13240:11, :13332:11, :17125:11, :17217:11, :21010:11, :21102:11, :22956:11, :23048:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [7:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -4405,12 +3860,12 @@ module Queue1_AddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243
 
   reg [10:0] ram;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   reg        full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
-  always @(posedge clock) begin	// <stdin>:9718:11, :9810:11, :13969:11, :14061:11, :18220:11, :18312:11, :22471:11, :22563:11, :24439:11, :24531:11
+  always @(posedge clock) begin	// <stdin>:9354:11, :9446:11, :13239:11, :13331:11, :17124:11, :17216:11, :21009:11, :21101:11, :22955:11, :23047:11
     automatic logic do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :286:19
     if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
       ram <= {io_enq_bits_prot, io_enq_bits_addr};	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    if (reset)	// <stdin>:9718:11, :9810:11, :13969:11, :14061:11, :18220:11, :18312:11, :22471:11, :22563:11, :24439:11, :24531:11
+    if (reset)	// <stdin>:9354:11, :9446:11, :13239:11, :13331:11, :17124:11, :17216:11, :21009:11, :21101:11, :22955:11, :23047:11
       full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     else if (~(do_enq == (io_deq_ready & full)))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
       full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
@@ -4440,8 +3895,8 @@ module Queue1_AddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243
 endmodule
 
 module Queue1_ReadDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:9764:11, :14015:11, :18266:11, :22517:11, :24485:11
-                reset,	// <stdin>:9765:11, :14016:11, :18267:11, :22518:11, :24486:11
+  input         clock,	// <stdin>:9400:11, :13285:11, :17170:11, :21055:11, :23001:11
+                reset,	// <stdin>:9401:11, :13286:11, :17171:11, :21056:11, :23002:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [31:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -4453,12 +3908,12 @@ module Queue1_ReadDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:24
 
   reg [33:0] ram;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   reg        full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
-  always @(posedge clock) begin	// <stdin>:9764:11, :14015:11, :18266:11, :22517:11, :24485:11
+  always @(posedge clock) begin	// <stdin>:9400:11, :13285:11, :17170:11, :21055:11, :23001:11
     automatic logic do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :286:19
     if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
       ram <= {2'h0, io_enq_bits_data};	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-    if (reset)	// <stdin>:9764:11, :14015:11, :18266:11, :22517:11, :24485:11
+    if (reset)	// <stdin>:9400:11, :13285:11, :17170:11, :21055:11, :23001:11
       full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     else if (~(do_enq == (io_deq_ready & full)))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
       full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
@@ -4491,8 +3946,8 @@ module Queue1_ReadDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:24
 endmodule
 
 module Queue1_WriteDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:9856:11, :14107:11, :18358:11, :22609:11, :24577:11
-                reset,	// <stdin>:9857:11, :14108:11, :18359:11, :22610:11, :24578:11
+  input         clock,	// <stdin>:9492:11, :13377:11, :17262:11, :21147:11, :23093:11
+                reset,	// <stdin>:9493:11, :13378:11, :17263:11, :21148:11, :23094:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [31:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -4505,12 +3960,12 @@ module Queue1_WriteDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:2
 
   reg [35:0] ram;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   reg        full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
-  always @(posedge clock) begin	// <stdin>:9856:11, :14107:11, :18358:11, :22609:11, :24577:11
+  always @(posedge clock) begin	// <stdin>:9492:11, :13377:11, :17262:11, :21147:11, :23093:11
     automatic logic do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :286:19
     if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
       ram <= {io_enq_bits_strb, io_enq_bits_data};	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    if (reset)	// <stdin>:9856:11, :14107:11, :18358:11, :22609:11, :24577:11
+    if (reset)	// <stdin>:9492:11, :13377:11, :17262:11, :21147:11, :23093:11
       full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     else if (~(do_enq == (io_deq_ready & full)))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
       full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
@@ -4543,8 +3998,8 @@ module Queue1_WriteDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:2
 endmodule
 
 module Queue1_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input  clock,	// <stdin>:9902:11, :14153:11, :18404:11, :22655:11, :24623:11
-         reset,	// <stdin>:9903:11, :14154:11, :18405:11, :22656:11, :24624:11
+  input  clock,	// <stdin>:9538:11, :13423:11, :17308:11, :21193:11, :23139:11
+         reset,	// <stdin>:9539:11, :13424:11, :17309:11, :21194:11, :23140:11
   output io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
          io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -4552,10 +4007,10 @@ module Queue1_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.sca
 );
 
   reg full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
-  always @(posedge clock) begin	// <stdin>:9902:11, :14153:11, :18404:11, :22655:11, :24623:11
-    if (reset)	// <stdin>:9902:11, :14153:11, :18404:11, :22655:11, :24623:11
+  always @(posedge clock) begin	// <stdin>:9538:11, :13423:11, :17308:11, :21193:11, :23139:11
+    if (reset)	// <stdin>:9538:11, :13423:11, :17308:11, :21193:11, :23139:11
       full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
-    else begin	// <stdin>:9902:11, :14153:11, :18404:11, :22655:11, :24623:11
+    else begin	// <stdin>:9538:11, :13423:11, :17308:11, :21193:11, :23139:11
       automatic logic do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35
       do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :286:19
       if (~(do_enq == (io_deq_ready & full)))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
@@ -4585,63 +4040,74 @@ module Queue1_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.sca
 endmodule
 
 // VCS coverage exclude_file
-module ram_16x8(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  input  [3:0] R0_addr,
-  input        R0_en,
-               R0_clk,
-  output [7:0] R0_data,
-  input  [3:0] W0_addr,
-  input        W0_en,
-               W0_clk,
-  input  [7:0] W0_data
+module ram_16x45(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  input  [3:0]  R0_addr,
+  input         R0_en,
+                R0_clk,
+  output [44:0] R0_data,
+  input  [3:0]  W0_addr,
+  input         W0_en,
+                W0_clk,
+  input  [44:0] W0_data
 );
 
-  reg [7:0] Memory[0:15];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  reg [44:0] Memory[0:15];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   always @(posedge W0_clk) begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
     if (W0_en & 1'h1)	// src/main/scala/chisel3/util/Decoupled.scala:256:91
       Memory[W0_addr] <= W0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    reg [31:0] _RANDOM_MEM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    reg [63:0] _RANDOM_MEM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
     initial begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
       `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
       `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chisel3/util/Decoupled.scala:256:91
         for (logic [4:0] i = 5'h0; i < 5'h10; i += 5'h1) begin
-          _RANDOM_MEM = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          Memory[i[3:0]] = _RANDOM_MEM[7:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          for (logic [6:0] j = 7'h0; j < 7'h40; j += 7'h20) begin
+            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          Memory[i[3:0]] = _RANDOM_MEM[44:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
         end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
       `endif // RANDOMIZE_MEM_INIT
     end // initial
   `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 8'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  assign R0_data = R0_en ? Memory[R0_addr] : 45'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue16_WriteAddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:9948:11, :14199:11, :18450:11, :22701:11
-                reset,	// <stdin>:9949:11, :14200:11, :18451:11, :22702:11
+  input         clock,	// <stdin>:9584:11, :13469:11, :17354:11, :21239:11, :38739:11, :38994:11, :39249:11, :39504:11
+                reset,	// <stdin>:9585:11, :13470:11, :17355:11, :21240:11, :38740:11, :38995:11, :39250:11, :39505:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [15:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [7:0]  io_enq_bits_len,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   output        io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [7:0]  io_deq_bits_len	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [15:0] io_deq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [7:0]  io_deq_bits_len,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [2:0]  io_deq_bits_size,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [1:0]  io_deq_bits_burst,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output        io_deq_bits_lock,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [3:0]  io_deq_bits_cache,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [2:0]  io_deq_bits_prot,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [3:0]  io_deq_bits_qos,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+                io_deq_bits_region	// src/main/scala/chisel3/util/Decoupled.scala:255:14
 );
 
-  reg  [3:0] enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [3:0] deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg        maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
-  wire       ptr_match = enq_ptr_value == deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
-  wire       empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
-  wire       full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
-  wire       do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:9948:11, :14199:11, :18450:11, :22701:11
-    if (reset) begin	// <stdin>:9948:11, :14199:11, :18450:11, :22701:11
+  wire [44:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  reg  [3:0]  enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [3:0]  deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg         maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
+  wire        ptr_match = enq_ptr_value == deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
+  wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
+  wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
+  wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
+  always @(posedge clock) begin	// <stdin>:9584:11, :13469:11, :17354:11, :21239:11, :38739:11, :38994:11, :39249:11, :39504:11
+    if (reset) begin	// <stdin>:9584:11, :13469:11, :17354:11, :21239:11, :38739:11, :38994:11, :39249:11, :39504:11
       enq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:255:14
       deq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:255:14
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:9948:11, :14199:11, :18450:11, :22701:11
+    else begin	// <stdin>:9584:11, :13469:11, :17354:11, :21239:11, :38739:11, :38994:11, :39249:11, :39504:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         enq_ptr_value <= enq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -4671,23 +4137,32 @@ module Queue16_WriteAddressChannel(	// src/main/scala/chisel3/util/Decoupled.sca
       `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  ram_16x8 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  ram_16x45 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
     .R0_addr (deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
     .R0_clk  (clock),
-    .R0_data (io_deq_bits_len),
+    .R0_data (_ram_ext_R0_data),
     .W0_addr (enq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .W0_clk  (clock),
-    .W0_data (io_enq_bits_len)
+    .W0_data ({21'hC, io_enq_bits_len, io_enq_bits_addr})	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   );
   assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
   assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
+  assign io_deq_bits_addr = _ram_ext_R0_data[15:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_len = _ram_ext_R0_data[23:16];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_size = _ram_ext_R0_data[26:24];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_burst = _ram_ext_R0_data[28:27];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_lock = _ram_ext_R0_data[29];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_cache = _ram_ext_R0_data[33:30];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_prot = _ram_ext_R0_data[36:34];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_qos = _ram_ext_R0_data[40:37];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_region = _ram_ext_R0_data[44:41];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
 endmodule
 
 module Queue2_SgdmaDesc(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:9999:11, :14250:11, :18501:11, :22752:11
-                reset,	// <stdin>:10000:11, :14251:11, :18502:11, :22753:11
+  input         clock,	// <stdin>:9635:11, :13520:11, :17405:11, :21290:11
+                reset,	// <stdin>:9636:11, :13521:11, :17406:11, :21291:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [47:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -4708,13 +4183,13 @@ module Queue2_SgdmaDesc(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:9999:11, :14250:11, :18501:11, :22752:11
-    if (reset) begin	// <stdin>:9999:11, :14250:11, :18501:11, :22752:11
+  always @(posedge clock) begin	// <stdin>:9635:11, :13520:11, :17405:11, :21290:11
+    if (reset) begin	// <stdin>:9635:11, :13520:11, :17405:11, :21290:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:9999:11, :14250:11, :18501:11, :22752:11
+    else begin	// <stdin>:9635:11, :13520:11, :17405:11, :21290:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -4761,9 +4236,118 @@ module Queue2_SgdmaDesc(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   assign io_deq_bits_flags = _ram_ext_R0_data[63:58];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
 endmodule
 
+// VCS coverage exclude_file
+module ram_2x145(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  input          R0_addr,
+                 R0_en,
+                 R0_clk,
+  output [144:0] R0_data,
+  input          W0_addr,
+                 W0_en,
+                 W0_clk,
+  input  [144:0] W0_data
+);
+
+  reg [144:0] Memory[0:1];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  always @(posedge W0_clk) begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    if (W0_en & 1'h1)	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      Memory[W0_addr] <= W0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    reg [159:0] _RANDOM_MEM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+        for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
+          for (logic [7:0] j = 8'h0; j < 8'hA0; j += 8'h20) begin
+            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          Memory[i[0]] = _RANDOM_MEM[144:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+        end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      `endif // RANDOMIZE_MEM_INIT
+    end // initial
+  `endif // ENABLE_INITIAL_MEM_
+  assign R0_data = R0_en ? Memory[R0_addr] : 145'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+endmodule
+
+module Queue2_WriteDataChannel_1(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input          clock,	// <stdin>:9686:11, :13571:11, :17456:11, :21341:11
+                 reset,	// <stdin>:9687:11, :13572:11, :17457:11, :21342:11
+  output         io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input          io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [127:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input          io_enq_bits_last,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+                 io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output         io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [127:0] io_deq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [15:0]  io_deq_bits_strb,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output         io_deq_bits_last	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+);
+
+  wire [144:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  reg          wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg          wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg          maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
+  wire         ptr_match = wrap == wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
+  wire         empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
+  wire         full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
+  wire         do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
+  always @(posedge clock) begin	// <stdin>:9686:11, :13571:11, :17456:11, :21341:11
+    if (reset) begin	// <stdin>:9686:11, :13571:11, :17456:11, :21341:11
+      wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+      wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+    end
+    else begin	// <stdin>:9686:11, :13571:11, :17456:11, :21341:11
+      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
+      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        wrap_1 <= wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
+        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
+    end
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_BEFORE_INITIAL
+    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `endif // INIT_RANDOM_PROLOG_
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        wrap = _RANDOM[/*Zero width*/ 1'b0][0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        wrap_1 = _RANDOM[/*Zero width*/ 1'b0][1];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        maybe_full = _RANDOM[/*Zero width*/ 1'b0][2];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+      `endif // RANDOMIZE_REG_INIT
+    end // initial
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_AFTER_INITIAL
+  `endif // ENABLE_INITIAL_REG_
+  ram_2x145 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    .R0_addr (wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    .R0_clk  (clock),
+    .R0_data (_ram_ext_R0_data),
+    .W0_addr (wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .W0_clk  (clock),
+    .W0_data ({io_enq_bits_last, 16'hFFFF, io_enq_bits_data})	// src/main/scala/chisel3/util/Decoupled.scala:255:14, :256:91
+  );
+  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
+  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
+  assign io_deq_bits_data = _ram_ext_R0_data[127:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_strb = _ram_ext_R0_data[143:128];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_last = _ram_ext_R0_data[144];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+endmodule
+
 module Sgdma(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7
-  input          clock,	// <stdin>:10101:11, :14352:11, :18603:11, :22854:11
-                 reset,	// <stdin>:10102:11, :14353:11, :18604:11, :22855:11
+  input          clock,	// <stdin>:9737:11, :13622:11, :17507:11, :21392:11
+                 reset,	// <stdin>:9738:11, :13623:11, :17508:11, :21393:11
   output         s_axi_desc_ar_ready,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:72:22
   input          s_axi_desc_ar_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:72:22
   input  [16:0]  s_axi_desc_ar_bits_addr,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:72:22
@@ -4818,13 +4402,6 @@ module Sgdma(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7
   output         m_axi_aw_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
   output [15:0]  m_axi_aw_bits_addr,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
   output [7:0]   m_axi_aw_bits_len,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
-  output [2:0]   m_axi_aw_bits_size,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
-  output [1:0]   m_axi_aw_bits_burst,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
-  output         m_axi_aw_bits_lock,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
-  output [3:0]   m_axi_aw_bits_cache,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
-  output [2:0]   m_axi_aw_bits_prot,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
-  output [3:0]   m_axi_aw_bits_qos,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
-                 m_axi_aw_bits_region,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
   input          m_axi_w_ready,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
   output         m_axi_w_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
   output [127:0] m_axi_w_bits_data,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:74:17
@@ -4836,142 +4413,136 @@ module Sgdma(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7
   output         busy	// src/main/scala/chext/ip/sgdma/Sgdma.scala:83:16
 );
 
-  wire         sgdma_rvAW_ready;	// src/main/scala/chext/elastic/Fork.scala:83:20, src/main/scala/chext/ip/sgdma/Sgdma.scala:485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:83:20
-  wire         _eagerFork_result_valid_T_2;	// src/main/scala/chext/elastic/Fork.scala:79:41
-  wire         _eagerFork_result_valid_T;	// src/main/scala/chext/elastic/Fork.scala:79:41
-  wire         _sinkBuffered__sinkBuffer_1_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _sinkBuffered__sinkBuffer_1_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire [127:0] _sinkBuffered__sinkBuffer_1_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire [15:0]  _sinkBuffered__sinkBuffer_1_io_deq_bits_strb;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _sinkBuffered__sinkBuffer_1_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _sinkBuffered__sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _sinkBuffered__sinkBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire [47:0]  _sinkBuffered__sinkBuffer_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire [9:0]   _sinkBuffered__sinkBuffer_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire [5:0]   _sinkBuffered__sinkBuffer_io_deq_bits_flags;	// src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _sgdma_queueAW_io_enq_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25
-  wire         _sgdma_queueAW_io_deq_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25
-  wire [7:0]   _sgdma_queueAW_io_deq_bits_len;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25
-  wire         _wrRespQueue__io_enq_ready;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:181:36
-  wire         _wrRespQueue__io_deq_valid;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:181:36
-  wire         _wrReqData__deq_q_io_enq_ready;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire         _wrReqData__deq_q_io_deq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire [31:0]  _wrReqData__deq_q_io_deq_bits_data;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire [3:0]   _wrReqData__deq_q_io_deq_bits_strb;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire         _wrReq__deq_q_io_enq_ready;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire         _wrReq__deq_q_io_deq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire [7:0]   _wrReq__deq_q_io_deq_bits_addr;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire         _rdRespQueue__io_enq_ready;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36
-  wire         _rdRespQueue__io_deq_valid;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36
-  wire [31:0]  _rdRespQueue__io_deq_bits_data;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36
-  wire [1:0]   _rdRespQueue__io_deq_bits_resp;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36
-  wire         _rdReq__deq_q_io_enq_ready;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire         _rdReq__deq_q_io_deq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire [7:0]   _rdReq__deq_q_io_deq_bits_addr;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire         _s_axil__sinkBuffer_1_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
-  wire         _s_axil__sourceBuffer_2_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [31:0]  _s_axil__sourceBuffer_2_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [3:0]   _s_axil__sourceBuffer_2_io_deq_bits_strb;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire         _s_axil__sourceBuffer_1_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [7:0]   _s_axil__sourceBuffer_1_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [2:0]   _s_axil__sourceBuffer_1_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire         _s_axil__sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
-  wire         _s_axil__sourceBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [7:0]   _s_axil__sourceBuffer_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire [2:0]   _s_axil__sourceBuffer_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire         _initSgdma_bridge_read_req_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
-  wire [13:0]  _initSgdma_bridge_read_req_bits;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
-  wire         _initSgdma_bridge_read_resp_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
-  wire         _initSgdma_bridge_write_req_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
-  wire [13:0]  _initSgdma_bridge_write_req_bits_addr;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
-  wire [63:0]  _initSgdma_bridge_write_req_bits_data;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
-  wire [7:0]   _initSgdma_bridge_write_req_bits_strb;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
-  wire         _initSgdma_bridge_write_resp_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
-  wire         _initSgdma_mem_read1_req_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
-  wire         _initSgdma_mem_read1_resp_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
-  wire [63:0]  _initSgdma_mem_read1_resp_bits;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
-  wire         _initSgdma_mem_write1_req_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
-  wire         _initSgdma_mem_write1_resp_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
-  wire         _writeBuffer_source_aw_ready;	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:79:29
-  wire         _writeBuffer_source_w_ready;	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:79:29
-  reg          working;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32
-  reg  [63:0]  regCounter;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:90:35
-  reg  [7:0]   regMode;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:93:32
-  reg  [31:0]  regSgdmaIndexLO;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:96:40
-  reg  [31:0]  regSgdmaIndexHI;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:97:40
-  reg  [31:0]  regSgdmaLengthLO;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:99:41
-  reg  [31:0]  regSgdmaLengthHI;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:100:41
-  reg          regSgdmaDiscardReadData;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:102:48
-  reg  [31:0]  regInitAddrLO;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:105:38
-  reg  [31:0]  regInitAddrHI;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:106:38
-  reg  [31:0]  regInitSizeLO;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:108:38
-  reg  [31:0]  regInitSizeHI;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:109:38
-  reg  [31:0]  regInitMaxBurstLen;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:111:43
-  reg  [31:0]  regInitInitial_0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:114:39
-  reg  [31:0]  regInitInitial_1;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:114:39
-  reg  [31:0]  regInitInitial_2;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:114:39
-  reg  [31:0]  regInitInitial_3;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:114:39
-  reg  [31:0]  regInitDelta_0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:115:37
-  reg  [31:0]  regInitDelta_1;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:115:37
-  reg  [31:0]  regInitDelta_2;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:115:37
-  reg  [31:0]  regInitDelta_3;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:115:37
-  wire         rdReq = _rdReq__deq_q_io_deq_valid & _rdRespQueue__io_enq_ready;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36, :226:35, src/main/scala/chisel3/util/Decoupled.scala:362:21
-  wire         wrReq =
+  wire        sgdma_rvAW_ready;	// src/main/scala/chext/elastic/Fork.scala:83:20, src/main/scala/chext/ip/sgdma/Sgdma.scala:485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:83:20
+  wire        _eagerFork_result_valid_T_2;	// src/main/scala/chext/elastic/Fork.scala:79:41
+  wire        _eagerFork_result_valid_T;	// src/main/scala/chext/elastic/Fork.scala:79:41
+  wire        _sinkBuffered__sinkBuffer_1_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  wire        _sinkBuffered__sinkBuffer_1_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  wire        _sinkBuffered__sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  wire        _sinkBuffered__sinkBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  wire [47:0] _sinkBuffered__sinkBuffer_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  wire [9:0]  _sinkBuffered__sinkBuffer_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  wire [5:0]  _sinkBuffered__sinkBuffer_io_deq_bits_flags;	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  wire        _sgdma_queueAW_io_enq_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25
+  wire        _sgdma_queueAW_io_deq_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25
+  wire [7:0]  _sgdma_queueAW_io_deq_bits_len;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25
+  wire        _wrRespQueue__io_enq_ready;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:181:36
+  wire        _wrRespQueue__io_deq_valid;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:181:36
+  wire        _wrReqData__deq_q_io_enq_ready;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire        _wrReqData__deq_q_io_deq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire [31:0] _wrReqData__deq_q_io_deq_bits_data;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire [3:0]  _wrReqData__deq_q_io_deq_bits_strb;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire        _wrReq__deq_q_io_enq_ready;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire        _wrReq__deq_q_io_deq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire [7:0]  _wrReq__deq_q_io_deq_bits_addr;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire        _rdRespQueue__io_enq_ready;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36
+  wire        _rdRespQueue__io_deq_valid;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36
+  wire [31:0] _rdRespQueue__io_deq_bits_data;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36
+  wire [1:0]  _rdRespQueue__io_deq_bits_resp;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36
+  wire        _rdReq__deq_q_io_enq_ready;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire        _rdReq__deq_q_io_deq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire [7:0]  _rdReq__deq_q_io_deq_bits_addr;	// src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire        _s_axil__sinkBuffer_1_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire        _s_axil__sourceBuffer_2_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [31:0] _s_axil__sourceBuffer_2_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]  _s_axil__sourceBuffer_2_io_deq_bits_strb;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire        _s_axil__sourceBuffer_1_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]  _s_axil__sourceBuffer_1_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]  _s_axil__sourceBuffer_1_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire        _s_axil__sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire        _s_axil__sourceBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]  _s_axil__sourceBuffer_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]  _s_axil__sourceBuffer_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire        _initSgdma_bridge_read_req_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
+  wire [13:0] _initSgdma_bridge_read_req_bits;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
+  wire        _initSgdma_bridge_read_resp_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
+  wire        _initSgdma_bridge_write_req_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
+  wire [13:0] _initSgdma_bridge_write_req_bits_addr;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
+  wire [63:0] _initSgdma_bridge_write_req_bits_data;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
+  wire [7:0]  _initSgdma_bridge_write_req_bits_strb;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
+  wire        _initSgdma_bridge_write_resp_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:138:24
+  wire        _initSgdma_mem_read1_req_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
+  wire        _initSgdma_mem_read1_resp_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
+  wire [63:0] _initSgdma_mem_read1_resp_bits;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
+  wire        _initSgdma_mem_write1_req_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
+  wire        _initSgdma_mem_write1_resp_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
+  reg         working;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32
+  reg  [63:0] regCounter;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:90:35
+  reg  [7:0]  regMode;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:93:32
+  reg  [31:0] regSgdmaIndexLO;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:96:40
+  reg  [31:0] regSgdmaIndexHI;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:97:40
+  reg  [31:0] regSgdmaLengthLO;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:99:41
+  reg  [31:0] regSgdmaLengthHI;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:100:41
+  reg         regSgdmaDiscardReadData;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:102:48
+  reg  [31:0] regInitAddrLO;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:105:38
+  reg  [31:0] regInitAddrHI;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:106:38
+  reg  [31:0] regInitSizeLO;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:108:38
+  reg  [31:0] regInitSizeHI;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:109:38
+  reg  [31:0] regInitMaxBurstLen;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:111:43
+  reg  [31:0] regInitInitial_0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:114:39
+  reg  [31:0] regInitInitial_1;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:114:39
+  reg  [31:0] regInitInitial_2;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:114:39
+  reg  [31:0] regInitInitial_3;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:114:39
+  reg  [31:0] regInitDelta_0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:115:37
+  reg  [31:0] regInitDelta_1;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:115:37
+  reg  [31:0] regInitDelta_2;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:115:37
+  reg  [31:0] regInitDelta_3;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:115:37
+  wire        rdReq = _rdReq__deq_q_io_deq_valid & _rdRespQueue__io_enq_ready;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:173:36, :226:35, src/main/scala/chisel3/util/Decoupled.scala:362:21
+  wire        wrReq =
     _wrReq__deq_q_io_deq_valid & _wrReqData__deq_q_io_deq_valid
     & _wrRespQueue__io_enq_ready;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:181:36, :265:54, src/main/scala/chisel3/util/Decoupled.scala:362:21
-  reg  [63:0]  sgdma_count;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:227:24
-  reg          sgdma_discardReadData;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:228:34
-  reg  [63:0]  sgdma_stg1_count;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:231:29
-  reg  [63:0]  sgdma_stg1_idx;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:232:27
-  reg  [63:0]  sgdma_stg2_count;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:235:29
-  reg  [47:0]  sgdma_stg2_waitCycles;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:238:34
-  reg  [31:0]  sgdma_stg3_expected;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:241:32
-  reg  [15:0]  sgdma_stg3_wBeatCount;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:242:34
-  reg  [31:0]  sgdma_stg3_received;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:244:32
-  wire         sgdma_stg3_wBeatLast =
+  reg  [63:0] sgdma_count;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:227:24
+  reg         sgdma_discardReadData;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:228:34
+  reg  [63:0] sgdma_stg1_count;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:231:29
+  reg  [63:0] sgdma_stg1_idx;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:232:27
+  reg  [63:0] sgdma_stg2_count;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:235:29
+  reg  [47:0] sgdma_stg2_waitCycles;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:238:34
+  reg  [31:0] sgdma_stg3_expected;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:241:32
+  reg  [15:0] sgdma_stg3_wBeatCount;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:242:34
+  reg  [31:0] sgdma_stg3_received;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:244:32
+  wire        sgdma_stg3_wBeatLast =
     sgdma_stg3_wBeatCount == {8'h0, _sgdma_queueAW_io_deq_bits_len};	// src/main/scala/chext/ip/sgdma/Sgdma.scala:93:32, :242:34, :256:25, :261:39
-  reg          modeSgdma;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:458:34
-  wire         _GEN = sgdma_stg1_count < sgdma_count;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:227:24, :231:29, :285:23
-  wire         _GEN_0 = working & modeSgdma;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32, :285:32, :458:34, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
-  wire         read_desc_req_valid = _GEN_0 & _GEN;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :285:{23,32}, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
-  wire [13:0]  read_desc_req_bits = sgdma_stg1_idx[13:0];	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :232:27, src/main/scala/chisel3/util/Decoupled.scala:59:19
-  wire         sgdma_rvDesc_valid = _GEN_0 & _sinkBuffered__sinkBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/elastic/Connect.scala:11:16, src/main/scala/chext/ip/sgdma/Sgdma.scala:285:32, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
-  wire         read_desc_resp_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31
-  wire         _GEN_1 = _sinkBuffered__sinkBuffer_io_enq_ready & read_desc_resp_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31
-  wire [63:0]  read_desc_resp_bits;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31
-  wire [47:0]  desc_addr = read_desc_resp_bits[47:0];	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :301:26, :303:26
-  wire [9:0]   desc_len = read_desc_resp_bits[57:48];	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :301:26, :304:25
-  wire [5:0]   desc_flags = read_desc_resp_bits[63:58];	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :301:26, :305:27
-  wire         _GEN_2 = sgdma_stg2_waitCycles == 48'h0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:238:34, :311:32
-  wire         _GEN_3 = desc_flags == 6'h1;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :301:26, :312:29
-  wire         _GEN_4 = desc_flags == 6'h3;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:301:26, :312:67
-  wire         _GEN_5 = _GEN_3 | _GEN_4;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:312:{29,53,67}
-  wire         _GEN_6 = _GEN_1 & _GEN_2 & _GEN_5;	// src/main/scala/chext/elastic/Arrival.scala:36:25, :65:{28,45}, src/main/scala/chext/ip/sgdma/Sgdma.scala:311:{32,41}, :312:{53,92}, :313:37
-  wire         read_desc_resp_ready = working & modeSgdma & _GEN_1 & _GEN_2;	// src/main/scala/chext/elastic/Arrival.scala:35:18, :65:{28,45}, src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32, :117:31, :311:{32,41}, :458:34, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:83:20
-  wire         _GEN_7 = _sinkBuffered__sinkBuffer_io_deq_bits_flags == 6'h1;	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :340:25
-  wire         _GEN_8 = working & modeSgdma & sgdma_rvDesc_valid;	// src/main/scala/chext/elastic/Connect.scala:11:16, src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32, :337:26, :340:50, :458:34, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
-  wire         m_axi__ar_valid = _GEN_8 & _GEN_7;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:337:26, :340:{25,50}, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
-  wire         _GEN_9 = _sinkBuffered__sinkBuffer_io_deq_bits_flags == 6'h3;	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:312:67, :361:31
-  wire         sgdma_rvAW_valid =
+  reg         modeSgdma;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:458:34
+  wire        _GEN = sgdma_stg1_count < sgdma_count;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:227:24, :231:29, :285:23
+  wire        _GEN_0 = working & modeSgdma;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32, :285:32, :458:34, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
+  wire        read_desc_req_valid = _GEN_0 & _GEN;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :285:{23,32}, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
+  wire [13:0] read_desc_req_bits = sgdma_stg1_idx[13:0];	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :232:27, src/main/scala/chisel3/util/Decoupled.scala:59:19
+  wire        sgdma_rvDesc_valid = _GEN_0 & _sinkBuffered__sinkBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/elastic/Connect.scala:11:16, src/main/scala/chext/ip/sgdma/Sgdma.scala:285:32, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
+  wire        read_desc_resp_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31
+  wire        _GEN_1 = _sinkBuffered__sinkBuffer_io_enq_ready & read_desc_resp_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31
+  wire [63:0] read_desc_resp_bits;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31
+  wire [47:0] desc_addr = read_desc_resp_bits[47:0];	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :301:26, :303:26
+  wire [9:0]  desc_len = read_desc_resp_bits[57:48];	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :301:26, :304:25
+  wire [5:0]  desc_flags = read_desc_resp_bits[63:58];	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31, :301:26, :305:27
+  wire        _GEN_2 = sgdma_stg2_waitCycles == 48'h0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:238:34, :311:32
+  wire        _GEN_3 = desc_flags == 6'h1;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :301:26, :312:29
+  wire        _GEN_4 = desc_flags == 6'h3;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:301:26, :312:67
+  wire        _GEN_5 = _GEN_3 | _GEN_4;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:312:{29,53,67}
+  wire        _GEN_6 = _GEN_1 & _GEN_2 & _GEN_5;	// src/main/scala/chext/elastic/Arrival.scala:36:25, :65:{28,45}, src/main/scala/chext/ip/sgdma/Sgdma.scala:311:{32,41}, :312:{53,92}, :313:37
+  wire        read_desc_resp_ready = working & modeSgdma & _GEN_1 & _GEN_2;	// src/main/scala/chext/elastic/Arrival.scala:35:18, :65:{28,45}, src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32, :117:31, :311:{32,41}, :458:34, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:83:20
+  wire        _GEN_7 = _sinkBuffered__sinkBuffer_io_deq_bits_flags == 6'h1;	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :340:25
+  wire        _GEN_8 = working & modeSgdma & sgdma_rvDesc_valid;	// src/main/scala/chext/elastic/Connect.scala:11:16, src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32, :337:26, :340:50, :458:34, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
+  wire        m_axi__ar_valid = _GEN_8 & _GEN_7;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:337:26, :340:{25,50}, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
+  wire        _GEN_9 = _sinkBuffered__sinkBuffer_io_deq_bits_flags == 6'h3;	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:312:67, :361:31
+  wire        sgdma_rvAW_valid =
     _GEN_8 & ~_GEN_7 & _GEN_9 & ~sgdma_discardReadData & sgdma_rvDesc_valid;	// src/main/scala/chext/elastic/Arrival.scala:29:25, src/main/scala/chext/elastic/Connect.scala:11:16, src/main/scala/chext/ip/sgdma/Sgdma.scala:228:34, :313:37, :314:58, :337:26, :340:{25,50}, :361:{31,56}, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
-  reg          eagerFork_regs_0;	// src/main/scala/chext/elastic/Fork.scala:75:25
-  reg          eagerFork_regs_1;	// src/main/scala/chext/elastic/Fork.scala:75:25
+  reg         eagerFork_regs_0;	// src/main/scala/chext/elastic/Fork.scala:75:25
+  reg         eagerFork_regs_1;	// src/main/scala/chext/elastic/Fork.scala:75:25
   assign _eagerFork_result_valid_T = ~eagerFork_regs_0;	// src/main/scala/chext/elastic/Fork.scala:75:25, :79:41
   assign _eagerFork_result_valid_T_2 = ~eagerFork_regs_1;	// src/main/scala/chext/elastic/Fork.scala:75:25, :79:41
-  wire         eagerFork_rvAW_ready_qual1_0 =
-    _writeBuffer_source_aw_ready | eagerFork_regs_0;	// src/main/scala/chext/elastic/Fork.scala:75:25, :85:22, src/main/scala/chext/ip/sgdma/WriteBuffer.scala:79:29
-  wire         eagerFork_rvAW_ready_qual1_1 =
+  wire        eagerFork_rvAW_ready_qual1_0 = m_axi_aw_ready | eagerFork_regs_0;	// src/main/scala/chext/elastic/Fork.scala:75:25, :85:22
+  wire        eagerFork_rvAW_ready_qual1_1 =
     _sgdma_queueAW_io_enq_ready | eagerFork_regs_1;	// src/main/scala/chext/elastic/Fork.scala:75:25, :85:22, src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25
   assign sgdma_rvAW_ready =
     _GEN_0 & eagerFork_rvAW_ready_qual1_0 & eagerFork_rvAW_ready_qual1_1;	// src/main/scala/chext/elastic/Fork.scala:83:20, :85:22, src/main/scala/chext/ip/sgdma/Sgdma.scala:285:32, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20, :83:20
-  wire         _GEN_10 = _sinkBuffered__sinkBuffer_1_io_enq_ready & m_axi_r_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Buffer.scala:131:30
-  wire         _GEN_11 = _GEN_10 & _sgdma_queueAW_io_deq_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:{28,45}, src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25, :414:40, :415:36, src/main/scala/chisel3/util/Decoupled.scala:83:20
-  wire         _GEN_12 = _GEN_10 & _sgdma_queueAW_io_deq_valid;	// src/main/scala/chext/elastic/Arrival.scala:35:18, :65:{28,45}, src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25, :414:40
-  wire         m_axi__r_ready = _GEN_0 & (sgdma_discardReadData | _GEN_12);	// src/main/scala/chext/elastic/Arrival.scala:35:18, :65:45, src/main/scala/chext/ip/sgdma/Sgdma.scala:228:34, :285:32, :399:29, :414:40, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20, :76:20, :83:20
-  wire         m_axi__b_ready = _GEN_0 & ~sgdma_discardReadData;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32, :215:30, :228:34, :285:32, :399:29, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20, :76:20, :83:20
-  wire         read_desc_req_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31
-  always @(posedge clock) begin	// <stdin>:10101:11, :14352:11, :18603:11, :22854:11
-    if (reset) begin	// <stdin>:10101:11, :14352:11, :18603:11, :22854:11
+  wire        _GEN_10 = _sinkBuffered__sinkBuffer_1_io_enq_ready & m_axi_r_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Buffer.scala:131:30
+  wire        _GEN_11 = _GEN_10 & _sgdma_queueAW_io_deq_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:{28,45}, src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25, :414:40, :415:36, src/main/scala/chisel3/util/Decoupled.scala:83:20
+  wire        _GEN_12 = _GEN_10 & _sgdma_queueAW_io_deq_valid;	// src/main/scala/chext/elastic/Arrival.scala:35:18, :65:{28,45}, src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25, :414:40
+  wire        m_axi__r_ready = _GEN_0 & (sgdma_discardReadData | _GEN_12);	// src/main/scala/chext/elastic/Arrival.scala:35:18, :65:45, src/main/scala/chext/ip/sgdma/Sgdma.scala:228:34, :285:32, :399:29, :414:40, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20, :76:20, :83:20
+  wire        m_axi__b_ready = _GEN_0 & ~sgdma_discardReadData;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32, :215:30, :228:34, :285:32, :399:29, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20, :76:20, :83:20
+  wire        read_desc_req_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:117:31
+  always @(posedge clock) begin	// <stdin>:9737:11, :13622:11, :17507:11, :21392:11
+    if (reset) begin	// <stdin>:9737:11, :13622:11, :17507:11, :21392:11
       working <= 1'h0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32
       regCounter <= 64'h0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:90:35
       regMode <= 8'h0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:93:32
@@ -5006,7 +4577,7 @@ module Sgdma(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7
       eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/elastic/Fork.scala:75:25, src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32
       eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/elastic/Fork.scala:75:25, src/main/scala/chext/ip/sgdma/Sgdma.scala:86:32
     end
-    else begin	// <stdin>:10101:11, :14352:11, :18603:11, :22854:11
+    else begin	// <stdin>:9737:11, :13622:11, :17507:11, :21392:11
       automatic logic        _GEN_13;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:460:17
       automatic logic        _GEN_14;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:461:18
       automatic logic [63:0] countNext;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:264:26
@@ -5391,36 +4962,6 @@ module Sgdma(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7
       `FIRRTL_AFTER_INITIAL	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  WriteBuffer writeBuffer (	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:79:29
-    .clock               (clock),
-    .reset               (reset),
-    .source_aw_ready     (_writeBuffer_source_aw_ready),
-    .source_aw_valid     (_GEN_0 & sgdma_rvAW_valid & _eagerFork_result_valid_T),	// src/main/scala/chext/elastic/Connect.scala:11:16, src/main/scala/chext/elastic/Fork.scala:79:41, src/main/scala/chext/ip/sgdma/Sgdma.scala:285:32, :337:26, :340:50, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
-    .source_aw_bits_addr (_sinkBuffered__sinkBuffer_io_deq_bits_addr[15:0]),	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:343:23
-    .source_aw_bits_len  (_sinkBuffered__sinkBuffer_io_deq_bits_len[7:0]),	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:344:22
-    .source_w_ready      (_writeBuffer_source_w_ready),
-    .source_w_valid
-      (_GEN_0 & ~sgdma_discardReadData & _sinkBuffered__sinkBuffer_1_io_deq_valid),	// src/main/scala/chext/elastic/Arrival.scala:29:25, src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:228:34, :285:32, :313:37, :314:58, :399:29, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
-    .source_w_bits_data  (_sinkBuffered__sinkBuffer_1_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:131:30
-    .source_w_bits_strb  (_sinkBuffered__sinkBuffer_1_io_deq_bits_strb),	// src/main/scala/chext/elastic/Buffer.scala:131:30
-    .source_w_bits_last  (_sinkBuffered__sinkBuffer_1_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:131:30
-    .sink_aw_ready       (m_axi_aw_ready),
-    .sink_aw_valid       (m_axi_aw_valid),
-    .sink_aw_bits_addr   (m_axi_aw_bits_addr),
-    .sink_aw_bits_len    (m_axi_aw_bits_len),
-    .sink_aw_bits_size   (m_axi_aw_bits_size),
-    .sink_aw_bits_burst  (m_axi_aw_bits_burst),
-    .sink_aw_bits_lock   (m_axi_aw_bits_lock),
-    .sink_aw_bits_cache  (m_axi_aw_bits_cache),
-    .sink_aw_bits_prot   (m_axi_aw_bits_prot),
-    .sink_aw_bits_qos    (m_axi_aw_bits_qos),
-    .sink_aw_bits_region (m_axi_aw_bits_region),
-    .sink_w_ready        (m_axi_w_ready),
-    .sink_w_valid        (m_axi_w_valid),
-    .sink_w_bits_data    (m_axi_w_bits_data),
-    .sink_w_bits_strb    (m_axi_w_bits_strb),
-    .sink_w_bits_last    (m_axi_w_bits_last)
-  );
   ChiselTrueDualPortRAM_1 initSgdma_mem (	// src/main/scala/chext/ip/sgdma/Sgdma.scala:131:21
     .clock                (clock),
     .reset                (reset),
@@ -5520,7 +5061,7 @@ module Sgdma(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7
     .io_deq_bits_addr (_s_axil__sourceBuffer_1_io_deq_bits_addr),
     .io_deq_bits_prot (_s_axil__sourceBuffer_1_io_deq_bits_prot)
   );
-  Queue2_WriteDataChannel_1 s_axil__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  Queue2_WriteDataChannel s_axil__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .clock            (clock),
     .reset            (reset),
     .io_enq_ready     (s_axil_ctrl_w_ready),
@@ -5646,15 +5187,24 @@ module Sgdma(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7
     .io_deq_valid (_wrRespQueue__io_deq_valid)
   );
   Queue16_WriteAddressChannel sgdma_queueAW (	// src/main/scala/chext/ip/sgdma/Sgdma.scala:256:25
-    .clock            (clock),
-    .reset            (reset),
-    .io_enq_ready     (_sgdma_queueAW_io_enq_ready),
-    .io_enq_valid     (_GEN_0 & sgdma_rvAW_valid & _eagerFork_result_valid_T_2),	// src/main/scala/chext/elastic/Connect.scala:11:16, src/main/scala/chext/elastic/Fork.scala:79:41, src/main/scala/chext/ip/sgdma/Sgdma.scala:285:32, :337:26, :340:50, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
-    .io_enq_bits_addr (_sinkBuffered__sinkBuffer_io_deq_bits_addr[15:0]),	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:343:23
-    .io_enq_bits_len  (_sinkBuffered__sinkBuffer_io_deq_bits_len[7:0]),	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:344:22
-    .io_deq_ready     (_GEN_0 & ~sgdma_discardReadData & _GEN_11 & sgdma_stg3_wBeatLast),	// src/main/scala/chext/elastic/Arrival.scala:29:25, :65:45, src/main/scala/chext/ip/sgdma/Sgdma.scala:228:34, :261:39, :285:32, :313:37, :314:58, :399:29, :414:40, :415:36, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20, :83:20
-    .io_deq_valid     (_sgdma_queueAW_io_deq_valid),
-    .io_deq_bits_len  (_sgdma_queueAW_io_deq_bits_len)
+    .clock              (clock),
+    .reset              (reset),
+    .io_enq_ready       (_sgdma_queueAW_io_enq_ready),
+    .io_enq_valid       (_GEN_0 & sgdma_rvAW_valid & _eagerFork_result_valid_T_2),	// src/main/scala/chext/elastic/Connect.scala:11:16, src/main/scala/chext/elastic/Fork.scala:79:41, src/main/scala/chext/ip/sgdma/Sgdma.scala:285:32, :337:26, :340:50, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
+    .io_enq_bits_addr   (_sinkBuffered__sinkBuffer_io_deq_bits_addr[15:0]),	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:343:23
+    .io_enq_bits_len    (_sinkBuffered__sinkBuffer_io_deq_bits_len[7:0]),	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:344:22
+    .io_deq_ready
+      (_GEN_0 & ~sgdma_discardReadData & _GEN_11 & sgdma_stg3_wBeatLast),	// src/main/scala/chext/elastic/Arrival.scala:29:25, :65:45, src/main/scala/chext/ip/sgdma/Sgdma.scala:228:34, :261:39, :285:32, :313:37, :314:58, :399:29, :414:40, :415:36, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20, :83:20
+    .io_deq_valid       (_sgdma_queueAW_io_deq_valid),
+    .io_deq_bits_addr   (/* unused */),
+    .io_deq_bits_len    (_sgdma_queueAW_io_deq_bits_len),
+    .io_deq_bits_size   (/* unused */),
+    .io_deq_bits_burst  (/* unused */),
+    .io_deq_bits_lock   (/* unused */),
+    .io_deq_bits_cache  (/* unused */),
+    .io_deq_bits_prot   (/* unused */),
+    .io_deq_bits_qos    (/* unused */),
+    .io_deq_bits_region (/* unused */)
   );
   Queue2_SgdmaDesc sinkBuffered__sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:131:30
     .clock             (clock),
@@ -5674,24 +5224,28 @@ module Sgdma(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7
     .io_deq_bits_len   (_sinkBuffered__sinkBuffer_io_deq_bits_len),
     .io_deq_bits_flags (_sinkBuffered__sinkBuffer_io_deq_bits_flags)
   );
-  Queue2_WriteDataChannel sinkBuffered__sinkBuffer_1 (	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  Queue2_WriteDataChannel_1 sinkBuffered__sinkBuffer_1 (	// src/main/scala/chext/elastic/Buffer.scala:131:30
     .clock            (clock),
     .reset            (reset),
     .io_enq_ready     (_sinkBuffered__sinkBuffer_1_io_enq_ready),
     .io_enq_valid     (_GEN_12),	// src/main/scala/chext/elastic/Arrival.scala:35:18, :65:45, src/main/scala/chext/ip/sgdma/Sgdma.scala:414:40
     .io_enq_bits_data (m_axi_r_bits_data),
-    .io_enq_bits_strb (16'hFFFF),	// src/main/scala/chext/ip/sgdma/Sgdma.scala:410:56
     .io_enq_bits_last (sgdma_stg3_wBeatLast),	// src/main/scala/chext/ip/sgdma/Sgdma.scala:261:39
-    .io_deq_ready     (_writeBuffer_source_w_ready),	// src/main/scala/chext/ip/sgdma/WriteBuffer.scala:79:29
+    .io_deq_ready     (m_axi_w_ready),
     .io_deq_valid     (_sinkBuffered__sinkBuffer_1_io_deq_valid),
-    .io_deq_bits_data (_sinkBuffered__sinkBuffer_1_io_deq_bits_data),
-    .io_deq_bits_strb (_sinkBuffered__sinkBuffer_1_io_deq_bits_strb),
-    .io_deq_bits_last (_sinkBuffered__sinkBuffer_1_io_deq_bits_last)
+    .io_deq_bits_data (m_axi_w_bits_data),
+    .io_deq_bits_strb (m_axi_w_bits_strb),
+    .io_deq_bits_last (m_axi_w_bits_last)
   );
   assign m_axi_ar_valid = m_axi__ar_valid;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :337:26, :340:50, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
   assign m_axi_ar_bits_addr = _sinkBuffered__sinkBuffer_io_deq_bits_addr[15:0];	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :343:23
   assign m_axi_ar_bits_len = _sinkBuffered__sinkBuffer_io_deq_bits_len[7:0];	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :344:22
   assign m_axi_r_ready = m_axi__r_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :399:29, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:83:20
+  assign m_axi_aw_valid = _GEN_0 & sgdma_rvAW_valid & _eagerFork_result_valid_T;	// src/main/scala/chext/elastic/Connect.scala:11:16, src/main/scala/chext/elastic/Fork.scala:79:41, src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :285:32, :337:26, :340:50, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
+  assign m_axi_aw_bits_addr = _sinkBuffered__sinkBuffer_io_deq_bits_addr[15:0];	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :343:23
+  assign m_axi_aw_bits_len = _sinkBuffered__sinkBuffer_io_deq_bits_len[7:0];	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :344:22
+  assign m_axi_w_valid =
+    _GEN_0 & ~sgdma_discardReadData & _sinkBuffered__sinkBuffer_1_io_deq_valid;	// src/main/scala/chext/elastic/Arrival.scala:29:25, src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :228:34, :285:32, :313:37, :314:58, :399:29, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:67:20
   assign m_axi_b_ready = m_axi__b_ready;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :399:29, :485:17, :486:21, src/main/scala/chisel3/util/Decoupled.scala:83:20
   assign busy = working;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:66:7, :86:32
 endmodule
@@ -5729,8 +5283,8 @@ module ram_2x14(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_AddressChannel_10(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:24669:11, :24771:11, :27247:11, :27349:11
-                reset,	// <stdin>:24670:11, :24772:11, :27248:11, :27350:11
+  input         clock,	// <stdin>:23185:11, :23287:11, :25763:11, :25865:11
+                reset,	// <stdin>:23186:11, :23288:11, :25764:11, :25866:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [10:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -5749,13 +5303,13 @@ module Queue2_AddressChannel_10(	// src/main/scala/chisel3/util/Decoupled.scala:
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:24669:11, :24771:11, :27247:11, :27349:11
-    if (reset) begin	// <stdin>:24669:11, :24771:11, :27247:11, :27349:11
+  always @(posedge clock) begin	// <stdin>:23185:11, :23287:11, :25763:11, :25865:11
+    if (reset) begin	// <stdin>:23185:11, :23287:11, :25763:11, :25865:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:24669:11, :24771:11, :27247:11, :27349:11
+    else begin	// <stdin>:23185:11, :23287:11, :25763:11, :25865:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -5834,8 +5388,8 @@ module ram_8x3(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue8_UInt3(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:24924:11, :25042:11, :25102:11, :27502:11, :27620:11, :27680:11
-               reset,	// <stdin>:24925:11, :25043:11, :25103:11, :27503:11, :27621:11, :27681:11
+  input        clock,	// <stdin>:23440:11, :23558:11, :23618:11, :26018:11, :26136:11, :26196:11
+               reset,	// <stdin>:23441:11, :23559:11, :23619:11, :26019:11, :26137:11, :26197:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [2:0] io_enq_bits,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -5855,13 +5409,13 @@ module Queue8_UInt3(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire       do_deq = ~empty & io_deq_ready & io_deq_valid_0;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :264:27, :285:16, :297:{24,39}, :298:17, :300:14
   wire       do_enq = ~(empty & io_deq_ready) & io_enq_ready_0 & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :263:27, :286:16, :298:17, :301:{26,35}, :306:{24,39}
   assign io_enq_ready_0 = io_deq_ready | ~(ptr_match & maybe_full);	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24, :286:{16,19}, :306:{24,39}
-  always @(posedge clock) begin	// <stdin>:24924:11, :25042:11, :25102:11, :27502:11, :27620:11, :27680:11
-    if (reset) begin	// <stdin>:24924:11, :25042:11, :25102:11, :27502:11, :27620:11, :27680:11
+  always @(posedge clock) begin	// <stdin>:23440:11, :23558:11, :23618:11, :26018:11, :26136:11, :26196:11
+    if (reset) begin	// <stdin>:23440:11, :23558:11, :23618:11, :26018:11, :26136:11, :26196:11
       enq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:24924:11, :25042:11, :25102:11, :27502:11, :27620:11, :27680:11
+    else begin	// <stdin>:23440:11, :23558:11, :23618:11, :26018:11, :26136:11, :26196:11
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:263:27, :298:17, :301:{26,35}
         enq_ptr_value <= enq_ptr_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:264:27, :298:17, :300:14
@@ -6150,8 +5704,8 @@ module elasticMux_1(	// src/main/scala/chext/elastic/Mux.scala:10:7
 endmodule
 
 module axi4LiteDemux(	// src/main/scala/chext/amba/axi4/lite/components/Demux.scala:43:7
-  input         clock,	// <stdin>:25251:11, :27829:11
-                reset,	// <stdin>:25252:11, :27830:11
+  input         clock,	// <stdin>:23767:11, :26345:11
+                reset,	// <stdin>:23768:11, :26346:11
   output        s_axil_ar_ready,	// src/main/scala/chext/amba/axi4/lite/components/Demux.scala:48:18
   input         s_axil_ar_valid,	// src/main/scala/chext/amba/axi4/lite/components/Demux.scala:48:18
   input  [10:0] s_axil_ar_bits_addr,	// src/main/scala/chext/amba/axi4/lite/components/Demux.scala:48:18
@@ -6328,8 +5882,8 @@ module axi4LiteDemux(	// src/main/scala/chext/amba/axi4/lite/components/Demux.sc
   wire        write_result_ready =
     write_eagerFork_awPort_ready_qual1_0 & write_eagerFork_awPort_ready_qual1_1
     & write_eagerFork_awPort_ready_qual1_2 & write_eagerFork_awPort_ready_qual1_3;	// src/main/scala/chext/elastic/Fork.scala:85:22, :87:23
-  always @(posedge clock) begin	// <stdin>:25251:11, :27829:11
-    if (reset) begin	// <stdin>:25251:11, :27829:11
+  always @(posedge clock) begin	// <stdin>:23767:11, :26345:11
+    if (reset) begin	// <stdin>:23767:11, :26345:11
       read_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/lite/components/Demux.scala:43:7, src/main/scala/chext/elastic/Fork.scala:75:25
       read_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/lite/components/Demux.scala:43:7, src/main/scala/chext/elastic/Fork.scala:75:25
       read_eagerFork_regs_2 <= 1'h0;	// src/main/scala/chext/amba/axi4/lite/components/Demux.scala:43:7, src/main/scala/chext/elastic/Fork.scala:75:25
@@ -6338,7 +5892,7 @@ module axi4LiteDemux(	// src/main/scala/chext/amba/axi4/lite/components/Demux.sc
       write_eagerFork_regs_2 <= 1'h0;	// src/main/scala/chext/amba/axi4/lite/components/Demux.scala:43:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_3 <= 1'h0;	// src/main/scala/chext/amba/axi4/lite/components/Demux.scala:43:7, src/main/scala/chext/elastic/Fork.scala:75:25
     end
-    else begin	// <stdin>:25251:11, :27829:11
+    else begin	// <stdin>:23767:11, :26345:11
       read_eagerFork_regs_0 <=
         read_eagerFork_arPort_ready_qual1_0 & _s_axil__sourceBuffer_io_deq_valid
         & ~read_result_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chext/elastic/Fork.scala:75:25, :85:22, :87:23, :92:{54,57}
@@ -6422,7 +5976,7 @@ module axi4LiteDemux(	// src/main/scala/chext/amba/axi4/lite/components/Demux.sc
     .io_deq_bits_addr (_s_axil__sourceBuffer_1_io_deq_bits_addr),
     .io_deq_bits_prot (_s_axil__sourceBuffer_1_io_deq_bits_prot)
   );
-  Queue2_WriteDataChannel_1 s_axil__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  Queue2_WriteDataChannel s_axil__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .clock            (clock),
     .reset            (reset),
     .io_enq_ready     (s_axil_w_ready),
@@ -6652,8 +6206,8 @@ module ram_2x48(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_ReadAddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:25804:11
-                reset,	// <stdin>:25805:11
+  input         clock,	// <stdin>:24320:11
+                reset,	// <stdin>:24321:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [18:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -6686,13 +6240,13 @@ module Queue2_ReadAddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:25804:11
-    if (reset) begin	// <stdin>:25804:11
+  always @(posedge clock) begin	// <stdin>:24320:11
+    if (reset) begin	// <stdin>:24320:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:25804:11
+    else begin	// <stdin>:24320:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -6789,8 +6343,8 @@ module ram_2x67(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_ReadDataChannel_6(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:25855:11
-                reset,	// <stdin>:25856:11
+  input         clock,	// <stdin>:24371:11
+                reset,	// <stdin>:24372:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [63:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -6810,13 +6364,13 @@ module Queue2_ReadDataChannel_6(	// src/main/scala/chisel3/util/Decoupled.scala:
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:25855:11
-    if (reset) begin	// <stdin>:25855:11
+  always @(posedge clock) begin	// <stdin>:24371:11
+    if (reset) begin	// <stdin>:24371:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:25855:11
+    else begin	// <stdin>:24371:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -6863,9 +6417,9 @@ module Queue2_ReadDataChannel_6(	// src/main/scala/chisel3/util/Decoupled.scala:
   assign io_deq_bits_last = _ram_ext_R0_data[66];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
 endmodule
 
-module Queue2_WriteAddressChannel_8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:25906:11
-                reset,	// <stdin>:25907:11
+module Queue2_WriteAddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input         clock,	// <stdin>:24422:11
+                reset,	// <stdin>:24423:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [18:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -6898,13 +6452,13 @@ module Queue2_WriteAddressChannel_8(	// src/main/scala/chisel3/util/Decoupled.sc
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:25906:11
-    if (reset) begin	// <stdin>:25906:11
+  always @(posedge clock) begin	// <stdin>:24422:11
+    if (reset) begin	// <stdin>:24422:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:25906:11
+    else begin	// <stdin>:24422:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -7000,9 +6554,9 @@ module ram_2x73(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   assign R0_data = R0_en ? Memory[R0_addr] : 73'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
-module Queue2_WriteDataChannel_14(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:25957:11
-                reset,	// <stdin>:25958:11
+module Queue2_WriteDataChannel_10(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input         clock,	// <stdin>:24473:11
+                reset,	// <stdin>:24474:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [63:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -7023,13 +6577,13 @@ module Queue2_WriteDataChannel_14(	// src/main/scala/chisel3/util/Decoupled.scal
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:25957:11
-    if (reset) begin	// <stdin>:25957:11
+  always @(posedge clock) begin	// <stdin>:24473:11
+    if (reset) begin	// <stdin>:24473:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:25957:11
+    else begin	// <stdin>:24473:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -7077,8 +6631,8 @@ module Queue2_WriteDataChannel_14(	// src/main/scala/chisel3/util/Decoupled.scal
 endmodule
 
 module TransactionTracker(	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7
-  input        clock,	// <stdin>:26059:11, :26277:11
-               reset,	// <stdin>:26060:11, :26278:11
+  input        clock,	// <stdin>:24575:11, :24793:11
+               reset,	// <stdin>:24576:11, :24794:11
                io_initiate_en,	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:37:14
   input  [1:0] io_initiate_port,	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:37:14
   input        io_complete_en,	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:37:14
@@ -7088,12 +6642,12 @@ module TransactionTracker(	// src/main/scala/chext/amba/axi4/full/components/hel
 
   reg [4:0] tableNumOutstanding_0;	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:81:44
   reg [1:0] tablePort_0;	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:88:34
-  always @(posedge clock) begin	// <stdin>:26059:11, :26277:11
-    if (reset) begin	// <stdin>:26059:11, :26277:11
+  always @(posedge clock) begin	// <stdin>:24575:11, :24793:11
+    if (reset) begin	// <stdin>:24575:11, :24793:11
       tableNumOutstanding_0 <= 5'h0;	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:81:44, :82:12
       tablePort_0 <= 2'h0;	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :88:34
     end
-    else begin	// <stdin>:26059:11, :26277:11
+    else begin	// <stdin>:24575:11, :24793:11
       if (io_initiate_en & ~io_complete_en)	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:107:{25,28}
         tableNumOutstanding_0 <= tableNumOutstanding_0 + 5'h1;	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:81:44, :109:45
       else if (~io_initiate_en & io_complete_en)	// src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:110:{16,32}
@@ -7128,8 +6682,8 @@ module TransactionTracker(	// src/main/scala/chext/amba/axi4/full/components/hel
 endmodule
 
 module Queue2_Bundle2(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:26114:11, :26392:11
-                reset,	// <stdin>:26115:11, :26393:11
+  input         clock,	// <stdin>:24630:11, :24908:11
+                reset,	// <stdin>:24631:11, :24909:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [18:0] io_enq_bits__1_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -7159,13 +6713,13 @@ module Queue2_Bundle2(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:26114:11, :26392:11
-    if (reset) begin	// <stdin>:26114:11, :26392:11
+  always @(posedge clock) begin	// <stdin>:24630:11, :24908:11
+    if (reset) begin	// <stdin>:24630:11, :24908:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:26114:11, :26392:11
+    else begin	// <stdin>:24630:11, :24908:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -7284,8 +6838,8 @@ module elasticDemux_3(	// src/main/scala/chext/elastic/Demux.scala:10:7
 endmodule
 
 module elasticArbiter(	// src/main/scala/chext/elastic/Arbiter.scala:11:7
-  input         clock,	// <stdin>:26192:11
-                reset,	// <stdin>:26193:11
+  input         clock,	// <stdin>:24708:11
+                reset,	// <stdin>:24709:11
   output        io_sources_0_ready,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
   input         io_sources_0_valid,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
   input  [63:0] io_sources_0_bits_data,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
@@ -7337,12 +6891,12 @@ module elasticArbiter(	// src/main/scala/chext/elastic/Arbiter.scala:11:7
      {io_sources_0_bits_last}};	// src/main/scala/chext/elastic/Arbiter.scala:44:15
   reg              sinkSent;	// src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27
   assign sourceReady = sinkSent | io_sink_ready;	// src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27, :49:30
-  always @(posedge clock) begin	// <stdin>:26192:11
-    if (reset) begin	// <stdin>:26192:11
+  always @(posedge clock) begin	// <stdin>:24708:11
+    if (reset) begin	// <stdin>:24708:11
       chooser_lastChoice <= 2'h0;	// src/main/scala/chext/elastic/Arbiter.scala:21:14, src/main/scala/chext/elastic/Chooser.scala:24:35
       sinkSent <= 1'h0;	// src/main/scala/chext/elastic/Arbiter.scala:11:7, src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27
     end
-    else begin	// <stdin>:26192:11
+    else begin	// <stdin>:24708:11
       if (_GEN[_lastChoice_T] & sourceReady) begin	// src/main/scala/chext/elastic/Arbiter.scala:44:15, src/main/scala/chext/elastic/Chooser.scala:28:8, src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:49:30, :52:22
         if (_GEN[chooser_rrChoice]) begin	// src/main/scala/chext/elastic/Chooser.scala:28:8, :33:8
           if (&chooser_lastChoice)	// src/main/scala/chext/elastic/Chooser.scala:24:35, :34:18
@@ -7419,8 +6973,8 @@ module ram_8x2(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue8_UInt2(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:26332:11, :41525:11
-               reset,	// <stdin>:26333:11, :41526:11
+  input        clock,	// <stdin>:24848:11, :41061:11
+               reset,	// <stdin>:24849:11, :41062:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0] io_enq_bits,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -7440,13 +6994,13 @@ module Queue8_UInt2(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire       do_deq = ~empty & io_deq_ready & io_deq_valid_0;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :264:27, :285:16, :297:{24,39}, :298:17, :300:14
   wire       do_enq = ~(empty & io_deq_ready) & io_enq_ready_0 & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :263:27, :286:16, :298:17, :301:{26,35}, :306:{24,39}
   assign io_enq_ready_0 = io_deq_ready | ~(ptr_match & maybe_full);	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24, :286:{16,19}, :306:{24,39}
-  always @(posedge clock) begin	// <stdin>:26332:11, :41525:11
-    if (reset) begin	// <stdin>:26332:11, :41525:11
+  always @(posedge clock) begin	// <stdin>:24848:11, :41061:11
+    if (reset) begin	// <stdin>:24848:11, :41061:11
       enq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:26332:11, :41525:11
+    else begin	// <stdin>:24848:11, :41061:11
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:263:27, :298:17, :301:{26,35}
         enq_ptr_value <= enq_ptr_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:264:27, :298:17, :300:14
@@ -7538,8 +7092,8 @@ module elasticDemux_5(	// src/main/scala/chext/elastic/Demux.scala:10:7
 endmodule
 
 module elasticArbiter_1(	// src/main/scala/chext/elastic/Arbiter.scala:11:7
-  input        clock,	// <stdin>:26497:11, :41639:11
-               reset,	// <stdin>:26498:11, :41640:11
+  input        clock,	// <stdin>:25013:11, :41175:11
+               reset,	// <stdin>:25014:11, :41176:11
   output       io_sources_0_ready,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
   input        io_sources_0_valid,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
   input  [1:0] io_sources_0_bits_resp,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
@@ -7580,12 +7134,12 @@ module elasticArbiter_1(	// src/main/scala/chext/elastic/Arbiter.scala:11:7
      {io_sources_0_bits_resp}};	// src/main/scala/chext/elastic/Arbiter.scala:44:15
   reg             sinkSent;	// src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27
   assign sourceReady = sinkSent | io_sink_ready;	// src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27, :49:30
-  always @(posedge clock) begin	// <stdin>:26497:11, :41639:11
-    if (reset) begin	// <stdin>:26497:11, :41639:11
+  always @(posedge clock) begin	// <stdin>:25013:11, :41175:11
+    if (reset) begin	// <stdin>:25013:11, :41175:11
       chooser_lastChoice <= 2'h0;	// src/main/scala/chext/elastic/Chooser.scala:24:35
       sinkSent <= 1'h0;	// src/main/scala/chext/elastic/Arbiter.scala:11:7, src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27
     end
-    else begin	// <stdin>:26497:11, :41639:11
+    else begin	// <stdin>:25013:11, :41175:11
       if (_GEN[_lastChoice_T] & sourceReady) begin	// src/main/scala/chext/elastic/Arbiter.scala:44:15, src/main/scala/chext/elastic/Chooser.scala:28:8, src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:49:30, :52:22
         if (_GEN[chooser_rrChoice]) begin	// src/main/scala/chext/elastic/Chooser.scala:28:8, :33:8
           if (&chooser_lastChoice)	// src/main/scala/chext/elastic/Chooser.scala:24:35, :34:18
@@ -7629,8 +7183,8 @@ module elasticArbiter_1(	// src/main/scala/chext/elastic/Arbiter.scala:11:7
 endmodule
 
 module axi4FullDemux(	// src/main/scala/chext/amba/axi4/full/components/Demux.scala:55:7
-  input         clock,	// <stdin>:26582:11
-                reset,	// <stdin>:26583:11
+  input         clock,	// <stdin>:25098:11
+                reset,	// <stdin>:25099:11
   output        s_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/Demux.scala:60:17
   input         s_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/Demux.scala:60:17
   input  [18:0] s_axi_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/Demux.scala:60:17
@@ -7846,15 +7400,15 @@ module axi4FullDemux(	// src/main/scala/chext/amba/axi4/full/components/Demux.sc
   wire        write_awPort_ready =
     write_eagerFork_awPort_ready_qual1_0 & write_eagerFork_awPort_ready_qual1_1
     & write_eagerFork_awPort_ready_qual1_2;	// src/main/scala/chext/elastic/Fork.scala:85:22, :87:23
-  always @(posedge clock) begin	// <stdin>:26582:11
-    if (reset) begin	// <stdin>:26582:11
+  always @(posedge clock) begin	// <stdin>:25098:11
+    if (reset) begin	// <stdin>:25098:11
       read_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Demux.scala:55:7, src/main/scala/chext/elastic/Fork.scala:75:25
       read_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Demux.scala:55:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Demux.scala:55:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Demux.scala:55:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_2 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Demux.scala:55:7, src/main/scala/chext/elastic/Fork.scala:75:25
     end
-    else begin	// <stdin>:26582:11
+    else begin	// <stdin>:25098:11
       read_eagerFork_regs_0 <=
         read_eagerFork_arPort_ready_qual1_0 & _read_sinkBuffered__sinkBuffer_io_deq_valid
         & ~read_arPort_ready;	// src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/elastic/Fork.scala:75:25, :85:22, :87:23, :92:{54,57}
@@ -7933,7 +7487,7 @@ module axi4FullDemux(	// src/main/scala/chext/amba/axi4/full/components/Demux.sc
     .io_deq_bits_resp (s_axi_r_bits_resp),
     .io_deq_bits_last (s_axi_r_bits_last)
   );
-  Queue2_WriteAddressChannel_8 s_axi__sourceBuffer_1 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  Queue2_WriteAddressChannel s_axi__sourceBuffer_1 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .clock              (clock),
     .reset              (reset),
     .io_enq_ready       (s_axi_aw_ready),
@@ -7959,7 +7513,7 @@ module axi4FullDemux(	// src/main/scala/chext/amba/axi4/full/components/Demux.sc
     .io_deq_bits_qos    (_s_axi__sourceBuffer_1_io_deq_bits_qos),
     .io_deq_bits_region (_s_axi__sourceBuffer_1_io_deq_bits_region)
   );
-  Queue2_WriteDataChannel_14 s_axi__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  Queue2_WriteDataChannel_10 s_axi__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .clock            (clock),
     .reset            (reset),
     .io_enq_ready     (s_axi_w_ready),
@@ -8206,8 +7760,8 @@ module axi4FullDemux(	// src/main/scala/chext/amba/axi4/full/components/Demux.sc
 endmodule
 
 module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
-  input          clock,	// <stdin>:28382:11
-                 reset,	// <stdin>:28383:11
+  input          clock,	// <stdin>:26898:11
+                 reset,	// <stdin>:26899:11
   output         s_axi_desc_ar_ready,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:516:22
   input          s_axi_desc_ar_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:516:22
   input  [18:0]  s_axi_desc_ar_bits_addr,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:516:22
@@ -8274,13 +7828,6 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
   output         m_axiN_0_aw_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [15:0]  m_axiN_0_aw_bits_addr,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [7:0]   m_axiN_0_aw_bits_len,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [2:0]   m_axiN_0_aw_bits_size,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [1:0]   m_axiN_0_aw_bits_burst,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output         m_axiN_0_aw_bits_lock,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [3:0]   m_axiN_0_aw_bits_cache,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [2:0]   m_axiN_0_aw_bits_prot,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [3:0]   m_axiN_0_aw_bits_qos,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-                 m_axiN_0_aw_bits_region,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   input          m_axiN_0_w_ready,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output         m_axiN_0_w_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [127:0] m_axiN_0_w_bits_data,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
@@ -8300,13 +7847,6 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
   output         m_axiN_1_aw_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [15:0]  m_axiN_1_aw_bits_addr,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [7:0]   m_axiN_1_aw_bits_len,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [2:0]   m_axiN_1_aw_bits_size,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [1:0]   m_axiN_1_aw_bits_burst,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output         m_axiN_1_aw_bits_lock,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [3:0]   m_axiN_1_aw_bits_cache,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [2:0]   m_axiN_1_aw_bits_prot,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [3:0]   m_axiN_1_aw_bits_qos,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-                 m_axiN_1_aw_bits_region,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   input          m_axiN_1_w_ready,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output         m_axiN_1_w_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [127:0] m_axiN_1_w_bits_data,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
@@ -8326,13 +7866,6 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
   output         m_axiN_2_aw_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [15:0]  m_axiN_2_aw_bits_addr,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [7:0]   m_axiN_2_aw_bits_len,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [2:0]   m_axiN_2_aw_bits_size,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [1:0]   m_axiN_2_aw_bits_burst,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output         m_axiN_2_aw_bits_lock,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [3:0]   m_axiN_2_aw_bits_cache,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [2:0]   m_axiN_2_aw_bits_prot,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [3:0]   m_axiN_2_aw_bits_qos,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-                 m_axiN_2_aw_bits_region,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   input          m_axiN_2_w_ready,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output         m_axiN_2_w_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [127:0] m_axiN_2_w_bits_data,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
@@ -8352,13 +7885,6 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
   output         m_axiN_3_aw_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [15:0]  m_axiN_3_aw_bits_addr,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [7:0]   m_axiN_3_aw_bits_len,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [2:0]   m_axiN_3_aw_bits_size,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [1:0]   m_axiN_3_aw_bits_burst,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output         m_axiN_3_aw_bits_lock,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [3:0]   m_axiN_3_aw_bits_cache,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [2:0]   m_axiN_3_aw_bits_prot,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-  output [3:0]   m_axiN_3_aw_bits_qos,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
-                 m_axiN_3_aw_bits_region,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   input          m_axiN_3_w_ready,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output         m_axiN_3_w_valid,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
   output [127:0] m_axiN_3_w_bits_data,	// src/main/scala/chext/ip/sgdma/Sgdma.scala:518:18
@@ -8592,8 +8118,8 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
   wire        _busy_T_2 =
     _dmaModules_0_busy | _dmaModules_1_busy | _dmaModules_2_busy | _dmaModules_3_busy;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:526:11, :612:56
   wire        _GEN = wrReq & _wrReq__deq_q_io_deq_bits_addr[7:2] == 6'h3;	// src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala:265:54, :268:39, src/main/scala/chext/ip/sgdma/Sgdma.scala:613:32, :624:24, :625:{26,52}, :627:36, src/main/scala/chisel3/util/Decoupled.scala:362:21
-  always @(posedge clock) begin	// <stdin>:28382:11
-    if (reset)	// <stdin>:28382:11
+  always @(posedge clock) begin	// <stdin>:26898:11
+    if (reset)	// <stdin>:26898:11
       regCounter <= 64'h0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:523:35
     else if (_GEN)	// src/main/scala/chext/ip/sgdma/Sgdma.scala:613:32, :624:24, :625:52, :627:36
       regCounter <= 64'h0;	// src/main/scala/chext/ip/sgdma/Sgdma.scala:523:35
@@ -8677,13 +8203,6 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
     .m_axi_aw_valid           (m_axiN_0_aw_valid),
     .m_axi_aw_bits_addr       (m_axiN_0_aw_bits_addr),
     .m_axi_aw_bits_len        (m_axiN_0_aw_bits_len),
-    .m_axi_aw_bits_size       (m_axiN_0_aw_bits_size),
-    .m_axi_aw_bits_burst      (m_axiN_0_aw_bits_burst),
-    .m_axi_aw_bits_lock       (m_axiN_0_aw_bits_lock),
-    .m_axi_aw_bits_cache      (m_axiN_0_aw_bits_cache),
-    .m_axi_aw_bits_prot       (m_axiN_0_aw_bits_prot),
-    .m_axi_aw_bits_qos        (m_axiN_0_aw_bits_qos),
-    .m_axi_aw_bits_region     (m_axiN_0_aw_bits_region),
     .m_axi_w_ready            (m_axiN_0_w_ready),
     .m_axi_w_valid            (m_axiN_0_w_valid),
     .m_axi_w_bits_data        (m_axiN_0_w_bits_data),
@@ -8751,13 +8270,6 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
     .m_axi_aw_valid           (m_axiN_1_aw_valid),
     .m_axi_aw_bits_addr       (m_axiN_1_aw_bits_addr),
     .m_axi_aw_bits_len        (m_axiN_1_aw_bits_len),
-    .m_axi_aw_bits_size       (m_axiN_1_aw_bits_size),
-    .m_axi_aw_bits_burst      (m_axiN_1_aw_bits_burst),
-    .m_axi_aw_bits_lock       (m_axiN_1_aw_bits_lock),
-    .m_axi_aw_bits_cache      (m_axiN_1_aw_bits_cache),
-    .m_axi_aw_bits_prot       (m_axiN_1_aw_bits_prot),
-    .m_axi_aw_bits_qos        (m_axiN_1_aw_bits_qos),
-    .m_axi_aw_bits_region     (m_axiN_1_aw_bits_region),
     .m_axi_w_ready            (m_axiN_1_w_ready),
     .m_axi_w_valid            (m_axiN_1_w_valid),
     .m_axi_w_bits_data        (m_axiN_1_w_bits_data),
@@ -8825,13 +8337,6 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
     .m_axi_aw_valid           (m_axiN_2_aw_valid),
     .m_axi_aw_bits_addr       (m_axiN_2_aw_bits_addr),
     .m_axi_aw_bits_len        (m_axiN_2_aw_bits_len),
-    .m_axi_aw_bits_size       (m_axiN_2_aw_bits_size),
-    .m_axi_aw_bits_burst      (m_axiN_2_aw_bits_burst),
-    .m_axi_aw_bits_lock       (m_axiN_2_aw_bits_lock),
-    .m_axi_aw_bits_cache      (m_axiN_2_aw_bits_cache),
-    .m_axi_aw_bits_prot       (m_axiN_2_aw_bits_prot),
-    .m_axi_aw_bits_qos        (m_axiN_2_aw_bits_qos),
-    .m_axi_aw_bits_region     (m_axiN_2_aw_bits_region),
     .m_axi_w_ready            (m_axiN_2_w_ready),
     .m_axi_w_valid            (m_axiN_2_w_valid),
     .m_axi_w_bits_data        (m_axiN_2_w_bits_data),
@@ -8899,13 +8404,6 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
     .m_axi_aw_valid           (m_axiN_3_aw_valid),
     .m_axi_aw_bits_addr       (m_axiN_3_aw_bits_addr),
     .m_axi_aw_bits_len        (m_axiN_3_aw_bits_len),
-    .m_axi_aw_bits_size       (m_axiN_3_aw_bits_size),
-    .m_axi_aw_bits_burst      (m_axiN_3_aw_bits_burst),
-    .m_axi_aw_bits_lock       (m_axiN_3_aw_bits_lock),
-    .m_axi_aw_bits_cache      (m_axiN_3_aw_bits_cache),
-    .m_axi_aw_bits_prot       (m_axiN_3_aw_bits_prot),
-    .m_axi_aw_bits_qos        (m_axiN_3_aw_bits_qos),
-    .m_axi_aw_bits_region     (m_axiN_3_aw_bits_region),
     .m_axi_w_ready            (m_axiN_3_w_ready),
     .m_axi_w_valid            (m_axiN_3_w_valid),
     .m_axi_w_bits_data        (m_axiN_3_w_bits_data),
@@ -8952,7 +8450,7 @@ module SgdmaMulti(	// src/main/scala/chext/ip/sgdma/Sgdma.scala:513:7
     .io_deq_bits_addr (_s_axil__sourceBuffer_1_io_deq_bits_addr),
     .io_deq_bits_prot (_s_axil__sourceBuffer_1_io_deq_bits_prot)
   );
-  Queue2_WriteDataChannel_1 s_axil__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  Queue2_WriteDataChannel s_axil__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .clock            (clock),
     .reset            (reset),
     .io_enq_ready     (_s_axil__sourceBuffer_2_io_enq_ready),
@@ -9451,8 +8949,8 @@ module StrobeGenerator_6(	// src/main/scala/chext/amba/axi4/full/components/Addr
 endmodule
 
 module AddressStrobeGenerator_6(	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:176:7
-  input         clock,	// <stdin>:29465:11, :29953:11, :30931:11, :31368:11, :32206:11, :32694:11, :33672:11, :34109:11, :34947:11, :35435:11, :36413:11, :36850:11, :37688:11, :38176:11, :39154:11, :39591:11
-                reset,	// <stdin>:29466:11, :29954:11, :30932:11, :31369:11, :32207:11, :32695:11, :33673:11, :34110:11, :34948:11, :35436:11, :36414:11, :36851:11, :37689:11, :38177:11, :39155:11, :39592:11
+  input         clock,	// <stdin>:27981:11, :28469:11, :29447:11, :29884:11, :30722:11, :31210:11, :32188:11, :32625:11, :33463:11, :33951:11, :34929:11, :35366:11, :36204:11, :36692:11, :37670:11, :38107:11
+                reset,	// <stdin>:27982:11, :28470:11, :29448:11, :29885:11, :30723:11, :31211:11, :32189:11, :32626:11, :33464:11, :33952:11, :34930:11, :35367:11, :36205:11, :36693:11, :37671:11, :38108:11
   output        source_ready,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:183:18
   input         source_valid,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:183:18
   input  [15:0] source_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:183:18
@@ -9539,8 +9037,8 @@ module ram_8x8(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue8_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:29492:11, :29980:11, :32233:11, :32721:11, :34974:11, :35462:11, :37715:11, :38203:11
-               reset,	// <stdin>:29493:11, :29981:11, :32234:11, :32722:11, :34975:11, :35463:11, :37716:11, :38204:11
+  input        clock,	// <stdin>:28008:11, :28496:11, :30749:11, :31237:11, :33490:11, :33978:11, :36231:11, :36719:11
+               reset,	// <stdin>:28009:11, :28497:11, :30750:11, :31238:11, :33491:11, :33979:11, :36232:11, :36720:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [7:0] io_enq_bits,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -9556,13 +9054,13 @@ module Queue8_UInt8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire       empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire       full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire       do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:29492:11, :29980:11, :32233:11, :32721:11, :34974:11, :35462:11, :37715:11, :38203:11
-    if (reset) begin	// <stdin>:29492:11, :29980:11, :32233:11, :32721:11, :34974:11, :35462:11, :37715:11, :38203:11
+  always @(posedge clock) begin	// <stdin>:28008:11, :28496:11, :30749:11, :31237:11, :33490:11, :33978:11, :36231:11, :36719:11
+    if (reset) begin	// <stdin>:28008:11, :28496:11, :30749:11, :31237:11, :33490:11, :33978:11, :36231:11, :36719:11
       enq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:29492:11, :29980:11, :32233:11, :32721:11, :34974:11, :35462:11, :37715:11, :38203:11
+    else begin	// <stdin>:28008:11, :28496:11, :30749:11, :31237:11, :33490:11, :33978:11, :36231:11, :36719:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         enq_ptr_value <= enq_ptr_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -9639,8 +9137,8 @@ module ram_2x16(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_ReadAddressChannel_1(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:29543:11, :32284:11, :35025:11, :37766:11
-                reset,	// <stdin>:29544:11, :32285:11, :35026:11, :37767:11
+  input         clock,	// <stdin>:28059:11, :30800:11, :33541:11, :36282:11
+                reset,	// <stdin>:28060:11, :30801:11, :33542:11, :36283:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [15:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -9669,13 +9167,13 @@ module Queue2_ReadAddressChannel_1(	// src/main/scala/chisel3/util/Decoupled.sca
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:29543:11, :32284:11, :35025:11, :37766:11
-    if (reset) begin	// <stdin>:29543:11, :32284:11, :35025:11, :37766:11
+  always @(posedge clock) begin	// <stdin>:28059:11, :30800:11, :33541:11, :36282:11
+    if (reset) begin	// <stdin>:28059:11, :30800:11, :33541:11, :36282:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:29543:11, :32284:11, :35025:11, :37766:11
+    else begin	// <stdin>:28059:11, :30800:11, :33541:11, :36282:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -9730,8 +9228,8 @@ module Queue2_ReadAddressChannel_1(	// src/main/scala/chisel3/util/Decoupled.sca
 endmodule
 
 module Queue2_Bool(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input  clock,	// <stdin>:29594:11, :30082:11, :32335:11, :32823:11, :35076:11, :35564:11, :37817:11, :38305:11
-         reset,	// <stdin>:29595:11, :30083:11, :32336:11, :32824:11, :35077:11, :35565:11, :37818:11, :38306:11
+  input  clock,	// <stdin>:28110:11, :28598:11, :30851:11, :31339:11, :33592:11, :34080:11, :36333:11, :36821:11
+         reset,	// <stdin>:28111:11, :28599:11, :30852:11, :31340:11, :33593:11, :34081:11, :36334:11, :36822:11
   output io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
          io_enq_bits,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -9747,13 +9245,13 @@ module Queue2_Bool(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:29594:11, :30082:11, :32335:11, :32823:11, :35076:11, :35564:11, :37817:11, :38305:11
-    if (reset) begin	// <stdin>:29594:11, :30082:11, :32335:11, :32823:11, :35076:11, :35564:11, :37817:11, :38305:11
+  always @(posedge clock) begin	// <stdin>:28110:11, :28598:11, :30851:11, :31339:11, :33592:11, :34080:11, :36333:11, :36821:11
+    if (reset) begin	// <stdin>:28110:11, :28598:11, :30851:11, :31339:11, :33592:11, :34080:11, :36333:11, :36821:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:29594:11, :30082:11, :32335:11, :32823:11, :35076:11, :35564:11, :37817:11, :38305:11
+    else begin	// <stdin>:28110:11, :28598:11, :30851:11, :31339:11, :33592:11, :34080:11, :36333:11, :36821:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -9797,9 +9295,100 @@ module Queue2_Bool(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
 endmodule
 
+module Queue2_WriteAddressChannel_1(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input         clock,	// <stdin>:28547:11, :31288:11, :34029:11, :36770:11
+                reset,	// <stdin>:28548:11, :31289:11, :34030:11, :36771:11
+  output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [15:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [7:0]  io_enq_bits_len,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [2:0]  io_enq_bits_size,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [1:0]  io_enq_bits_burst,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input         io_enq_bits_lock,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [3:0]  io_enq_bits_cache,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [2:0]  io_enq_bits_prot,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [3:0]  io_enq_bits_qos,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+                io_enq_bits_region,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input         io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output        io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+                io_deq_bits_lock,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [3:0]  io_deq_bits_cache,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [2:0]  io_deq_bits_prot,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [3:0]  io_deq_bits_qos,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+                io_deq_bits_region	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+);
+
+  wire [15:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  reg         wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg         wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg         maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
+  wire        ptr_match = wrap == wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
+  wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
+  wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
+  wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
+  always @(posedge clock) begin	// <stdin>:28547:11, :31288:11, :34029:11, :36770:11
+    if (reset) begin	// <stdin>:28547:11, :31288:11, :34029:11, :36770:11
+      wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+      wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+    end
+    else begin	// <stdin>:28547:11, :31288:11, :34029:11, :36770:11
+      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
+      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        wrap_1 <= wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
+        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
+    end
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_BEFORE_INITIAL
+    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `endif // INIT_RANDOM_PROLOG_
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        wrap = _RANDOM[/*Zero width*/ 1'b0][0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        wrap_1 = _RANDOM[/*Zero width*/ 1'b0][1];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        maybe_full = _RANDOM[/*Zero width*/ 1'b0][2];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+      `endif // RANDOMIZE_REG_INIT
+    end // initial
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_AFTER_INITIAL
+  `endif // ENABLE_INITIAL_REG_
+  ram_2x16 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    .R0_addr (wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    .R0_clk  (clock),
+    .R0_data (_ram_ext_R0_data),
+    .W0_addr (wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .W0_clk  (clock),
+    .W0_data
+      ({io_enq_bits_region,
+        io_enq_bits_qos,
+        io_enq_bits_prot,
+        io_enq_bits_cache,
+        io_enq_bits_lock})	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  );
+  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
+  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
+  assign io_deq_bits_lock = _ram_ext_R0_data[0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_cache = _ram_ext_R0_data[4:1];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_prot = _ram_ext_R0_data[7:5];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_qos = _ram_ext_R0_data[11:8];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_region = _ram_ext_R0_data[15:12];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+endmodule
+
 module BurstSplitter(	// src/main/scala/chext/amba/axi4/full/components/BurstSplitter.scala:30:7
-  input          clock,	// <stdin>:30184:11, :32925:11, :35666:11, :38407:11
-                 reset,	// <stdin>:30185:11, :32926:11, :35667:11, :38408:11
+  input          clock,	// <stdin>:28700:11, :31441:11, :34182:11, :36923:11
+                 reset,	// <stdin>:28701:11, :31442:11, :34183:11, :36924:11
   output         s_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/BurstSplitter.scala:33:17
   input          s_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/BurstSplitter.scala:33:17
   input  [15:0]  s_axi_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/BurstSplitter.scala:33:17
@@ -9983,8 +9572,8 @@ module BurstSplitter(	// src/main/scala/chext/amba/axi4/full/components/BurstSpl
   assign write_joined_ready =
     _write_sinkBuffered__sinkBuffer_2_io_enq_ready & write_joined_valid;	// src/main/scala/chext/elastic/Arrival.scala:65:28, src/main/scala/chext/elastic/Buffer.scala:131:30, src/main/scala/chext/elastic/Join.scala:41:55
   wire        _write_T_9 = m_axi_b_bits_resp > write_respReg;	// src/main/scala/chext/amba/axi4/full/components/BurstSplitter.scala:194:28, :201:27
-  always @(posedge clock) begin	// <stdin>:30184:11, :32925:11, :35666:11, :38407:11
-    if (reset) begin	// <stdin>:30184:11, :32925:11, :35666:11, :38407:11
+  always @(posedge clock) begin	// <stdin>:28700:11, :31441:11, :34182:11, :36923:11
+    if (reset) begin	// <stdin>:28700:11, :31441:11, :34182:11, :36923:11
       read_ar_generating_ <= 1'h0;	// src/main/scala/chext/elastic/Replicate.scala:20:36
       read_ar_idx_ <= 16'h0;	// src/main/scala/chext/elastic/Replicate.scala:21:29
       read_ar_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/elastic/Fork.scala:75:25, src/main/scala/chext/elastic/Replicate.scala:20:36
@@ -10001,7 +9590,7 @@ module BurstSplitter(	// src/main/scala/chext/amba/axi4/full/components/BurstSpl
       write_idx__1 <= 16'h0;	// src/main/scala/chext/elastic/Replicate.scala:21:29
       write_respReg <= 2'h0;	// src/main/scala/chext/amba/axi4/full/components/BurstSplitter.scala:30:7, :194:28
     end
-    else begin	// <stdin>:30184:11, :32925:11, :35666:11, :38407:11
+    else begin	// <stdin>:28700:11, :31441:11, :34182:11, :36923:11
       if (_read_ar_T) begin	// src/main/scala/chext/elastic/Replicate.scala:36:21
         if (read_ar_generating_) begin	// src/main/scala/chext/elastic/Replicate.scala:20:36
           read_ar_generating_ <= ~read_ar_last & read_ar_generating_;	// src/main/scala/chext/elastic/Replicate.scala:20:36, :27:29, :38:18, :40:21
@@ -10195,7 +9784,7 @@ module BurstSplitter(	// src/main/scala/chext/amba/axi4/full/components/BurstSpl
     .io_deq_valid (_write_lenQueue_io_deq_valid),
     .io_deq_bits  (_write_lenQueue_io_deq_bits)
   );
-  Queue2_WriteAddressChannel write_sinkBuffered__sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  Queue2_WriteAddressChannel_1 write_sinkBuffered__sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:131:30
     .clock              (clock),
     .reset              (reset),
     .io_enq_ready       (_write_sinkBuffered__sinkBuffer_io_enq_ready),
@@ -10211,10 +9800,6 @@ module BurstSplitter(	// src/main/scala/chext/amba/axi4/full/components/BurstSpl
     .io_enq_bits_region (s_axi_aw_bits_region),
     .io_deq_ready       (write_mkJoin_fire),	// src/main/scala/chext/elastic/Join.scala:42:29
     .io_deq_valid       (_write_sinkBuffered__sinkBuffer_io_deq_valid),
-    .io_deq_bits_addr   (/* unused */),
-    .io_deq_bits_len    (/* unused */),
-    .io_deq_bits_size   (/* unused */),
-    .io_deq_bits_burst  (/* unused */),
     .io_deq_bits_lock   (m_axi_aw_bits_lock),
     .io_deq_bits_cache  (m_axi_aw_bits_cache),
     .io_deq_bits_prot   (m_axi_aw_bits_prot),
@@ -10295,8 +9880,8 @@ module ram_16x21(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue16_AddrSizeStrobeLastBundle(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:30958:11, :31395:11, :33699:11, :34136:11, :36440:11, :36877:11, :39181:11, :39618:11
-                reset,	// <stdin>:30959:11, :31396:11, :33700:11, :34137:11, :36441:11, :36878:11, :39182:11, :39619:11
+  input         clock,	// <stdin>:29474:11, :29911:11, :32215:11, :32652:11, :34956:11, :35393:11, :37697:11, :38134:11
+                reset,	// <stdin>:29475:11, :29912:11, :32216:11, :32653:11, :34957:11, :35394:11, :37698:11, :38135:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [15:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -10320,13 +9905,13 @@ module Queue16_AddrSizeStrobeLastBundle(	// src/main/scala/chisel3/util/Decouple
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:30958:11, :31395:11, :33699:11, :34136:11, :36440:11, :36877:11, :39181:11, :39618:11
-    if (reset) begin	// <stdin>:30958:11, :31395:11, :33699:11, :34136:11, :36440:11, :36877:11, :39181:11, :39618:11
+  always @(posedge clock) begin	// <stdin>:29474:11, :29911:11, :32215:11, :32652:11, :34956:11, :35393:11, :37697:11, :38134:11
+    if (reset) begin	// <stdin>:29474:11, :29911:11, :32215:11, :32652:11, :34956:11, :35393:11, :37697:11, :38134:11
       enq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:30958:11, :31395:11, :33699:11, :34136:11, :36440:11, :36877:11, :39181:11, :39618:11
+    else begin	// <stdin>:29474:11, :29911:11, :32215:11, :32652:11, :34956:11, :35393:11, :37697:11, :38134:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         enq_ptr_value <= enq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -10408,8 +9993,8 @@ module ram_2x131(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_ReadDataChannel_8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input          clock,	// <stdin>:31009:11, :33750:11, :36491:11, :39232:11
-                 reset,	// <stdin>:31010:11, :33751:11, :36492:11, :39233:11
+  input          clock,	// <stdin>:29525:11, :32266:11, :35007:11, :37748:11
+                 reset,	// <stdin>:29526:11, :32267:11, :35008:11, :37749:11
   output         io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input          io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [127:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -10429,13 +10014,13 @@ module Queue2_ReadDataChannel_8(	// src/main/scala/chisel3/util/Decoupled.scala:
   wire         empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire         full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire         do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:31009:11, :33750:11, :36491:11, :39232:11
-    if (reset) begin	// <stdin>:31009:11, :33750:11, :36491:11, :39232:11
+  always @(posedge clock) begin	// <stdin>:29525:11, :32266:11, :35007:11, :37748:11
+    if (reset) begin	// <stdin>:29525:11, :32266:11, :35007:11, :37748:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:31009:11, :33750:11, :36491:11, :39232:11
+    else begin	// <stdin>:29525:11, :32266:11, :35007:11, :37748:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -10516,9 +10101,9 @@ module ram_2x37(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   assign R0_data = R0_en ? Memory[R0_addr] : 37'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
-module Queue2_WriteDataChannel_16(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:31446:11, :34187:11, :36928:11, :39669:11, :40274:11
-                reset,	// <stdin>:31447:11, :34188:11, :36929:11, :39670:11, :40275:11
+module Queue2_WriteDataChannel_12(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input         clock,	// <stdin>:29962:11, :32703:11, :35444:11, :38185:11, :39810:11
+                reset,	// <stdin>:29963:11, :32704:11, :35445:11, :38186:11, :39811:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [31:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -10539,13 +10124,13 @@ module Queue2_WriteDataChannel_16(	// src/main/scala/chisel3/util/Decoupled.scal
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:31446:11, :34187:11, :36928:11, :39669:11, :40274:11
-    if (reset) begin	// <stdin>:31446:11, :34187:11, :36928:11, :39669:11, :40274:11
+  always @(posedge clock) begin	// <stdin>:29962:11, :32703:11, :35444:11, :38185:11, :39810:11
+    if (reset) begin	// <stdin>:29962:11, :32703:11, :35444:11, :38185:11, :39810:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:31446:11, :34187:11, :36928:11, :39669:11, :40274:11
+    else begin	// <stdin>:29962:11, :32703:11, :35444:11, :38185:11, :39810:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -10593,8 +10178,8 @@ module Queue2_WriteDataChannel_16(	// src/main/scala/chisel3/util/Decoupled.scal
 endmodule
 
 module Downscale(	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:38:7
-  input          clock,	// <stdin>:31497:11, :34238:11, :36979:11, :39720:11
-                 reset,	// <stdin>:31498:11, :34239:11, :36980:11, :39721:11
+  input          clock,	// <stdin>:30013:11, :32754:11, :35495:11, :38236:11
+                 reset,	// <stdin>:30014:11, :32755:11, :35496:11, :38237:11
   output         s_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:41:17
   input          s_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:41:17
   input  [15:0]  s_axi_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:41:17
@@ -10735,8 +10320,8 @@ module Downscale(	// src/main/scala/chext/amba/axi4/full/components/Downscale.sc
     (s_axi_w_bits_strb & _write_addressStrobeQueue_io_deq_bits_strb)
     >> write_w_shiftBytes;	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:148:13, :205:{33,63}, src/main/scala/chext/util/BitOps.scala:33:9
   wire         _GEN = _write_w_T & _write_addressStrobeQueue_io_deq_valid;	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:148:13, :210:40, src/main/scala/chext/elastic/Arrival.scala:65:{28,45}, src/main/scala/chisel3/util/Decoupled.scala:83:20
-  always @(posedge clock) begin	// <stdin>:31497:11, :34238:11, :36979:11, :39720:11
-    if (reset) begin	// <stdin>:31497:11, :34238:11, :36979:11, :39720:11
+  always @(posedge clock) begin	// <stdin>:30013:11, :32754:11, :35495:11, :38236:11
+    if (reset) begin	// <stdin>:30013:11, :32754:11, :35495:11, :38236:11
       read_ar_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:69:21, src/main/scala/chext/elastic/Fork.scala:75:25
       read_ar_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:69:21, src/main/scala/chext/elastic/Fork.scala:75:25
       read_r_dataReg <= 128'h0;	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:100:28
@@ -10744,7 +10329,7 @@ module Downscale(	// src/main/scala/chext/amba/axi4/full/components/Downscale.sc
       write_aw_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:69:21, src/main/scala/chext/elastic/Fork.scala:75:25
       write_aw_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Downscale.scala:69:21, src/main/scala/chext/elastic/Fork.scala:75:25
     end
-    else begin	// <stdin>:31497:11, :34238:11, :36979:11, :39720:11
+    else begin	// <stdin>:30013:11, :32754:11, :35495:11, :38236:11
       read_ar_eagerFork_regs_0 <=
         read_ar_eagerFork_arTransformed_ready_qual1_0 & s_axi_ar_valid
         & ~read_ar_arTransformed_ready;	// src/main/scala/chext/elastic/Fork.scala:75:25, :85:22, :87:23, :92:{54,57}
@@ -10880,7 +10465,7 @@ module Downscale(	// src/main/scala/chext/amba/axi4/full/components/Downscale.sc
     .io_deq_bits_lowerByteIndex (_write_addressStrobeQueue_io_deq_bits_lowerByteIndex),
     .io_deq_bits_last           (_write_addressStrobeQueue_io_deq_bits_last)
   );
-  Queue2_WriteDataChannel_16 write_w_sinkBuffered__sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:131:30
+  Queue2_WriteDataChannel_12 write_w_sinkBuffered__sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:131:30
     .clock            (clock),
     .reset            (reset),
     .io_enq_ready     (_write_w_sinkBuffered__sinkBuffer_io_enq_ready),
@@ -10924,15 +10509,23 @@ module Downscale(	// src/main/scala/chext/amba/axi4/full/components/Downscale.sc
 endmodule
 
 module protocolConverter(	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:172:7
-  input          clock,	// <stdin>:31738:11, :34479:11, :37220:11, :39961:11
-                 reset,	// <stdin>:31739:11, :34480:11, :37221:11, :39962:11
+  input          clock,	// <stdin>:30254:11, :32995:11, :35736:11, :38477:11
+                 reset,	// <stdin>:30255:11, :32996:11, :35737:11, :38478:11
   output         s_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   input          s_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   input  [15:0]  s_axi_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   input  [7:0]   s_axi_ar_bits_len,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
+  input  [2:0]   s_axi_ar_bits_size,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
+  input  [1:0]   s_axi_ar_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
+  input          s_axi_ar_bits_lock,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
+  input  [3:0]   s_axi_ar_bits_cache,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
+  input  [2:0]   s_axi_ar_bits_prot,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
+  input  [3:0]   s_axi_ar_bits_qos,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
+                 s_axi_ar_bits_region,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   input          s_axi_r_ready,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   output         s_axi_r_valid,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   output [127:0] s_axi_r_bits_data,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
+  output [1:0]   s_axi_r_bits_resp,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   output         s_axi_r_bits_last,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
                  s_axi_aw_ready,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   input          s_axi_aw_valid,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
@@ -11023,17 +10616,17 @@ module protocolConverter(	// src/main/scala/chext/amba/axi4/full/components/Prot
     .s_axi_ar_valid       (s_axi_ar_valid),
     .s_axi_ar_bits_addr   (s_axi_ar_bits_addr),
     .s_axi_ar_bits_len    (s_axi_ar_bits_len),
-    .s_axi_ar_bits_size   (3'h4),	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17, :239:21
-    .s_axi_ar_bits_burst  (2'h1),	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:172:7, :175:17, :176:17, :239:21, :254:21
-    .s_axi_ar_bits_lock   (1'h0),	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17, :239:21
-    .s_axi_ar_bits_cache  (4'h0),	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17, :239:21
-    .s_axi_ar_bits_prot   (3'h0),	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17, :239:21
-    .s_axi_ar_bits_qos    (4'h0),	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17, :239:21
-    .s_axi_ar_bits_region (4'h0),	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17, :239:21
+    .s_axi_ar_bits_size   (s_axi_ar_bits_size),
+    .s_axi_ar_bits_burst  (s_axi_ar_bits_burst),
+    .s_axi_ar_bits_lock   (s_axi_ar_bits_lock),
+    .s_axi_ar_bits_cache  (s_axi_ar_bits_cache),
+    .s_axi_ar_bits_prot   (s_axi_ar_bits_prot),
+    .s_axi_ar_bits_qos    (s_axi_ar_bits_qos),
+    .s_axi_ar_bits_region (s_axi_ar_bits_region),
     .s_axi_r_ready        (s_axi_r_ready),
     .s_axi_r_valid        (s_axi_r_valid),
     .s_axi_r_bits_data    (s_axi_r_bits_data),
-    .s_axi_r_bits_resp    (/* unused */),
+    .s_axi_r_bits_resp    (s_axi_r_bits_resp),
     .s_axi_r_bits_last    (s_axi_r_bits_last),
     .s_axi_aw_ready       (s_axi_aw_ready),
     .s_axi_aw_valid       (s_axi_aw_valid),
@@ -11158,6 +10751,368 @@ module protocolConverter(	// src/main/scala/chext/amba/axi4/full/components/Prot
   );
 endmodule
 
+module Queue16_ReadAddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input         clock,	// <stdin>:38637:11, :38892:11, :39147:11, :39402:11
+                reset,	// <stdin>:38638:11, :38893:11, :39148:11, :39403:11
+  output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [15:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [7:0]  io_enq_bits_len,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input         io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output        io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [15:0] io_deq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [7:0]  io_deq_bits_len,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [2:0]  io_deq_bits_size,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [1:0]  io_deq_bits_burst,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output        io_deq_bits_lock,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [3:0]  io_deq_bits_cache,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [2:0]  io_deq_bits_prot,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [3:0]  io_deq_bits_qos,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+                io_deq_bits_region	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+);
+
+  wire [44:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  reg  [3:0]  enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [3:0]  deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg         maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
+  wire        ptr_match = enq_ptr_value == deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
+  wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
+  wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
+  wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
+  always @(posedge clock) begin	// <stdin>:38637:11, :38892:11, :39147:11, :39402:11
+    if (reset) begin	// <stdin>:38637:11, :38892:11, :39147:11, :39402:11
+      enq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:255:14
+      deq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:255:14
+      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+    end
+    else begin	// <stdin>:38637:11, :38892:11, :39147:11, :39402:11
+      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
+      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        enq_ptr_value <= enq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        deq_ptr_value <= deq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
+        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
+    end
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_BEFORE_INITIAL
+    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `endif // INIT_RANDOM_PROLOG_
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][3:0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][7:4];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        maybe_full = _RANDOM[/*Zero width*/ 1'b0][8];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+      `endif // RANDOMIZE_REG_INIT
+    end // initial
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_AFTER_INITIAL
+  `endif // ENABLE_INITIAL_REG_
+  ram_16x45 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    .R0_addr (deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    .R0_clk  (clock),
+    .R0_data (_ram_ext_R0_data),
+    .W0_addr (enq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .W0_clk  (clock),
+    .W0_data ({21'hC, io_enq_bits_len, io_enq_bits_addr})	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  );
+  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
+  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
+  assign io_deq_bits_addr = _ram_ext_R0_data[15:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_len = _ram_ext_R0_data[23:16];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_size = _ram_ext_R0_data[26:24];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_burst = _ram_ext_R0_data[28:27];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_lock = _ram_ext_R0_data[29];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_cache = _ram_ext_R0_data[33:30];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_prot = _ram_ext_R0_data[36:34];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_qos = _ram_ext_R0_data[40:37];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_region = _ram_ext_R0_data[44:41];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+endmodule
+
+// VCS coverage exclude_file
+module ram_16x129(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  input  [3:0]   R0_addr,
+  input          R0_en,
+                 R0_clk,
+  output [128:0] R0_data,
+  input  [3:0]   W0_addr,
+  input          W0_en,
+                 W0_clk,
+  input  [128:0] W0_data
+);
+
+  reg [128:0] Memory[0:15];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  always @(posedge W0_clk) begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    if (W0_en & 1'h1)	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      Memory[W0_addr] <= W0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    reg [159:0] _RANDOM_MEM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+        for (logic [4:0] i = 5'h0; i < 5'h10; i += 5'h1) begin
+          for (logic [7:0] j = 8'h0; j < 8'hA0; j += 8'h20) begin
+            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          Memory[i[3:0]] = _RANDOM_MEM[128:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+        end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      `endif // RANDOMIZE_MEM_INIT
+    end // initial
+  `endif // ENABLE_INITIAL_MEM_
+  assign R0_data = R0_en ? Memory[R0_addr] : 129'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+endmodule
+
+module Queue16_ReadDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input          clock,	// <stdin>:38688:11, :38943:11, :39198:11, :39453:11
+                 reset,	// <stdin>:38689:11, :38944:11, :39199:11, :39454:11
+  output         io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input          io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [127:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [1:0]   io_enq_bits_resp,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input          io_enq_bits_last,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+                 io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output         io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [127:0] io_deq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output         io_deq_bits_last	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+);
+
+  wire [128:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  reg  [3:0]   enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [3:0]   deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg          maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
+  wire         ptr_match = enq_ptr_value == deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
+  wire         empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
+  wire         full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
+  wire         do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
+  always @(posedge clock) begin	// <stdin>:38688:11, :38943:11, :39198:11, :39453:11
+    if (reset) begin	// <stdin>:38688:11, :38943:11, :39198:11, :39453:11
+      enq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      deq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+    end
+    else begin	// <stdin>:38688:11, :38943:11, :39198:11, :39453:11
+      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
+      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        enq_ptr_value <= enq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        deq_ptr_value <= deq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
+        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
+    end
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_BEFORE_INITIAL
+    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `endif // INIT_RANDOM_PROLOG_
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][3:0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][7:4];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        maybe_full = _RANDOM[/*Zero width*/ 1'b0][8];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+      `endif // RANDOMIZE_REG_INIT
+    end // initial
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_AFTER_INITIAL
+  `endif // ENABLE_INITIAL_REG_
+  ram_16x129 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    .R0_addr (deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    .R0_clk  (clock),
+    .R0_data (_ram_ext_R0_data),
+    .W0_addr (enq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .W0_clk  (clock),
+    .W0_data ({io_enq_bits_last, io_enq_bits_data})	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  );
+  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
+  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
+  assign io_deq_bits_data = _ram_ext_R0_data[127:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_last = _ram_ext_R0_data[128];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+endmodule
+
+// VCS coverage exclude_file
+module ram_16x145(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  input  [3:0]   R0_addr,
+  input          R0_en,
+                 R0_clk,
+  output [144:0] R0_data,
+  input  [3:0]   W0_addr,
+  input          W0_en,
+                 W0_clk,
+  input  [144:0] W0_data
+);
+
+  reg [144:0] Memory[0:15];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  always @(posedge W0_clk) begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    if (W0_en & 1'h1)	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      Memory[W0_addr] <= W0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    reg [159:0] _RANDOM_MEM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+        for (logic [4:0] i = 5'h0; i < 5'h10; i += 5'h1) begin
+          for (logic [7:0] j = 8'h0; j < 8'hA0; j += 8'h20) begin
+            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+          Memory[i[3:0]] = _RANDOM_MEM[144:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+        end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+      `endif // RANDOMIZE_MEM_INIT
+    end // initial
+  `endif // ENABLE_INITIAL_MEM_
+  assign R0_data = R0_en ? Memory[R0_addr] : 145'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+endmodule
+
+module Queue16_WriteDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input          clock,	// <stdin>:38790:11, :39045:11, :39300:11, :39555:11
+                 reset,	// <stdin>:38791:11, :39046:11, :39301:11, :39556:11
+  output         io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input          io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [127:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  [15:0]  io_enq_bits_strb,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input          io_enq_bits_last,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+                 io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output         io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [127:0] io_deq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output [15:0]  io_deq_bits_strb,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output         io_deq_bits_last	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+);
+
+  wire [144:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  reg  [3:0]   enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [3:0]   deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg          maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
+  wire         ptr_match = enq_ptr_value == deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
+  wire         empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
+  wire         full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
+  wire         do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
+  always @(posedge clock) begin	// <stdin>:38790:11, :39045:11, :39300:11, :39555:11
+    if (reset) begin	// <stdin>:38790:11, :39045:11, :39300:11, :39555:11
+      enq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      deq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+    end
+    else begin	// <stdin>:38790:11, :39045:11, :39300:11, :39555:11
+      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
+      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        enq_ptr_value <= enq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        deq_ptr_value <= deq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
+        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
+    end
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_BEFORE_INITIAL
+    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `endif // INIT_RANDOM_PROLOG_
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][3:0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][7:4];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        maybe_full = _RANDOM[/*Zero width*/ 1'b0][8];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+      `endif // RANDOMIZE_REG_INIT
+    end // initial
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_AFTER_INITIAL
+  `endif // ENABLE_INITIAL_REG_
+  ram_16x145 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    .R0_addr (deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    .R0_clk  (clock),
+    .R0_data (_ram_ext_R0_data),
+    .W0_addr (enq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .W0_clk  (clock),
+    .W0_data ({io_enq_bits_last, io_enq_bits_strb, io_enq_bits_data})	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  );
+  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
+  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
+  assign io_deq_bits_data = _ram_ext_R0_data[127:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_strb = _ram_ext_R0_data[143:128];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_deq_bits_last = _ram_ext_R0_data[144];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+endmodule
+
+module Queue16_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input  clock,	// <stdin>:38841:11, :39096:11, :39351:11, :39606:11
+         reset,	// <stdin>:38842:11, :39097:11, :39352:11, :39607:11
+  output io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  input  io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+         io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+  output io_deq_valid	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+);
+
+  reg  [3:0] enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [3:0] deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg        maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
+  wire       ptr_match = enq_ptr_value == deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
+  wire       empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
+  wire       full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
+  always @(posedge clock) begin	// <stdin>:38841:11, :39096:11, :39351:11, :39606:11
+    if (reset) begin	// <stdin>:38841:11, :39096:11, :39351:11, :39606:11
+      enq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      deq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+    end
+    else begin	// <stdin>:38841:11, :39096:11, :39351:11, :39606:11
+      automatic logic do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
+      do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
+      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        enq_ptr_value <= enq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        deq_ptr_value <= deq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
+        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
+    end
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_BEFORE_INITIAL
+    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `endif // INIT_RANDOM_PROLOG_
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+        enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][3:0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][7:4];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
+        maybe_full = _RANDOM[/*Zero width*/ 1'b0][8];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
+      `endif // RANDOMIZE_REG_INIT
+    end // initial
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+    `endif // FIRRTL_AFTER_INITIAL
+  `endif // ENABLE_INITIAL_REG_
+  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
+  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
+endmodule
+
 // VCS coverage exclude_file
 module ram_2x47(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   input         R0_addr,
@@ -11193,8 +11148,8 @@ module ram_2x47(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_ReadAddressChannel_5(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:40121:11
-                reset,	// <stdin>:40122:11
+  input         clock,	// <stdin>:39657:11
+                reset,	// <stdin>:39658:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0]  io_enq_bits_id,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -11229,13 +11184,13 @@ module Queue2_ReadAddressChannel_5(	// src/main/scala/chisel3/util/Decoupled.sca
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:40121:11
-    if (reset) begin	// <stdin>:40121:11
+  always @(posedge clock) begin	// <stdin>:39657:11
+    if (reset) begin	// <stdin>:39657:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:40121:11
+    else begin	// <stdin>:39657:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -11300,8 +11255,8 @@ module Queue2_ReadAddressChannel_5(	// src/main/scala/chisel3/util/Decoupled.sca
 endmodule
 
 module Queue2_ReadDataChannel_12(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:40172:11
-                reset,	// <stdin>:40173:11
+  input         clock,	// <stdin>:39708:11
+                reset,	// <stdin>:39709:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [31:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -11321,13 +11276,13 @@ module Queue2_ReadDataChannel_12(	// src/main/scala/chisel3/util/Decoupled.scala
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:40172:11
-    if (reset) begin	// <stdin>:40172:11
+  always @(posedge clock) begin	// <stdin>:39708:11
+    if (reset) begin	// <stdin>:39708:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:40172:11
+    else begin	// <stdin>:39708:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -11374,9 +11329,9 @@ module Queue2_ReadDataChannel_12(	// src/main/scala/chisel3/util/Decoupled.scala
   assign io_deq_bits_resp = _ram_ext_R0_data[35:34];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
 endmodule
 
-module Queue2_WriteAddressChannel_13(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:40223:11
-                reset,	// <stdin>:40224:11
+module Queue2_WriteAddressChannel_5(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  input         clock,	// <stdin>:39759:11
+                reset,	// <stdin>:39760:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0]  io_enq_bits_id,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -11411,13 +11366,13 @@ module Queue2_WriteAddressChannel_13(	// src/main/scala/chisel3/util/Decoupled.s
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:40223:11
-    if (reset) begin	// <stdin>:40223:11
+  always @(posedge clock) begin	// <stdin>:39759:11
+    if (reset) begin	// <stdin>:39759:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:40223:11
+    else begin	// <stdin>:39759:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -11482,8 +11437,8 @@ module Queue2_WriteAddressChannel_13(	// src/main/scala/chisel3/util/Decoupled.s
 endmodule
 
 module elasticArbiter_2(	// src/main/scala/chext/elastic/Arbiter.scala:11:7
-  input         clock,	// <stdin>:40376:11, :40548:11, :45439:11, :45611:11
-                reset,	// <stdin>:40377:11, :40549:11, :45440:11, :45612:11
+  input         clock,	// <stdin>:39912:11, :40084:11, :44975:11, :45147:11
+                reset,	// <stdin>:39913:11, :40085:11, :44976:11, :45148:11
   output        io_sources_0_ready,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
   input         io_sources_0_valid,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
   input  [15:0] io_sources_0_bits_addr,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
@@ -11611,13 +11566,13 @@ module elasticArbiter_2(	// src/main/scala/chext/elastic/Arbiter.scala:11:7
   reg              sinkSent;	// src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27
   reg              selectSent;	// src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:37:29
   assign sourceReady = (sinkSent | io_sink_ready) & (selectSent | io_select_ready);	// src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27, :37:29, :49:{30,44}, :50:49
-  always @(posedge clock) begin	// <stdin>:40376:11, :40548:11, :45439:11, :45611:11
-    if (reset) begin	// <stdin>:40376:11, :40548:11, :45439:11, :45611:11
+  always @(posedge clock) begin	// <stdin>:39912:11, :40084:11, :44975:11, :45147:11
+    if (reset) begin	// <stdin>:39912:11, :40084:11, :44975:11, :45147:11
       chooser_lastChoice <= 2'h0;	// src/main/scala/chext/elastic/Arbiter.scala:21:14, src/main/scala/chext/elastic/Chooser.scala:24:35
       sinkSent <= 1'h0;	// src/main/scala/chext/elastic/Arbiter.scala:11:7, src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27
       selectSent <= 1'h0;	// src/main/scala/chext/elastic/Arbiter.scala:11:7, src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:37:29
     end
-    else begin	// <stdin>:40376:11, :40548:11, :45439:11, :45611:11
+    else begin	// <stdin>:39912:11, :40084:11, :44975:11, :45147:11
       if (_GEN_0[io_select_bits_0] & sourceReady) begin	// src/main/scala/chext/elastic/Arbiter.scala:44:15, src/main/scala/chext/elastic/Chooser.scala:28:8, src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:49:44, :52:22
         if (_GEN_0[chooser_rrChoice]) begin	// src/main/scala/chext/elastic/Chooser.scala:28:8, :33:8
           if (&chooser_lastChoice)	// src/main/scala/chext/elastic/Chooser.scala:24:35, :34:18
@@ -11753,8 +11708,8 @@ module ram_32x2(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue32_UInt2(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:40488:11, :45551:11
-               reset,	// <stdin>:40489:11, :45552:11
+  input        clock,	// <stdin>:40024:11, :45087:11
+               reset,	// <stdin>:40025:11, :45088:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0] io_enq_bits,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -11774,13 +11729,13 @@ module Queue32_UInt2(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire       do_deq = ~empty & io_deq_ready & io_deq_valid_0;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :264:27, :285:16, :297:{24,39}, :298:17, :300:14
   wire       do_enq = ~(empty & io_deq_ready) & io_enq_ready_0 & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :263:27, :286:16, :298:17, :301:{26,35}, :306:{24,39}
   assign io_enq_ready_0 = io_deq_ready | ~(ptr_match & maybe_full);	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24, :286:{16,19}, :306:{24,39}
-  always @(posedge clock) begin	// <stdin>:40488:11, :45551:11
-    if (reset) begin	// <stdin>:40488:11, :45551:11
+  always @(posedge clock) begin	// <stdin>:40024:11, :45087:11
+    if (reset) begin	// <stdin>:40024:11, :45087:11
       enq_ptr_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:40488:11, :45551:11
+    else begin	// <stdin>:40024:11, :45087:11
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:263:27, :298:17, :301:{26,35}
         enq_ptr_value <= enq_ptr_value + 5'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:264:27, :298:17, :300:14
@@ -11935,8 +11890,8 @@ module elasticDemux_10(	// src/main/scala/chext/elastic/Demux.scala:10:7
 endmodule
 
 module axi4FullMux(	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:31:7
-  input         clock,	// <stdin>:40684:11
-                reset,	// <stdin>:40685:11
+  input         clock,	// <stdin>:40220:11
+                reset,	// <stdin>:40221:11
   output        s_axi_0_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:38:17
   input         s_axi_0_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:38:17
   input  [15:0] s_axi_0_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:38:17
@@ -12165,14 +12120,14 @@ module axi4FullMux(	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:
     _write_demux_io_select_ready | write_eagerFork_regs_1;	// src/main/scala/chext/elastic/Demux.scala:48:23, src/main/scala/chext/elastic/Fork.scala:75:25, :85:22
   wire        m_axi__b_ready =
     write_eagerFork_m_axi__b_ready_qual1_0 & write_eagerFork_m_axi__b_ready_qual1_1;	// src/main/scala/chext/elastic/Fork.scala:85:22, :87:23
-  always @(posedge clock) begin	// <stdin>:40684:11
-    if (reset) begin	// <stdin>:40684:11
+  always @(posedge clock) begin	// <stdin>:40220:11
+    if (reset) begin	// <stdin>:40220:11
       read_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:31:7, src/main/scala/chext/elastic/Fork.scala:75:25
       read_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:31:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:31:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:31:7, src/main/scala/chext/elastic/Fork.scala:75:25
     end
-    else begin	// <stdin>:40684:11
+    else begin	// <stdin>:40220:11
       read_eagerFork_regs_0 <=
         read_eagerFork_m_axi__r_ready_qual1_0 & _m_axi__sinkBuffer_io_deq_valid
         & ~m_axi__r_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/elastic/Fork.scala:75:25, :85:22, :87:23, :92:{54,57}
@@ -12249,7 +12204,7 @@ module axi4FullMux(	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:
     .io_deq_bits_data (_m_axi__sinkBuffer_io_deq_bits_data),
     .io_deq_bits_resp (_m_axi__sinkBuffer_io_deq_bits_resp)
   );
-  Queue2_WriteAddressChannel_13 m_axi__sourceBuffer_1 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  Queue2_WriteAddressChannel_5 m_axi__sourceBuffer_1 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .clock              (clock),
     .reset              (reset),
     .io_enq_ready       (_m_axi__sourceBuffer_1_io_enq_ready),
@@ -12277,7 +12232,7 @@ module axi4FullMux(	// src/main/scala/chext/amba/axi4/full/components/Mux.scala:
     .io_deq_bits_qos    (m_axi_aw_bits_qos),
     .io_deq_bits_region (m_axi_aw_bits_region)
   );
-  Queue2_WriteDataChannel_16 m_axi__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  Queue2_WriteDataChannel_12 m_axi__sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .clock            (clock),
     .reset            (reset),
     .io_enq_ready     (_m_axi__sourceBuffer_2_io_enq_ready),
@@ -12631,8 +12586,8 @@ module elasticDemux_11(	// src/main/scala/chext/elastic/Demux.scala:10:7
 endmodule
 
 module elasticArbiter_4(	// src/main/scala/chext/elastic/Arbiter.scala:11:7
-  input         clock,	// <stdin>:41440:11
-                reset,	// <stdin>:41441:11
+  input         clock,	// <stdin>:40976:11
+                reset,	// <stdin>:40977:11
   output        io_sources_0_ready,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
   input         io_sources_0_valid,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
   input  [31:0] io_sources_0_bits_data,	// src/main/scala/chext/elastic/Arbiter.scala:21:14
@@ -12684,12 +12639,12 @@ module elasticArbiter_4(	// src/main/scala/chext/elastic/Arbiter.scala:11:7
      {io_sources_0_bits_last}};	// src/main/scala/chext/elastic/Arbiter.scala:44:15
   reg              sinkSent;	// src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27
   assign sourceReady = sinkSent | io_sink_ready;	// src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27, :49:30
-  always @(posedge clock) begin	// <stdin>:41440:11
-    if (reset) begin	// <stdin>:41440:11
+  always @(posedge clock) begin	// <stdin>:40976:11
+    if (reset) begin	// <stdin>:40976:11
       chooser_lastChoice <= 2'h0;	// src/main/scala/chext/elastic/Arbiter.scala:21:14, src/main/scala/chext/elastic/Chooser.scala:24:35
       sinkSent <= 1'h0;	// src/main/scala/chext/elastic/Arbiter.scala:11:7, src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:36:27
     end
-    else begin	// <stdin>:41440:11
+    else begin	// <stdin>:40976:11
       if (_GEN[_lastChoice_T] & sourceReady) begin	// src/main/scala/chext/elastic/Arbiter.scala:44:15, src/main/scala/chext/elastic/Chooser.scala:28:8, src/main/scala/chext/elastic/internal/InputToOutputSelectModule.scala:49:30, :52:22
         if (_GEN[chooser_rrChoice]) begin	// src/main/scala/chext/elastic/Chooser.scala:28:8, :33:8
           if (&chooser_lastChoice)	// src/main/scala/chext/elastic/Chooser.scala:24:35, :34:18
@@ -12789,8 +12744,8 @@ module elasticDemux_13(	// src/main/scala/chext/elastic/Demux.scala:10:7
 endmodule
 
 module IdDemux(	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:38:7
-  input         clock,	// <stdin>:41724:11
-                reset,	// <stdin>:41725:11
+  input         clock,	// <stdin>:41260:11
+                reset,	// <stdin>:41261:11
   output        s_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:41:17
   input         s_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:41:17
   input  [1:0]  s_axi_ar_bits_id,	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:41:17
@@ -12993,15 +12948,15 @@ module IdDemux(	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:
   wire       s_axi_aw_ready_0 =
     write_eagerFork_s_axi_aw_ready_qual1_0 & write_eagerFork_s_axi_aw_ready_qual1_1
     & write_eagerFork_s_axi_aw_ready_qual1_2;	// src/main/scala/chext/elastic/Fork.scala:85:22, :87:23
-  always @(posedge clock) begin	// <stdin>:41724:11
-    if (reset) begin	// <stdin>:41724:11
+  always @(posedge clock) begin	// <stdin>:41260:11
+    if (reset) begin	// <stdin>:41260:11
       read_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:38:7, src/main/scala/chext/elastic/Fork.scala:75:25
       read_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:38:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:38:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:38:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_2 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/IdDemux.scala:38:7, src/main/scala/chext/elastic/Fork.scala:75:25
     end
-    else begin	// <stdin>:41724:11
+    else begin	// <stdin>:41260:11
       read_eagerFork_regs_0 <=
         read_eagerFork_s_axi_ar_ready_qual1_0 & s_axi_ar_valid & ~s_axi_ar_ready_0;	// src/main/scala/chext/elastic/Fork.scala:75:25, :85:22, :87:23, :92:{54,57}
       read_eagerFork_regs_1 <=
@@ -13276,8 +13231,8 @@ module ram_16x11(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue16_AddrSizeStrobeLastBundle_8(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:42322:11, :42668:11, :43175:11, :43521:11, :44028:11, :44374:11, :44881:11, :45227:11
-                reset,	// <stdin>:42323:11, :42669:11, :43176:11, :43522:11, :44029:11, :44375:11, :44882:11, :45228:11
+  input         clock,	// <stdin>:41858:11, :42204:11, :42711:11, :43057:11, :43564:11, :43910:11, :44417:11, :44763:11
+                reset,	// <stdin>:41859:11, :42205:11, :42712:11, :43058:11, :43565:11, :43911:11, :44418:11, :44764:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [15:0] io_enq_bits_addr,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -13300,13 +13255,13 @@ module Queue16_AddrSizeStrobeLastBundle_8(	// src/main/scala/chisel3/util/Decoup
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:42322:11, :42668:11, :43175:11, :43521:11, :44028:11, :44374:11, :44881:11, :45227:11
-    if (reset) begin	// <stdin>:42322:11, :42668:11, :43175:11, :43521:11, :44028:11, :44374:11, :44881:11, :45227:11
+  always @(posedge clock) begin	// <stdin>:41858:11, :42204:11, :42711:11, :43057:11, :43564:11, :43910:11, :44417:11, :44763:11
+    if (reset) begin	// <stdin>:41858:11, :42204:11, :42711:11, :43057:11, :43564:11, :43910:11, :44417:11, :44763:11
       enq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:42322:11, :42668:11, :43175:11, :43521:11, :44028:11, :44374:11, :44881:11, :45227:11
+    else begin	// <stdin>:41858:11, :42204:11, :42711:11, :43057:11, :43564:11, :43910:11, :44417:11, :44763:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         enq_ptr_value <= enq_ptr_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -13353,8 +13308,8 @@ module Queue16_AddrSizeStrobeLastBundle_8(	// src/main/scala/chisel3/util/Decoup
 endmodule
 
 module Upscale(	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:34:7
-  input         clock,	// <stdin>:42719:11, :43572:11, :44425:11, :45278:11
-                reset,	// <stdin>:42720:11, :43573:11, :44426:11, :45279:11
+  input         clock,	// <stdin>:42255:11, :43108:11, :43961:11, :44814:11
+                reset,	// <stdin>:42256:11, :43109:11, :43962:11, :44815:11
   output        s_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:37:17
   input         s_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:37:17
   input  [15:0] s_axi_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:37:17
@@ -13477,14 +13432,14 @@ module Upscale(	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:
     {7'h0, s_axi_w_bits_strb} << write_w_shiftBytes;	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:144:34, src/main/scala/chext/util/BitOps.scala:33:9
   wire        m_axi_w_valid_0 = s_axi_w_valid & _write_addressStrobeQueue_io_deq_valid;	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:109:13, src/main/scala/chext/elastic/Join.scala:41:55
   wire        s_axi_w_ready_0 = m_axi_w_ready & m_axi_w_valid_0;	// src/main/scala/chext/elastic/Join.scala:41:55, :42:29
-  always @(posedge clock) begin	// <stdin>:42719:11, :43572:11, :44425:11, :45278:11
-    if (reset) begin	// <stdin>:42719:11, :43572:11, :44425:11, :45278:11
+  always @(posedge clock) begin	// <stdin>:42255:11, :43108:11, :43961:11, :44814:11
+    if (reset) begin	// <stdin>:42255:11, :43108:11, :43961:11, :44814:11
       read_ar_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:34:7, src/main/scala/chext/elastic/Fork.scala:75:25
       read_ar_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:34:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_aw_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:34:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_aw_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/Upscale.scala:34:7, src/main/scala/chext/elastic/Fork.scala:75:25
     end
-    else begin	// <stdin>:42719:11, :43572:11, :44425:11, :45278:11
+    else begin	// <stdin>:42255:11, :43108:11, :43961:11, :44814:11
       read_ar_eagerFork_regs_0 <=
         read_ar_eagerFork_s_axi_ar_ready_qual1_0 & s_axi_ar_valid & ~s_axi_ar_ready_0;	// src/main/scala/chext/elastic/Fork.scala:75:25, :85:22, :87:23, :92:{54,57}
       read_ar_eagerFork_regs_1 <=
@@ -13730,8 +13685,8 @@ module elasticMux_5(	// src/main/scala/chext/elastic/Mux.scala:10:7
 endmodule
 
 module IdMux(	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:29:7
-  input         clock,	// <stdin>:45747:11
-                reset,	// <stdin>:45748:11
+  input         clock,	// <stdin>:45283:11
+                reset,	// <stdin>:45284:11
   output        s_axi_0_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:32:17
   input         s_axi_0_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:32:17
   input  [15:0] s_axi_0_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:32:17
@@ -13923,14 +13878,14 @@ module IdMux(	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:29:7
     _write_demux_io_select_ready | write_eagerFork_regs_1;	// src/main/scala/chext/elastic/Demux.scala:48:23, src/main/scala/chext/elastic/Fork.scala:75:25, :85:22
   wire       m_axi_b_ready_0 =
     write_eagerFork_m_axi_b_ready_qual1_0 & write_eagerFork_m_axi_b_ready_qual1_1;	// src/main/scala/chext/elastic/Fork.scala:85:22, :87:23
-  always @(posedge clock) begin	// <stdin>:45747:11
-    if (reset) begin	// <stdin>:45747:11
+  always @(posedge clock) begin	// <stdin>:45283:11
+    if (reset) begin	// <stdin>:45283:11
       read_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:29:7, src/main/scala/chext/elastic/Fork.scala:75:25
       read_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:29:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_0 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:29:7, src/main/scala/chext/elastic/Fork.scala:75:25
       write_eagerFork_regs_1 <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:29:7, src/main/scala/chext/elastic/Fork.scala:75:25
     end
-    else begin	// <stdin>:45747:11
+    else begin	// <stdin>:45283:11
       read_eagerFork_regs_0 <=
         read_eagerFork_m_axi_r_ready_qual1_0 & m_axi_r_valid & ~m_axi_r_ready_0;	// src/main/scala/chext/elastic/Fork.scala:75:25, :85:22, :87:23, :92:{54,57}
       read_eagerFork_regs_1 <=
@@ -14182,8 +14137,8 @@ module IdMux(	// src/main/scala/chext/amba/axi4/full/components/IdMux.scala:29:7
 endmodule
 
 module protocolConverter_4(	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:172:7
-  input         clock,	// <stdin>:46139:11
-                reset,	// <stdin>:46140:11
+  input         clock,	// <stdin>:45675:11
+                reset,	// <stdin>:45676:11
   output        s_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   input         s_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
   input  [1:0]  s_axi_ar_bits_id,	// src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala:175:17
@@ -15155,8 +15110,8 @@ module protocolConverter_4(	// src/main/scala/chext/amba/axi4/full/components/Pr
 endmodule
 
 module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:110:9
-  input         clock,	// <stdin>:46619:11
-                reset,	// <stdin>:46620:11
+  input         clock,	// <stdin>:46155:11
+                reset,	// <stdin>:46156:11
   output        S_AXI_MEM_ARREADY,	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:113:23
   input         S_AXI_MEM_ARVALID,	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:113:23
   input  [1:0]  S_AXI_MEM_ARID,	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:113:23
@@ -15252,94 +15207,227 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
   output [1:0]  S_AXI_DESC_BRESP	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:116:24
 );
 
-  wire         _protocolConverter2_s_axi_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_s_axi_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [31:0]  _protocolConverter2_s_axi_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_s_axi_r_bits_last;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_s_axi_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_s_axi_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_s_axi_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [1:0]   _protocolConverter2_s_axi_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_m_axi_ar_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [1:0]   _protocolConverter2_m_axi_ar_bits_id;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [15:0]  _protocolConverter2_m_axi_ar_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [7:0]   _protocolConverter2_m_axi_ar_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [2:0]   _protocolConverter2_m_axi_ar_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [1:0]   _protocolConverter2_m_axi_ar_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_m_axi_r_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_m_axi_aw_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [1:0]   _protocolConverter2_m_axi_aw_bits_id;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [15:0]  _protocolConverter2_m_axi_aw_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [7:0]   _protocolConverter2_m_axi_aw_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [2:0]   _protocolConverter2_m_axi_aw_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [1:0]   _protocolConverter2_m_axi_aw_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_m_axi_w_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [63:0]  _protocolConverter2_m_axi_w_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire [7:0]   _protocolConverter2_m_axi_w_bits_strb;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _protocolConverter2_m_axi_b_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-  wire         _mux_s_axi_0_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_0_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [31:0]  _mux_s_axi_0_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_s_axi_0_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_0_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_0_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_0_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_s_axi_0_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_1_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_1_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [31:0]  _mux_s_axi_1_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_s_axi_1_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_1_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_1_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_1_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_s_axi_1_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_2_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_2_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [31:0]  _mux_s_axi_2_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_s_axi_2_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_2_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_2_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_2_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_s_axi_2_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_3_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_3_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [31:0]  _mux_s_axi_3_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_s_axi_3_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_3_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_3_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_s_axi_3_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_s_axi_3_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_m_axi_ar_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_m_axi_ar_bits_id;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [15:0]  _mux_m_axi_ar_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [7:0]   _mux_m_axi_ar_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [2:0]   _mux_m_axi_ar_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_m_axi_ar_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_m_axi_ar_bits_lock;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [3:0]   _mux_m_axi_ar_bits_cache;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [2:0]   _mux_m_axi_ar_bits_prot;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [3:0]   _mux_m_axi_ar_bits_qos;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [3:0]   _mux_m_axi_ar_bits_region;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_m_axi_r_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_m_axi_aw_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_m_axi_aw_bits_id;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [15:0]  _mux_m_axi_aw_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [7:0]   _mux_m_axi_aw_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [2:0]   _mux_m_axi_aw_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [1:0]   _mux_m_axi_aw_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_m_axi_aw_bits_lock;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [3:0]   _mux_m_axi_aw_bits_cache;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [2:0]   _mux_m_axi_aw_bits_prot;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [3:0]   _mux_m_axi_aw_bits_qos;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [3:0]   _mux_m_axi_aw_bits_region;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_m_axi_w_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [31:0]  _mux_m_axi_w_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire [3:0]   _mux_m_axi_w_bits_strb;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_m_axi_w_bits_last;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-  wire         _mux_m_axi_b_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+  wire         _protocolConverter2_s_axi_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_s_axi_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [31:0]  _protocolConverter2_s_axi_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_s_axi_r_bits_last;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_s_axi_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_s_axi_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_s_axi_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [1:0]   _protocolConverter2_s_axi_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_m_axi_ar_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [1:0]   _protocolConverter2_m_axi_ar_bits_id;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [15:0]  _protocolConverter2_m_axi_ar_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [7:0]   _protocolConverter2_m_axi_ar_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [2:0]   _protocolConverter2_m_axi_ar_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [1:0]   _protocolConverter2_m_axi_ar_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_m_axi_r_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_m_axi_aw_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [1:0]   _protocolConverter2_m_axi_aw_bits_id;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [15:0]  _protocolConverter2_m_axi_aw_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [7:0]   _protocolConverter2_m_axi_aw_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [2:0]   _protocolConverter2_m_axi_aw_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [1:0]   _protocolConverter2_m_axi_aw_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_m_axi_w_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [63:0]  _protocolConverter2_m_axi_w_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire [7:0]   _protocolConverter2_m_axi_w_bits_strb;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _protocolConverter2_m_axi_b_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+  wire         _mux_s_axi_0_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_0_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [31:0]  _mux_s_axi_0_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_s_axi_0_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_0_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_0_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_0_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_s_axi_0_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_1_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_1_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [31:0]  _mux_s_axi_1_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_s_axi_1_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_1_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_1_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_1_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_s_axi_1_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_2_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_2_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [31:0]  _mux_s_axi_2_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_s_axi_2_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_2_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_2_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_2_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_s_axi_2_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_3_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_3_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [31:0]  _mux_s_axi_3_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_s_axi_3_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_3_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_3_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_s_axi_3_b_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_s_axi_3_b_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_m_axi_ar_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_m_axi_ar_bits_id;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [15:0]  _mux_m_axi_ar_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [7:0]   _mux_m_axi_ar_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [2:0]   _mux_m_axi_ar_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_m_axi_ar_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_m_axi_ar_bits_lock;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [3:0]   _mux_m_axi_ar_bits_cache;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [2:0]   _mux_m_axi_ar_bits_prot;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [3:0]   _mux_m_axi_ar_bits_qos;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [3:0]   _mux_m_axi_ar_bits_region;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_m_axi_r_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_m_axi_aw_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_m_axi_aw_bits_id;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [15:0]  _mux_m_axi_aw_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [7:0]   _mux_m_axi_aw_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [2:0]   _mux_m_axi_aw_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [1:0]   _mux_m_axi_aw_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_m_axi_aw_bits_lock;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [3:0]   _mux_m_axi_aw_bits_cache;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [2:0]   _mux_m_axi_aw_bits_prot;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [3:0]   _mux_m_axi_aw_bits_qos;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [3:0]   _mux_m_axi_aw_bits_region;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_m_axi_w_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [31:0]  _mux_m_axi_w_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire [3:0]   _mux_m_axi_w_bits_strb;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_m_axi_w_bits_last;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _mux_m_axi_b_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+  wire         _sinkBuffer_7_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_7_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sourceBuffer_11_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_11_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [127:0] _sourceBuffer_11_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_11_io_deq_bits_strb;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_11_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_10_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_10_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_10_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]   _sourceBuffer_10_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_10_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [1:0]   _sourceBuffer_10_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_10_io_deq_bits_lock;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_10_io_deq_bits_cache;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_10_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_10_io_deq_bits_qos;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_10_io_deq_bits_region;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sinkBuffer_6_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_6_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire [127:0] _sinkBuffer_6_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_6_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sourceBuffer_9_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_9_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_9_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]   _sourceBuffer_9_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_9_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [1:0]   _sourceBuffer_9_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_9_io_deq_bits_lock;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_9_io_deq_bits_cache;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_9_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_9_io_deq_bits_qos;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_9_io_deq_bits_region;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sinkBuffer_5_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_5_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sourceBuffer_8_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_8_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [127:0] _sourceBuffer_8_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_8_io_deq_bits_strb;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_8_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_7_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_7_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_7_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]   _sourceBuffer_7_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_7_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [1:0]   _sourceBuffer_7_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_7_io_deq_bits_lock;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_7_io_deq_bits_cache;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_7_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_7_io_deq_bits_qos;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_7_io_deq_bits_region;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sinkBuffer_4_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_4_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire [127:0] _sinkBuffer_4_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_4_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sourceBuffer_6_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_6_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_6_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]   _sourceBuffer_6_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_6_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [1:0]   _sourceBuffer_6_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_6_io_deq_bits_lock;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_6_io_deq_bits_cache;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_6_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_6_io_deq_bits_qos;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_6_io_deq_bits_region;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sinkBuffer_3_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_3_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sourceBuffer_5_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_5_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [127:0] _sourceBuffer_5_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_5_io_deq_bits_strb;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_5_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_4_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_4_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_4_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]   _sourceBuffer_4_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_4_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [1:0]   _sourceBuffer_4_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_4_io_deq_bits_lock;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_4_io_deq_bits_cache;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_4_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_4_io_deq_bits_qos;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_4_io_deq_bits_region;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sinkBuffer_2_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_2_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire [127:0] _sinkBuffer_2_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_2_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sourceBuffer_3_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_3_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_3_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]   _sourceBuffer_3_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_3_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [1:0]   _sourceBuffer_3_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_3_io_deq_bits_lock;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_3_io_deq_bits_cache;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_3_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_3_io_deq_bits_qos;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_3_io_deq_bits_region;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sinkBuffer_1_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_1_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sourceBuffer_2_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_2_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [127:0] _sourceBuffer_2_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_2_io_deq_bits_strb;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_2_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_1_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_1_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_1_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]   _sourceBuffer_1_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_1_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [1:0]   _sourceBuffer_1_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_1_io_deq_bits_lock;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_1_io_deq_bits_cache;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_1_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_1_io_deq_bits_qos;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_1_io_deq_bits_region;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire [127:0] _sinkBuffer_io_deq_bits_data;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sinkBuffer_io_deq_bits_last;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire         _sourceBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_io_deq_valid;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [15:0]  _sourceBuffer_io_deq_bits_addr;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [7:0]   _sourceBuffer_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [1:0]   _sourceBuffer_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire         _sourceBuffer_io_deq_bits_lock;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_io_deq_bits_cache;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [2:0]   _sourceBuffer_io_deq_bits_prot;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_io_deq_bits_qos;	// src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire [3:0]   _sourceBuffer_io_deq_bits_region;	// src/main/scala/chext/elastic/Buffer.scala:93:32
   wire         _protocolConverter1_3_s_axi_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_3_s_axi_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire [127:0] _protocolConverter1_3_s_axi_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+  wire [1:0]   _protocolConverter1_3_s_axi_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_3_s_axi_r_bits_last;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_3_s_axi_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_3_s_axi_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
@@ -15371,6 +15459,7 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
   wire         _protocolConverter1_2_s_axi_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_2_s_axi_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire [127:0] _protocolConverter1_2_s_axi_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+  wire [1:0]   _protocolConverter1_2_s_axi_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_2_s_axi_r_bits_last;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_2_s_axi_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_2_s_axi_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
@@ -15402,6 +15491,7 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
   wire         _protocolConverter1_1_s_axi_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_1_s_axi_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire [127:0] _protocolConverter1_1_s_axi_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+  wire [1:0]   _protocolConverter1_1_s_axi_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_1_s_axi_r_bits_last;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_1_s_axi_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_1_s_axi_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
@@ -15433,6 +15523,7 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
   wire         _protocolConverter1_0_s_axi_ar_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_0_s_axi_r_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire [127:0] _protocolConverter1_0_s_axi_r_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+  wire [1:0]   _protocolConverter1_0_s_axi_r_bits_resp;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_0_s_axi_r_bits_last;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_0_s_axi_aw_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
   wire         _protocolConverter1_0_s_axi_w_ready;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
@@ -15468,13 +15559,6 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
   wire         _sgdmaMulti_m_axiN_0_aw_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [15:0]  _sgdmaMulti_m_axiN_0_aw_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [7:0]   _sgdmaMulti_m_axiN_0_aw_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [2:0]   _sgdmaMulti_m_axiN_0_aw_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [1:0]   _sgdmaMulti_m_axiN_0_aw_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire         _sgdmaMulti_m_axiN_0_aw_bits_lock;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_0_aw_bits_cache;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [2:0]   _sgdmaMulti_m_axiN_0_aw_bits_prot;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_0_aw_bits_qos;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_0_aw_bits_region;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire         _sgdmaMulti_m_axiN_0_w_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [127:0] _sgdmaMulti_m_axiN_0_w_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [15:0]  _sgdmaMulti_m_axiN_0_w_bits_strb;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
@@ -15487,13 +15571,6 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
   wire         _sgdmaMulti_m_axiN_1_aw_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [15:0]  _sgdmaMulti_m_axiN_1_aw_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [7:0]   _sgdmaMulti_m_axiN_1_aw_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [2:0]   _sgdmaMulti_m_axiN_1_aw_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [1:0]   _sgdmaMulti_m_axiN_1_aw_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire         _sgdmaMulti_m_axiN_1_aw_bits_lock;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_1_aw_bits_cache;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [2:0]   _sgdmaMulti_m_axiN_1_aw_bits_prot;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_1_aw_bits_qos;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_1_aw_bits_region;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire         _sgdmaMulti_m_axiN_1_w_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [127:0] _sgdmaMulti_m_axiN_1_w_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [15:0]  _sgdmaMulti_m_axiN_1_w_bits_strb;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
@@ -15506,13 +15583,6 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
   wire         _sgdmaMulti_m_axiN_2_aw_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [15:0]  _sgdmaMulti_m_axiN_2_aw_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [7:0]   _sgdmaMulti_m_axiN_2_aw_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [2:0]   _sgdmaMulti_m_axiN_2_aw_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [1:0]   _sgdmaMulti_m_axiN_2_aw_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire         _sgdmaMulti_m_axiN_2_aw_bits_lock;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_2_aw_bits_cache;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [2:0]   _sgdmaMulti_m_axiN_2_aw_bits_prot;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_2_aw_bits_qos;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_2_aw_bits_region;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire         _sgdmaMulti_m_axiN_2_w_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [127:0] _sgdmaMulti_m_axiN_2_w_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [15:0]  _sgdmaMulti_m_axiN_2_w_bits_strb;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
@@ -15525,13 +15595,6 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
   wire         _sgdmaMulti_m_axiN_3_aw_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [15:0]  _sgdmaMulti_m_axiN_3_aw_bits_addr;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [7:0]   _sgdmaMulti_m_axiN_3_aw_bits_len;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [2:0]   _sgdmaMulti_m_axiN_3_aw_bits_size;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [1:0]   _sgdmaMulti_m_axiN_3_aw_bits_burst;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire         _sgdmaMulti_m_axiN_3_aw_bits_lock;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_3_aw_bits_cache;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [2:0]   _sgdmaMulti_m_axiN_3_aw_bits_prot;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_3_aw_bits_qos;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-  wire [3:0]   _sgdmaMulti_m_axiN_3_aw_bits_region;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire         _sgdmaMulti_m_axiN_3_w_valid;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [127:0] _sgdmaMulti_m_axiN_3_w_bits_data;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
   wire [15:0]  _sgdmaMulti_m_axiN_3_w_bits_strb;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
@@ -15577,15 +15640,15 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .clock                (clock),
     .reset                (reset),
     .read1_req_ready      (_mem_read1_req_ready),
-    .read1_req_valid      (_bridge1_read_req_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:122:33
-    .read1_req_bits       (_bridge1_read_req_bits),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:122:33
-    .read1_resp_ready     (_bridge1_read_resp_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:122:33
+    .read1_req_valid      (_bridge2_read_req_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:123:33
+    .read1_req_bits       (_bridge2_read_req_bits),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:123:33
+    .read1_resp_ready     (_bridge2_read_resp_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:123:33
     .read1_resp_valid     (_mem_read1_resp_valid),
     .read1_resp_bits      (_mem_read1_resp_bits),
     .read2_req_ready      (_mem_read2_req_ready),
-    .read2_req_valid      (_bridge2_read_req_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:123:33
-    .read2_req_bits       (_bridge2_read_req_bits),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:123:33
-    .read2_resp_ready     (_bridge2_read_resp_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:123:33
+    .read2_req_valid      (_bridge1_read_req_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:122:33
+    .read2_req_bits       (_bridge1_read_req_bits),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:122:33
+    .read2_resp_ready     (_bridge1_read_resp_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:122:33
     .read2_resp_valid     (_mem_read2_resp_valid),
     .read2_resp_bits      (_mem_read2_resp_bits),
     .write1_req_ready     (_mem_write1_req_ready),
@@ -15633,12 +15696,12 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .s_axi_b_valid       (S_AXI_MEM_BVALID),
     .s_axi_b_bits_id     (S_AXI_MEM_BID),
     .s_axi_b_bits_resp   (S_AXI_MEM_BRESP),
-    .read_req_ready      (_mem_read1_req_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
+    .read_req_ready      (_mem_read2_req_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
     .read_req_valid      (_bridge1_read_req_valid),
     .read_req_bits       (_bridge1_read_req_bits),
     .read_resp_ready     (_bridge1_read_resp_ready),
-    .read_resp_valid     (_mem_read1_resp_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
-    .read_resp_bits      (_mem_read1_resp_bits),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
+    .read_resp_valid     (_mem_read2_resp_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
+    .read_resp_bits      (_mem_read2_resp_bits),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
     .write_req_ready     (_mem_write1_req_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
     .write_req_valid     (_bridge1_write_req_valid),
     .write_req_bits_addr (_bridge1_write_req_bits_addr),
@@ -15651,38 +15714,38 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .clock               (clock),
     .reset               (reset),
     .s_axi_ar_ready      (_bridge2_s_axi_ar_ready),
-    .s_axi_ar_valid      (_protocolConverter2_m_axi_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_ar_bits_id    (_protocolConverter2_m_axi_ar_bits_id),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_ar_bits_addr  (_protocolConverter2_m_axi_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_ar_bits_len   (_protocolConverter2_m_axi_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_ar_bits_size  (_protocolConverter2_m_axi_ar_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_ar_bits_burst (_protocolConverter2_m_axi_ar_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_r_ready       (_protocolConverter2_m_axi_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
+    .s_axi_ar_valid      (_protocolConverter2_m_axi_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_ar_bits_id    (_protocolConverter2_m_axi_ar_bits_id),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_ar_bits_addr  (_protocolConverter2_m_axi_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_ar_bits_len   (_protocolConverter2_m_axi_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_ar_bits_size  (_protocolConverter2_m_axi_ar_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_ar_bits_burst (_protocolConverter2_m_axi_ar_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_r_ready       (_protocolConverter2_m_axi_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
     .s_axi_r_valid       (_bridge2_s_axi_r_valid),
     .s_axi_r_bits_id     (_bridge2_s_axi_r_bits_id),
     .s_axi_r_bits_data   (_bridge2_s_axi_r_bits_data),
     .s_axi_r_bits_last   (_bridge2_s_axi_r_bits_last),
     .s_axi_aw_ready      (_bridge2_s_axi_aw_ready),
-    .s_axi_aw_valid      (_protocolConverter2_m_axi_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_aw_bits_id    (_protocolConverter2_m_axi_aw_bits_id),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_aw_bits_addr  (_protocolConverter2_m_axi_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_aw_bits_len   (_protocolConverter2_m_axi_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_aw_bits_size  (_protocolConverter2_m_axi_aw_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_aw_bits_burst (_protocolConverter2_m_axi_aw_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
+    .s_axi_aw_valid      (_protocolConverter2_m_axi_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_aw_bits_id    (_protocolConverter2_m_axi_aw_bits_id),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_aw_bits_addr  (_protocolConverter2_m_axi_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_aw_bits_len   (_protocolConverter2_m_axi_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_aw_bits_size  (_protocolConverter2_m_axi_aw_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_aw_bits_burst (_protocolConverter2_m_axi_aw_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
     .s_axi_w_ready       (_bridge2_s_axi_w_ready),
-    .s_axi_w_valid       (_protocolConverter2_m_axi_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_w_bits_data   (_protocolConverter2_m_axi_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_w_bits_strb   (_protocolConverter2_m_axi_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .s_axi_b_ready       (_protocolConverter2_m_axi_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
+    .s_axi_w_valid       (_protocolConverter2_m_axi_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_w_bits_data   (_protocolConverter2_m_axi_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_w_bits_strb   (_protocolConverter2_m_axi_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .s_axi_b_ready       (_protocolConverter2_m_axi_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
     .s_axi_b_valid       (_bridge2_s_axi_b_valid),
     .s_axi_b_bits_id     (_bridge2_s_axi_b_bits_id),
     .s_axi_b_bits_resp   (_bridge2_s_axi_b_bits_resp),
-    .read_req_ready      (_mem_read2_req_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
+    .read_req_ready      (_mem_read1_req_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
     .read_req_valid      (_bridge2_read_req_valid),
     .read_req_bits       (_bridge2_read_req_bits),
     .read_resp_ready     (_bridge2_read_resp_ready),
-    .read_resp_valid     (_mem_read2_resp_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
-    .read_resp_bits      (_mem_read2_resp_bits),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
+    .read_resp_valid     (_mem_read1_resp_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
+    .read_resp_bits      (_mem_read1_resp_bits),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
     .write_req_ready     (_mem_write2_req_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:120:29
     .write_req_valid     (_bridge2_write_req_valid),
     .write_req_bits_addr (_bridge2_write_req_bits_addr),
@@ -15748,141 +15811,121 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .s_axil_ctrl_b_ready       (S_AXIL_CTRL_BREADY),
     .s_axil_ctrl_b_valid       (S_AXIL_CTRL_BVALID),
     .s_axil_ctrl_b_bits_resp   (S_AXIL_CTRL_BRESP),
-    .m_axiN_0_ar_ready         (_protocolConverter1_0_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_0_ar_ready         (_sourceBuffer_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_0_ar_valid         (_sgdmaMulti_m_axiN_0_ar_valid),
     .m_axiN_0_ar_bits_addr     (_sgdmaMulti_m_axiN_0_ar_bits_addr),
     .m_axiN_0_ar_bits_len      (_sgdmaMulti_m_axiN_0_ar_bits_len),
     .m_axiN_0_r_ready          (_sgdmaMulti_m_axiN_0_r_ready),
-    .m_axiN_0_r_valid          (_protocolConverter1_0_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_0_r_bits_data      (_protocolConverter1_0_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_0_r_bits_last      (_protocolConverter1_0_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_0_aw_ready         (_protocolConverter1_0_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_0_r_valid          (_sinkBuffer_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_0_r_bits_data      (_sinkBuffer_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_0_r_bits_last      (_sinkBuffer_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_0_aw_ready         (_sourceBuffer_1_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_0_aw_valid         (_sgdmaMulti_m_axiN_0_aw_valid),
     .m_axiN_0_aw_bits_addr     (_sgdmaMulti_m_axiN_0_aw_bits_addr),
     .m_axiN_0_aw_bits_len      (_sgdmaMulti_m_axiN_0_aw_bits_len),
-    .m_axiN_0_aw_bits_size     (_sgdmaMulti_m_axiN_0_aw_bits_size),
-    .m_axiN_0_aw_bits_burst    (_sgdmaMulti_m_axiN_0_aw_bits_burst),
-    .m_axiN_0_aw_bits_lock     (_sgdmaMulti_m_axiN_0_aw_bits_lock),
-    .m_axiN_0_aw_bits_cache    (_sgdmaMulti_m_axiN_0_aw_bits_cache),
-    .m_axiN_0_aw_bits_prot     (_sgdmaMulti_m_axiN_0_aw_bits_prot),
-    .m_axiN_0_aw_bits_qos      (_sgdmaMulti_m_axiN_0_aw_bits_qos),
-    .m_axiN_0_aw_bits_region   (_sgdmaMulti_m_axiN_0_aw_bits_region),
-    .m_axiN_0_w_ready          (_protocolConverter1_0_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_0_w_ready          (_sourceBuffer_2_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_0_w_valid          (_sgdmaMulti_m_axiN_0_w_valid),
     .m_axiN_0_w_bits_data      (_sgdmaMulti_m_axiN_0_w_bits_data),
     .m_axiN_0_w_bits_strb      (_sgdmaMulti_m_axiN_0_w_bits_strb),
     .m_axiN_0_w_bits_last      (_sgdmaMulti_m_axiN_0_w_bits_last),
     .m_axiN_0_b_ready          (_sgdmaMulti_m_axiN_0_b_ready),
-    .m_axiN_0_b_valid          (_protocolConverter1_0_s_axi_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_1_ar_ready         (_protocolConverter1_1_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_0_b_valid          (_sinkBuffer_1_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_1_ar_ready         (_sourceBuffer_3_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_1_ar_valid         (_sgdmaMulti_m_axiN_1_ar_valid),
     .m_axiN_1_ar_bits_addr     (_sgdmaMulti_m_axiN_1_ar_bits_addr),
     .m_axiN_1_ar_bits_len      (_sgdmaMulti_m_axiN_1_ar_bits_len),
     .m_axiN_1_r_ready          (_sgdmaMulti_m_axiN_1_r_ready),
-    .m_axiN_1_r_valid          (_protocolConverter1_1_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_1_r_bits_data      (_protocolConverter1_1_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_1_r_bits_last      (_protocolConverter1_1_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_1_aw_ready         (_protocolConverter1_1_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_1_r_valid          (_sinkBuffer_2_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_1_r_bits_data      (_sinkBuffer_2_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_1_r_bits_last      (_sinkBuffer_2_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_1_aw_ready         (_sourceBuffer_4_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_1_aw_valid         (_sgdmaMulti_m_axiN_1_aw_valid),
     .m_axiN_1_aw_bits_addr     (_sgdmaMulti_m_axiN_1_aw_bits_addr),
     .m_axiN_1_aw_bits_len      (_sgdmaMulti_m_axiN_1_aw_bits_len),
-    .m_axiN_1_aw_bits_size     (_sgdmaMulti_m_axiN_1_aw_bits_size),
-    .m_axiN_1_aw_bits_burst    (_sgdmaMulti_m_axiN_1_aw_bits_burst),
-    .m_axiN_1_aw_bits_lock     (_sgdmaMulti_m_axiN_1_aw_bits_lock),
-    .m_axiN_1_aw_bits_cache    (_sgdmaMulti_m_axiN_1_aw_bits_cache),
-    .m_axiN_1_aw_bits_prot     (_sgdmaMulti_m_axiN_1_aw_bits_prot),
-    .m_axiN_1_aw_bits_qos      (_sgdmaMulti_m_axiN_1_aw_bits_qos),
-    .m_axiN_1_aw_bits_region   (_sgdmaMulti_m_axiN_1_aw_bits_region),
-    .m_axiN_1_w_ready          (_protocolConverter1_1_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_1_w_ready          (_sourceBuffer_5_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_1_w_valid          (_sgdmaMulti_m_axiN_1_w_valid),
     .m_axiN_1_w_bits_data      (_sgdmaMulti_m_axiN_1_w_bits_data),
     .m_axiN_1_w_bits_strb      (_sgdmaMulti_m_axiN_1_w_bits_strb),
     .m_axiN_1_w_bits_last      (_sgdmaMulti_m_axiN_1_w_bits_last),
     .m_axiN_1_b_ready          (_sgdmaMulti_m_axiN_1_b_ready),
-    .m_axiN_1_b_valid          (_protocolConverter1_1_s_axi_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_2_ar_ready         (_protocolConverter1_2_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_1_b_valid          (_sinkBuffer_3_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_2_ar_ready         (_sourceBuffer_6_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_2_ar_valid         (_sgdmaMulti_m_axiN_2_ar_valid),
     .m_axiN_2_ar_bits_addr     (_sgdmaMulti_m_axiN_2_ar_bits_addr),
     .m_axiN_2_ar_bits_len      (_sgdmaMulti_m_axiN_2_ar_bits_len),
     .m_axiN_2_r_ready          (_sgdmaMulti_m_axiN_2_r_ready),
-    .m_axiN_2_r_valid          (_protocolConverter1_2_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_2_r_bits_data      (_protocolConverter1_2_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_2_r_bits_last      (_protocolConverter1_2_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_2_aw_ready         (_protocolConverter1_2_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_2_r_valid          (_sinkBuffer_4_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_2_r_bits_data      (_sinkBuffer_4_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_2_r_bits_last      (_sinkBuffer_4_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_2_aw_ready         (_sourceBuffer_7_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_2_aw_valid         (_sgdmaMulti_m_axiN_2_aw_valid),
     .m_axiN_2_aw_bits_addr     (_sgdmaMulti_m_axiN_2_aw_bits_addr),
     .m_axiN_2_aw_bits_len      (_sgdmaMulti_m_axiN_2_aw_bits_len),
-    .m_axiN_2_aw_bits_size     (_sgdmaMulti_m_axiN_2_aw_bits_size),
-    .m_axiN_2_aw_bits_burst    (_sgdmaMulti_m_axiN_2_aw_bits_burst),
-    .m_axiN_2_aw_bits_lock     (_sgdmaMulti_m_axiN_2_aw_bits_lock),
-    .m_axiN_2_aw_bits_cache    (_sgdmaMulti_m_axiN_2_aw_bits_cache),
-    .m_axiN_2_aw_bits_prot     (_sgdmaMulti_m_axiN_2_aw_bits_prot),
-    .m_axiN_2_aw_bits_qos      (_sgdmaMulti_m_axiN_2_aw_bits_qos),
-    .m_axiN_2_aw_bits_region   (_sgdmaMulti_m_axiN_2_aw_bits_region),
-    .m_axiN_2_w_ready          (_protocolConverter1_2_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_2_w_ready          (_sourceBuffer_8_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_2_w_valid          (_sgdmaMulti_m_axiN_2_w_valid),
     .m_axiN_2_w_bits_data      (_sgdmaMulti_m_axiN_2_w_bits_data),
     .m_axiN_2_w_bits_strb      (_sgdmaMulti_m_axiN_2_w_bits_strb),
     .m_axiN_2_w_bits_last      (_sgdmaMulti_m_axiN_2_w_bits_last),
     .m_axiN_2_b_ready          (_sgdmaMulti_m_axiN_2_b_ready),
-    .m_axiN_2_b_valid          (_protocolConverter1_2_s_axi_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_3_ar_ready         (_protocolConverter1_3_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_2_b_valid          (_sinkBuffer_5_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_3_ar_ready         (_sourceBuffer_9_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_3_ar_valid         (_sgdmaMulti_m_axiN_3_ar_valid),
     .m_axiN_3_ar_bits_addr     (_sgdmaMulti_m_axiN_3_ar_bits_addr),
     .m_axiN_3_ar_bits_len      (_sgdmaMulti_m_axiN_3_ar_bits_len),
     .m_axiN_3_r_ready          (_sgdmaMulti_m_axiN_3_r_ready),
-    .m_axiN_3_r_valid          (_protocolConverter1_3_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_3_r_bits_data      (_protocolConverter1_3_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_3_r_bits_last      (_protocolConverter1_3_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
-    .m_axiN_3_aw_ready         (_protocolConverter1_3_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_3_r_valid          (_sinkBuffer_6_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_3_r_bits_data      (_sinkBuffer_6_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_3_r_bits_last      (_sinkBuffer_6_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .m_axiN_3_aw_ready         (_sourceBuffer_10_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_3_aw_valid         (_sgdmaMulti_m_axiN_3_aw_valid),
     .m_axiN_3_aw_bits_addr     (_sgdmaMulti_m_axiN_3_aw_bits_addr),
     .m_axiN_3_aw_bits_len      (_sgdmaMulti_m_axiN_3_aw_bits_len),
-    .m_axiN_3_aw_bits_size     (_sgdmaMulti_m_axiN_3_aw_bits_size),
-    .m_axiN_3_aw_bits_burst    (_sgdmaMulti_m_axiN_3_aw_bits_burst),
-    .m_axiN_3_aw_bits_lock     (_sgdmaMulti_m_axiN_3_aw_bits_lock),
-    .m_axiN_3_aw_bits_cache    (_sgdmaMulti_m_axiN_3_aw_bits_cache),
-    .m_axiN_3_aw_bits_prot     (_sgdmaMulti_m_axiN_3_aw_bits_prot),
-    .m_axiN_3_aw_bits_qos      (_sgdmaMulti_m_axiN_3_aw_bits_qos),
-    .m_axiN_3_aw_bits_region   (_sgdmaMulti_m_axiN_3_aw_bits_region),
-    .m_axiN_3_w_ready          (_protocolConverter1_3_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_3_w_ready          (_sourceBuffer_11_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .m_axiN_3_w_valid          (_sgdmaMulti_m_axiN_3_w_valid),
     .m_axiN_3_w_bits_data      (_sgdmaMulti_m_axiN_3_w_bits_data),
     .m_axiN_3_w_bits_strb      (_sgdmaMulti_m_axiN_3_w_bits_strb),
     .m_axiN_3_w_bits_last      (_sgdmaMulti_m_axiN_3_w_bits_last),
     .m_axiN_3_b_ready          (_sgdmaMulti_m_axiN_3_b_ready),
-    .m_axiN_3_b_valid          (_protocolConverter1_3_s_axi_b_valid)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .m_axiN_3_b_valid          (_sinkBuffer_7_io_deq_valid)	// src/main/scala/chext/elastic/Buffer.scala:148:30
   );
   protocolConverter protocolConverter1_0 (	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
     .clock                (clock),
     .reset                (reset),
     .s_axi_ar_ready       (_protocolConverter1_0_s_axi_ar_ready),
-    .s_axi_ar_valid       (_sgdmaMulti_m_axiN_0_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_ar_bits_addr   (_sgdmaMulti_m_axiN_0_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_ar_bits_len    (_sgdmaMulti_m_axiN_0_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_r_ready        (_sgdmaMulti_m_axiN_0_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_ar_valid       (_sourceBuffer_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_addr   (_sourceBuffer_io_deq_bits_addr),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_len    (_sourceBuffer_io_deq_bits_len),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_size   (_sourceBuffer_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_burst  (_sourceBuffer_io_deq_bits_burst),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_lock   (_sourceBuffer_io_deq_bits_lock),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_cache  (_sourceBuffer_io_deq_bits_cache),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_prot   (_sourceBuffer_io_deq_bits_prot),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_qos    (_sourceBuffer_io_deq_bits_qos),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_region (_sourceBuffer_io_deq_bits_region),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_r_ready        (_sinkBuffer_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:148:30
     .s_axi_r_valid        (_protocolConverter1_0_s_axi_r_valid),
     .s_axi_r_bits_data    (_protocolConverter1_0_s_axi_r_bits_data),
+    .s_axi_r_bits_resp    (_protocolConverter1_0_s_axi_r_bits_resp),
     .s_axi_r_bits_last    (_protocolConverter1_0_s_axi_r_bits_last),
     .s_axi_aw_ready       (_protocolConverter1_0_s_axi_aw_ready),
-    .s_axi_aw_valid       (_sgdmaMulti_m_axiN_0_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_addr   (_sgdmaMulti_m_axiN_0_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_len    (_sgdmaMulti_m_axiN_0_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_size   (_sgdmaMulti_m_axiN_0_aw_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_burst  (_sgdmaMulti_m_axiN_0_aw_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_lock   (_sgdmaMulti_m_axiN_0_aw_bits_lock),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_cache  (_sgdmaMulti_m_axiN_0_aw_bits_cache),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_prot   (_sgdmaMulti_m_axiN_0_aw_bits_prot),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_qos    (_sgdmaMulti_m_axiN_0_aw_bits_qos),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_region (_sgdmaMulti_m_axiN_0_aw_bits_region),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_aw_valid       (_sourceBuffer_1_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_addr   (_sourceBuffer_1_io_deq_bits_addr),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_len    (_sourceBuffer_1_io_deq_bits_len),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_size   (_sourceBuffer_1_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_burst  (_sourceBuffer_1_io_deq_bits_burst),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_lock   (_sourceBuffer_1_io_deq_bits_lock),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_cache  (_sourceBuffer_1_io_deq_bits_cache),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_prot   (_sourceBuffer_1_io_deq_bits_prot),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_qos    (_sourceBuffer_1_io_deq_bits_qos),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_region (_sourceBuffer_1_io_deq_bits_region),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .s_axi_w_ready        (_protocolConverter1_0_s_axi_w_ready),
-    .s_axi_w_valid        (_sgdmaMulti_m_axiN_0_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_data    (_sgdmaMulti_m_axiN_0_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_strb    (_sgdmaMulti_m_axiN_0_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_last    (_sgdmaMulti_m_axiN_0_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_b_ready        (_sgdmaMulti_m_axiN_0_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_w_valid        (_sourceBuffer_2_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_data    (_sourceBuffer_2_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_strb    (_sourceBuffer_2_io_deq_bits_strb),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_last    (_sourceBuffer_2_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_b_ready        (_sinkBuffer_1_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:148:30
     .s_axi_b_valid        (_protocolConverter1_0_s_axi_b_valid),
-    .m_axi_ar_ready       (_mux_s_axi_0_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_ar_ready       (_mux_s_axi_0_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_ar_valid       (_protocolConverter1_0_m_axi_ar_valid),
     .m_axi_ar_bits_addr   (_protocolConverter1_0_m_axi_ar_bits_addr),
     .m_axi_ar_bits_len    (_protocolConverter1_0_m_axi_ar_bits_len),
@@ -15893,10 +15936,10 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_ar_bits_qos    (_protocolConverter1_0_m_axi_ar_bits_qos),
     .m_axi_ar_bits_region (_protocolConverter1_0_m_axi_ar_bits_region),
     .m_axi_r_ready        (_protocolConverter1_0_m_axi_r_ready),
-    .m_axi_r_valid        (_mux_s_axi_0_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_r_bits_data    (_mux_s_axi_0_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_r_bits_resp    (_mux_s_axi_0_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_aw_ready       (_mux_s_axi_0_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_r_valid        (_mux_s_axi_0_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_r_bits_data    (_mux_s_axi_0_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_r_bits_resp    (_mux_s_axi_0_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_aw_ready       (_mux_s_axi_0_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_aw_valid       (_protocolConverter1_0_m_axi_aw_valid),
     .m_axi_aw_bits_addr   (_protocolConverter1_0_m_axi_aw_bits_addr),
     .m_axi_aw_bits_len    (_protocolConverter1_0_m_axi_aw_bits_len),
@@ -15906,45 +15949,53 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_aw_bits_prot   (_protocolConverter1_0_m_axi_aw_bits_prot),
     .m_axi_aw_bits_qos    (_protocolConverter1_0_m_axi_aw_bits_qos),
     .m_axi_aw_bits_region (_protocolConverter1_0_m_axi_aw_bits_region),
-    .m_axi_w_ready        (_mux_s_axi_0_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_w_ready        (_mux_s_axi_0_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_w_valid        (_protocolConverter1_0_m_axi_w_valid),
     .m_axi_w_bits_data    (_protocolConverter1_0_m_axi_w_bits_data),
     .m_axi_w_bits_strb    (_protocolConverter1_0_m_axi_w_bits_strb),
     .m_axi_w_bits_last    (_protocolConverter1_0_m_axi_w_bits_last),
     .m_axi_b_ready        (_protocolConverter1_0_m_axi_b_ready),
-    .m_axi_b_valid        (_mux_s_axi_0_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_b_bits_resp    (_mux_s_axi_0_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_b_valid        (_mux_s_axi_0_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_b_bits_resp    (_mux_s_axi_0_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
   );
   protocolConverter protocolConverter1_1 (	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
     .clock                (clock),
     .reset                (reset),
     .s_axi_ar_ready       (_protocolConverter1_1_s_axi_ar_ready),
-    .s_axi_ar_valid       (_sgdmaMulti_m_axiN_1_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_ar_bits_addr   (_sgdmaMulti_m_axiN_1_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_ar_bits_len    (_sgdmaMulti_m_axiN_1_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_r_ready        (_sgdmaMulti_m_axiN_1_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_ar_valid       (_sourceBuffer_3_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_addr   (_sourceBuffer_3_io_deq_bits_addr),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_len    (_sourceBuffer_3_io_deq_bits_len),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_size   (_sourceBuffer_3_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_burst  (_sourceBuffer_3_io_deq_bits_burst),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_lock   (_sourceBuffer_3_io_deq_bits_lock),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_cache  (_sourceBuffer_3_io_deq_bits_cache),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_prot   (_sourceBuffer_3_io_deq_bits_prot),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_qos    (_sourceBuffer_3_io_deq_bits_qos),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_region (_sourceBuffer_3_io_deq_bits_region),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_r_ready        (_sinkBuffer_2_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:148:30
     .s_axi_r_valid        (_protocolConverter1_1_s_axi_r_valid),
     .s_axi_r_bits_data    (_protocolConverter1_1_s_axi_r_bits_data),
+    .s_axi_r_bits_resp    (_protocolConverter1_1_s_axi_r_bits_resp),
     .s_axi_r_bits_last    (_protocolConverter1_1_s_axi_r_bits_last),
     .s_axi_aw_ready       (_protocolConverter1_1_s_axi_aw_ready),
-    .s_axi_aw_valid       (_sgdmaMulti_m_axiN_1_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_addr   (_sgdmaMulti_m_axiN_1_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_len    (_sgdmaMulti_m_axiN_1_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_size   (_sgdmaMulti_m_axiN_1_aw_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_burst  (_sgdmaMulti_m_axiN_1_aw_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_lock   (_sgdmaMulti_m_axiN_1_aw_bits_lock),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_cache  (_sgdmaMulti_m_axiN_1_aw_bits_cache),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_prot   (_sgdmaMulti_m_axiN_1_aw_bits_prot),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_qos    (_sgdmaMulti_m_axiN_1_aw_bits_qos),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_region (_sgdmaMulti_m_axiN_1_aw_bits_region),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_aw_valid       (_sourceBuffer_4_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_addr   (_sourceBuffer_4_io_deq_bits_addr),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_len    (_sourceBuffer_4_io_deq_bits_len),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_size   (_sourceBuffer_4_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_burst  (_sourceBuffer_4_io_deq_bits_burst),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_lock   (_sourceBuffer_4_io_deq_bits_lock),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_cache  (_sourceBuffer_4_io_deq_bits_cache),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_prot   (_sourceBuffer_4_io_deq_bits_prot),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_qos    (_sourceBuffer_4_io_deq_bits_qos),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_region (_sourceBuffer_4_io_deq_bits_region),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .s_axi_w_ready        (_protocolConverter1_1_s_axi_w_ready),
-    .s_axi_w_valid        (_sgdmaMulti_m_axiN_1_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_data    (_sgdmaMulti_m_axiN_1_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_strb    (_sgdmaMulti_m_axiN_1_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_last    (_sgdmaMulti_m_axiN_1_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_b_ready        (_sgdmaMulti_m_axiN_1_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_w_valid        (_sourceBuffer_5_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_data    (_sourceBuffer_5_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_strb    (_sourceBuffer_5_io_deq_bits_strb),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_last    (_sourceBuffer_5_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_b_ready        (_sinkBuffer_3_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:148:30
     .s_axi_b_valid        (_protocolConverter1_1_s_axi_b_valid),
-    .m_axi_ar_ready       (_mux_s_axi_1_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_ar_ready       (_mux_s_axi_1_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_ar_valid       (_protocolConverter1_1_m_axi_ar_valid),
     .m_axi_ar_bits_addr   (_protocolConverter1_1_m_axi_ar_bits_addr),
     .m_axi_ar_bits_len    (_protocolConverter1_1_m_axi_ar_bits_len),
@@ -15955,10 +16006,10 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_ar_bits_qos    (_protocolConverter1_1_m_axi_ar_bits_qos),
     .m_axi_ar_bits_region (_protocolConverter1_1_m_axi_ar_bits_region),
     .m_axi_r_ready        (_protocolConverter1_1_m_axi_r_ready),
-    .m_axi_r_valid        (_mux_s_axi_1_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_r_bits_data    (_mux_s_axi_1_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_r_bits_resp    (_mux_s_axi_1_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_aw_ready       (_mux_s_axi_1_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_r_valid        (_mux_s_axi_1_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_r_bits_data    (_mux_s_axi_1_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_r_bits_resp    (_mux_s_axi_1_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_aw_ready       (_mux_s_axi_1_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_aw_valid       (_protocolConverter1_1_m_axi_aw_valid),
     .m_axi_aw_bits_addr   (_protocolConverter1_1_m_axi_aw_bits_addr),
     .m_axi_aw_bits_len    (_protocolConverter1_1_m_axi_aw_bits_len),
@@ -15968,45 +16019,53 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_aw_bits_prot   (_protocolConverter1_1_m_axi_aw_bits_prot),
     .m_axi_aw_bits_qos    (_protocolConverter1_1_m_axi_aw_bits_qos),
     .m_axi_aw_bits_region (_protocolConverter1_1_m_axi_aw_bits_region),
-    .m_axi_w_ready        (_mux_s_axi_1_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_w_ready        (_mux_s_axi_1_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_w_valid        (_protocolConverter1_1_m_axi_w_valid),
     .m_axi_w_bits_data    (_protocolConverter1_1_m_axi_w_bits_data),
     .m_axi_w_bits_strb    (_protocolConverter1_1_m_axi_w_bits_strb),
     .m_axi_w_bits_last    (_protocolConverter1_1_m_axi_w_bits_last),
     .m_axi_b_ready        (_protocolConverter1_1_m_axi_b_ready),
-    .m_axi_b_valid        (_mux_s_axi_1_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_b_bits_resp    (_mux_s_axi_1_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_b_valid        (_mux_s_axi_1_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_b_bits_resp    (_mux_s_axi_1_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
   );
   protocolConverter protocolConverter1_2 (	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
     .clock                (clock),
     .reset                (reset),
     .s_axi_ar_ready       (_protocolConverter1_2_s_axi_ar_ready),
-    .s_axi_ar_valid       (_sgdmaMulti_m_axiN_2_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_ar_bits_addr   (_sgdmaMulti_m_axiN_2_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_ar_bits_len    (_sgdmaMulti_m_axiN_2_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_r_ready        (_sgdmaMulti_m_axiN_2_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_ar_valid       (_sourceBuffer_6_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_addr   (_sourceBuffer_6_io_deq_bits_addr),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_len    (_sourceBuffer_6_io_deq_bits_len),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_size   (_sourceBuffer_6_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_burst  (_sourceBuffer_6_io_deq_bits_burst),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_lock   (_sourceBuffer_6_io_deq_bits_lock),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_cache  (_sourceBuffer_6_io_deq_bits_cache),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_prot   (_sourceBuffer_6_io_deq_bits_prot),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_qos    (_sourceBuffer_6_io_deq_bits_qos),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_region (_sourceBuffer_6_io_deq_bits_region),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_r_ready        (_sinkBuffer_4_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:148:30
     .s_axi_r_valid        (_protocolConverter1_2_s_axi_r_valid),
     .s_axi_r_bits_data    (_protocolConverter1_2_s_axi_r_bits_data),
+    .s_axi_r_bits_resp    (_protocolConverter1_2_s_axi_r_bits_resp),
     .s_axi_r_bits_last    (_protocolConverter1_2_s_axi_r_bits_last),
     .s_axi_aw_ready       (_protocolConverter1_2_s_axi_aw_ready),
-    .s_axi_aw_valid       (_sgdmaMulti_m_axiN_2_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_addr   (_sgdmaMulti_m_axiN_2_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_len    (_sgdmaMulti_m_axiN_2_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_size   (_sgdmaMulti_m_axiN_2_aw_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_burst  (_sgdmaMulti_m_axiN_2_aw_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_lock   (_sgdmaMulti_m_axiN_2_aw_bits_lock),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_cache  (_sgdmaMulti_m_axiN_2_aw_bits_cache),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_prot   (_sgdmaMulti_m_axiN_2_aw_bits_prot),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_qos    (_sgdmaMulti_m_axiN_2_aw_bits_qos),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_region (_sgdmaMulti_m_axiN_2_aw_bits_region),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_aw_valid       (_sourceBuffer_7_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_addr   (_sourceBuffer_7_io_deq_bits_addr),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_len    (_sourceBuffer_7_io_deq_bits_len),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_size   (_sourceBuffer_7_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_burst  (_sourceBuffer_7_io_deq_bits_burst),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_lock   (_sourceBuffer_7_io_deq_bits_lock),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_cache  (_sourceBuffer_7_io_deq_bits_cache),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_prot   (_sourceBuffer_7_io_deq_bits_prot),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_qos    (_sourceBuffer_7_io_deq_bits_qos),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_region (_sourceBuffer_7_io_deq_bits_region),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .s_axi_w_ready        (_protocolConverter1_2_s_axi_w_ready),
-    .s_axi_w_valid        (_sgdmaMulti_m_axiN_2_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_data    (_sgdmaMulti_m_axiN_2_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_strb    (_sgdmaMulti_m_axiN_2_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_last    (_sgdmaMulti_m_axiN_2_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_b_ready        (_sgdmaMulti_m_axiN_2_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_w_valid        (_sourceBuffer_8_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_data    (_sourceBuffer_8_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_strb    (_sourceBuffer_8_io_deq_bits_strb),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_last    (_sourceBuffer_8_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_b_ready        (_sinkBuffer_5_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:148:30
     .s_axi_b_valid        (_protocolConverter1_2_s_axi_b_valid),
-    .m_axi_ar_ready       (_mux_s_axi_2_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_ar_ready       (_mux_s_axi_2_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_ar_valid       (_protocolConverter1_2_m_axi_ar_valid),
     .m_axi_ar_bits_addr   (_protocolConverter1_2_m_axi_ar_bits_addr),
     .m_axi_ar_bits_len    (_protocolConverter1_2_m_axi_ar_bits_len),
@@ -16017,10 +16076,10 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_ar_bits_qos    (_protocolConverter1_2_m_axi_ar_bits_qos),
     .m_axi_ar_bits_region (_protocolConverter1_2_m_axi_ar_bits_region),
     .m_axi_r_ready        (_protocolConverter1_2_m_axi_r_ready),
-    .m_axi_r_valid        (_mux_s_axi_2_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_r_bits_data    (_mux_s_axi_2_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_r_bits_resp    (_mux_s_axi_2_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_aw_ready       (_mux_s_axi_2_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_r_valid        (_mux_s_axi_2_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_r_bits_data    (_mux_s_axi_2_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_r_bits_resp    (_mux_s_axi_2_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_aw_ready       (_mux_s_axi_2_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_aw_valid       (_protocolConverter1_2_m_axi_aw_valid),
     .m_axi_aw_bits_addr   (_protocolConverter1_2_m_axi_aw_bits_addr),
     .m_axi_aw_bits_len    (_protocolConverter1_2_m_axi_aw_bits_len),
@@ -16030,45 +16089,53 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_aw_bits_prot   (_protocolConverter1_2_m_axi_aw_bits_prot),
     .m_axi_aw_bits_qos    (_protocolConverter1_2_m_axi_aw_bits_qos),
     .m_axi_aw_bits_region (_protocolConverter1_2_m_axi_aw_bits_region),
-    .m_axi_w_ready        (_mux_s_axi_2_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_w_ready        (_mux_s_axi_2_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_w_valid        (_protocolConverter1_2_m_axi_w_valid),
     .m_axi_w_bits_data    (_protocolConverter1_2_m_axi_w_bits_data),
     .m_axi_w_bits_strb    (_protocolConverter1_2_m_axi_w_bits_strb),
     .m_axi_w_bits_last    (_protocolConverter1_2_m_axi_w_bits_last),
     .m_axi_b_ready        (_protocolConverter1_2_m_axi_b_ready),
-    .m_axi_b_valid        (_mux_s_axi_2_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_b_bits_resp    (_mux_s_axi_2_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_b_valid        (_mux_s_axi_2_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_b_bits_resp    (_mux_s_axi_2_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
   );
   protocolConverter protocolConverter1_3 (	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
     .clock                (clock),
     .reset                (reset),
     .s_axi_ar_ready       (_protocolConverter1_3_s_axi_ar_ready),
-    .s_axi_ar_valid       (_sgdmaMulti_m_axiN_3_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_ar_bits_addr   (_sgdmaMulti_m_axiN_3_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_ar_bits_len    (_sgdmaMulti_m_axiN_3_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_r_ready        (_sgdmaMulti_m_axiN_3_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_ar_valid       (_sourceBuffer_9_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_addr   (_sourceBuffer_9_io_deq_bits_addr),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_len    (_sourceBuffer_9_io_deq_bits_len),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_size   (_sourceBuffer_9_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_burst  (_sourceBuffer_9_io_deq_bits_burst),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_lock   (_sourceBuffer_9_io_deq_bits_lock),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_cache  (_sourceBuffer_9_io_deq_bits_cache),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_prot   (_sourceBuffer_9_io_deq_bits_prot),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_qos    (_sourceBuffer_9_io_deq_bits_qos),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_ar_bits_region (_sourceBuffer_9_io_deq_bits_region),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_r_ready        (_sinkBuffer_6_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:148:30
     .s_axi_r_valid        (_protocolConverter1_3_s_axi_r_valid),
     .s_axi_r_bits_data    (_protocolConverter1_3_s_axi_r_bits_data),
+    .s_axi_r_bits_resp    (_protocolConverter1_3_s_axi_r_bits_resp),
     .s_axi_r_bits_last    (_protocolConverter1_3_s_axi_r_bits_last),
     .s_axi_aw_ready       (_protocolConverter1_3_s_axi_aw_ready),
-    .s_axi_aw_valid       (_sgdmaMulti_m_axiN_3_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_addr   (_sgdmaMulti_m_axiN_3_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_len    (_sgdmaMulti_m_axiN_3_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_size   (_sgdmaMulti_m_axiN_3_aw_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_burst  (_sgdmaMulti_m_axiN_3_aw_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_lock   (_sgdmaMulti_m_axiN_3_aw_bits_lock),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_cache  (_sgdmaMulti_m_axiN_3_aw_bits_cache),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_prot   (_sgdmaMulti_m_axiN_3_aw_bits_prot),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_qos    (_sgdmaMulti_m_axiN_3_aw_bits_qos),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_aw_bits_region (_sgdmaMulti_m_axiN_3_aw_bits_region),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_aw_valid       (_sourceBuffer_10_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_addr   (_sourceBuffer_10_io_deq_bits_addr),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_len    (_sourceBuffer_10_io_deq_bits_len),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_size   (_sourceBuffer_10_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_burst  (_sourceBuffer_10_io_deq_bits_burst),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_lock   (_sourceBuffer_10_io_deq_bits_lock),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_cache  (_sourceBuffer_10_io_deq_bits_cache),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_prot   (_sourceBuffer_10_io_deq_bits_prot),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_qos    (_sourceBuffer_10_io_deq_bits_qos),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_aw_bits_region (_sourceBuffer_10_io_deq_bits_region),	// src/main/scala/chext/elastic/Buffer.scala:93:32
     .s_axi_w_ready        (_protocolConverter1_3_s_axi_w_ready),
-    .s_axi_w_valid        (_sgdmaMulti_m_axiN_3_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_data    (_sgdmaMulti_m_axiN_3_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_strb    (_sgdmaMulti_m_axiN_3_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_w_bits_last    (_sgdmaMulti_m_axiN_3_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
-    .s_axi_b_ready        (_sgdmaMulti_m_axiN_3_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .s_axi_w_valid        (_sourceBuffer_11_io_deq_valid),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_data    (_sourceBuffer_11_io_deq_bits_data),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_strb    (_sourceBuffer_11_io_deq_bits_strb),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_w_bits_last    (_sourceBuffer_11_io_deq_bits_last),	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .s_axi_b_ready        (_sinkBuffer_7_io_enq_ready),	// src/main/scala/chext/elastic/Buffer.scala:148:30
     .s_axi_b_valid        (_protocolConverter1_3_s_axi_b_valid),
-    .m_axi_ar_ready       (_mux_s_axi_3_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_ar_ready       (_mux_s_axi_3_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_ar_valid       (_protocolConverter1_3_m_axi_ar_valid),
     .m_axi_ar_bits_addr   (_protocolConverter1_3_m_axi_ar_bits_addr),
     .m_axi_ar_bits_len    (_protocolConverter1_3_m_axi_ar_bits_len),
@@ -16079,10 +16146,10 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_ar_bits_qos    (_protocolConverter1_3_m_axi_ar_bits_qos),
     .m_axi_ar_bits_region (_protocolConverter1_3_m_axi_ar_bits_region),
     .m_axi_r_ready        (_protocolConverter1_3_m_axi_r_ready),
-    .m_axi_r_valid        (_mux_s_axi_3_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_r_bits_data    (_mux_s_axi_3_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_r_bits_resp    (_mux_s_axi_3_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_aw_ready       (_mux_s_axi_3_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_r_valid        (_mux_s_axi_3_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_r_bits_data    (_mux_s_axi_3_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_r_bits_resp    (_mux_s_axi_3_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_aw_ready       (_mux_s_axi_3_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_aw_valid       (_protocolConverter1_3_m_axi_aw_valid),
     .m_axi_aw_bits_addr   (_protocolConverter1_3_m_axi_aw_bits_addr),
     .m_axi_aw_bits_len    (_protocolConverter1_3_m_axi_aw_bits_len),
@@ -16092,16 +16159,308 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_aw_bits_prot   (_protocolConverter1_3_m_axi_aw_bits_prot),
     .m_axi_aw_bits_qos    (_protocolConverter1_3_m_axi_aw_bits_qos),
     .m_axi_aw_bits_region (_protocolConverter1_3_m_axi_aw_bits_region),
-    .m_axi_w_ready        (_mux_s_axi_3_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_w_ready        (_mux_s_axi_3_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .m_axi_w_valid        (_protocolConverter1_3_m_axi_w_valid),
     .m_axi_w_bits_data    (_protocolConverter1_3_m_axi_w_bits_data),
     .m_axi_w_bits_strb    (_protocolConverter1_3_m_axi_w_bits_strb),
     .m_axi_w_bits_last    (_protocolConverter1_3_m_axi_w_bits_last),
     .m_axi_b_ready        (_protocolConverter1_3_m_axi_b_ready),
-    .m_axi_b_valid        (_mux_s_axi_3_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .m_axi_b_bits_resp    (_mux_s_axi_3_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .m_axi_b_valid        (_mux_s_axi_3_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .m_axi_b_bits_resp    (_mux_s_axi_3_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
   );
-  axi4FullMux mux (	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+  Queue16_ReadAddressChannel sourceBuffer (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock              (clock),
+    .reset              (reset),
+    .io_enq_ready       (_sourceBuffer_io_enq_ready),
+    .io_enq_valid       (_sgdmaMulti_m_axiN_0_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_addr   (_sgdmaMulti_m_axiN_0_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_len    (_sgdmaMulti_m_axiN_0_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready       (_protocolConverter1_0_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid       (_sourceBuffer_io_deq_valid),
+    .io_deq_bits_addr   (_sourceBuffer_io_deq_bits_addr),
+    .io_deq_bits_len    (_sourceBuffer_io_deq_bits_len),
+    .io_deq_bits_size   (_sourceBuffer_io_deq_bits_size),
+    .io_deq_bits_burst  (_sourceBuffer_io_deq_bits_burst),
+    .io_deq_bits_lock   (_sourceBuffer_io_deq_bits_lock),
+    .io_deq_bits_cache  (_sourceBuffer_io_deq_bits_cache),
+    .io_deq_bits_prot   (_sourceBuffer_io_deq_bits_prot),
+    .io_deq_bits_qos    (_sourceBuffer_io_deq_bits_qos),
+    .io_deq_bits_region (_sourceBuffer_io_deq_bits_region)
+  );
+  Queue16_ReadDataChannel sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .clock            (clock),
+    .reset            (reset),
+    .io_enq_ready     (_sinkBuffer_io_enq_ready),
+    .io_enq_valid     (_protocolConverter1_0_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_data (_protocolConverter1_0_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_resp (_protocolConverter1_0_s_axi_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_last (_protocolConverter1_0_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_ready     (_sgdmaMulti_m_axiN_0_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_valid     (_sinkBuffer_io_deq_valid),
+    .io_deq_bits_data (_sinkBuffer_io_deq_bits_data),
+    .io_deq_bits_last (_sinkBuffer_io_deq_bits_last)
+  );
+  Queue16_WriteAddressChannel sourceBuffer_1 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock              (clock),
+    .reset              (reset),
+    .io_enq_ready       (_sourceBuffer_1_io_enq_ready),
+    .io_enq_valid       (_sgdmaMulti_m_axiN_0_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_addr   (_sgdmaMulti_m_axiN_0_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_len    (_sgdmaMulti_m_axiN_0_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready       (_protocolConverter1_0_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid       (_sourceBuffer_1_io_deq_valid),
+    .io_deq_bits_addr   (_sourceBuffer_1_io_deq_bits_addr),
+    .io_deq_bits_len    (_sourceBuffer_1_io_deq_bits_len),
+    .io_deq_bits_size   (_sourceBuffer_1_io_deq_bits_size),
+    .io_deq_bits_burst  (_sourceBuffer_1_io_deq_bits_burst),
+    .io_deq_bits_lock   (_sourceBuffer_1_io_deq_bits_lock),
+    .io_deq_bits_cache  (_sourceBuffer_1_io_deq_bits_cache),
+    .io_deq_bits_prot   (_sourceBuffer_1_io_deq_bits_prot),
+    .io_deq_bits_qos    (_sourceBuffer_1_io_deq_bits_qos),
+    .io_deq_bits_region (_sourceBuffer_1_io_deq_bits_region)
+  );
+  Queue16_WriteDataChannel sourceBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock            (clock),
+    .reset            (reset),
+    .io_enq_ready     (_sourceBuffer_2_io_enq_ready),
+    .io_enq_valid     (_sgdmaMulti_m_axiN_0_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_data (_sgdmaMulti_m_axiN_0_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_strb (_sgdmaMulti_m_axiN_0_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_last (_sgdmaMulti_m_axiN_0_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready     (_protocolConverter1_0_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid     (_sourceBuffer_2_io_deq_valid),
+    .io_deq_bits_data (_sourceBuffer_2_io_deq_bits_data),
+    .io_deq_bits_strb (_sourceBuffer_2_io_deq_bits_strb),
+    .io_deq_bits_last (_sourceBuffer_2_io_deq_bits_last)
+  );
+  Queue16_WriteResponseChannel sinkBuffer_1 (	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .clock        (clock),
+    .reset        (reset),
+    .io_enq_ready (_sinkBuffer_1_io_enq_ready),
+    .io_enq_valid (_protocolConverter1_0_s_axi_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_ready (_sgdmaMulti_m_axiN_0_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_valid (_sinkBuffer_1_io_deq_valid)
+  );
+  Queue16_ReadAddressChannel sourceBuffer_3 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock              (clock),
+    .reset              (reset),
+    .io_enq_ready       (_sourceBuffer_3_io_enq_ready),
+    .io_enq_valid       (_sgdmaMulti_m_axiN_1_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_addr   (_sgdmaMulti_m_axiN_1_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_len    (_sgdmaMulti_m_axiN_1_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready       (_protocolConverter1_1_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid       (_sourceBuffer_3_io_deq_valid),
+    .io_deq_bits_addr   (_sourceBuffer_3_io_deq_bits_addr),
+    .io_deq_bits_len    (_sourceBuffer_3_io_deq_bits_len),
+    .io_deq_bits_size   (_sourceBuffer_3_io_deq_bits_size),
+    .io_deq_bits_burst  (_sourceBuffer_3_io_deq_bits_burst),
+    .io_deq_bits_lock   (_sourceBuffer_3_io_deq_bits_lock),
+    .io_deq_bits_cache  (_sourceBuffer_3_io_deq_bits_cache),
+    .io_deq_bits_prot   (_sourceBuffer_3_io_deq_bits_prot),
+    .io_deq_bits_qos    (_sourceBuffer_3_io_deq_bits_qos),
+    .io_deq_bits_region (_sourceBuffer_3_io_deq_bits_region)
+  );
+  Queue16_ReadDataChannel sinkBuffer_2 (	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .clock            (clock),
+    .reset            (reset),
+    .io_enq_ready     (_sinkBuffer_2_io_enq_ready),
+    .io_enq_valid     (_protocolConverter1_1_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_data (_protocolConverter1_1_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_resp (_protocolConverter1_1_s_axi_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_last (_protocolConverter1_1_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_ready     (_sgdmaMulti_m_axiN_1_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_valid     (_sinkBuffer_2_io_deq_valid),
+    .io_deq_bits_data (_sinkBuffer_2_io_deq_bits_data),
+    .io_deq_bits_last (_sinkBuffer_2_io_deq_bits_last)
+  );
+  Queue16_WriteAddressChannel sourceBuffer_4 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock              (clock),
+    .reset              (reset),
+    .io_enq_ready       (_sourceBuffer_4_io_enq_ready),
+    .io_enq_valid       (_sgdmaMulti_m_axiN_1_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_addr   (_sgdmaMulti_m_axiN_1_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_len    (_sgdmaMulti_m_axiN_1_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready       (_protocolConverter1_1_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid       (_sourceBuffer_4_io_deq_valid),
+    .io_deq_bits_addr   (_sourceBuffer_4_io_deq_bits_addr),
+    .io_deq_bits_len    (_sourceBuffer_4_io_deq_bits_len),
+    .io_deq_bits_size   (_sourceBuffer_4_io_deq_bits_size),
+    .io_deq_bits_burst  (_sourceBuffer_4_io_deq_bits_burst),
+    .io_deq_bits_lock   (_sourceBuffer_4_io_deq_bits_lock),
+    .io_deq_bits_cache  (_sourceBuffer_4_io_deq_bits_cache),
+    .io_deq_bits_prot   (_sourceBuffer_4_io_deq_bits_prot),
+    .io_deq_bits_qos    (_sourceBuffer_4_io_deq_bits_qos),
+    .io_deq_bits_region (_sourceBuffer_4_io_deq_bits_region)
+  );
+  Queue16_WriteDataChannel sourceBuffer_5 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock            (clock),
+    .reset            (reset),
+    .io_enq_ready     (_sourceBuffer_5_io_enq_ready),
+    .io_enq_valid     (_sgdmaMulti_m_axiN_1_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_data (_sgdmaMulti_m_axiN_1_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_strb (_sgdmaMulti_m_axiN_1_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_last (_sgdmaMulti_m_axiN_1_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready     (_protocolConverter1_1_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid     (_sourceBuffer_5_io_deq_valid),
+    .io_deq_bits_data (_sourceBuffer_5_io_deq_bits_data),
+    .io_deq_bits_strb (_sourceBuffer_5_io_deq_bits_strb),
+    .io_deq_bits_last (_sourceBuffer_5_io_deq_bits_last)
+  );
+  Queue16_WriteResponseChannel sinkBuffer_3 (	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .clock        (clock),
+    .reset        (reset),
+    .io_enq_ready (_sinkBuffer_3_io_enq_ready),
+    .io_enq_valid (_protocolConverter1_1_s_axi_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_ready (_sgdmaMulti_m_axiN_1_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_valid (_sinkBuffer_3_io_deq_valid)
+  );
+  Queue16_ReadAddressChannel sourceBuffer_6 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock              (clock),
+    .reset              (reset),
+    .io_enq_ready       (_sourceBuffer_6_io_enq_ready),
+    .io_enq_valid       (_sgdmaMulti_m_axiN_2_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_addr   (_sgdmaMulti_m_axiN_2_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_len    (_sgdmaMulti_m_axiN_2_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready       (_protocolConverter1_2_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid       (_sourceBuffer_6_io_deq_valid),
+    .io_deq_bits_addr   (_sourceBuffer_6_io_deq_bits_addr),
+    .io_deq_bits_len    (_sourceBuffer_6_io_deq_bits_len),
+    .io_deq_bits_size   (_sourceBuffer_6_io_deq_bits_size),
+    .io_deq_bits_burst  (_sourceBuffer_6_io_deq_bits_burst),
+    .io_deq_bits_lock   (_sourceBuffer_6_io_deq_bits_lock),
+    .io_deq_bits_cache  (_sourceBuffer_6_io_deq_bits_cache),
+    .io_deq_bits_prot   (_sourceBuffer_6_io_deq_bits_prot),
+    .io_deq_bits_qos    (_sourceBuffer_6_io_deq_bits_qos),
+    .io_deq_bits_region (_sourceBuffer_6_io_deq_bits_region)
+  );
+  Queue16_ReadDataChannel sinkBuffer_4 (	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .clock            (clock),
+    .reset            (reset),
+    .io_enq_ready     (_sinkBuffer_4_io_enq_ready),
+    .io_enq_valid     (_protocolConverter1_2_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_data (_protocolConverter1_2_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_resp (_protocolConverter1_2_s_axi_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_last (_protocolConverter1_2_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_ready     (_sgdmaMulti_m_axiN_2_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_valid     (_sinkBuffer_4_io_deq_valid),
+    .io_deq_bits_data (_sinkBuffer_4_io_deq_bits_data),
+    .io_deq_bits_last (_sinkBuffer_4_io_deq_bits_last)
+  );
+  Queue16_WriteAddressChannel sourceBuffer_7 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock              (clock),
+    .reset              (reset),
+    .io_enq_ready       (_sourceBuffer_7_io_enq_ready),
+    .io_enq_valid       (_sgdmaMulti_m_axiN_2_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_addr   (_sgdmaMulti_m_axiN_2_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_len    (_sgdmaMulti_m_axiN_2_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready       (_protocolConverter1_2_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid       (_sourceBuffer_7_io_deq_valid),
+    .io_deq_bits_addr   (_sourceBuffer_7_io_deq_bits_addr),
+    .io_deq_bits_len    (_sourceBuffer_7_io_deq_bits_len),
+    .io_deq_bits_size   (_sourceBuffer_7_io_deq_bits_size),
+    .io_deq_bits_burst  (_sourceBuffer_7_io_deq_bits_burst),
+    .io_deq_bits_lock   (_sourceBuffer_7_io_deq_bits_lock),
+    .io_deq_bits_cache  (_sourceBuffer_7_io_deq_bits_cache),
+    .io_deq_bits_prot   (_sourceBuffer_7_io_deq_bits_prot),
+    .io_deq_bits_qos    (_sourceBuffer_7_io_deq_bits_qos),
+    .io_deq_bits_region (_sourceBuffer_7_io_deq_bits_region)
+  );
+  Queue16_WriteDataChannel sourceBuffer_8 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock            (clock),
+    .reset            (reset),
+    .io_enq_ready     (_sourceBuffer_8_io_enq_ready),
+    .io_enq_valid     (_sgdmaMulti_m_axiN_2_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_data (_sgdmaMulti_m_axiN_2_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_strb (_sgdmaMulti_m_axiN_2_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_last (_sgdmaMulti_m_axiN_2_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready     (_protocolConverter1_2_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid     (_sourceBuffer_8_io_deq_valid),
+    .io_deq_bits_data (_sourceBuffer_8_io_deq_bits_data),
+    .io_deq_bits_strb (_sourceBuffer_8_io_deq_bits_strb),
+    .io_deq_bits_last (_sourceBuffer_8_io_deq_bits_last)
+  );
+  Queue16_WriteResponseChannel sinkBuffer_5 (	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .clock        (clock),
+    .reset        (reset),
+    .io_enq_ready (_sinkBuffer_5_io_enq_ready),
+    .io_enq_valid (_protocolConverter1_2_s_axi_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_ready (_sgdmaMulti_m_axiN_2_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_valid (_sinkBuffer_5_io_deq_valid)
+  );
+  Queue16_ReadAddressChannel sourceBuffer_9 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock              (clock),
+    .reset              (reset),
+    .io_enq_ready       (_sourceBuffer_9_io_enq_ready),
+    .io_enq_valid       (_sgdmaMulti_m_axiN_3_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_addr   (_sgdmaMulti_m_axiN_3_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_len    (_sgdmaMulti_m_axiN_3_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready       (_protocolConverter1_3_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid       (_sourceBuffer_9_io_deq_valid),
+    .io_deq_bits_addr   (_sourceBuffer_9_io_deq_bits_addr),
+    .io_deq_bits_len    (_sourceBuffer_9_io_deq_bits_len),
+    .io_deq_bits_size   (_sourceBuffer_9_io_deq_bits_size),
+    .io_deq_bits_burst  (_sourceBuffer_9_io_deq_bits_burst),
+    .io_deq_bits_lock   (_sourceBuffer_9_io_deq_bits_lock),
+    .io_deq_bits_cache  (_sourceBuffer_9_io_deq_bits_cache),
+    .io_deq_bits_prot   (_sourceBuffer_9_io_deq_bits_prot),
+    .io_deq_bits_qos    (_sourceBuffer_9_io_deq_bits_qos),
+    .io_deq_bits_region (_sourceBuffer_9_io_deq_bits_region)
+  );
+  Queue16_ReadDataChannel sinkBuffer_6 (	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .clock            (clock),
+    .reset            (reset),
+    .io_enq_ready     (_sinkBuffer_6_io_enq_ready),
+    .io_enq_valid     (_protocolConverter1_3_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_data (_protocolConverter1_3_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_resp (_protocolConverter1_3_s_axi_r_bits_resp),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_enq_bits_last (_protocolConverter1_3_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_ready     (_sgdmaMulti_m_axiN_3_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_valid     (_sinkBuffer_6_io_deq_valid),
+    .io_deq_bits_data (_sinkBuffer_6_io_deq_bits_data),
+    .io_deq_bits_last (_sinkBuffer_6_io_deq_bits_last)
+  );
+  Queue16_WriteAddressChannel sourceBuffer_10 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock              (clock),
+    .reset              (reset),
+    .io_enq_ready       (_sourceBuffer_10_io_enq_ready),
+    .io_enq_valid       (_sgdmaMulti_m_axiN_3_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_addr   (_sgdmaMulti_m_axiN_3_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_len    (_sgdmaMulti_m_axiN_3_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready       (_protocolConverter1_3_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid       (_sourceBuffer_10_io_deq_valid),
+    .io_deq_bits_addr   (_sourceBuffer_10_io_deq_bits_addr),
+    .io_deq_bits_len    (_sourceBuffer_10_io_deq_bits_len),
+    .io_deq_bits_size   (_sourceBuffer_10_io_deq_bits_size),
+    .io_deq_bits_burst  (_sourceBuffer_10_io_deq_bits_burst),
+    .io_deq_bits_lock   (_sourceBuffer_10_io_deq_bits_lock),
+    .io_deq_bits_cache  (_sourceBuffer_10_io_deq_bits_cache),
+    .io_deq_bits_prot   (_sourceBuffer_10_io_deq_bits_prot),
+    .io_deq_bits_qos    (_sourceBuffer_10_io_deq_bits_qos),
+    .io_deq_bits_region (_sourceBuffer_10_io_deq_bits_region)
+  );
+  Queue16_WriteDataChannel sourceBuffer_11 (	// src/main/scala/chext/elastic/Buffer.scala:93:32
+    .clock            (clock),
+    .reset            (reset),
+    .io_enq_ready     (_sourceBuffer_11_io_enq_ready),
+    .io_enq_valid     (_sgdmaMulti_m_axiN_3_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_data (_sgdmaMulti_m_axiN_3_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_strb (_sgdmaMulti_m_axiN_3_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_enq_bits_last (_sgdmaMulti_m_axiN_3_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_ready     (_protocolConverter1_3_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_valid     (_sourceBuffer_11_io_deq_valid),
+    .io_deq_bits_data (_sourceBuffer_11_io_deq_bits_data),
+    .io_deq_bits_strb (_sourceBuffer_11_io_deq_bits_strb),
+    .io_deq_bits_last (_sourceBuffer_11_io_deq_bits_last)
+  );
+  Queue16_WriteResponseChannel sinkBuffer_7 (	// src/main/scala/chext/elastic/Buffer.scala:148:30
+    .clock        (clock),
+    .reset        (reset),
+    .io_enq_ready (_sinkBuffer_7_io_enq_ready),
+    .io_enq_valid (_protocolConverter1_3_s_axi_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
+    .io_deq_ready (_sgdmaMulti_m_axiN_3_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:139:36
+    .io_deq_valid (_sinkBuffer_7_io_deq_valid)
+  );
+  axi4FullMux mux (	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .clock                  (clock),
     .reset                  (reset),
     .s_axi_0_ar_ready       (_mux_s_axi_0_ar_ready),
@@ -16232,7 +16591,7 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .s_axi_3_b_ready        (_protocolConverter1_3_m_axi_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:146:13
     .s_axi_3_b_valid        (_mux_s_axi_3_b_valid),
     .s_axi_3_b_bits_resp    (_mux_s_axi_3_b_bits_resp),
-    .m_axi_ar_ready         (_protocolConverter2_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
+    .m_axi_ar_ready         (_protocolConverter2_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
     .m_axi_ar_valid         (_mux_m_axi_ar_valid),
     .m_axi_ar_bits_id       (_mux_m_axi_ar_bits_id),
     .m_axi_ar_bits_addr     (_mux_m_axi_ar_bits_addr),
@@ -16245,10 +16604,10 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_ar_bits_qos      (_mux_m_axi_ar_bits_qos),
     .m_axi_ar_bits_region   (_mux_m_axi_ar_bits_region),
     .m_axi_r_ready          (_mux_m_axi_r_ready),
-    .m_axi_r_valid          (_protocolConverter2_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .m_axi_r_bits_data      (_protocolConverter2_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .m_axi_r_bits_last      (_protocolConverter2_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .m_axi_aw_ready         (_protocolConverter2_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
+    .m_axi_r_valid          (_protocolConverter2_s_axi_r_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .m_axi_r_bits_data      (_protocolConverter2_s_axi_r_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .m_axi_r_bits_last      (_protocolConverter2_s_axi_r_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .m_axi_aw_ready         (_protocolConverter2_s_axi_aw_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
     .m_axi_aw_valid         (_mux_m_axi_aw_valid),
     .m_axi_aw_bits_id       (_mux_m_axi_aw_bits_id),
     .m_axi_aw_bits_addr     (_mux_m_axi_aw_bits_addr),
@@ -16260,52 +16619,52 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_aw_bits_prot     (_mux_m_axi_aw_bits_prot),
     .m_axi_aw_bits_qos      (_mux_m_axi_aw_bits_qos),
     .m_axi_aw_bits_region   (_mux_m_axi_aw_bits_region),
-    .m_axi_w_ready          (_protocolConverter2_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
+    .m_axi_w_ready          (_protocolConverter2_s_axi_w_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
     .m_axi_w_valid          (_mux_m_axi_w_valid),
     .m_axi_w_bits_data      (_mux_m_axi_w_bits_data),
     .m_axi_w_bits_strb      (_mux_m_axi_w_bits_strb),
     .m_axi_w_bits_last      (_mux_m_axi_w_bits_last),
     .m_axi_b_ready          (_mux_m_axi_b_ready),
-    .m_axi_b_valid          (_protocolConverter2_s_axi_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
-    .m_axi_b_bits_resp      (_protocolConverter2_s_axi_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
+    .m_axi_b_valid          (_protocolConverter2_s_axi_b_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
+    .m_axi_b_bits_resp      (_protocolConverter2_s_axi_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
   );
-  protocolConverter_4 protocolConverter2 (	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:164:44
+  protocolConverter_4 protocolConverter2 (	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:165:44
     .clock                (clock),
     .reset                (reset),
     .s_axi_ar_ready       (_protocolConverter2_s_axi_ar_ready),
-    .s_axi_ar_valid       (_mux_m_axi_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_id     (_mux_m_axi_ar_bits_id),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_addr   (_mux_m_axi_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_len    (_mux_m_axi_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_size   (_mux_m_axi_ar_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_burst  (_mux_m_axi_ar_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_lock   (_mux_m_axi_ar_bits_lock),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_cache  (_mux_m_axi_ar_bits_cache),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_prot   (_mux_m_axi_ar_bits_prot),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_qos    (_mux_m_axi_ar_bits_qos),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_ar_bits_region (_mux_m_axi_ar_bits_region),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_r_ready        (_mux_m_axi_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .s_axi_ar_valid       (_mux_m_axi_ar_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_id     (_mux_m_axi_ar_bits_id),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_addr   (_mux_m_axi_ar_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_len    (_mux_m_axi_ar_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_size   (_mux_m_axi_ar_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_burst  (_mux_m_axi_ar_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_lock   (_mux_m_axi_ar_bits_lock),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_cache  (_mux_m_axi_ar_bits_cache),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_prot   (_mux_m_axi_ar_bits_prot),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_qos    (_mux_m_axi_ar_bits_qos),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_ar_bits_region (_mux_m_axi_ar_bits_region),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_r_ready        (_mux_m_axi_r_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .s_axi_r_valid        (_protocolConverter2_s_axi_r_valid),
     .s_axi_r_bits_data    (_protocolConverter2_s_axi_r_bits_data),
     .s_axi_r_bits_last    (_protocolConverter2_s_axi_r_bits_last),
     .s_axi_aw_ready       (_protocolConverter2_s_axi_aw_ready),
-    .s_axi_aw_valid       (_mux_m_axi_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_id     (_mux_m_axi_aw_bits_id),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_addr   (_mux_m_axi_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_len    (_mux_m_axi_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_size   (_mux_m_axi_aw_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_burst  (_mux_m_axi_aw_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_lock   (_mux_m_axi_aw_bits_lock),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_cache  (_mux_m_axi_aw_bits_cache),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_prot   (_mux_m_axi_aw_bits_prot),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_qos    (_mux_m_axi_aw_bits_qos),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_aw_bits_region (_mux_m_axi_aw_bits_region),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .s_axi_aw_valid       (_mux_m_axi_aw_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_id     (_mux_m_axi_aw_bits_id),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_addr   (_mux_m_axi_aw_bits_addr),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_len    (_mux_m_axi_aw_bits_len),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_size   (_mux_m_axi_aw_bits_size),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_burst  (_mux_m_axi_aw_bits_burst),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_lock   (_mux_m_axi_aw_bits_lock),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_cache  (_mux_m_axi_aw_bits_cache),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_prot   (_mux_m_axi_aw_bits_prot),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_qos    (_mux_m_axi_aw_bits_qos),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_aw_bits_region (_mux_m_axi_aw_bits_region),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .s_axi_w_ready        (_protocolConverter2_s_axi_w_ready),
-    .s_axi_w_valid        (_mux_m_axi_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_w_bits_data    (_mux_m_axi_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_w_bits_strb    (_mux_m_axi_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_w_bits_last    (_mux_m_axi_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
-    .s_axi_b_ready        (_mux_m_axi_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:155:29
+    .s_axi_w_valid        (_mux_m_axi_w_valid),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_w_bits_data    (_mux_m_axi_w_bits_data),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_w_bits_strb    (_mux_m_axi_w_bits_strb),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_w_bits_last    (_mux_m_axi_w_bits_last),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
+    .s_axi_b_ready        (_mux_m_axi_b_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:156:29
     .s_axi_b_valid        (_protocolConverter2_s_axi_b_valid),
     .s_axi_b_bits_resp    (_protocolConverter2_s_axi_b_bits_resp),
     .m_axi_ar_ready       (_bridge2_s_axi_ar_ready),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:123:33
@@ -16336,6 +16695,6 @@ module ProtocolConverterTest1(	// src/test/scala/chext/amba/axi4/full/components
     .m_axi_b_bits_id      (_bridge2_s_axi_b_bits_id),	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:123:33
     .m_axi_b_bits_resp    (_bridge2_s_axi_b_bits_resp)	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:123:33
   );
-  assign S_AXI_MEM_RRESP = 2'h0;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:110:9, :122:33, :123:33, :164:44
+  assign S_AXI_MEM_RRESP = 2'h0;	// src/test/scala/chext/amba/axi4/full/components/EmitProtocolConverter.scala:110:9, :122:33, :123:33, :165:44
 endmodule
 
