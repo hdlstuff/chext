@@ -149,7 +149,8 @@ object EmitProtocolConverterTop extends App {
     sgdmaMulti.m_axiN
       .zip(protocolConverter1.map { _.s_axi })
       .foreach { //
-        case (master, slave) => master :=> slave
+        case (master, slave) =>
+          axi4.full.SlaveBuffer(master, axi4.BufferConfig.all(16)) :=> slave
       }
 
     private val mux = Module(new Mux(muxCfg))

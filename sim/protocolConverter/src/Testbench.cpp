@@ -1,6 +1,8 @@
 #include <ScProviders.hpp>
 #include <Testbench.hpp>
 
+#include <fmt/core.h>
+
 Testbench::Testbench(ModuleGen moduleGen)
     : sc_module(sc_core::sc_module_name("tb"))
     , clock("clock", 2, sc_core::SC_NS)
@@ -53,13 +55,15 @@ void Testbench::thread() {
 
     auto& sgdma0 = (*sgdmaMulti_)[0];
     SgdmaDesc descs[2] = {
-        SgdmaDesc::genAR(0x0000, 3),
-        SgdmaDesc::genAW(0x1000, 3)
+        SgdmaDesc::genAR(0x0000, 255),
+        SgdmaDesc::genAW(0x1000, 15)
     };
     sgdma0.copyDesc(descs, 2);
-    sgdma0.sgdmaTask(0, 2);
+    sgdma0.sgdmaTask(0, 2, true);
     sgdma0.start();
     sgdma0.waitUntilComplete();
+
+    fmt::print("cycles = {}\n", sgdma0.cycles());
 
     isDone_ = true;
 }
