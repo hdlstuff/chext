@@ -20,7 +20,11 @@ case class MuxConfig(
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
     val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
-)
+) {
+  require(capacityPortQueueR > 0)
+  require(capacityPortQueueW > 0)
+  require(capacityPortQueueB > 0)
+}
 
 class Mux(
     val axiCfg: axi4.Config,

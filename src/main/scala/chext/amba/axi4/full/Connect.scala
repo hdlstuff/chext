@@ -13,6 +13,11 @@ private object connect {
     val slaveCfg = slave.cfg.copy(wId = 0, wAddr = 0)
     assert(masterCfg == slaveCfg, "Configurations do not match.")
 
+    assert(
+      !masterCfg.axi3Compat && !slaveCfg.axi3Compat || masterCfg.axi3Compat,
+      "A master interface that is not AXI3-compatible cannot drive an AXI3-compatible interface."
+    )
+
     if (master.cfg.read) {
       master.ar :=> slave.ar
       slave.r :=> master.r

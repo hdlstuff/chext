@@ -4,6 +4,12 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
+/**
+  * @note Never declare registers inside `onAccept`!
+  *
+  * @param source
+  * @param sink
+  */
 abstract class Arrival[Tin <: Data, T <: Data](
     source: ReadyValidIO[Tin],
     sink: ReadyValidIO[T]
