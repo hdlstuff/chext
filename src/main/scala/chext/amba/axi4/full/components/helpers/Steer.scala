@@ -10,9 +10,9 @@ class SteerLeft(val wDataInput: Int, val wDataOutput: Int) extends Module {
 
   val wOffset = log2Ceil(wDataOutput) - log2Ceil(wDataInput)
 
-  val dataIn = IO(UInt(wDataInput.W))
-  val offsetIn = IO(UInt(wOffset.W))
-  val dataOut = IO(UInt(wDataOutput.W))
+  val dataIn = IO(Input(UInt(wDataInput.W)))
+  val offsetIn = IO(Input(UInt(wOffset.W)))
+  val dataOut = IO(Output(UInt(wDataOutput.W)))
 
   private val shifted = VecInit.tabulate(1 << wOffset) {
     case (shift) => {
@@ -31,14 +31,14 @@ class SteerRight(val wDataInput: Int, val wDataOutput: Int) extends Module {
   require(wDataOutput <= wDataInput, "'wDataOutput <= wDataInput' must be true!")
   val wOffset = log2Ceil(wDataInput) - log2Ceil(wDataOutput)
 
-  val dataIn = IO(UInt(wDataInput.W))
-  val offsetIn = IO(UInt(wOffset.W))
-  val dataOut = IO(UInt(wDataOutput.W))
+  val dataIn = IO(Input(UInt(wDataInput.W)))
+  val offsetIn = IO(Input(UInt(wOffset.W)))
+  val dataOut = IO(Output(UInt(wDataOutput.W)))
 
   private val substrings = VecInit.tabulate(1 << wOffset) {
     case (index) => {
-      val lsbIndex = index * wDataInput
-      val msbIndex = (index + 1) * wDataInput - 1
+      val lsbIndex = index * wDataOutput
+      val msbIndex = (index + 1) * wDataOutput - 1
       dataIn(msbIndex, lsbIndex)
     }
   }

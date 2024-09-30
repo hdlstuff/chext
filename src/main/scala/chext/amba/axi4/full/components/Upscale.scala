@@ -27,6 +27,8 @@ case class UpscaleConfig(
   require(isPow2(wDataMaster))
 
   val wDataSlave = axiSlaveCfg.wData
+  val wStrobeMaster = wDataMaster / 8
+  val wStrobeSlave = wDataSlave / 8
   val wAddr = axiSlaveCfg.wAddr
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
 }

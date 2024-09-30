@@ -53,11 +53,11 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
 
       new elastic.Fork(s_axi_.ar) {
         override protected def onFork = {
-          val sel = in.id.lsb(wIdSel)
+          val sel = in.id.lsbN(wIdSel)
           val ar = Wire(axi4.full.ReadAddressChannel(axiMasterCfg))
 
           ar := in
-          ar.id := in.id.dropLsb(wIdSel)
+          ar.id := in.id.dropLsbN(wIdSel)
 
           fork(ar) :=> demuxInput
           fork(sel) :=> demuxSelect
@@ -113,11 +113,11 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
 
       new elastic.Fork(s_axi_.aw) {
         override protected def onFork = {
-          val sel = in.id.lsb(wIdSel)
+          val sel = in.id.lsbN(wIdSel)
           val aw = Wire(axi4.full.WriteAddressChannel(axiMasterCfg))
 
           aw := in
-          aw.id := in.id.dropLsb(wIdSel)
+          aw.id := in.id.dropLsbN(wIdSel)
 
           fork(aw) :=> demuxInput
           fork(sel) :=> demuxSelect

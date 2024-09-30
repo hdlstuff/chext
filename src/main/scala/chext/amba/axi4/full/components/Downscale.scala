@@ -7,11 +7,12 @@ import chisel3.experimental.prefix
 import chext.amba.axi4
 import chext.elastic
 
+import chext.util.BitOps._
 import elastic.ConnectOp._
 import axi4.Ops._
-import chext.util.BitOps._
 
-import axi4.full.components.addrgen
+import axi4.full.components.addrgen.AddressStrobeGenerator
+import helpers.{SteerLeft, SteerRight}
 
 case class DownscaleConfig(
     val axiSlaveCfg: axi4.Config,
@@ -30,6 +31,8 @@ case class DownscaleConfig(
   require(!axiSlaveCfg.axi3Compat, "Downscale cannot work in Axi3 compatibility mode!")
 
   val wDataSlave = axiSlaveCfg.wData
+  val wStrobeMaster = wDataMaster / 8
+  val wStrobeSlave = wDataSlave / 8
   val wAddr = axiSlaveCfg.wAddr
   val axsizeMaxMaster = log2Ceil(wDataMaster >> 3)
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
@@ -42,18 +45,11 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private def implRead(): Unit = prefix("read") {
-    val addressStrobeGenerator =
-      Module(
-        new addrgen.AddressStrobeGenerator(wAddr, wDataSlave)
-      )
+    val addressStrobeGenerator = Module(new AddressStrobeGenerator(wAddr, wDataSlave))
 
-    val addressStrobeQueue =
-      Module(
-        new Queue(
-          addressStrobeGenerator.genOutput,
-          readAddressStrobeQueueLength
-        )
-      )
+    val addressStrobeQueue = Module(
+      new Queue(addressStrobeGenerator.genOutput, readAddressStrobeQueueLength)
+    )
 
     def implAR(): Unit = prefix("ar") {
       val arTransformed = Wire(chiselTypeOf(m_axi.ar))
@@ -69,8 +65,6 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
             out.len := 0.U
           }.otherwise {
             out.size := axsizeMaxMaster.U
-
-            // TODO: optimize this calculation
             out.len := (1.U << (in.size - axsizeMaxMaster.U)) - 1.U
           }
         }
@@ -100,10 +94,14 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
       val dataReg = RegInit(0.U(axiSlaveCfg.wData.W))
       val respReg = RegInit(0.U(2.W))
 
+      val steerLeftData = Module(new SteerLeft(wDataMaster, wDataSlave))
+
       new elastic.Arrival(zipped, s_axi.r) {
+        steerLeftData.dataIn := in._1.data
+        steerLeftData.offsetIn := in._2.lowerByteIndex.dropLsbN(log2Ceil(wStrobeMaster))
+
         protected def onArrival: Unit = {
           // we reduce on the largest value of response
-
           out.id := in._1.id
 
           when(in._1.resp > respReg) {
@@ -113,9 +111,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
             out.resp := respReg
           }
 
-          // TODO: Use a better line steering module
-          val shiftBytes = in._2.lowerByteIndex.resetLsbN(log2Ceil(wDataMaster / 8))
-          val outputData = dataReg | (in._1.data << (shiftBytes << 3))
+          val outputData = dataReg | steerLeftData.dataOut
 
           out.data := outputData
           dataReg := outputData
@@ -166,8 +162,6 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
             out.len := 0.U
           }.otherwise {
             out.size := axsizeMaxMaster.U
-
-            // TODO: optimize this calculation
             out.len := (1.U << (in.size - axsizeMaxMaster.U)) - 1.U
           }
         }
@@ -195,14 +189,21 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
       val addressStrobeDeq = addressStrobeQueue.io.deq
       addressStrobeDeq.nodeq()
 
-      new elastic.Arrival(s_axi.w, m_axi.w) {
-        protected def onArrival: Unit = {
-          val shiftBytes =
-            addressStrobeDeq.bits.lowerByteIndex.resetLsbN(log2Ceil(wDataMaster / 8))
+      val steerRightData = Module(new SteerRight(wDataSlave, wDataMaster))
+      val steerRightStrobe = Module(new SteerRight(wStrobeSlave, wStrobeMaster))
 
-          // TODO: Lane steering module
-          out.data := (in.data >> (shiftBytes << 3))
-          out.strb := ((in.strb & addressStrobeDeq.bits.strb) >> shiftBytes)
+      new elastic.Arrival(s_axi.w, m_axi.w) {
+        val offset = addressStrobeDeq.bits.lowerByteIndex.dropLsbN(log2Ceil(wStrobeMaster))
+
+        steerRightData.dataIn := in.data
+        steerRightData.offsetIn := offset
+
+        steerRightStrobe.dataIn := in.strb & addressStrobeDeq.bits.strb
+        steerRightStrobe.offsetIn := offset
+
+        protected def onArrival: Unit = {
+          out.data := steerRightData.dataOut
+          out.strb := steerRightStrobe.dataOut
 
           out.last := addressStrobeDeq.bits.last
           out.user := in.user

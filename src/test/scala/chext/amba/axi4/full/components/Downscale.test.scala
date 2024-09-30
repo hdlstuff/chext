@@ -15,7 +15,7 @@ import chiseltest._
 import axi4.full.test.PacketUtils._
 import axi4.full.test._
 
-class DownscaleTestModule extends Module {
+class DownscaleTestModule1 extends Module {
   // (2 ** 12) * 4B = 16 KB of memory (14 bits)
   private val rawMemCfg = memory.RawMemConfig(12, 32, 4, 4)
   private val portCfg = memory.PortConfig(8, 8)
@@ -53,6 +53,44 @@ class DownscaleTestModule extends Module {
   downscale.m_axi :=> axiBridge2.s_axi
 }
 
+class DownscaleTestModule2 extends Module {
+  // (2 ** 12) * 4B = 16 KB of memory (14 bits)
+  private val rawMemCfg = memory.RawMemConfig(11, 64, 4, 4)
+  private val portCfg = memory.PortConfig(8, 8)
+  private val axiCfg128 = axi4.Config(0, 14, 128)
+  private val axiCfg64 = axiCfg128.copy(wData = 64)
+
+  val s_axi_w128 = IO(axi4.full.Slave(axiCfg128))
+  val s_axi_w64 = IO(axi4.full.Slave(axiCfg64))
+
+  private val mem = Module(
+    new memory.TrueDualPortRAM(rawMemCfg, portCfg, portCfg)
+  )
+
+  private val axiBridge1 = Module(new memory.Axi4FullToReadWriteBridge(axiCfg64))
+
+  s_axi_w64 :=> axiBridge1.s_axi
+
+  axiBridge1.read.req :=> mem.read1.req
+  mem.read1.resp :=> axiBridge1.read.resp
+
+  axiBridge1.write.req :=> mem.write1.req
+  mem.write1.resp :=> axiBridge1.write.resp
+
+  private val axiBridge2 = Module(new memory.Axi4FullToReadWriteBridge(axiCfg64))
+
+  axiBridge2.read.req :=> mem.read2.req
+  mem.read2.resp :=> axiBridge2.read.resp
+
+  axiBridge2.write.req :=> mem.write2.req
+  mem.write2.resp :=> axiBridge2.write.resp
+
+  private val downscaleCfg = axi4.full.components.DownscaleConfig(axiCfg128, 64)
+  private val downscale = Module(new axi4.full.components.Downscale(downscaleCfg))
+  s_axi_w128 :=> downscale.s_axi
+  downscale.m_axi :=> axiBridge2.s_axi
+}
+
 class DownscaleTest extends test.FreeSpec with test.TestMixin {
   memory.Target.setCurrent(memory.chisel.Target)
 
@@ -66,7 +104,7 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
     WriteDataPacket((u32_3 << 96) | (u32_2 << 64) | (u32_1 << 32) | u32_0, 0xffff, last)
   }
 
-  "Downscale basic" in test(new DownscaleTestModule)
+  "Downscale basic" in test(new DownscaleTestModule1)
     .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
         dut.s_axi_w32.initSlave()
@@ -155,7 +193,7 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
       }
     }
 
-  "Downscale unaligned" in test(new DownscaleTestModule)
+  "Downscale unaligned" in test(new DownscaleTestModule1)
     .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
         dut.s_axi_w32.initSlave()
@@ -189,7 +227,7 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
       }
     }
 
-  "Downscale narrow bursts 1" in test(new DownscaleTestModule)
+  "Downscale narrow bursts 1" in test(new DownscaleTestModule1)
     .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
         dut.s_axi_w32.initSlave()
@@ -249,7 +287,7 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
       }
     }
 
-  "Downscale narrow bursts 2" in test(new DownscaleTestModule)
+  "Downscale narrow bursts 2" in test(new DownscaleTestModule1)
     .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       {
         dut.s_axi_w32.initSlave()
@@ -282,7 +320,7 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
         println("narrow read complete.")
 
         fork {
-          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x000C, 0, 2))
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x000c, 0, 2))
         }.fork {
           dut.s_axi_w128.sendWriteData(
             writeDataPacket(0x64f312d1, 0x64f302c1, 0x64f302b1, 0x64f302a1, true)
@@ -300,7 +338,7 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
         println("full read complete.")
 
         fork {
-          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x000C, 0, 2))
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x000c, 0, 2))
         }.fork {
           println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
         }.joinAndStep()
@@ -309,14 +347,47 @@ class DownscaleTest extends test.FreeSpec with test.TestMixin {
       }
     }
 
-  "Downscale narrow unaligned bursts 1" in test(new DownscaleTestModule)
-    .withAnnotations(Seq(WriteVcdAnnotation)) { dut => {} }
+  "Downscale narrow unaligned bursts 1" in test(new DownscaleTestModule2)
+    .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      {
+        dut.s_axi_w64.initSlave()
+        dut.s_axi_w128.initSlave()
 
-  "Downscale narrow unaligned bursts 2" in test(new DownscaleTestModule)
+        fork {
+          dut.s_axi_w128.sendWriteAddress(AddressPacket(0, 0x0008, 0, 2))
+        }.fork {
+          dut.s_axi_w128.sendWriteData(
+            writeDataPacket(0, 0x0ded_beef, 0, 0, true)
+          )
+        }.fork {
+          dut.s_axi_w128.receiveWriteResponse()
+        }.joinAndStep()
+
+        println("full write complete")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0000, 0, 4))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("full read complete.")
+
+        fork {
+          dut.s_axi_w128.sendReadAddress(AddressPacket(0, 0x0008, 0, 2))
+        }.fork {
+          println(f"data = ${dut.s_axi_w128.receiveReadData().data.toString(16)}")
+        }.joinAndStep()
+
+        println("narrow read complete.")
+      }
+    }
+
+  "Downscale narrow unaligned bursts 2" in test(new DownscaleTestModule1)
     .withAnnotations(Seq(WriteVcdAnnotation)) { dut => {} }
 }
 
 object EmitDownscaleTest extends App {
   memory.Target.setCurrent(memory.chisel.Target)
-  emitVerilog(new DownscaleTestModule)
+  emitVerilog(new DownscaleTestModule1)
 }

@@ -12,14 +12,14 @@ object BitOps {
       * @param n
       * @return
       */
-    private def makeLsbMask(n: Int): UInt = {
+    private def makeLsbMaskN(n: Int): UInt = {
       if (n == width)
         ~0.U(width.W)
       else
         (0.U((width - n - 1).W) ## 1.U(1.W) ## 0.U(n.W)) -% 1.U
     }
 
-    private def makeMsbMask(n: Int): UInt = ~makeLsbMask(width - n)
+    private def makeMsbMaskN(n: Int): UInt = ~makeLsbMaskN(width - n)
 
     /** Returns a copy of `x` with least-significant n bits are reset.
       *
@@ -30,14 +30,14 @@ object BitOps {
       chisel3.experimental.requireIsHardware(x)
 
       require(n >= 0 && n <= width)
-      x & ~makeLsbMask(n)
+      x & ~makeLsbMaskN(n)
     }
 
     def resetMsbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
       require(n >= 0 && n <= width)
-      x & ~makeMsbMask(n)
+      x & ~makeMsbMaskN(n)
     }
 
     /** Returns a copy of `x` with last n bits are set.
@@ -49,17 +49,17 @@ object BitOps {
       chisel3.experimental.requireIsHardware(x)
 
       require(n >= 0 && n <= width)
-      x | makeLsbMask(n)
+      x | makeLsbMaskN(n)
     }
 
     def setMsbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
       require(n >= 0 && n <= width)
-      x | makeMsbMask(n)
+      x | makeMsbMaskN(n)
     }
 
-    def lsb(n: Int): UInt = {
+    def lsbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
       require(n >= 0 && n <= width)
@@ -70,9 +70,9 @@ object BitOps {
         x(n - 1, 0)
     }
 
-    def dropLsb(n: Int): UInt = msb(width - n)
+    def dropLsbN(n: Int): UInt = msbN(width - n)
 
-    def msb(n: Int): UInt = {
+    def msbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
       require(n >= 0 && n <= width)
@@ -82,7 +82,7 @@ object BitOps {
         x(width - 1, width - n)
     }
 
-    def dropMsb(n: Int) = lsb(width - n)
+    def dropMsbN(n: Int) = lsbN(width - n)
 
     /** Extracts certain bits from `x`, designated by `indices`. Result is little-endian: the index
       * at the end of the list determines the most significant bit.
