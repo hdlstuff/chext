@@ -16,8 +16,8 @@ import helpers.{SteerLeft, SteerRight}
 case class DownscaleConfig(
     val axiSlaveCfg: axi4.Config,
     val wDataMaster: Int,
-    val readOffsetQueueLength: Int = 16,
-    val writeAddressStrobeQueueLength: Int = 16
+    val readOffsetLastQueueLength: Int = 16,
+    val writeOffsetLastQueueLength: Int = 16
 ) {
   require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
   require(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
@@ -37,6 +37,86 @@ case class DownscaleConfig(
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
 }
 
+private class AddrLenBundle(val wAddr: Int) extends Bundle {
+  val addr = UInt(wAddr.W)
+  val len = UInt(5.W)
+}
+
+private class OffsetLastBundle(wOffset: Int) extends Bundle {
+  val offset = UInt(wOffset.W)
+  val last = Bool()
+}
+
+private class OffsetLastGenerator(wWide: Int, wNarrow: Int) extends Module {
+  override def desiredName: String = f"OffsetLastGenerator_${wWide}_${wNarrow}"
+
+  val wAddr = log2Ceil(wWide >> 3 /* to bytes */ )
+  val wOffset = log2Ceil(wWide) - log2Ceil(wNarrow)
+
+  val genSource = new AddrLenBundle(wAddr)
+  val genSink = new OffsetLastBundle(wOffset)
+
+  val source = IO(elastic.Source(Irrevocable(genSource)))
+  val sink = IO(elastic.Sink(Irrevocable(genSink)))
+
+  private val source_ = source
+  private val sink_ = elastic.SinkBuffer(sink)
+
+  private val current = source_.bits
+  private val offset = Reg(UInt(wOffset.W))
+  private val ctr = Reg(UInt(5.W))
+  private val generating = RegInit(false.B)
+
+  source_.nodeq()
+  sink_.noenq()
+
+  when(source_.valid && sink_.ready) {
+    when(generating) {
+      val last = ctr === 0.U
+
+      when(last) {
+        generating := false.B
+        source_.deq()
+      }.otherwise {
+        ctr := ctr - 1.U
+        offset := offset + 1.U
+      }
+
+      // NOTE: the logic on `bits` might not depend on `source_.valid && sink_.ready`
+      // Does your synthesis tool can figure out that optimization?
+      // Maybe, in the future, write data and control logic separately
+      sink_.enq {
+        val result = Wire(genSink)
+
+        result.offset := offset
+        result.last := last
+
+        result
+      }
+    }.otherwise {
+      val last = current.len === 0.U
+      val thisOffset = current.addr.dropLsbN(log2Ceil(wNarrow >> 3 /* to bytes */ ))
+
+      when(last) {
+        source_.deq()
+      }.otherwise {
+        generating := true.B
+        offset := thisOffset + 1.U
+        ctr := current.len - 1.U
+      }
+
+      sink_.enq {
+        val result = Wire(genSink)
+
+        result.offset := thisOffset
+        result.last := last
+
+        result
+      }
+    }
+  }
+}
+
 class Downscale(val cfg: DownscaleConfig) extends Module {
   import cfg._
 
@@ -44,9 +124,8 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private def implRead(): Unit = prefix("read") {
-    val offsetGenerator = Module(new OffsetGenerator(wDataSlave, wDataMaster))
-
-    val offsetQueue = Module(new Queue(offsetGenerator.genSink, readOffsetQueueLength))
+    val offsetLastGenerator = Module(new OffsetLastGenerator(wDataSlave, wDataMaster))
+    val offsetLastQueue = Module(new Queue(offsetLastGenerator.genSink, readOffsetLastQueueLength))
 
     def implAR(): Unit = prefix("ar") {
       val arTransformed = Wire(chiselTypeOf(m_axi.ar))
@@ -69,11 +148,10 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
       new elastic.Fork(arTransformed) {
         override protected def onFork: Unit = {
-          new elastic.Transform(fork(), offsetGenerator.source) {
+          new elastic.Transform(fork(), offsetLastGenerator.source) {
             override protected def onTransform: Unit = {
               out.addr := in.addr
               out.len := in.len
-              out.fixed := in.burst === axi4.BurstType.FIXED
             }
           }
 
@@ -81,20 +159,20 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         }
       }
 
-      offsetGenerator.sink :=> offsetQueue.io.enq
+      offsetLastGenerator.sink :=> offsetLastQueue.io.enq
     }
 
     def implR(): Unit = prefix("r") {
-      val zipped = elastic.Zip(m_axi.r, offsetQueue.io.deq)
+      val zipped = elastic.Zip(m_axi.r, offsetLastQueue.io.deq)
 
       val dataReg = RegInit(0.U(axiSlaveCfg.wData.W))
       val respReg = RegInit(0.U(2.W))
 
-      val steerLeftData = Module(new SteerLeft(wDataMaster, wDataSlave))
+      val steerLeft = Module(new SteerLeft(wDataMaster, wDataSlave))
 
       new elastic.Arrival(zipped, s_axi.r) {
-        steerLeftData.dataIn := in._1.data
-        steerLeftData.offsetIn := in._2.offset
+        steerLeft.dataIn := in._1.data
+        steerLeft.offsetIn := in._2.offset
 
         protected def onArrival: Unit = {
           // we reduce on the largest value of response
@@ -107,14 +185,14 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
             out.resp := respReg
           }
 
-          val outputData = dataReg | steerLeftData.dataOut
+          val outputData = dataReg | steerLeft.dataOut
 
           out.data := outputData
           dataReg := outputData
 
           out.last := true.B
 
-          when(in._2.last) {
+          when(in._1.last) {
             dataReg := 0.U
 
             consume()
@@ -131,18 +209,8 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val addressStrobeGenerator =
-      Module(
-        new addrgen.AddressStrobeGenerator(wAddr, wDataSlave)
-      )
-
-    val addressStrobeQueue =
-      Module(
-        new Queue(
-          addressStrobeGenerator.genOutput,
-          readOffsetQueueLength
-        )
-      )
+    val offsetLastGenerator = Module(new OffsetLastGenerator(wDataSlave, wDataMaster))
+    val offsetLastQueue = Module(new Queue(offsetLastGenerator.genSink, writeOffsetLastQueueLength))
 
     def implAW(): Unit = prefix("aw") {
       val awTransformed = Wire(chiselTypeOf(m_axi.aw))
@@ -165,12 +233,10 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
       new elastic.Fork(awTransformed) {
         override protected def onFork: Unit = {
-          new elastic.Transform(fork(), addressStrobeGenerator.source) {
+          new elastic.Transform(fork(), offsetLastGenerator.source) {
             override protected def onTransform: Unit = {
               out.addr := in.addr
               out.len := in.len
-              out.size := in.size
-              out.burst := in.burst
             }
           }
 
@@ -178,37 +244,37 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         }
       }
 
-      addressStrobeGenerator.sink :=> addressStrobeQueue.io.enq
+      offsetLastGenerator.sink :=> offsetLastQueue.io.enq
     }
 
     def implW(): Unit = prefix("w") {
-      val addressStrobeDeq = addressStrobeQueue.io.deq
-      addressStrobeDeq.nodeq()
+      val offsetLastQueueDeq = offsetLastQueue.io.deq
+      offsetLastQueueDeq.nodeq()
 
-      val steerRightData = Module(new SteerRight(wDataSlave, wDataMaster))
+      val steerRight = Module(new SteerRight(wDataSlave, wDataMaster))
       val steerRightStrobe = Module(new SteerRight(wStrobeSlave, wStrobeMaster))
 
       new elastic.Arrival(s_axi.w, m_axi.w) {
-        val offset = addressStrobeDeq.bits.lowerByteIndex.dropLsbN(log2Ceil(wStrobeMaster))
+        val offset = offsetLastQueueDeq.bits
 
-        steerRightData.dataIn := in.data
-        steerRightData.offsetIn := offset
+        steerRight.dataIn := in.data
+        steerRight.offsetIn := offset.offset
 
-        steerRightStrobe.dataIn := in.strb & addressStrobeDeq.bits.strb
-        steerRightStrobe.offsetIn := offset
+        steerRightStrobe.dataIn := in.strb
+        steerRightStrobe.offsetIn := offset.offset
 
         protected def onArrival: Unit = {
-          out.data := steerRightData.dataOut
+          out.data := steerRight.dataOut
           out.strb := steerRightStrobe.dataOut
 
-          out.last := addressStrobeDeq.bits.last
+          out.last := offsetLastQueueDeq.bits.last
           out.user := in.user
 
-          when(addressStrobeDeq.valid) {
-            addressStrobeDeq.deq()
+          when(offsetLastQueueDeq.valid) {
+            offsetLastQueueDeq.deq()
             produce()
 
-            when(addressStrobeDeq.bits.last) {
+            when(offsetLastQueueDeq.bits.last) {
               consume()
             }
           }
