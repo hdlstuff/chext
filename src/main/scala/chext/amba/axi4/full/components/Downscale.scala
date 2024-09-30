@@ -11,13 +11,12 @@ import chext.util.BitOps._
 import elastic.ConnectOp._
 import axi4.Ops._
 
-import axi4.full.components.addrgen.AddressStrobeGenerator
 import helpers.{SteerLeft, SteerRight}
 
 case class DownscaleConfig(
     val axiSlaveCfg: axi4.Config,
     val wDataMaster: Int,
-    val readAddressStrobeQueueLength: Int = 16,
+    val readOffsetQueueLength: Int = 16,
     val writeAddressStrobeQueueLength: Int = 16
 ) {
   require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
@@ -45,11 +44,9 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private def implRead(): Unit = prefix("read") {
-    val addressStrobeGenerator = Module(new AddressStrobeGenerator(wAddr, wDataSlave))
+    val offsetGenerator = Module(new OffsetGenerator(wDataSlave, wDataMaster))
 
-    val addressStrobeQueue = Module(
-      new Queue(addressStrobeGenerator.genOutput, readAddressStrobeQueueLength)
-    )
+    val offsetQueue = Module(new Queue(offsetGenerator.genSink, readOffsetQueueLength))
 
     def implAR(): Unit = prefix("ar") {
       val arTransformed = Wire(chiselTypeOf(m_axi.ar))
@@ -72,12 +69,11 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
       new elastic.Fork(arTransformed) {
         override protected def onFork: Unit = {
-          new elastic.Transform(fork(), addressStrobeGenerator.source) {
+          new elastic.Transform(fork(), offsetGenerator.source) {
             override protected def onTransform: Unit = {
               out.addr := in.addr
               out.len := in.len
-              out.size := in.size
-              out.burst := in.burst
+              out.fixed := in.burst === axi4.BurstType.FIXED
             }
           }
 
@@ -85,11 +81,11 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         }
       }
 
-      addressStrobeGenerator.sink :=> addressStrobeQueue.io.enq
+      offsetGenerator.sink :=> offsetQueue.io.enq
     }
 
     def implR(): Unit = prefix("r") {
-      val zipped = elastic.Zip(m_axi.r, addressStrobeQueue.io.deq)
+      val zipped = elastic.Zip(m_axi.r, offsetQueue.io.deq)
 
       val dataReg = RegInit(0.U(axiSlaveCfg.wData.W))
       val respReg = RegInit(0.U(2.W))
@@ -98,7 +94,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
       new elastic.Arrival(zipped, s_axi.r) {
         steerLeftData.dataIn := in._1.data
-        steerLeftData.offsetIn := in._2.lowerByteIndex.dropLsbN(log2Ceil(wStrobeMaster))
+        steerLeftData.offsetIn := in._2.offset
 
         protected def onArrival: Unit = {
           // we reduce on the largest value of response
@@ -144,7 +140,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
       Module(
         new Queue(
           addressStrobeGenerator.genOutput,
-          readAddressStrobeQueueLength
+          readOffsetQueueLength
         )
       )
 

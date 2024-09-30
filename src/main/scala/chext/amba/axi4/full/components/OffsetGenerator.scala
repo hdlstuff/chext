@@ -26,8 +26,8 @@ class OffsetLastBundle(wOffset: Int) extends Bundle {
   * @param wWide
   * @param wNarrow
   */
-class OffsetLastGenerator(wWide: Int, wNarrow: Int) extends Bundle {
-  val wAddr = log2Ceil(wWide)
+class OffsetGenerator(wWide: Int, wNarrow: Int) extends Module {
+  val wAddr = log2Ceil(wWide >> 3 /* to bytes */)
   val wOffset = log2Ceil(wWide) - log2Ceil(wNarrow)
 
   val genSource = new AddrLenFixedBundle(wAddr)
@@ -73,7 +73,7 @@ class OffsetLastGenerator(wWide: Int, wNarrow: Int) extends Bundle {
       }
     }.otherwise {
       val last = current.len === 0.U
-      val thisOffset = current.addr.dropLsbN(log2Ceil(wNarrow)).lsbN(wOffset)
+      val thisOffset = current.addr.dropLsbN(log2Ceil(wNarrow >> 3 /* to bytes */))
 
       when(last) {
         source_.deq()
