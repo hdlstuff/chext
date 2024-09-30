@@ -11,13 +11,14 @@ import elastic.ConnectOp._
 import axi4.Ops._
 import chext.util.BitOps._
 
-import axi4.full.components.addrgen
+import axi4.full.components.helpers.{SteerLeft, SteerRight}
+import axi4.full.components.addrgen.AddressGenerator
 
 case class UpscaleConfig(
     val axiSlaveCfg: axi4.Config,
     val wDataMaster: Int,
-    val readAddressStrobeQueueLength: Int = 16,
-    val writeAddressStrobeQueueLength: Int = 16
+    val readOffsetQueueLength: Int = 16,
+    val writeOffsetQueueLength: Int = 16
 ) {
   require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
   require(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
@@ -27,8 +28,9 @@ case class UpscaleConfig(
   require(isPow2(wDataMaster))
 
   val wDataSlave = axiSlaveCfg.wData
-  val wStrobeMaster = wDataMaster / 8
-  val wStrobeSlave = wDataSlave / 8
+  val wStrobeMaster = wDataMaster >> 3
+  val wStrobeSlave = wDataSlave >> 3
+  val wOffset = log2Ceil(wDataMaster) - log2Ceil(wDataSlave)
   val wAddr = axiSlaveCfg.wAddr
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
 }
@@ -40,23 +42,13 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private def implRead(): Unit = prefix("read") {
-    val addressStrobeGenerator =
-      Module(
-        new addrgen.AddressStrobeGenerator(wAddr, wDataMaster)
-      )
-
-    val addressStrobeQueue =
-      Module(
-        new Queue(
-          addressStrobeGenerator.genOutput,
-          readAddressStrobeQueueLength
-        )
-      )
+    val addressGenerator = Module(new AddressGenerator(log2Ceil(wStrobeMaster)))
+    val offsetQueue = Module(new Queue(UInt(wOffset.W), readOffsetQueueLength))
 
     def implAR(): Unit = prefix("ar") {
       new elastic.Fork(s_axi.ar) {
         override protected def onFork: Unit = {
-          new elastic.Transform(fork(), addressStrobeGenerator.source) {
+          new elastic.Transform(fork(), addressGenerator.source) {
             override protected def onTransform: Unit = {
               out.addr := in.addr
               out.len := in.len
@@ -69,25 +61,25 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
         }
       }
 
-      addressStrobeGenerator.sink :=> addressStrobeQueue.io.enq
+      new elastic.Transform(addressGenerator.sink, offsetQueue.io.enq) {
+        protected def onTransform: Unit = {
+          out := in.addr.dropLsbN(log2Ceil(wStrobeSlave))
+        }
+      }
     }
 
     def implR(): Unit = prefix("r") {
+      val steerRight = Module(new SteerRight(wDataMaster, wDataSlave))
+
       new elastic.Join(s_axi.r) {
         override protected def onJoin: Unit = {
           val beat = join(m_axi.r)
-          val addressStrobe = join(addressStrobeQueue.io.deq)
+          val offset = join(offsetQueue.io.deq)
 
-          //
-          // This is called "lane steering" by the following guys:
-          // https://github.com/pulp-platform/axi/blob/master/src/axi_dw_upsizer.sv
-          //
-          // My implementation is definitely not the best.
-          // Depending on the data widths, addressStrobe.lowerByteIndex is constrained.
-          // TODO: create a new module for doing this more optimally.
-          //
-          val shiftBytes = addressStrobe.lowerByteIndex.resetLsbN(log2Ceil(wDataSlave / 8))
-          out.data := beat.data >> (shiftBytes << 3)
+          steerRight.dataIn := beat.data
+          steerRight.offsetIn := offset
+
+          out.data := steerRight.dataOut
 
           out.id := beat.id // must be zero
           out.resp := beat.resp
@@ -102,23 +94,13 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val addressStrobeGenerator =
-      Module(
-        new addrgen.AddressStrobeGenerator(wAddr, wDataMaster)
-      )
-
-    val addressStrobeQueue =
-      Module(
-        new Queue(
-          addressStrobeGenerator.genOutput,
-          writeAddressStrobeQueueLength
-        )
-      )
+    val addressGenerator = Module(new AddressGenerator(log2Ceil(wStrobeMaster)))
+    val offsetQueue = Module(new Queue(UInt(wOffset.W), writeOffsetQueueLength))
 
     def implAW(): Unit = prefix("aw") {
       new elastic.Fork(s_axi.aw) {
         override protected def onFork: Unit = {
-          new elastic.Transform(fork(), addressStrobeGenerator.source) {
+          new elastic.Transform(fork(), addressGenerator.source) {
             override protected def onTransform: Unit = {
               out.addr := in.addr
               out.len := in.len
@@ -131,20 +113,30 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
         }
       }
 
-      addressStrobeGenerator.sink :=> addressStrobeQueue.io.enq
+      new elastic.Transform(addressGenerator.sink, offsetQueue.io.enq) {
+        protected def onTransform: Unit = {
+          out := in.addr.dropLsbN(log2Ceil(wStrobeSlave))
+        }
+      }
     }
 
     def implW(): Unit = prefix("w") {
+      val steerLeft = Module(new SteerLeft(wDataSlave, wDataMaster))
+      val steerLeftStrobe = Module(new SteerLeft(wStrobeSlave, wStrobeMaster))
+
       new elastic.Join(m_axi.w) {
         override protected def onJoin: Unit = {
           val beat = join(s_axi.w)
-          val addressStrobe = join(addressStrobeQueue.io.deq)
-          val shiftBytes = addressStrobe.lowerByteIndex.resetLsbN(log2Ceil(wDataSlave / 8))
+          val offset = join(offsetQueue.io.deq)
 
-          // TODO: the same concern as above
-          out.data := beat.data << (shiftBytes << 3)
-          out.strb := (beat.strb << shiftBytes) & addressStrobe.strb
+          steerLeft.dataIn := beat.data
+          steerLeft.offsetIn := offset
 
+          steerLeftStrobe.dataIn := beat.strb
+          steerLeftStrobe.offsetIn := offset
+
+          out.data := steerLeft.dataOut
+          out.strb := steerLeftStrobe.dataOut
           out.last := beat.last
           out.user := beat.user
         }
