@@ -79,7 +79,6 @@ class AddressGenerator(val wAddr: Int) extends Module {
       when(last) {
         generating := false.B
         source_.deq()
-
       }.otherwise {
         ctr := ctr - 1.U
 
@@ -90,7 +89,6 @@ class AddressGenerator(val wAddr: Int) extends Module {
           val mask2 = ~mask1
           addr := (addr & mask2) | (((addr + 1.U) & mask1))
         }
-
       }
 
       when(current.burst === BurstType.FIXED) {
@@ -148,7 +146,7 @@ class StrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
   new elastic.Transform(source, sink) {
     protected def onTransform: Unit = {
       val addr = in.addr(log2strobe - 1, 0)
-      
+
       // we should preserve the lower bits for unaligned transactions
       val lowerByteIndex = addr
 
