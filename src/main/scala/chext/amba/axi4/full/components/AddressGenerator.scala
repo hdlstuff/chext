@@ -49,11 +49,11 @@ class AddrSizeStrobeLastBundle(val wAddr: Int, val wData: Int) extends Bundle {
   */
 class AddressGenerator(val wAddr: Int) extends Module {
 
-  val genInput = new AddrLenSizeBurstBundle(wAddr)
-  val genOutput = new AddrSizeLastBundle(wAddr)
+  val genSource = new AddrLenSizeBurstBundle(wAddr)
+  val genSink = new AddrSizeLastBundle(wAddr)
 
-  val source = IO(Source(Irrevocable(genInput)))
-  val sink = IO(Sink(Irrevocable(genOutput)))
+  val source = IO(Source(Irrevocable(genSource)))
+  val sink = IO(Sink(Irrevocable(genSink)))
 
   private val source_ = SourceBuffer(source)
   private val sink_ = SinkBuffer(sink)
@@ -95,7 +95,7 @@ class AddressGenerator(val wAddr: Int) extends Module {
 
       when(current.burst === BurstType.FIXED) {
         sink_.enq {
-          val result = Wire(genOutput)
+          val result = Wire(genSink)
           result.addr := current.addr
           result.size := current.size
           result.last := last
@@ -104,7 +104,7 @@ class AddressGenerator(val wAddr: Int) extends Module {
         }
       }.otherwise {
         sink_.enq {
-          val result = Wire(genOutput)
+          val result = Wire(genSink)
           result.addr := addr << current.size
           result.size := current.size
           result.last := last
@@ -124,7 +124,7 @@ class AddressGenerator(val wAddr: Int) extends Module {
       }
 
       sink_.enq {
-        val result = Wire(genOutput)
+        val result = Wire(genSink)
         result.addr := current.addr
         result.size := current.size
         result.last := last
@@ -177,7 +177,7 @@ class AddressStrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
   private val addressGenerator = Module(new AddressGenerator(wAddr))
   private val strobeGenerator = Module(new StrobeGenerator(wAddr, wData))
 
-  val genInput = addressGenerator.genInput
+  val genInput = addressGenerator.genSource
   val genOutput = strobeGenerator.genOutput
 
   val source = IO(Source(Irrevocable(genInput)))
