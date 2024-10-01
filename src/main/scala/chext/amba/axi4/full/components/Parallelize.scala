@@ -73,7 +73,7 @@ class Parallelize(val cfg: ParallelizeConfig = ParallelizeConfig()) extends Modu
   // NOTE: I use SinkBuffer(...) to avoid combinational loops
 
   def implRead(): Unit = {
-    val wBufferIdx = 3
+    val wBufferIdx = 10
     val buffer = Mem(1 << wBufferIdx, chiselTypeOf(s_axi.r.bits))
     val xIdxFill = Mem(1 << wIdMaster, UInt(wBufferIdx.W))
     val xIdxDrain = Mem(1 << wIdMaster, UInt(wBufferIdx.W))

@@ -11,7 +11,7 @@ import chext.ip.memory._
 import elastic.ConnectOp._
 import axi4.Ops._
 
-case class ParallelizeTopConfig() {
+case class ParallelizeTopConfig(val wId: Int = 4) {
   val axiCfg = axi4.Config(wId = 0, wAddr = 14, wData = 64)
 
   val rawMemCfg = RawMemConfig(
@@ -19,9 +19,9 @@ case class ParallelizeTopConfig() {
     axiCfg.wData
   )
 
-  val portCfg = PortConfig(16, 16)
+  val portCfg = PortConfig(256, 256)
 
-  val axiMemCfg = axiCfg.copy(wId = 4)
+  val axiMemCfg = axiCfg.copy(wId = wId)
 }
 
 class ParallelizeTop(cfg: ParallelizeTopConfig = ParallelizeTopConfig()) extends Module {
@@ -49,7 +49,9 @@ class ParallelizeTop(cfg: ParallelizeTopConfig = ParallelizeTopConfig()) extends
 
   s_axi_0 :=> bridge1.s_axi
 
-  val parallelize = Module(new Parallelize(ParallelizeConfig(axiSlaveCfg = axiCfg, wIdMaster = 4)))
+  val parallelize = Module(
+    new Parallelize(ParallelizeConfig(axiSlaveCfg = axiCfg, wIdMaster = cfg.wId))
+  )
 
   s_axi_1 :=> parallelize.s_axi
   parallelize.m_axi :=> bridge2.s_axi
@@ -68,23 +70,31 @@ class ParallelizeTest extends chext.test.FreeSpec with chext.test.TestMixin {
       dut.s_axi_1.initSlave()
 
       fork {
-        dut.s_axi_0.sendWriteAddress(AddressPacket(0, 0x000, 3, 3, 1))
+        dut.s_axi_0.sendWriteAddress(AddressPacket(0, 0x000, 255, 3, 1))
+        println(f"[AW]")
       }.fork {
-        dut.s_axi_0.sendWriteData(WriteDataPacket(0x0fff_0000_aaaa_0000L, 0xff, false))
-        dut.s_axi_0.sendWriteData(WriteDataPacket(0x0fff_1111_aaaa_1000L, 0xff, false))
-        dut.s_axi_0.sendWriteData(WriteDataPacket(0x0fff_2222_aaaa_2000L, 0xff, false))
-        dut.s_axi_0.sendWriteData(WriteDataPacket(0x0fff_3333_aaaa_3000L, 0xff, true))
+        for (idx <- (0 until 256)) {
+          println(f"[W] idx = ${idx}%03d")
+          dut.s_axi_0.sendWriteData(
+            WriteDataPacket(0x0fff_0000_aaaa_0000L + (idx << 8) + (idx), 0xff, idx == 255)
+          )
+        }
       }.fork {
-        println(dut.s_axi_0.receiveWriteResponse())
+        println(f"[W] ${dut.s_axi_0.receiveWriteResponse()}")
       }.joinAndStep()
 
-      for (idx <- (0 until 4)) {
-        dut.s_axi_1.sendReadAddress(AddressPacket(0, 0x000 + 8 * idx, 0, 3, 1))
-      }
+      fork {
+        for (idx <- (0 until 256)) {
+          println(f"[AR] idx = ${idx}%03d")
+          dut.s_axi_1.sendReadAddress(AddressPacket(0, 0x000 + 8 * idx, 0, 3, 1))
+        }
+      }.fork {
+        for (idx <- (0 until 256)) {
+          val readData = dut.s_axi_1.receiveReadData()
+          println(f"[R] idx = ${idx}%03d, data = ${readData.data}%016x")
+        }
+      }.joinAndStep()
 
-      dut.s_axi_1.r.ready.poke(true)
-
-      dut.clock.step(30)
     }
   }
 }
