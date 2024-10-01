@@ -11,8 +11,8 @@ import elastic.ConnectOp._
 import axi4.Ops._
 import chext.util.BitOps._
 
-import axi4.full.components.helpers.{SteerLeft, SteerRight}
-import axi4.full.components.addrgen.AddressGenerator
+import helpers.{SteerLeft, SteerRight}
+import addrgen.AddressGenerator
 
 case class UpscaleConfig(
     val axiSlaveCfg: axi4.Config,
@@ -42,7 +42,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private def implRead(): Unit = prefix("read") {
-    val addressGenerator = Module(new AddressGenerator(log2Ceil(wStrobeMaster)))
+    val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataMaster >> 3)))
     val offsetQueue = Module(new Queue(UInt(wOffset.W), readOffsetQueueLength))
 
     def implAR(): Unit = prefix("ar") {
@@ -63,7 +63,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
 
       new elastic.Transform(addressGenerator.sink, offsetQueue.io.enq) {
         protected def onTransform: Unit = {
-          out := in.addr.dropLsbN(log2Ceil(wStrobeSlave))
+          out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
         }
       }
     }
@@ -94,7 +94,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val addressGenerator = Module(new AddressGenerator(log2Ceil(wStrobeMaster)))
+    val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataMaster >> 3)))
     val offsetQueue = Module(new Queue(UInt(wOffset.W), writeOffsetQueueLength))
 
     def implAW(): Unit = prefix("aw") {
@@ -115,7 +115,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
 
       new elastic.Transform(addressGenerator.sink, offsetQueue.io.enq) {
         protected def onTransform: Unit = {
-          out := in.addr.dropLsbN(log2Ceil(wStrobeSlave))
+          out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
         }
       }
     }

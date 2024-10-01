@@ -12,6 +12,7 @@ import elastic.ConnectOp._
 import axi4.Ops._
 
 import helpers.{SteerLeft, SteerRight}
+import addrgen.AddressGenerator
 
 case class DownscaleConfig(
     val axiSlaveCfg: axi4.Config,
@@ -32,6 +33,7 @@ case class DownscaleConfig(
   val wDataSlave = axiSlaveCfg.wData
   val wStrobeMaster = wDataMaster / 8
   val wStrobeSlave = wDataSlave / 8
+  val wOffset = log2Ceil(wDataSlave) - log2Ceil(wDataMaster)
   val wAddr = axiSlaveCfg.wAddr
   val axsizeMaxMaster = log2Ceil(wDataMaster >> 3)
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
@@ -123,9 +125,11 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
+  private val genOffsetLast = chext.bundles.BundleN(UInt(wOffset.W), Bool())
+
   private def implRead(): Unit = prefix("read") {
-    val offsetLastGenerator = Module(new OffsetLastGenerator(wDataSlave, wDataMaster))
-    val offsetLastQueue = Module(new Queue(offsetLastGenerator.genSink, readOffsetLastQueueLength))
+    val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataSlave >> 3)))
+    val offsetLastQueue = Module(new Queue(genOffsetLast, readOffsetLastQueueLength))
 
     def implAR(): Unit = prefix("ar") {
       val arTransformed = Wire(chiselTypeOf(m_axi.ar))
@@ -148,10 +152,12 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
       new elastic.Fork(arTransformed) {
         override protected def onFork: Unit = {
-          new elastic.Transform(fork(), offsetLastGenerator.source) {
+          new elastic.Transform(fork(), addressGenerator.source) {
             override protected def onTransform: Unit = {
               out.addr := in.addr
               out.len := in.len
+              out.size := in.size
+              out.burst := axi4.BurstType.INCR
             }
           }
 
@@ -159,7 +165,12 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         }
       }
 
-      offsetLastGenerator.sink :=> offsetLastQueue.io.enq
+      new elastic.Transform(addressGenerator.sink, offsetLastQueue.io.enq) {
+        protected def onTransform: Unit = {
+          out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
+          out._2 := in.last
+        }
+      }
     }
 
     def implR(): Unit = prefix("r") {
@@ -172,7 +183,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
       new elastic.Arrival(zipped, s_axi.r) {
         steerLeft.dataIn := in._1.data
-        steerLeft.offsetIn := in._2.offset
+        steerLeft.offsetIn := in._2._1 /* offset */
 
         protected def onArrival: Unit = {
           // we reduce on the largest value of response
@@ -209,8 +220,8 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val offsetLastGenerator = Module(new OffsetLastGenerator(wDataSlave, wDataMaster))
-    val offsetLastQueue = Module(new Queue(offsetLastGenerator.genSink, writeOffsetLastQueueLength))
+    val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataSlave >> 3)))
+    val offsetLastQueue = Module(new Queue(genOffsetLast, writeOffsetLastQueueLength))
 
     def implAW(): Unit = prefix("aw") {
       val awTransformed = Wire(chiselTypeOf(m_axi.aw))
@@ -233,10 +244,12 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
       new elastic.Fork(awTransformed) {
         override protected def onFork: Unit = {
-          new elastic.Transform(fork(), offsetLastGenerator.source) {
+          new elastic.Transform(fork(), addressGenerator.source) {
             override protected def onTransform: Unit = {
               out.addr := in.addr
               out.len := in.len
+              out.size := in.size
+              out.burst := axi4.BurstType.INCR
             }
           }
 
@@ -244,7 +257,12 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         }
       }
 
-      offsetLastGenerator.sink :=> offsetLastQueue.io.enq
+      new elastic.Transform(addressGenerator.sink, offsetLastQueue.io.enq) {
+        protected def onTransform: Unit = {
+          out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
+          out._2 := in.last
+        }
+      }
     }
 
     def implW(): Unit = prefix("w") {
@@ -258,23 +276,23 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         val offset = offsetLastQueueDeq.bits
 
         steerRight.dataIn := in.data
-        steerRight.offsetIn := offset.offset
+        steerRight.offsetIn := offset._1 /* offset */
 
         steerRightStrobe.dataIn := in.strb
-        steerRightStrobe.offsetIn := offset.offset
+        steerRightStrobe.offsetIn := offset._1 /* offset */
 
         protected def onArrival: Unit = {
           out.data := steerRight.dataOut
           out.strb := steerRightStrobe.dataOut
 
-          out.last := offsetLastQueueDeq.bits.last
+          out.last := offsetLastQueueDeq.bits._2 /* last */
           out.user := in.user
 
           when(offsetLastQueueDeq.valid) {
             offsetLastQueueDeq.deq()
             produce()
 
-            when(offsetLastQueueDeq.bits.last) {
+            when(offsetLastQueueDeq.bits._2 /* last */ ) {
               consume()
             }
           }
