@@ -82,7 +82,7 @@ class Parallelize(val cfg: ParallelizeConfig = ParallelizeConfig()) extends Modu
     val idFreeList = Module(new IdFreeList(wIdMaster))
     val idQueue = Module(new IdQueue(wIdMaster))
 
-    val bufferFree = RegInit(0.U((wBufferIdx + 1).W))
+    val bufferFree = RegInit((1L << wBufferIdx).U((wBufferIdx + 1).W))
     val bufferIdxNext = RegInit(0.U(wBufferIdx.W))
 
     val s_ar = s_axi.ar
@@ -109,12 +109,12 @@ class Parallelize(val cfg: ParallelizeConfig = ParallelizeConfig()) extends Modu
     s_r.bits := buffer(xIdxDrain(idQueue.sink.bits))
 
     idFreeList.source.bits := m_r.bits.id
-    idFreeList.source.valid := false.B
+    idFreeList.source.valid := m_r.fire && m_r.bits.last
 
     idFreeList.sink.ready := s_ar.fire
 
     idQueue.source.bits := idFreeList.sink.bits
-    idQueue.source.valid := false.B
+    idQueue.source.valid := s_ar.fire
 
     idQueue.sink.ready := s_r.fire && s_r.bits.last
 
@@ -136,8 +136,7 @@ class Parallelize(val cfg: ParallelizeConfig = ParallelizeConfig()) extends Modu
       buffer(offset) := m_r.bits
 
       when(m_r.bits.last) {
-        idFreeList.source.bits := m_r.bits.id
-        idFreeList.source.valid := true.B
+        xComplete(m_r.bits.id) := true.B
       }
     }
 
