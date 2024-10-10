@@ -110,6 +110,71 @@ struct AddrSizeLastSignals {
     }
 };
 
+struct AddrSizeStrobeLast {
+    sc_bv_base addr;
+    uint8_t size;
+    sc_bv_base strb;
+    uint32_t lowerByteIndex;
+    uint32_t upperByteIndex;
+    bool last;
+
+    JQR_DECL(
+        AddrSizeStrobeLast,
+        JQR_MEMBER(addr),
+        JQR_MEMBER(size),
+        JQR_MEMBER(strb),
+        JQR_MEMBER(lowerByteIndex),
+        JQR_MEMBER(upperByteIndex),
+        JQR_MEMBER(last)
+    )
+
+    JQR_TO_STRING
+    JQR_COMP_EQ
+};
+
+template<
+    unsigned wAddr,
+    unsigned wStrobe,
+    unsigned wIndex>
+struct AddrSizeStrobeLastSignals {
+    using value_type = AddrSizeStrobeLast;
+
+    AddrSizeStrobeLastSignals(const char* name)
+        : addr(fmt::format("{}_addr", name).c_str())
+        , size(fmt::format("{}_size", name).c_str())
+        , strb(fmt::format("{}_strb", name).c_str())
+        , lowerByteIndex(fmt::format("{}_lowerByteIndex", name).c_str())
+        , upperByteIndex(fmt::format("{}_upperByteIndex", name).c_str())
+        , last(fmt::format("{}_last", name).c_str()) {}
+
+    sc_signal<sc_bv<wAddr>, SC_MANY_WRITERS> addr;
+    sc_signal<sc_bv<3>, SC_MANY_WRITERS> size;
+    sc_signal<sc_bv<wStrobe>, SC_MANY_WRITERS> strb;
+    sc_signal<sc_bv<wIndex>, SC_MANY_WRITERS> lowerByteIndex;
+    sc_signal<sc_bv<wIndex>, SC_MANY_WRITERS> upperByteIndex;
+    sc_signal<bool, SC_MANY_WRITERS> last;
+
+    value_type read() {
+        return {
+            addr.read(),
+            (uint8_t)size.read().to_uint(),
+            strb.read(),
+            lowerByteIndex.read().to_uint(),
+            upperByteIndex.read().to_uint(),
+            last.read()
+        };
+    }
+
+    void write(value_type const& x) {
+        addr.write(x.addr);
+        size.write(x.size);
+        strb.write(x.strb);
+        lowerByteIndex.write(x.lowerByteIndex);
+        upperByteIndex.write(x.upperByteIndex);
+        last.write(x.last);
+    }
+};
+
 } // namespace detail
 
 using detail::AddrLenSizeBurst;

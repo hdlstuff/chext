@@ -1,5 +1,6 @@
 from chext_test import ElasticProtocol
 import hdlinfo
+import math
 
 
 def registerAddrLenSizeBurstBundle() -> None:
@@ -49,3 +50,31 @@ def registerAddrSizeLastBundle() -> None:
 
 
 registerAddrSizeLastBundle()
+
+def registerAddrSizeStrobeLastBundle() -> None:
+    def signalName(interface: hdlinfo.Interface) -> str:
+        wAddr = interface.args["wAddr"]
+        wData = interface.args["wData"]
+        wStrobe = wData / 8
+        wIndex = int(math.log2(wStrobe))
+        return f"protocols::AddrSizeStrobeLastSignals<{wAddr}, {wStrobe}, {wIndex}>"
+
+    portsToSignals = [
+        ("bits_addr", "bits.addr"),
+        ("bits_size", "bits.size"),
+        ("bits_strb", "bits.strb"),
+        ("bits_lowerByteIndex", "bits.lowerByteIndex"),
+        ("bits_upperByteIndex", "bits.upperByteIndex"),
+        ("bits_last", "bits.last"),
+        ("ready", "ready"),
+        ("valid", "valid")
+    ]
+
+    ElasticProtocol(
+        "chext.amba.axi4.full.components.addrgen.AddrSizeStrobeLastBundle",
+        includeStr='"Protocols.hpp"',
+        bitsSignalType=signalName,
+        portsToSignals=portsToSignals
+    )
+
+registerAddrSizeStrobeLastBundle()

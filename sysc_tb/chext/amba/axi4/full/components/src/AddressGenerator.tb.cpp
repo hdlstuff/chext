@@ -154,6 +154,47 @@ private:
     }
 };
 
+/* to be incorporated later... */
+#if 0
+
+    std::vector<AddrLenSizeBurst> sourcePackets;
+    std::vector<AddrSizeStrobeLast> sinkPackets;
+
+    std::cout << "chext.amba.axi4.full.components.AddressStrobeGenerator.INCR (32B)" << std::endl;
+
+    // Test body
+    sourcePackets.push_back(AddrLenSizeBurst{ .addr = sc_bv<32>(0x3000), .len = 0, .size = 0, .burst = 1 });
+    sourcePackets.push_back(AddrLenSizeBurst{ .addr = sc_bv<32>(0x5024), .len = 1, .size = 0, .burst = 1 });
+    sourcePackets.push_back(AddrLenSizeBurst{ .addr = sc_bv<32>(0x6008), .len = 3, .size = 0, .burst = 1 });
+    sourcePackets.push_back(AddrLenSizeBurst{ .addr = sc_bv<32>(0xA000), .len = 3, .size = 3, .burst = 1 });
+    sourcePackets.push_back(AddrLenSizeBurst{ .addr = sc_bv<32>(0xA001), .len = 3, .size = 3, .burst = 1 });
+    sourcePackets.push_back(AddrLenSizeBurst{ .addr = sc_bv<32>(0xA009), .len = 1, .size = 3, .burst = 1 });
+
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0x3000), .size = 0, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(0), .upperByteIndex = sc_bv<4>(0), .last = true });
+
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0x5024), .size = 0, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(4), .upperByteIndex = sc_bv<4>(4), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0x5025), .size = 0, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(5), .upperByteIndex = sc_bv<4>(5), .last = true });
+
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0x6008), .size = 0, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(8), .upperByteIndex = sc_bv<4>(8), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0x6009), .size = 0, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(9), .upperByteIndex = sc_bv<4>(9), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0x600a), .size = 0, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(10), .upperByteIndex = sc_bv<4>(10), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0x600b), .size = 0, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(11), .upperByteIndex = sc_bv<4>(11), .last = true });
+
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA000), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(0), .upperByteIndex = sc_bv<4>(7), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA008), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(8), .upperByteIndex = sc_bv<4>(15), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA010), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(0), .upperByteIndex = sc_bv<4>(7), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA018), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(8), .upperByteIndex = sc_bv<4>(15), .last = true });
+
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA001), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(1), .upperByteIndex = sc_bv<4>(7), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA008), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(8), .upperByteIndex = sc_bv<4>(15), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA010), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(0), .upperByteIndex = sc_bv<4>(7), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA018), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(8), .upperByteIndex = sc_bv<4>(15), .last = true });
+
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA009), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(9), .upperByteIndex = sc_bv<4>(15), .last = false });
+    sinkPackets.push_back(AddrSizeStrobeLast{ .addr = sc_bv<32>(0xA010), .size = 3, .strb = sc_bv<16>(), .lowerByteIndex = sc_bv<4>(0), .upperByteIndex = sc_bv<4>(7), .last = true });
+
+#endif
+
 int sc_main(int argc, char** argv) {
     AddressGeneratorTestbench tb;
     tb.start();
