@@ -1,7 +1,12 @@
 #ifndef PROTOCOLS_HPP_INCLUDED
 #define PROTOCOLS_HPP_INCLUDED
 
+#include <jqr/comp_eq.hpp>
+#include <jqr/core.hpp>
+#include <jqr/dump.hpp>
+
 #include <fmt/core.h>
+
 #include <systemc>
 
 namespace protocols {
@@ -16,6 +21,17 @@ struct AddrLenSizeBurst {
     uint8_t len;
     uint8_t size;
     uint8_t burst;
+
+    JQR_DECL(
+        AddrLenSizeBurst,
+        JQR_MEMBER(addr),
+        JQR_MEMBER(len),
+        JQR_MEMBER(size),
+        JQR_MEMBER(burst)
+    )
+
+    JQR_TO_STRING
+    JQR_COMP_EQ
 };
 
 template<unsigned wAddr>
@@ -28,10 +44,10 @@ struct AddrLenSizeBurstSignals {
         , size(fmt::format("{}_size", name).c_str())
         , burst(fmt::format("{}_burst", name).c_str()) {}
 
-    sc_signal<sc_bv<wAddr>> addr;
-    sc_signal<sc_bv<8>> len;
-    sc_signal<sc_bv<3>> size;
-    sc_signal<sc_bv<2>> burst;
+    sc_signal<sc_bv<wAddr>, SC_MANY_WRITERS> addr;
+    sc_signal<sc_bv<8>, SC_MANY_WRITERS> len;
+    sc_signal<sc_bv<3>, SC_MANY_WRITERS> size;
+    sc_signal<sc_bv<2>, SC_MANY_WRITERS> burst;
 
     value_type read() {
         return {
@@ -54,6 +70,16 @@ struct AddrSizeLast {
     sc_bv_base addr;
     uint8_t size;
     bool last;
+
+    JQR_DECL(
+        AddrSizeLast,
+        JQR_MEMBER(addr),
+        JQR_MEMBER(size),
+        JQR_MEMBER(last)
+    )
+
+    JQR_TO_STRING
+    JQR_COMP_EQ
 };
 
 template<unsigned wAddr>
@@ -65,9 +91,9 @@ struct AddrSizeLastSignals {
         , size(fmt::format("{}_size", name).c_str())
         , last(fmt::format("{}_last", name).c_str()) {}
 
-    sc_signal<sc_bv<wAddr>> addr;
-    sc_signal<sc_bv<3>> size;
-    sc_signal<bool> last;
+    sc_signal<sc_bv<wAddr>, SC_MANY_WRITERS> addr;
+    sc_signal<sc_bv<3>, SC_MANY_WRITERS> size;
+    sc_signal<bool, SC_MANY_WRITERS> last;
 
     value_type read() {
         return {
