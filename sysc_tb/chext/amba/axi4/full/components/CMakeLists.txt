@@ -14,6 +14,11 @@ target_sources(AddressGenerator.tb PUBLIC src/AddressGenerator.tb.cpp)
 target_include_directories(AddressGenerator.tb PUBLIC include/)
 target_link_libraries(AddressGenerator.tb PUBLIC SystemC::systemc fmt::fmt chext_test::chext_test)
 
+add_executable(AddressStrobeGenerator.tb)
+target_sources(AddressStrobeGenerator.tb PUBLIC src/AddressStrobeGenerator.tb.cpp)
+target_include_directories(AddressStrobeGenerator.tb PUBLIC include/)
+target_link_libraries(AddressStrobeGenerator.tb PUBLIC SystemC::systemc fmt::fmt chext_test::chext_test)
+
 verilate(
     AddressGenerator.tb
     SYSTEMC
@@ -24,5 +29,18 @@ verilate(
 hdlscw(
     TARGET AddressGenerator.tb
     HDLINFO hdl/AddressGenerator.hdlinfo.json
+    ARGS -r protocols.py
+)
+
+verilate(
+    AddressStrobeGenerator.tb
+    SYSTEMC
+    SOURCES hdl/AddressStrobeGenerator.sv
+    VERILATOR_ARGS --trace
+)
+
+hdlscw(
+    TARGET AddressStrobeGenerator.tb
+    HDLINFO hdl/AddressStrobeGenerator.hdlinfo.json
     ARGS -r protocols.py
 )

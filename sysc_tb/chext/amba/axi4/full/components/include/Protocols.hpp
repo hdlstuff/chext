@@ -31,6 +31,7 @@ struct AddrLenSizeBurst {
     )
 
     JQR_TO_STRING
+    JQR_OSTREAM
     JQR_COMP_EQ
 };
 
@@ -49,8 +50,10 @@ struct AddrLenSizeBurstSignals {
     sc_signal<sc_bv<3>, SC_MANY_WRITERS> size;
     sc_signal<sc_bv<2>, SC_MANY_WRITERS> burst;
 
-    value_type read() {
-        return {
+    void readTo(value_type& x) {
+        x.~value_type();
+
+        new (&x) value_type {
             addr.read(),
             (uint8_t)len.read().to_uint(),
             (uint8_t)size.read().to_uint(),
@@ -58,7 +61,7 @@ struct AddrLenSizeBurstSignals {
         };
     }
 
-    void write(value_type const& x) {
+    void writeFrom(value_type const& x) {
         addr.write(x.addr);
         len.write(x.len);
         size.write(x.size);
@@ -79,6 +82,7 @@ struct AddrSizeLast {
     )
 
     JQR_TO_STRING
+    JQR_OSTREAM
     JQR_COMP_EQ
 };
 
@@ -95,15 +99,17 @@ struct AddrSizeLastSignals {
     sc_signal<sc_bv<3>, SC_MANY_WRITERS> size;
     sc_signal<bool, SC_MANY_WRITERS> last;
 
-    value_type read() {
-        return {
+    void readTo(value_type& x) {
+        x.~value_type();
+
+        new (&x) value_type {
             addr.read(),
             (uint8_t)size.read().to_uint(),
             last.read()
         };
     }
 
-    void write(value_type const& x) {
+    void writeFrom(value_type const& x) {
         addr.write(x.addr);
         size.write(x.size);
         last.write(x.last);
@@ -114,8 +120,8 @@ struct AddrSizeStrobeLast {
     sc_bv_base addr;
     uint8_t size;
     sc_bv_base strb;
-    uint32_t lowerByteIndex;
-    uint32_t upperByteIndex;
+    sc_bv_base lowerByteIndex;
+    sc_bv_base upperByteIndex;
     bool last;
 
     JQR_DECL(
@@ -129,6 +135,7 @@ struct AddrSizeStrobeLast {
     )
 
     JQR_TO_STRING
+    JQR_OSTREAM
     JQR_COMP_EQ
 };
 
@@ -154,18 +161,20 @@ struct AddrSizeStrobeLastSignals {
     sc_signal<sc_bv<wIndex>, SC_MANY_WRITERS> upperByteIndex;
     sc_signal<bool, SC_MANY_WRITERS> last;
 
-    value_type read() {
-        return {
+    void readTo(value_type& x) {
+        x.~value_type();
+
+        new (&x) value_type {
             addr.read(),
             (uint8_t)size.read().to_uint(),
             strb.read(),
-            lowerByteIndex.read().to_uint(),
-            upperByteIndex.read().to_uint(),
+            lowerByteIndex.read(),
+            upperByteIndex.read(),
             last.read()
         };
     }
 
-    void write(value_type const& x) {
+    void writeFrom(value_type const& x) {
         addr.write(x.addr);
         size.write(x.size);
         strb.write(x.strb);
@@ -181,6 +190,8 @@ using detail::AddrLenSizeBurst;
 using detail::AddrLenSizeBurstSignals;
 using detail::AddrSizeLast;
 using detail::AddrSizeLastSignals;
+using detail::AddrSizeStrobeLast;
+using detail::AddrSizeStrobeLastSignals;
 
 } // namespace protocols
 

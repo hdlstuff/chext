@@ -55,7 +55,7 @@ def registerAddrSizeStrobeLastBundle() -> None:
     def signalName(interface: hdlinfo.Interface) -> str:
         wAddr = interface.args["wAddr"]
         wData = interface.args["wData"]
-        wStrobe = wData / 8
+        wStrobe = wData // 8
         wIndex = int(math.log2(wStrobe))
         return f"protocols::AddrSizeStrobeLastSignals<{wAddr}, {wStrobe}, {wIndex}>"
 
