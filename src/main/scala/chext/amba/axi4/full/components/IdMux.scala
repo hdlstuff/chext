@@ -16,17 +16,21 @@ import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
 case class IdMuxConfig(
     val axiSlaveCfg: axi4.Config,
     val wIdSel: Int,
-    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
-) {
+    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr,
+    val desiredName: Option[String] = None
+) extends chext.ModuleConfig {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
   require(wIdSel >= 0)
 
   val numSlaves = 1 << wIdSel
   val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId + wIdSel)
+
+  def moduleName: String = desiredName.getOrElse("IdMux")
+  def hdlinfoModule: hdlinfo.Module = ???
 }
 
-class IdMux(val cfg: IdMuxConfig) extends Module {
+class IdMux(val cfg: IdMuxConfig) extends Module with chext.Module {
   import cfg._
 
   val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiSlaveCfg)))

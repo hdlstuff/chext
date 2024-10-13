@@ -18,17 +18,21 @@ case class MuxConfig(
     val numSlaves: Int = 4,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
-    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
-) {
+    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr,
+    val desiredName: Option[String] = None
+) extends chext.ModuleConfig {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
   require(numSlaves > 0)
 
   val wPort = log2Ceil(numSlaves)
   val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId + wPort)
+
+  def moduleName: String = desiredName.getOrElse("Mux")
+  def hdlinfoModule: hdlinfo.Module = ???
 }
 
-class Mux(val cfg: MuxConfig) extends Module {
+class Mux(val cfg: MuxConfig) extends Module with chext.Module {
   import cfg._
 
   override def desiredName: String = "axi4FullMux"

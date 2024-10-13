@@ -73,7 +73,7 @@ object EmitAddressGenerator extends App {
     )
   }
 
-  emitVerilog(new chext.amba.axi4.full.components.addrgen.AddressGenerator(wAddr))
+  emitVerilog(new chext.amba.axi4.full.components.AddressGenerator(wAddr))
   _emitHdlinfo(hdlinfoModule, "./")
 }
 
@@ -136,6 +136,6 @@ object EmitAddressStrobeGenerator extends App {
     )
   }
 
-  emitVerilog(new chext.amba.axi4.full.components.addrgen.AddressStrobeGenerator(wAddr, wData))
+  emitVerilog(new chext.amba.axi4.full.components.AddressStrobeGenerator(wAddr, wData))
   _emitHdlinfo(hdlinfoModule, "./")
 }

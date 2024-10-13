@@ -278,20 +278,20 @@ module Queue2_AddrSizeLastBundle(	// src/main/scala/chisel3/util/Decoupled.scala
   assign io_deq_bits_last = _ram_ext_R0_data[35];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
 endmodule
 
-module AddressGenerator(	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
+module AddressGenerator1(	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
   input         clock,	// <stdin>:122:11
                 reset,	// <stdin>:123:11
-  output        source_ready,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
-  input         source_valid,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
-  input  [31:0] source_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
-  input  [7:0]  source_bits_len,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
-  input  [2:0]  source_bits_size,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
-  input  [1:0]  source_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:55:18
-  input         sink_ready,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:56:16
-  output        sink_valid,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:56:16
-  output [31:0] sink_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:56:16
-  output [2:0]  sink_bits_size,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:56:16
-  output        sink_bits_last	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:56:16
+  output        source_ready,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:124:18
+  input         source_valid,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:124:18
+  input  [31:0] source_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:124:18
+  input  [7:0]  source_bits_len,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:124:18
+  input  [2:0]  source_bits_size,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:124:18
+  input  [1:0]  source_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:124:18
+  input         sink_ready,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:125:16
+  output        sink_valid,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:125:16
+  output [31:0] sink_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:125:16
+  output [2:0]  sink_bits_size,	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:125:16
+  output        sink_bits_last	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:125:16
 );
 
   wire        _sink__sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
@@ -300,63 +300,63 @@ module AddressGenerator(	// src/main/scala/chext/amba/axi4/full/components/Addre
   wire [7:0]  _source__sourceBuffer_io_deq_bits_len;	// src/main/scala/chext/elastic/Buffer.scala:93:32
   wire [2:0]  _source__sourceBuffer_io_deq_bits_size;	// src/main/scala/chext/elastic/Buffer.scala:93:32
   wire [1:0]  _source__sourceBuffer_io_deq_bits_burst;	// src/main/scala/chext/elastic/Buffer.scala:93:32
-  reg  [31:0] addr;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:64:25
-  reg  [7:0]  ctr;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:67:24
-  reg         generating;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35
+  reg  [31:0] addr;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:133:25
+  reg  [7:0]  ctr;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:136:24
+  reg         generating;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35
   wire        sink__valid =
-    _source__sourceBuffer_io_deq_valid & _sink__sinkBuffer_io_enq_ready;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:22, src/main/scala/chext/elastic/Buffer.scala:93:32, :148:30
-  wire        last = ctr == 8'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:67:24, :77:22
-  wire [38:0] _result_addr_T = {7'h0, addr} << _source__sourceBuffer_io_deq_bits_size;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:64:25, :106:31, src/main/scala/chext/elastic/Buffer.scala:93:32
-  wire        last_1 = _source__sourceBuffer_io_deq_bits_len == 8'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:77:22, :114:30, src/main/scala/chext/elastic/Buffer.scala:93:32
+    _source__sourceBuffer_io_deq_valid & _sink__sinkBuffer_io_enq_ready;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:144:22, src/main/scala/chext/elastic/Buffer.scala:93:32, :148:30
+  wire        last = ctr == 8'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:136:24, :146:22
+  wire [38:0] _result_addr_T = {7'h0, addr} << _source__sourceBuffer_io_deq_bits_size;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:133:25, :175:31, src/main/scala/chext/elastic/Buffer.scala:93:32
+  wire        last_1 = _source__sourceBuffer_io_deq_bits_len == 8'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:146:22, :183:30, src/main/scala/chext/elastic/Buffer.scala:93:32
   always @(posedge clock) begin	// <stdin>:122:11
-    if (sink__valid) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:22
-      if (generating) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35
-        if (~last) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35, :77:22, :79:18, :80:20
-          if (_source__sourceBuffer_io_deq_bits_burst == 2'h1)	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7, :85:28, src/main/scala/chext/elastic/Buffer.scala:93:32
-            addr <= addr + 32'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:64:25, :86:24
-          else if (_source__sourceBuffer_io_deq_bits_burst == 2'h2)	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7, :87:34, src/main/scala/chext/elastic/Buffer.scala:93:32
+    if (sink__valid) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:144:22
+      if (generating) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35
+        if (~last) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35, :146:22, :148:18, :149:20
+          if (_source__sourceBuffer_io_deq_bits_burst == 2'h1)	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7, :154:28, src/main/scala/chext/elastic/Buffer.scala:93:32
+            addr <= addr + 32'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:133:25, :155:24
+          else if (_source__sourceBuffer_io_deq_bits_burst == 2'h2)	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7, :156:34, src/main/scala/chext/elastic/Buffer.scala:93:32
             addr <=
               addr & {24'hFFFFFF, ~_source__sourceBuffer_io_deq_bits_len} | addr + 32'h1
-              & {24'h0, _source__sourceBuffer_io_deq_bits_len};	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:64:25, :86:24, :88:35, :89:23, :90:{25,34,44,51}, src/main/scala/chext/elastic/Buffer.scala:93:32
-          ctr <= ctr - 8'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:67:24, :83:20
+              & {24'h0, _source__sourceBuffer_io_deq_bits_len};	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:133:25, :155:24, :157:35, :158:23, :159:{25,34,44,51}, src/main/scala/chext/elastic/Buffer.scala:93:32
+          ctr <= ctr - 8'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:136:24, :152:20
         end
       end
-      else if (~last_1) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35, :114:30, :116:18, :119:20
+      else if (~last_1) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35, :183:30, :185:18, :188:20
         addr <=
           (_source__sourceBuffer_io_deq_bits_addr
-           >> _source__sourceBuffer_io_deq_bits_size) + 32'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:64:25, :86:24, :120:{32,49}, src/main/scala/chext/elastic/Buffer.scala:93:32
-        ctr <= _source__sourceBuffer_io_deq_bits_len - 8'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:67:24, :121:28, src/main/scala/chext/elastic/Buffer.scala:93:32
+           >> _source__sourceBuffer_io_deq_bits_size) + 32'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:133:25, :155:24, :189:{32,49}, src/main/scala/chext/elastic/Buffer.scala:93:32
+        ctr <= _source__sourceBuffer_io_deq_bits_len - 8'h1;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:136:24, :190:28, src/main/scala/chext/elastic/Buffer.scala:93:32
       end
     end
     if (reset)	// <stdin>:122:11
-      generating <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7, :70:35
-    else if (sink__valid) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:22
-      if (generating)	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35
-        generating <= ~last & generating;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35, :77:22, :79:18, :80:20
-      else	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35
-        generating <= ~last_1 | generating;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35, :114:30, :116:18, :119:20
+      generating <= 1'h0;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7, :139:35
+    else if (sink__valid) begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:144:22
+      if (generating)	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35
+        generating <= ~last & generating;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35, :146:22, :148:18, :149:20
+      else	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35
+        generating <= ~last_1 | generating;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35, :183:30, :185:18, :188:20
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-      automatic logic [31:0] _RANDOM[0:1];	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-        `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
+    initial begin	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
+      automatic logic [31:0] _RANDOM[0:1];	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
         for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
-          _RANDOM[i[0]] = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-        end	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-        addr = _RANDOM[1'h0];	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7, :64:25
-        ctr = _RANDOM[1'h1][7:0];	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7, :67:24
-        generating = _RANDOM[1'h1][8];	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7, :67:24, :70:35
+          _RANDOM[i[0]] = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
+        end	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
+        addr = _RANDOM[1'h0];	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7, :133:25
+        ctr = _RANDOM[1'h1][7:0];	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7, :136:24
+        generating = _RANDOM[1'h1][8];	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7, :136:24, :139:35
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
-      `FIRRTL_AFTER_INITIAL	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   Queue2_AddrLenSizeBurstBundle source__sourceBuffer (	// src/main/scala/chext/elastic/Buffer.scala:93:32
@@ -368,7 +368,7 @@ module AddressGenerator(	// src/main/scala/chext/amba/axi4/full/components/Addre
     .io_enq_bits_len   (source_bits_len),
     .io_enq_bits_size  (source_bits_size),
     .io_enq_bits_burst (source_bits_burst),
-    .io_deq_ready      (sink__valid & (generating ? last : last_1)),	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35, :75:{22,38}, :76:22, :77:22, :79:18, :114:30, :116:18, src/main/scala/chisel3/util/Decoupled.scala:83:20
+    .io_deq_ready      (sink__valid & (generating ? last : last_1)),	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35, :144:{22,38}, :145:22, :146:22, :148:18, :183:30, :185:18, src/main/scala/chisel3/util/Decoupled.scala:83:20
     .io_deq_valid      (_source__sourceBuffer_io_deq_valid),
     .io_deq_bits_addr  (_source__sourceBuffer_io_deq_bits_addr),
     .io_deq_bits_len   (_source__sourceBuffer_io_deq_bits_len),
@@ -379,13 +379,13 @@ module AddressGenerator(	// src/main/scala/chext/amba/axi4/full/components/Addre
     .clock            (clock),
     .reset            (reset),
     .io_enq_ready     (_sink__sinkBuffer_io_enq_ready),
-    .io_enq_valid     (sink__valid),	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:22
+    .io_enq_valid     (sink__valid),	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:144:22
     .io_enq_bits_addr
       (~generating | _source__sourceBuffer_io_deq_bits_burst == 2'h0
          ? _source__sourceBuffer_io_deq_bits_addr
-         : _result_addr_T[31:0]),	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:50:7, :70:35, :76:22, :94:{26,47}, :106:{23,31}, src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chisel3/util/Decoupled.scala:59:19
+         : _result_addr_T[31:0]),	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:114:7, :139:35, :145:22, :163:{26,47}, :175:{23,31}, src/main/scala/chext/elastic/Buffer.scala:93:32, src/main/scala/chisel3/util/Decoupled.scala:59:19
     .io_enq_bits_size (_source__sourceBuffer_io_deq_bits_size),	// src/main/scala/chext/elastic/Buffer.scala:93:32
-    .io_enq_bits_last (generating ? last : last_1),	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:35, :76:22, :77:22, :94:47, :114:30, src/main/scala/chisel3/util/Decoupled.scala:59:19
+    .io_enq_bits_last (generating ? last : last_1),	// src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:139:35, :145:22, :146:22, :163:47, :183:30, src/main/scala/chisel3/util/Decoupled.scala:59:19
     .io_deq_ready     (sink_ready),
     .io_deq_valid     (sink_valid),
     .io_deq_bits_addr (sink_bits_addr),

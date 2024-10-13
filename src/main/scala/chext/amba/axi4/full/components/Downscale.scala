@@ -12,14 +12,14 @@ import elastic.ConnectOp._
 import axi4.Ops._
 
 import helpers.{SteerLeft, SteerRight}
-import addrgen.AddressGenerator
 
 case class DownscaleConfig(
     val axiSlaveCfg: axi4.Config,
     val wDataMaster: Int,
     val readOffsetLastQueueLength: Int = 16,
-    val writeOffsetLastQueueLength: Int = 16
-) {
+    val writeOffsetLastQueueLength: Int = 16,
+    val desiredName: Option[String] = None
+) extends chext.ModuleConfig {
   require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
   require(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
   require(wDataMaster < axiSlaveCfg.wData, "wDataMaster must be < axiSlaveCfg.wData")
@@ -37,9 +37,12 @@ case class DownscaleConfig(
   val wAddr = axiSlaveCfg.wAddr
   val axsizeMaxMaster = log2Ceil(wDataMaster >> 3)
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
+
+  val moduleName: String = desiredName.getOrElse("Downscale")
+  val hdlinfoModule: hdlinfo.Module = null
 }
 
-class Downscale(val cfg: DownscaleConfig) extends Module {
+class Downscale(val cfg: DownscaleConfig) extends Module with chext.Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))

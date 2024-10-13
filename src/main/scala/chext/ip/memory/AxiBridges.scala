@@ -6,7 +6,7 @@ import chisel3.util._
 import chext.elastic
 import chext.amba.axi4
 
-import axi4.full.components.addrgen._
+import axi4.full.components._
 
 import elastic.{Fork, Join, Replicate, Transform, Arrival}
 import elastic.ConnectOp._

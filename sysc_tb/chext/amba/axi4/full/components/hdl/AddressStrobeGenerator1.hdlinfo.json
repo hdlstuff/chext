@@ -1,5 +1,5 @@
 {
-  "name" : "AddressStrobeGenerator",
+  "name" : "AddressStrobeGenerator1",
   "ports" : [
     {
       "name" : "clock",
@@ -69,9 +69,13 @@
     }
   ],
   "args" : {
-    "wAddr" : {
-      "typeName" : "scala.Int",
-      "obj" : 32
+    "cfg" : {
+      "typeName" : "chext.amba.axi4.full.components.AddressStrobeGeneratorConfig",
+      "obj" : {
+        "wAddr" : 32,
+        "wData" : 128,
+        "desiredName" : "AddressStrobeGenerator1"
+      }
     }
   }
 }

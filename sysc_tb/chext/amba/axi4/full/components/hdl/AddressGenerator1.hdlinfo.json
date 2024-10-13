@@ -1,5 +1,5 @@
 {
-  "name" : "AddressGenerator",
+  "name" : "AddressGenerator1",
   "ports" : [
     {
       "name" : "clock",
@@ -65,9 +65,12 @@
     }
   ],
   "args" : {
-    "wAddr" : {
-      "typeName" : "scala.Int",
-      "obj" : 32
+    "cfg" : {
+      "typeName" : "chext.amba.axi4.full.components.AddressGeneratorConfig",
+      "obj" : {
+        "wAddr" : 32,
+        "desiredName" : "AddressGenerator1"
+      }
     }
   }
 }

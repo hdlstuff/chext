@@ -50,7 +50,7 @@ struct AddrLenSizeBurstSignals {
     sc_signal<sc_bv<3>, SC_MANY_WRITERS> size;
     sc_signal<sc_bv<2>, SC_MANY_WRITERS> burst;
 
-    void readTo(value_type& x) {
+    void readTo(value_type& x) const {
         x.~value_type();
 
         new (&x) value_type {
@@ -99,7 +99,7 @@ struct AddrSizeLastSignals {
     sc_signal<sc_bv<3>, SC_MANY_WRITERS> size;
     sc_signal<bool, SC_MANY_WRITERS> last;
 
-    void readTo(value_type& x) {
+    void readTo(value_type& x) const {
         x.~value_type();
 
         new (&x) value_type {
@@ -161,7 +161,7 @@ struct AddrSizeStrobeLastSignals {
     sc_signal<sc_bv<wIndex>, SC_MANY_WRITERS> upperByteIndex;
     sc_signal<bool, SC_MANY_WRITERS> last;
 
-    void readTo(value_type& x) {
+    void readTo(value_type& x) const {
         x.~value_type();
 
         new (&x) value_type {

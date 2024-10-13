@@ -14,8 +14,9 @@ import axi4.full.components.addrgen
 case class BurstSplitterConfig(
     val axiCfg: axi4.Config,
     val arQueueCapacity: Int = 8,
-    val awQueueCapacity: Int = 8
-) {
+    val awQueueCapacity: Int = 8,
+    val desiredName: Option[String] = None
+) extends chext.ModuleConfig {
   require(axiCfg.wId == 0, "axiCfg.wId must be zero!")
   require(!axiCfg.lite, "axiCfg.lite must be false!")
   require(arQueueCapacity >= 2, "AR queue capacity must be >= 2!")
@@ -25,9 +26,12 @@ case class BurstSplitterConfig(
 
   val wAddr = axiCfg.wAddr
   val wData = axiCfg.wData
+
+  val moduleName: String = desiredName.getOrElse("BurstSplitter")
+  val hdlinfoModule: hdlinfo.Module = null
 }
 
-class BurstSplitter(val cfg: BurstSplitterConfig) extends Module {
+class BurstSplitter(val cfg: BurstSplitterConfig) extends Module with chext.Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiCfg))
@@ -39,7 +43,7 @@ class BurstSplitter(val cfg: BurstSplitterConfig) extends Module {
   private def implRead(): Unit = prefix("read") {
     val addressStrobeGenerator =
       Module(
-        new addrgen.AddressStrobeGenerator(wAddr, wData)
+        new AddressStrobeGenerator(wAddr, wData)
       )
 
     val lenQueue = Module(
@@ -119,7 +123,7 @@ class BurstSplitter(val cfg: BurstSplitterConfig) extends Module {
   private def implWrite(): Unit = prefix("write") {
     val addressStrobeGenerator =
       Module(
-        new addrgen.AddressStrobeGenerator(wAddr, wData)
+        new AddressStrobeGenerator(wAddr, wData)
       )
 
     val lenQueue = Module(

@@ -13,8 +13,8 @@ case class ProtocolConverterConfig(
     val axiSlaveCfg: axi4.Config,
     val axiMasterCfg: axi4.Config,
     val slaveNeverBursts: Boolean = false,
-    val desiredName: String = "protocolConverter"
-) {
+    val desiredName: Option[String] = None
+) extends chext.ModuleConfig {
 
   val wDataSlave = axiSlaveCfg.wData
   val wDataMaster = axiMasterCfg.wData
@@ -74,6 +74,9 @@ case class ProtocolConverterConfig(
       Some(IdMuxConfig(axiSlaveCfgInternal.copy(wId = 0, wData = wDataMaster), wIdEffective))
     else
       None
+
+  def moduleName: String = desiredName.getOrElse("ProtocolConverter")
+  def hdlinfoModule: hdlinfo.Module = ???
 }
 
 /** The idea of this class to programmatically connect a large number of sequentially arranged
@@ -169,13 +172,11 @@ private class AxiFullStages {
   }
 }
 
-class ProtocolConverter(cfg: ProtocolConverterConfig) extends Module {
+class ProtocolConverter(val cfg: ProtocolConverterConfig) extends Module with chext.Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
-
-  override def desiredName: String = cfg.desiredName
 
   if (isPassthrough) {
     s_axi :=> m_axi
@@ -299,28 +300,28 @@ object EmitProtocolConverter extends App {
   val cfg1 = ProtocolConverterConfig(
     axi4.Config(wAddr = 32, wData = 32, wId = 8),
     axi4.Config(wAddr = 32, wData = 128, wId = 2),
-    desiredName = "ProtocolConverter1"
+    desiredName = Some("ProtocolConverter1")
   )
   emitVerilog(new ProtocolConverter(cfg1))
 
   val cfg2 = ProtocolConverterConfig(
     axi4.Config(wAddr = 32, wData = 128, wId = 0),
     axi4.Config(wAddr = 32, wData = 32, wId = 0),
-    desiredName = "ProtocolConverter2"
+    desiredName = Some("ProtocolConverter2")
   )
   emitVerilog(new ProtocolConverter(cfg2))
 
   val cfg3 = ProtocolConverterConfig(
     axi4.Config(wAddr = 32, wData = 128, wId = 2),
     axi4.Config(wAddr = 32, wData = 128, wId = 4),
-    desiredName = "ProtocolConverter3"
+    desiredName = Some("ProtocolConverter3")
   )
   emitVerilog(new ProtocolConverter(cfg3))
 
   val cfg4 = ProtocolConverterConfig(
     axi4.Config(wAddr = 32, wData = 128, wId = 4),
     axi4.Config(wAddr = 32, wData = 128, wId = 2),
-    desiredName = "ProtocolConverter4"
+    desiredName = Some("ProtocolConverter4")
   )
   emitVerilog(new ProtocolConverter(cfg4))
 }
