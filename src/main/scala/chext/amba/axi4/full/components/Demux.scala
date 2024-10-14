@@ -141,9 +141,9 @@ class Demux(val cfg: DemuxConfig) extends Module with chext.Module {
   private def implWrite(): Unit = prefix("write") {
     val transactionTracker = Module(
       new helpers.TransactionTracker(
-        wIdTrackedRead,
+        wIdTrackedWrite,
         wPort,
-        wOutstandingRead
+        wOutstandingWrite
       )
     )
 
