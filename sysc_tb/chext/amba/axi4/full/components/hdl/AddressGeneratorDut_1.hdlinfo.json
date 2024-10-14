@@ -1,5 +1,5 @@
 {
-  "name" : "AddressStrobeGenerator1",
+  "name" : "AddressGeneratorDut_1",
   "ports" : [
     {
       "name" : "clock",
@@ -53,28 +53,23 @@
     {
       "name" : "sink",
       "role" : "sink",
-      "kind" : "readyValid[chext.amba.axi4.full.components.addrgen.AddrSizeStrobeLastBundle]",
+      "kind" : "readyValid[chext.amba.axi4.full.components.addrgen.AddrSizeLastBundle]",
       "associatedClock" : "clock",
       "associatedReset" : "reset",
       "args" : {
         "wAddr" : {
           "typeName" : "scala.Int",
           "obj" : 32
-        },
-        "wData" : {
-          "typeName" : "scala.Int",
-          "obj" : 128
         }
       }
     }
   ],
   "args" : {
     "cfg" : {
-      "typeName" : "chext.amba.axi4.full.components.AddressStrobeGeneratorConfig",
+      "typeName" : "chext.amba.axi4.full.components.AddressGeneratorConfig",
       "obj" : {
         "wAddr" : 32,
-        "wData" : 128,
-        "desiredName" : "AddressStrobeGenerator1"
+        "desiredName" : "AddressGeneratorDut_1"
       }
     }
   }

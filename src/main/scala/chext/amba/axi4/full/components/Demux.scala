@@ -59,8 +59,6 @@ case class DemuxConfig(
 class Demux(val cfg: DemuxConfig) extends Module with chext.Module {
   import cfg._
 
-  override def desiredName: String = "axi4FullDemux"
-
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(Vec(numMasters, axi4.full.Master(axiMasterCfg)))
 

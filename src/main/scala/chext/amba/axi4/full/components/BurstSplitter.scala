@@ -9,8 +9,6 @@ import chext.elastic
 import elastic.ConnectOp._
 import axi4.Ops._
 
-import axi4.full.components.addrgen
-
 case class BurstSplitterConfig(
     val axiCfg: axi4.Config,
     val arQueueCapacity: Int = 8,

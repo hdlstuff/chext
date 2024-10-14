@@ -35,8 +35,6 @@ case class MuxConfig(
 class Mux(val cfg: MuxConfig) extends Module with chext.Module {
   import cfg._
 
-  override def desiredName: String = "axi4FullMux"
-
   private val genPort = UInt(wPort.W)
 
   val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiSlaveCfg)))

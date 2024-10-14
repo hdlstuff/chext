@@ -25,8 +25,9 @@ case class DemuxConfig(
     val capacityPortQueueW: Int = 8,
     val capacityPortQueueB: Int = 8,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
-    val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0)
-) {
+    val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
+    val desiredName: Option[String] = None
+) extends chext.ModuleConfig {
   require(axiSlaveCfg.lite, "should use AXI4 lite")
   require(axiSlaveCfg.read || axiSlaveCfg.write, "must be at least read or write")
   require(numMasters > 0, "number of masters must be positive")
@@ -38,9 +39,12 @@ case class DemuxConfig(
   val wPort = log2Up(numMasters)
 
   val axiMasterCfg = axiSlaveCfg
+
+  val moduleName: String = desiredName.getOrElse("Demux")
+  val hdlinfoModule: hdlinfo.Module = null
 }
 
-class Demux(val cfg: DemuxConfig) extends Module {
+class Demux(val cfg: DemuxConfig) extends Module with chext.Module {
   import cfg._
 
   override def desiredName: String = "axi4LiteDemux"

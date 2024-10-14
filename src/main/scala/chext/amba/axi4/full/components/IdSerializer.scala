@@ -37,8 +37,6 @@ case class IdSerializerConfig(
 class IdSerializer(val cfg: IdSerializerConfig) extends Module with chext.Module {
   import cfg._
 
-  override def desiredName: String = "axi4FullIdSerializerZero"
-
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
