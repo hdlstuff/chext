@@ -13,7 +13,7 @@ import elastic._
 import elastic.TransformOp._
 import elastic.ConnectOp._
 
-case class IdSerializerConfig(
+case class IdSerializeConfig(
     val axiSlaveCfg: axi4.Config,
     val capacityIdQueueR: Int = 4,
     val capacityIdQueueW: Int = 4,
@@ -30,7 +30,7 @@ case class IdSerializerConfig(
   * @param axiCfg
   *   AXI configuration of the slave interface.
   */
-class IdSerializer(val cfg: IdSerializerConfig) extends Module {
+class IdSerialize(val cfg: IdSerializeConfig) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))

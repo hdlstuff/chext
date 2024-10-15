@@ -38,9 +38,9 @@ case class ProtocolConverterConfig(
     if (wIdEffective > 0) Some(IdDemuxConfig(axiSlaveCfgInternal, wIdEffective))
     else None
 
-  val idSerializerCfg =
+  val idSerializeCfg =
     if (!isPassthrough && axiSlaveCfgInternal.wId != wIdEffective)
-      Some(IdSerializerConfig(axiSlaveCfgInternal.copy(wId = axiSlaveCfg.wId - wIdEffective)))
+      Some(IdSerializeConfig(axiSlaveCfgInternal.copy(wId = axiSlaveCfg.wId - wIdEffective)))
     else
       None
 
@@ -198,13 +198,13 @@ class ProtocolConverter(val cfg: ProtocolConverterConfig) extends Module {
       }
     }
 
-    idSerializerCfg.foreach { cfg =>
+    idSerializeCfg.foreach { cfg =>
       {
-        stages.newStage("idSerializer")
+        stages.newStage("idSerialize")
 
         Seq.tabulate(1 << wIdEffective) {
           case (index) => {
-            val module = Module(new IdSerializer(cfg)).suggestName(f"idSerializer_$index")
+            val module = Module(new IdSerialize(cfg)).suggestName(f"idSerialize_$index")
             stages.addSlaveInterface(module.s_axi)
             stages.addMasterInterface(module.m_axi)
           }

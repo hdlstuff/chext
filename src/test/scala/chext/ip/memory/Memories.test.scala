@@ -52,7 +52,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
   "chext.ip.memory.SinglePortRAMSpec.Basic1" in
     test(dut_Basic1) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => (x + 0xa0) + ((x + 0xb0) << 16) }
 
@@ -90,7 +90,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
   "chext.ip.memory.SinglePortRAMSpec.Basic2" in
     test(dut_Basic2) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => (x + 0xa0) + ((x + 0xb0) << 16) }
 
@@ -131,7 +131,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
   "chext.ip.memory.SinglePortRAMSpec.LongLatency1" in
     test(dut_LongLatency1) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => (x + 0xa0) + ((x + 0xb0) << 16) }
 
@@ -170,7 +170,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
   "chext.ip.memory.SinglePortRAMSpec.LongLatency2" in
     test(dut_LongLatency2) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => ((x + 0xa0) + ((x + 0xb0) << 16)) }
 
@@ -212,7 +212,7 @@ class SinglePortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixin {
   "chext.ip.memory.SinglePortRAMSpec.Interleaved" in
     test(dut_Interleaved) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => ((x + 0xa0) + ((x + 0xb0) << 16)) }
 
@@ -296,7 +296,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
   "chext.ip.memory.SimpleDualPortRAMSpec.Basic1" in
     test(dut_Basic1) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => (x + 0xa0) + ((x + 0xb0) << 16) }
 
@@ -335,7 +335,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
   "chext.ip.memory.SimpleDualPortRAMSpec.Basic2" in
     test(dut_Basic2) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => (x + 0xa0) + ((x + 0xb0) << 16) }
 
@@ -376,7 +376,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
   "chext.ip.memory.SimpleDualPortRAMSpec.LongLatency1" in
     test(dut_LongLatency1) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => (x + 0xa0) + ((x + 0xb0) << 16) }
 
@@ -415,7 +415,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
   "chext.ip.memory.SimpleDualPortRAMSpec.LongLatency2" in
     test(dut_LongLatency2) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => ((x + 0xa0) + ((x + 0xb0) << 16)) }
 
@@ -457,7 +457,7 @@ class SimpleDualPortRAMSpec extends chext.test.FreeSpec with chext.test.TestMixi
   "chext.ip.memory.SimpleDualPortRAMSpec.Interleaved" in
     test(dut_Interleaved) { dut =>
       {
-        val testSize = 128;
+        val testSize = 128
         val addr = Seq.range(0, testSize)
         val data = addr.map { (x) => ((x + 0xa0) + ((x + 0xb0) << 16)) }
 

@@ -10,14 +10,18 @@ import chext.ip.memory
 import axi4.Ops._
 import elastic.ConnectOp._
 
-class UnburstTestTop1(override val desiredName: String) extends Module with chext.HasHdlinfoModule {
+case class IdSerializeTestTop1(
+    val wId: Int,
+    override val desiredName: String
+) extends Module
+    with chext.HasHdlinfoModule {
   val log2bytesTotal = 14
-  val wData = 128
+  val wData = 64
 
   val rawMemCfg = memory.RawMemConfig(log2bytesTotal - log2Ceil(wData / 8), wData, 4, 4)
   val portCfg = memory.PortConfig(8, 8)
 
-  val axiCfg = axi4.Config(0, log2bytesTotal, wData)
+  val axiCfg = axi4.Config(wId, log2bytesTotal, wData)
 
   val S_AXI_NORMAL = IO(axi4.Slave(axiCfg))
   val S_AXI_TEST = IO(axi4.Slave(axiCfg))
@@ -44,12 +48,12 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
   axiBridge2.write.req :=> mem.write2.req
   mem.write2.resp :=> axiBridge2.write.resp
 
-  private val unburstCfg = axi4.full.components.UnburstConfig(axiCfg)
-  private val unburst = Module(new axi4.full.components.Unburst(unburstCfg))
-  S_AXI_TEST :=> unburst.s_axi
-  unburst.m_axi :=> axiBridge2.s_axi
+  private val idSerializeCfg = IdSerializeConfig(axiCfg)
+  private val idSerialize = Module(new IdSerialize(idSerializeCfg))
+  S_AXI_TEST :=> idSerialize.s_axi
+  idSerialize.m_axi :=> axiBridge2.s_axi
 
-  override def hdlinfoModule: hdlinfo.Module = {
+  def hdlinfoModule: hdlinfo.Module = {
     import hdlinfo._
     import io.circe.generic.auto._
     import scala.collection.mutable.ArrayBuffer
@@ -102,11 +106,13 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
       desiredName,
       ports.toSeq,
       interfaces.toSeq,
-      Map()
+      Map(
+        "wId" -> TypedObject(wId)
+      )
     )
   }
 }
 
-object Unburst_TB extends chext.TestBench {
-  emit(new UnburstTestTop1("UnburstTestTop1_1"))
+object IdSerialize_TB extends chext.TestBench {
+  emit(new IdSerializeTestTop1(4, "IdSerializeTestTop1_1"))
 }

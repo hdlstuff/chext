@@ -16,7 +16,7 @@ case class DownscaleTestTop1(
     override val desiredName: String
 ) extends Module
     with chext.HasHdlinfoModule {
-  val log2bytesTotal = 14;
+  val log2bytesTotal = 14
 
   val rawMemCfg = memory.RawMemConfig(log2bytesTotal - log2Ceil(wDataNarrow / 8), wDataNarrow, 4, 4)
   val portCfg = memory.PortConfig(8, 8)
@@ -24,8 +24,8 @@ case class DownscaleTestTop1(
   val axiCfgWide = axi4.Config(0, log2bytesTotal, wDataWide)
   val axiCfgNarrow = axi4.Config(0, log2bytesTotal, wDataNarrow)
 
-  val S_AXI_WIDE = IO(axi4.Slave(axiCfgWide))
-  val S_AXI_NARROW = IO(axi4.Slave(axiCfgNarrow))
+  val S_AXI_NORMAL = IO(axi4.Slave(axiCfgNarrow))
+  val S_AXI_TEST = IO(axi4.Slave(axiCfgWide))
 
   private val mem = Module(
     new memory.TrueDualPortRAM(rawMemCfg, portCfg, portCfg)
@@ -33,7 +33,7 @@ case class DownscaleTestTop1(
 
   private val axiBridge1 = Module(new memory.Axi4FullToReadWriteBridge(axiCfgNarrow))
 
-  S_AXI_NARROW :=> axiBridge1.s_axi
+  S_AXI_NORMAL :=> axiBridge1.s_axi
 
   axiBridge1.read.req :=> mem.read1.req
   mem.read1.resp :=> axiBridge1.read.resp
@@ -51,7 +51,7 @@ case class DownscaleTestTop1(
 
   private val downscaleCfg = DownscaleConfig(axiCfgWide, wDataNarrow)
   private val downscale = Module(new Downscale(downscaleCfg))
-  S_AXI_WIDE :=> downscale.s_axi
+  S_AXI_TEST :=> downscale.s_axi
   downscale.m_axi :=> axiBridge2.s_axi
 
   def hdlinfoModule: hdlinfo.Module = {
@@ -83,7 +83,7 @@ case class DownscaleTestTop1(
 
     interfaces.append(
       Interface(
-        "S_AXI_WIDE",
+        "S_AXI_TEST",
         InterfaceRole.slave,
         InterfaceKind("axi4"),
         associatedClock = "clock",
@@ -94,7 +94,7 @@ case class DownscaleTestTop1(
 
     interfaces.append(
       Interface(
-        "S_AXI_NARROW",
+        "S_AXI_NORMAL",
         InterfaceRole.slave,
         InterfaceKind("axi4"),
         associatedClock = "clock",
