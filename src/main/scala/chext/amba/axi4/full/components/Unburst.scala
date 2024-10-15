@@ -9,12 +9,11 @@ import chext.elastic
 import elastic.ConnectOp._
 import axi4.Ops._
 
-case class BurstSplitterConfig(
+case class UnburstConfig(
     val axiCfg: axi4.Config,
     val arQueueCapacity: Int = 8,
-    val awQueueCapacity: Int = 8,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
+    val awQueueCapacity: Int = 8
+) {
   require(axiCfg.wId == 0, "axiCfg.wId must be zero!")
   require(!axiCfg.lite, "axiCfg.lite must be false!")
   require(arQueueCapacity >= 2, "AR queue capacity must be >= 2!")
@@ -24,12 +23,9 @@ case class BurstSplitterConfig(
 
   val wAddr = axiCfg.wAddr
   val wData = axiCfg.wData
-
-  val moduleName: String = desiredName.getOrElse("BurstSplitter")
-  val hdlinfoModule: hdlinfo.Module = null
 }
 
-class BurstSplitter(val cfg: BurstSplitterConfig) extends Module with chext.Module {
+class Unburst(val cfg: UnburstConfig) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiCfg))

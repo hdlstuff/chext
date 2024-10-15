@@ -1,6 +1,31 @@
 package chext
 
 import chisel3._
+import chisel3.reflect.DataMirror
+
+object exportIO {
+  def module(parentModule: Module, childModule: Module) = {
+    val ports = DataMirror.modulePorts(childModule)
+
+    ports.foreach {
+      case (portName, portData) => {
+        if (!(portData.isInstanceOf[Clock] || portData.isInstanceOf[Reset])) {
+          IO(chiselTypeOf(portData)).suggestName(portName) <> portData
+        }
+      }
+    }
+  }
+
+  def rawModule(parentModule: RawModule, childModule: RawModule) = {
+    val ports = DataMirror.modulePorts(childModule)
+
+    ports.foreach {
+      case (portName, portData) => {
+        IO(chiselTypeOf(portData)).suggestName(portName) <> portData
+      }
+    }
+  }
+}
 
 private object emitHdlinfo {
   def apply(module: hdlinfo.Module, targetDir: String): Unit = {
@@ -14,23 +39,27 @@ private object emitHdlinfo {
   }
 }
 
+trait HasHdlinfoModule extends RawModule {
+  def hdlinfoModule: hdlinfo.Module
+}
+
 trait TestBench extends App {
   private val _pkgName = Option(this.getClass.getPackage).map(_.getName).getOrElse(".")
 
   def ns(x: String): String = f"${_pkgName}.${x}".stripPrefix(".")
 
-  def emit[T <: chext.Module](genModule: => T): Unit = {
+  def emit[T <: HasHdlinfoModule](genModule: => T): Unit = {
     val pkgPath = _pkgName.replace('.', '/')
     val hdlPath = f"./sysc_tb/${pkgPath}/hdl/"
-    var cfg: chext.ModuleConfig = null
+    var hdlinfoModule: hdlinfo.Module = null
     emitVerilog(
       {
         val module = genModule
-        cfg = module.cfg
+        hdlinfoModule = module.hdlinfoModule
         module
       },
       Array("--target-dir", hdlPath)
     )
-    emitHdlinfo(cfg.hdlinfoModule, hdlPath)
+    emitHdlinfo(hdlinfoModule, hdlPath)
   }
 }

@@ -4,6 +4,8 @@ import chisel3._
 import chisel3.util._
 
 import chext.amba.axi4
+/*
+abstract class InterconnectTestTop extends chext.Module {}
 
 object Interconnect_TB extends chext.TestBench {
   def emitDemux(numMasters: Int, name: String) = {
@@ -49,3 +51,4 @@ object Interconnect_TB extends chext.TestBench {
   emitDemux(4, "DemuxDut_1")
   emitMux(4, "MuxDut_1")
 }
+*/

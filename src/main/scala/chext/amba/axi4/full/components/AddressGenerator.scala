@@ -43,81 +43,11 @@ class AddrSizeStrobeLastBundle(val wAddr: Int, val wData: Int) extends Bundle {
   val last = Bool()
 }
 
-case class AddressGeneratorConfig(
-    val wAddr: Int,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
-  val moduleName = desiredName.getOrElse(f"AddressGenerator_$wAddr")
-
-  def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
-
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
-
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "source",
-        InterfaceRole("source") /* TODO define InterfaceRole.source */,
-        InterfaceKind("readyValid[chext.amba.axi4.full.components.addrgen.AddrLenSizeBurstBundle]"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("wAddr" -> TypedObject(wAddr))
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "sink",
-        InterfaceRole("sink"),
-        InterfaceKind("readyValid[chext.amba.axi4.full.components.addrgen.AddrSizeLastBundle]"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("wAddr" -> TypedObject(wAddr))
-      )
-    )
-
-    Module(
-      moduleName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map("cfg" -> TypedObject(this))
-    )
-  }
-}
-
 /** @brief
   *   Decodes an address packet by calculating the addresses corresponding to each beat of the
   *   transaction.
   */
-class AddressGenerator(val cfg: AddressGeneratorConfig) extends Module with chext.Module {
-  import cfg._
-
-  def this(wAddr: Int, desiredName: Option[String] = None) = {
-    this(AddressGeneratorConfig(wAddr, desiredName))
-  }
-
+class AddressGenerator(val wAddr: Int) extends Module {
   val genSource = new AddrLenSizeBurstBundle(wAddr)
   val genSink = new AddrSizeLastBundle(wAddr)
 
@@ -202,80 +132,7 @@ class AddressGenerator(val cfg: AddressGeneratorConfig) extends Module with chex
   }
 }
 
-case class StrobeGeneratorConfig(
-    val wAddr: Int,
-    val wData: Int,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
-  val moduleName = desiredName.getOrElse(f"StrobeGenerator_${wAddr}_${wData}")
-
-  def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
-
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
-
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "source",
-        InterfaceRole("source") /* TODO define InterfaceRole.source */,
-        InterfaceKind("readyValid[chext.amba.axi4.full.components.addrgen.AddrSizeLastBundle]"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("wAddr" -> TypedObject(wAddr))
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "sink",
-        InterfaceRole("sink"),
-        InterfaceKind(
-          "readyValid[chext.amba.axi4.full.components.addrgen.AddrSizeStrobeLastBundle]"
-        ),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("wAddr" -> TypedObject(wAddr), "wData" -> TypedObject(wData))
-      )
-    )
-
-    Module(
-      moduleName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map("cfg" -> TypedObject(this))
-    )
-  }
-}
-
-class StrobeGenerator(val cfg: StrobeGeneratorConfig) extends Module with chext.Module {
-  import cfg._
-
-  def this(wAddr: Int, wData: Int, desiredName: Option[String] = None) = {
-    this(StrobeGeneratorConfig(wAddr, wData, desiredName))
-  }
-
+class StrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
   val genInput = new AddrSizeLastBundle(wAddr)
   val genOutput = new AddrSizeStrobeLastBundle(wAddr, wData)
 
@@ -313,84 +170,9 @@ class StrobeGenerator(val cfg: StrobeGeneratorConfig) extends Module with chext.
   }
 }
 
-case class AddressStrobeGeneratorConfig(
-    val wAddr: Int,
-    val wData: Int,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
-  val moduleName = desiredName.getOrElse(f"AddressStrobeGenerator_${wAddr}_${wData}")
-
-  def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
-
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
-
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "source",
-        InterfaceRole("source") /* TODO define InterfaceRole.source */,
-        InterfaceKind("readyValid[chext.amba.axi4.full.components.addrgen.AddrLenSizeBurstBundle]"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("wAddr" -> TypedObject(wAddr))
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "sink",
-        InterfaceRole("sink"),
-        InterfaceKind(
-          "readyValid[chext.amba.axi4.full.components.addrgen.AddrSizeStrobeLastBundle]"
-        ),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("wAddr" -> TypedObject(wAddr), "wData" -> TypedObject(wData))
-      )
-    )
-
-    Module(
-      moduleName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map("cfg" -> TypedObject(this))
-    )
-  }
-}
-
-class AddressStrobeGenerator(val cfg: AddressStrobeGeneratorConfig)
-    extends Module
-    with chext.Module {
-  import cfg._
-
-  def this(wAddr: Int, wData: Int, desiredName: Option[String] = None) = {
-    this(AddressStrobeGeneratorConfig(wAddr, wData, desiredName))
-  }
-
-  private val addressGenerator = Module(new AddressGenerator(AddressGeneratorConfig(wAddr)))
-  private val strobeGenerator = Module(new StrobeGenerator(StrobeGeneratorConfig(wAddr, wData)))
+class AddressStrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
+  private val addressGenerator = Module(new AddressGenerator(wAddr))
+  private val strobeGenerator = Module(new StrobeGenerator(wAddr, wData))
 
   val genInput = addressGenerator.genSource
   val genOutput = strobeGenerator.genOutput

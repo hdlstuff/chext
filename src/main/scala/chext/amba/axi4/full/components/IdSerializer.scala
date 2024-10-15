@@ -17,16 +17,12 @@ case class IdSerializerConfig(
     val axiSlaveCfg: axi4.Config,
     val capacityIdQueueR: Int = 4,
     val capacityIdQueueW: Int = 4,
-    val wIdSelect: Int = 0,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
+    val wIdSelect: Int = 0
+) {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
 
   val axiMasterCfg = axiSlaveCfg.copy(wId = 0)
-
-  def moduleName: String = desiredName.getOrElse("IdSerializer")
-  def hdlinfoModule: hdlinfo.Module = ???
 }
 
 /** Serializes the AXI transactions to a single ID, which is 0.
@@ -34,7 +30,7 @@ case class IdSerializerConfig(
   * @param axiCfg
   *   AXI configuration of the slave interface.
   */
-class IdSerializer(val cfg: IdSerializerConfig) extends Module with chext.Module {
+class IdSerializer(val cfg: IdSerializerConfig) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))

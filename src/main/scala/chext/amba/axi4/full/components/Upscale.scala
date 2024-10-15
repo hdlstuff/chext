@@ -17,9 +17,8 @@ case class UpscaleConfig(
     val axiSlaveCfg: axi4.Config,
     val wDataMaster: Int,
     val readOffsetQueueLength: Int = 16,
-    val writeOffsetQueueLength: Int = 16,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
+    val writeOffsetQueueLength: Int = 16
+) {
   require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
   require(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
   require(wDataMaster > axiSlaveCfg.wData, "wDataMaster must be > axiSlaveCfg.wData")
@@ -33,12 +32,9 @@ case class UpscaleConfig(
   val wOffset = log2Ceil(wDataMaster) - log2Ceil(wDataSlave)
   val wAddr = axiSlaveCfg.wAddr
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
-
-  def moduleName: String = desiredName.getOrElse("Upscale")
-  def hdlinfoModule: hdlinfo.Module = ???
 }
 
-class Upscale(val cfg: UpscaleConfig) extends Module with chext.Module {
+class Upscale(val cfg: UpscaleConfig) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))

@@ -30,9 +30,8 @@ case class DemuxConfig(
     val capacityPortQueueW: Int = 8,
     val slaveBuffers: BufferConfig = BufferConfig.all(2),
     val masterBuffers: BufferConfig = BufferConfig.all(0),
-    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
+    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
+) {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
   require(numMasters > 0)
@@ -51,12 +50,9 @@ case class DemuxConfig(
   val wPort = log2Ceil(numMasters)
 
   val axiMasterCfg = axiSlaveCfg
-
-  val moduleName: String = desiredName.getOrElse("Demux")
-  val hdlinfoModule: hdlinfo.Module = null
 }
 
-class Demux(val cfg: DemuxConfig) extends Module with chext.Module {
+class Demux(val cfg: DemuxConfig) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))

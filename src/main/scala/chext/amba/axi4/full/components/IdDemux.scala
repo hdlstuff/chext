@@ -23,9 +23,8 @@ case class IdDemuxConfig(
     val axiSlaveCfg: chext.amba.axi4.Config,
     val wIdSel: Int,
     val capacityPortQueueW: Int = 8,
-    val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
+    val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr
+) {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
   require(wIdSel >= 0)
@@ -34,12 +33,9 @@ case class IdDemuxConfig(
 
   val numMasters = 1 << wIdSel
   val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId - wIdSel)
-
-  def moduleName: String = desiredName.getOrElse("IdDemux")
-  def hdlinfoModule: hdlinfo.Module = ???
 }
 
-class IdDemux(val cfg: IdDemuxConfig) extends Module with chext.Module {
+class IdDemux(val cfg: IdDemuxConfig) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))

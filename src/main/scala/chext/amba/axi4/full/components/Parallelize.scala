@@ -12,15 +12,11 @@ import elastic.ConnectOp._
 
 case class ParallelizeConfig(
     val axiSlaveCfg: axi4.Config = axi4.Config(wId = 0, wAddr = 12, wData = 64),
-    val wIdMaster: Int = 3,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
+    val wIdMaster: Int = 3
+) {
   require(axiSlaveCfg.wId == 0)
 
   val axiMasterCfg = axiSlaveCfg.copy(wId = wIdMaster)
-
-  def moduleName: String = desiredName.getOrElse("Parallelize")
-  def hdlinfoModule: hdlinfo.Module = ???
 }
 
 class IdFreeList(wId: Int) extends Module {
@@ -68,9 +64,7 @@ class IdQueue(wId: Int) extends Module {
   queue.io.deq :=> sink
 }
 
-class Parallelize(val cfg: ParallelizeConfig = ParallelizeConfig())
-    extends Module
-    with chext.Module {
+class Parallelize(val cfg: ParallelizeConfig = ParallelizeConfig()) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))

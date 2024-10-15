@@ -21,9 +21,8 @@ case class MuxConfig(
     val capacityPortQueueB: Int = 8,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
-    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr,
-    val desiredName: Option[String] = None
-) extends chext.ModuleConfig {
+    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
+) {
   require(axiSlaveCfg.lite, "should use AXI4 lite")
   require(axiSlaveCfg.read || axiSlaveCfg.write, "must be at least read or write")
   require(numSlaves > 0, "number of slaves must be positive")
@@ -35,12 +34,9 @@ case class MuxConfig(
   val wPort = log2Up(numSlaves)
 
   val axiMasterCfg = axiSlaveCfg
-
-  val moduleName: String = desiredName.getOrElse("Mux")
-  val hdlinfoModule: hdlinfo.Module = null
 }
 
-class Mux(val cfg: MuxConfig) extends Module with chext.Module {
+class Mux(val cfg: MuxConfig) extends Module {
   import cfg._
 
   override def desiredName: String = "axi4LiteMux"
