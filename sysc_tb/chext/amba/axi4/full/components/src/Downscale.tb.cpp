@@ -99,6 +99,12 @@ void prepareData(sc_bv_base& out, uint8_t const* in, uint8_t lowerByteIndex, uin
     }
 }
 
+void prepareStrobe(sc_bv_base& out, uint8_t lowerByteIndex, uint8_t upperByteIndex) {
+    for (unsigned bitIndex = 0; bitIndex < out.length(); ++bitIndex) {
+        out.set_bit(bitIndex, bitIndex >= lowerByteIndex && bitIndex <= upperByteIndex);
+    }
+}
+
 struct Transaction {
     Transaction(axi4::full::Config const& cfg)
         : cfg_ { cfg } {
@@ -202,7 +208,7 @@ private:
     uint8_t burst_;
 };
 
-void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, unsigned char const* data, int size = -1) {
+void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, uint8_t const*& data, int size = -1) {
     auto const& cfg = target.config();
     unsigned maxSize = log2(cfg.wData / 8u);
     size = (size >= 0 && size <= maxSize) ? size : maxSize;
@@ -216,8 +222,6 @@ void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numByt
         numBeats++;
 
     uint8_t len = numBeats - 1;
-
-    // fmt::print("addr = {:08x}, numBytes = {}, size = {}, alignedAddr = {:08x}, numBeats = {}\n", addr, numBytes, size, alignedAddr, numBeats);
 
     Transaction transaction(cfg);
     transaction.reset(addr, len, size, 1);
@@ -244,7 +248,9 @@ void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numByt
         Beat b;
 
         while (transaction.nextBeat(b)) {
-            prepareData(bvData, data, b.lowerByteIndex, b.upperByteIndex);
+            uint32_t transferSize = MIN(b.size, numBytes);
+            prepareData(bvData, data, b.lowerByteIndex, b.lowerByteIndex + transferSize - 1);
+            prepareStrobe(bvStrb, b.lowerByteIndex, b.lowerByteIndex + transferSize - 1);
 
             axi4::full::Packets::WriteData w {
                 .data = bvData,
@@ -255,9 +261,9 @@ void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numByt
             target.sendW(w);
             fmt::print("[t = {}] sent: {}\n", sc_time_stamp().to_string(), w);
 
-            addr += b.size;
-            data += b.size;
-            numBytes -= b.size;
+            addr += transferSize;
+            data += transferSize;
+            numBytes -= transferSize;
         }
     };
 
@@ -268,6 +274,13 @@ void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numByt
 
     j.wait();
 }
+
+void write(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, unsigned char const*& data, int size = -1) {
+    while (numBytes > 0) {
+        simpleWrite(target, addr, numBytes, data, size);
+    }
+}
+
 /*
 void fillMemory(
     axi4::full::SlaveBase& target,
@@ -340,6 +353,7 @@ struct TwoInterfaceTest {
         // fillMemory(normal_, addr + 0x2, length, nullptr);
 
         uint64_t addr, numBytes;
+        uint8_t const* dataPtr;
 
         uint8_t data[256];
 
@@ -349,42 +363,98 @@ struct TwoInterfaceTest {
         fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
         addr = 0x00;
         numBytes = 32;
-        simpleWrite(normal_, addr, numBytes, data);
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 2);
 
         wait(5, SC_NS);
 
         fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
         addr = 0x01;
         numBytes = 32;
-        simpleWrite(normal_, addr, numBytes, data);
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 2);
 
         wait(5, SC_NS);
 
         fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
         addr = 0x02;
         numBytes = 32;
-        simpleWrite(normal_, addr, numBytes, data);
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 2);
 
         wait(5, SC_NS);
 
         fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
         addr = 0x03;
         numBytes = 32;
-        simpleWrite(normal_, addr, numBytes, data);
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 2);
 
         wait(5, SC_NS);
 
         fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
         addr = 0x04;
         numBytes = 32;
-        simpleWrite(normal_, addr, numBytes, data);
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 2);
 
         wait(5, SC_NS);
 
         fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
         addr = 0x02;
         numBytes = 4;
-        simpleWrite(normal_, addr, numBytes, data);
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 2);
+
+        wait(5, SC_NS);
+
+        fmt::print(" ---- \n");
+
+        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
+        addr = 0x00;
+        numBytes = 32;
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 1);
+
+        wait(5, SC_NS);
+
+        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
+        addr = 0x01;
+        numBytes = 32;
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 1);
+
+        wait(5, SC_NS);
+
+        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
+        addr = 0x02;
+        numBytes = 32;
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 1);
+
+        wait(5, SC_NS);
+
+        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
+        addr = 0x03;
+        numBytes = 32;
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 1);
+
+        wait(5, SC_NS);
+
+        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
+        addr = 0x04;
+        numBytes = 32;
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 1);
+
+        wait(5, SC_NS);
+
+        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
+        addr = 0x02;
+        numBytes = 4;
+        dataPtr = data;
+        write(normal_, addr, numBytes, dataPtr, 1);
 
         wait(5, SC_NS);
     }
