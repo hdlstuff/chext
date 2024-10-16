@@ -10,7 +10,7 @@ import chext.util.BitOps._
 import elastic.{Source, Sink, SinkBuffer}
 import elastic.ConnectOp._
 
-case class ParallelizeConfig(
+case class IdParallelizeConfig(
     val axiSlaveCfg: axi4.Config = axi4.Config(wId = 0, wAddr = 12, wData = 64),
     val wIdMaster: Int = 3
 ) {
@@ -64,7 +64,7 @@ class IdQueue(wId: Int) extends Module {
   queue.io.deq :=> sink
 }
 
-class Parallelize(val cfg: ParallelizeConfig = ParallelizeConfig()) extends Module {
+class IdParallelize(val cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
@@ -162,8 +162,4 @@ class Parallelize(val cfg: ParallelizeConfig = ParallelizeConfig()) extends Modu
 
   if (axiSlaveCfg.read) implRead()
   if (axiSlaveCfg.write) implWrite()
-}
-
-object EmitParallelize extends App {
-  emitVerilog(new Parallelize, Array("--target-dir", "output/"))
 }

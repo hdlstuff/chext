@@ -3,6 +3,7 @@ package chext.amba.axi4.full.components
 import chisel3._
 import chisel3.util._
 
+import chext.test
 import chext.amba.axi4
 import chext.elastic
 import chext.ip.memory
@@ -10,23 +11,32 @@ import chext.ip.memory
 import axi4.Ops._
 import elastic.ConnectOp._
 
-class UnburstTestTop1(override val desiredName: String) extends Module with chext.HasHdlinfoModule {
-  val log2bytesTotal = 14
-  val wData = 128
+import chiseltest._
+import axi4.full.test.PacketUtils._
+import axi4.full.test._
 
-  val rawMemCfg = memory.RawMemConfig(log2bytesTotal - log2Ceil(wData / 8), wData, 4, 4)
+case class UpscaleTestTop1(
+    val wDataNarrow: Int,
+    val wDataWide: Int,
+    override val desiredName: String
+) extends Module
+    with chext.HasHdlinfoModule {
+  val log2bytesTotal = 14
+
+  val rawMemCfg = memory.RawMemConfig(log2bytesTotal - log2Ceil(wDataWide / 8), wDataWide, 4, 4)
   val portCfg = memory.PortConfig(8, 8)
 
-  val axiCfg = axi4.Config(0, log2bytesTotal, wData)
+  val axiCfgNarrow = axi4.Config(0, log2bytesTotal, wDataNarrow)
+  val axiCfgWide = axi4.Config(0, log2bytesTotal, wDataWide)
 
-  val S_AXI_NORMAL = IO(axi4.Slave(axiCfg))
-  val S_AXI_TEST = IO(axi4.Slave(axiCfg))
+  val S_AXI_NORMAL = IO(axi4.Slave(axiCfgWide))
+  val S_AXI_TEST = IO(axi4.Slave(axiCfgNarrow))
 
   private val mem = Module(
     new memory.TrueDualPortRAM(rawMemCfg, portCfg, portCfg)
   )
 
-  private val axiBridge1 = Module(new memory.Axi4FullToReadWriteBridge(axiCfg))
+  private val axiBridge1 = Module(new memory.Axi4FullToReadWriteBridge(axiCfgWide))
 
   S_AXI_NORMAL :=> axiBridge1.s_axi
 
@@ -36,7 +46,7 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
   axiBridge1.write.req :=> mem.write1.req
   mem.write1.resp :=> axiBridge1.write.resp
 
-  private val axiBridge2 = Module(new memory.Axi4FullToReadWriteBridge(axiCfg))
+  private val axiBridge2 = Module(new memory.Axi4FullToReadWriteBridge(axiCfgWide))
 
   axiBridge2.read.req :=> mem.read2.req
   mem.read2.resp :=> axiBridge2.read.resp
@@ -44,12 +54,12 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
   axiBridge2.write.req :=> mem.write2.req
   mem.write2.resp :=> axiBridge2.write.resp
 
-  private val unburstCfg = UnburstConfig(axiCfg)
-  private val unburst = Module(new Unburst(unburstCfg))
-  S_AXI_TEST :=> unburst.s_axi
-  unburst.m_axi :=> axiBridge2.s_axi
+  private val upscaleCfg = UpscaleConfig(axiCfgNarrow, wDataWide)
+  private val upscale = Module(new Upscale(upscaleCfg))
+  S_AXI_TEST :=> upscale.s_axi
+  upscale.m_axi :=> axiBridge2.s_axi
 
-  override def hdlinfoModule: hdlinfo.Module = {
+  def hdlinfoModule: hdlinfo.Module = {
     import hdlinfo._
     import io.circe.generic.auto._
     import scala.collection.mutable.ArrayBuffer
@@ -78,23 +88,23 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
 
     interfaces.append(
       Interface(
-        "S_AXI_NORMAL",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfg))
-      )
-    )
-
-    interfaces.append(
-      Interface(
         "S_AXI_TEST",
         InterfaceRole.slave,
         InterfaceKind("axi4"),
         associatedClock = "clock",
         associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfg))
+        args = Map("cfg" -> TypedObject(axiCfgWide))
+      )
+    )
+
+    interfaces.append(
+      Interface(
+        "S_AXI_NORMAL",
+        InterfaceRole.slave,
+        InterfaceKind("axi4"),
+        associatedClock = "clock",
+        associatedReset = "reset",
+        args = Map("cfg" -> TypedObject(axiCfgNarrow))
       )
     )
 
@@ -102,11 +112,15 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
       desiredName,
       ports.toSeq,
       interfaces.toSeq,
-      Map()
+      Map(
+        "wDataWide" -> TypedObject(wDataWide),
+        "wDataNarrow" -> TypedObject(wDataNarrow)
+      )
     )
   }
 }
 
-object Unburst_TB extends chext.TestBench {
-  emit(new UnburstTestTop1("UnburstTestTop1_1"))
+object Upscale_TB extends chext.TestBench {
+  emit(new UpscaleTestTop1(32, 128, "UpscaleTestTop1_1"))
+  emit(new UpscaleTestTop1(64, 128, "UpscaleTestTop1_2"))
 }

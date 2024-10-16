@@ -10,17 +10,19 @@ import chext.ip.memory
 import axi4.Ops._
 import elastic.ConnectOp._
 
-class UnburstTestTop1(override val desiredName: String) extends Module with chext.HasHdlinfoModule {
+class IdParallelizeTestTop1(override val desiredName: String)
+    extends Module
+    with chext.HasHdlinfoModule {
   val log2bytesTotal = 14
   val wData = 128
 
   val rawMemCfg = memory.RawMemConfig(log2bytesTotal - log2Ceil(wData / 8), wData, 4, 4)
   val portCfg = memory.PortConfig(8, 8)
 
-  val axiCfg = axi4.Config(0, log2bytesTotal, wData)
+  val axiCfg = axi4.Config(4, log2bytesTotal, wData)
 
   val S_AXI_NORMAL = IO(axi4.Slave(axiCfg))
-  val S_AXI_TEST = IO(axi4.Slave(axiCfg))
+  val S_AXI_TEST = IO(axi4.Slave(axiCfg.copy(wId = 0)))
 
   private val mem = Module(
     new memory.TrueDualPortRAM(rawMemCfg, portCfg, portCfg)
@@ -44,10 +46,10 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
   axiBridge2.write.req :=> mem.write2.req
   mem.write2.resp :=> axiBridge2.write.resp
 
-  private val unburstCfg = UnburstConfig(axiCfg)
-  private val unburst = Module(new Unburst(unburstCfg))
-  S_AXI_TEST :=> unburst.s_axi
-  unburst.m_axi :=> axiBridge2.s_axi
+  private val idParallelizeCfg = IdParallelizeConfig(axiCfg.copy(wId = 0), 4)
+  private val idParallelize = Module(new IdParallelize(idParallelizeCfg))
+  S_AXI_TEST :=> idParallelize.s_axi
+  idParallelize.m_axi :=> axiBridge2.s_axi
 
   override def hdlinfoModule: hdlinfo.Module = {
     import hdlinfo._
@@ -107,6 +109,6 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
   }
 }
 
-object Unburst_TB extends chext.TestBench {
-  emit(new UnburstTestTop1("UnburstTestTop1_1"))
+object IdParallelize_TB extends chext.TestBench {
+  emit(new IdParallelizeTestTop1("IdParallelizeTestTop1_1"))
 }
