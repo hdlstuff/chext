@@ -78,7 +78,8 @@ struct Beat {
     JQR_TO_STRING
 };
 
-void prepareData(sc_bv_base& out, uint8_t const* in, uint8_t lowerByteIndex, uint8_t upperByteIndex) {
+void prepareWriteData(sc_bv_base& out, uint8_t const* in, uint8_t lowerByteIndex, uint8_t upperByteIndex) {
+    // can be further improved
     uint8_t buffer[128] = { 0 };
 
     for (unsigned i = lowerByteIndex; i <= upperByteIndex; ++i)
@@ -99,10 +100,31 @@ void prepareData(sc_bv_base& out, uint8_t const* in, uint8_t lowerByteIndex, uin
     }
 }
 
-void prepareStrobe(sc_bv_base& out, uint8_t lowerByteIndex, uint8_t upperByteIndex) {
+void prepareWriteStrobe(sc_bv_base& out, uint8_t lowerByteIndex, uint8_t upperByteIndex) {
     for (unsigned bitIndex = 0; bitIndex < out.length(); ++bitIndex) {
         out.set_bit(bitIndex, bitIndex >= lowerByteIndex && bitIndex <= upperByteIndex);
     }
+}
+
+void prepareReadData(sc_bv_base const& in, uint8_t* out, uint8_t lowerByteIndex, uint8_t upperByteIndex) {
+    // can be further improved
+    uint8_t buffer[128] = { 0 };
+
+    for (unsigned wordIndex = 0; wordIndex < in.size(); ++wordIndex) {
+        static_assert(sizeof(sc_digit) == 4);
+
+        auto word = in.get_word(wordIndex);
+
+        // clang-format off
+        buffer[wordIndex * 4] = (word >> 0) & 0xFF;
+        buffer[wordIndex * 4 + 1] = (word >> 8) & 0xFF;
+        buffer[wordIndex * 4 + 2] = (word >> 16) & 0xFF;
+        buffer[wordIndex * 4 + 3] = (word >> 24) & 0xFF;
+        // clang-format on
+    }
+
+    for (unsigned i = lowerByteIndex; i <= upperByteIndex; ++i)
+        *(out++) = buffer[i];
 }
 
 struct Transaction {
@@ -229,7 +251,7 @@ void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numByt
     sc_join j;
 
     SC_SPAWN_TO(j) {
-        axi4::full::Packets::Address aw {
+        axi4::full::Packets::WriteAddress aw {
             .id = bv_from(0, cfg.wId),
             .addr = bv_from(addr, cfg.wAddr),
             .size = (uint8_t)size,
@@ -249,8 +271,8 @@ void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numByt
 
         while (transaction.nextBeat(b)) {
             uint32_t transferSize = MIN(b.size, numBytes);
-            prepareData(bvData, data, b.lowerByteIndex, b.lowerByteIndex + transferSize - 1);
-            prepareStrobe(bvStrb, b.lowerByteIndex, b.lowerByteIndex + transferSize - 1);
+            prepareWriteData(bvData, data, b.lowerByteIndex, b.lowerByteIndex + transferSize - 1);
+            prepareWriteStrobe(bvStrb, b.lowerByteIndex, b.lowerByteIndex + transferSize - 1);
 
             axi4::full::Packets::WriteData w {
                 .data = bvData,
@@ -281,65 +303,65 @@ void write(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, un
     }
 }
 
-/*
-void fillMemory(
-    axi4::full::SlaveBase& target,
-    uint64_t base,
-    uint64_t size,
-    unsigned char const* data
-) {
+void simpleRead(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, uint8_t* data, int size = -1) {
     auto const& cfg = target.config();
-    sc_bv_base bits((int)cfg.wData);
+    unsigned maxSize = log2(cfg.wData / 8u);
+    size = (size >= 0 && size <= maxSize) ? size : maxSize;
 
-    unsigned busBytes = cfg.wData / 8u;
-    unsigned maxBeats = (1u << cfg.wLen);
+    uint64_t mask = (((uint64_t)1) << size) - 1;
+    uint64_t alignedAddr = addr & ~mask;
+    uint64_t alignedNumBytes = numBytes + addr - alignedAddr;
 
-    unsigned totalBeats = 1 + ((size - 1) / busBytes);
-    unsigned totalTransactions = 1 + ((totalBeats - 1) / maxBeats);
+    uint64_t numBeats = alignedNumBytes >> size;
+    if (alignedNumBytes & mask)
+        numBeats++;
 
-    Transaction transfer(cfg);
+    uint8_t len = numBeats - 1;
 
-    transfer.reset(base, 15, log2(busBytes), 1);
+    Transaction transaction(cfg);
+    transaction.reset(addr, len, size, 1);
 
     sc_join j;
 
     SC_SPAWN_TO(j) {
-        axi4::full::Packets::Address aw {
-            .id = bv_from(0, cfg.wId > 0 ? cfg.wId : 4),
-            .addr = bv_from(base, cfg.wAddr),
-            .size = log2(busBytes),
+        axi4::full::Packets::ReadAddress ar {
+            .id = bv_from(0, cfg.wId),
+            .addr = bv_from(addr, cfg.wAddr),
+            .size = (uint8_t)size,
             .burst = 1,
-            .len = 15
+            .len = (uint8_t)len
         };
 
-        target.sendAW(aw);
-        fmt::print("sent = {}\n", aw);
+        target.sendAR(ar);
+        fmt::print("[t = {}] sent: {}\n", sc_time_stamp().to_string(), ar);
     };
 
     SC_SPAWN_TO(j) {
-        Beat beat;
+        sc_bv_base bvData((int)cfg.wData);
 
-        while (transfer.nextBeat(beat)) {
-            fmt::print("beat = {}\n", beat);
+        Beat b;
 
-            axi4::full::Packets::WriteData w {
-                .data = bv_from(0xCAFE'BABE, cfg.wData),
-                .strb = bv_from(0xF, cfg.wStrb),
-                .last = beat.last
-            };
+        while (transaction.nextBeat(b)) {
+            auto r = target.receiveR();
+            fmt::print("[t = {}] received: {}\n", sc_time_stamp().to_string(), r);
 
-            target.sendW(w);
-            fmt::print("sent = {}\n", w);
+            uint32_t transferSize = MIN(b.size, numBytes);
+            prepareReadData(r.data, data, b.lowerByteIndex, b.lowerByteIndex + transferSize - 1);
+
+            addr += transferSize;
+            data += transferSize;
+            numBytes -= transferSize;
         }
-    };
-
-    SC_SPAWN_TO(j) {
-        fmt::print("received = {}\n", target.receiveB());
     };
 
     j.wait();
 }
-*/
+
+void read(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, uint8_t* data, int size = -1) {
+    while (numBytes > 0) {
+        simpleRead(target, addr, numBytes, data, size);
+    }
+}
 
 struct TwoInterfaceTest {
     TwoInterfaceTest(std::string const& name, axi4::full::SlaveBase& normal, axi4::full::SlaveBase& test)
@@ -354,8 +376,9 @@ struct TwoInterfaceTest {
 
         uint64_t addr, numBytes;
         uint8_t const* dataPtr;
+        uint8_t * dataPtr2;
 
-        uint8_t data[256];
+        uint8_t data[256], data2[256] = { 0 };
 
         for (unsigned i = 0; i < 256; ++i)
             data[i] = i;
@@ -367,6 +390,14 @@ struct TwoInterfaceTest {
         write(normal_, addr, numBytes, dataPtr, 2);
 
         wait(5, SC_NS);
+
+        addr = 0x00;
+        numBytes = 64;
+        dataPtr2 = data2;
+        read(normal_, addr, numBytes, dataPtr2, 2);
+
+        for (unsigned idx = 0; idx < 64; ++idx)
+            fmt::print("data2[{}] = {}\n", idx, data2[idx]);
 
         fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
         addr = 0x01;
