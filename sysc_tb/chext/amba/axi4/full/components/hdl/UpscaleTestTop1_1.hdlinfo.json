@@ -38,13 +38,13 @@
   ],
   "interfaces" : [
     {
-      "name" : "S_AXI_TEST",
+      "name" : "S_AXI_NORMAL",
       "role" : "slave",
       "kind" : "axi4",
       "associatedClock" : "clock",
       "associatedReset" : "reset",
       "args" : {
-        "cfg" : {
+        "config" : {
           "typeName" : "chext.amba.axi4.Config",
           "obj" : {
             "wId" : 0,
@@ -69,13 +69,13 @@
       }
     },
     {
-      "name" : "S_AXI_NORMAL",
+      "name" : "S_AXI_TEST",
       "role" : "slave",
       "kind" : "axi4",
       "associatedClock" : "clock",
       "associatedReset" : "reset",
       "args" : {
-        "cfg" : {
+        "config" : {
           "typeName" : "chext.amba.axi4.Config",
           "obj" : {
             "wId" : 0,

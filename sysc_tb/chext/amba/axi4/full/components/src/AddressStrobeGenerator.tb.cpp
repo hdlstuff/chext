@@ -1,6 +1,6 @@
 #define SC_ALLOW_DEPRECATED_IEEE_API
 
-#include <AddressStrobeGenerator1.hpp>
+#include <AddressStrobeGeneratorTestTop1_1.hpp>
 #include <chext_test/chext_test.hpp>
 
 using namespace sc_core;
@@ -30,7 +30,7 @@ public:
     }
 
 private:
-    AddressStrobeGenerator1 dut;
+    AddressStrobeGeneratorTestTop1_1 dut;
 
     sc_clock clock;
     sc_signal<bool> reset;

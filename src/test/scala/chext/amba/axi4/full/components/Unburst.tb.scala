@@ -83,7 +83,7 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
         InterfaceKind("axi4"),
         associatedClock = "clock",
         associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfg))
+        args = Map("config" -> TypedObject(axiCfg))
       )
     )
 
@@ -94,7 +94,7 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
         InterfaceKind("axi4"),
         associatedClock = "clock",
         associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfg))
+        args = Map("config" -> TypedObject(axiCfg))
       )
     )
 

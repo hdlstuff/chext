@@ -83,23 +83,22 @@ case class DownscaleTestTop1(
 
     interfaces.append(
       Interface(
-        "S_AXI_TEST",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfgWide))
-      )
-    )
-
-    interfaces.append(
-      Interface(
         "S_AXI_NORMAL",
         InterfaceRole.slave,
         InterfaceKind("axi4"),
         associatedClock = "clock",
         associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfgNarrow))
+        args = Map("config" -> TypedObject(axiCfgNarrow))
+      )
+    )
+    interfaces.append(
+      Interface(
+        "S_AXI_TEST",
+        InterfaceRole.slave,
+        InterfaceKind("axi4"),
+        associatedClock = "clock",
+        associatedReset = "reset",
+        args = Map("config" -> TypedObject(axiCfgWide))
       )
     )
 

@@ -37,6 +37,7 @@ function(generate_tb)
 
     add_executable(${GEN_TB_TARGET_NAME})
     set_target_properties(${GEN_TB_TARGET_NAME} PROPERTIES OUTPUT_NAME ${GEN_TB_OUTPUT_NAME})
+    target_compile_definitions(${GEN_TB_TARGET_NAME} PUBLIC VERILATED_TRACE_ENABLED)
 
     foreach(SOURCE_FILE IN LISTS GEN_TB_CPP_SOURCES)
         target_sources(

@@ -87,7 +87,7 @@ case class IdSerializeTestTop1(
         InterfaceKind("axi4"),
         associatedClock = "clock",
         associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfg))
+        args = Map("config" -> TypedObject(axiCfg))
       )
     )
 
@@ -98,7 +98,7 @@ case class IdSerializeTestTop1(
         InterfaceKind("axi4"),
         associatedClock = "clock",
         associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfg))
+        args = Map("config" -> TypedObject(axiCfg))
       )
     )
 

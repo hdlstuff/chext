@@ -44,7 +44,7 @@
       "associatedClock" : "clock",
       "associatedReset" : "reset",
       "args" : {
-        "cfg" : {
+        "config" : {
           "typeName" : "chext.amba.axi4.Config",
           "obj" : {
             "wId" : 4,
@@ -75,7 +75,7 @@
       "associatedClock" : "clock",
       "associatedReset" : "reset",
       "args" : {
-        "cfg" : {
+        "config" : {
           "typeName" : "chext.amba.axi4.Config",
           "obj" : {
             "wId" : 4,

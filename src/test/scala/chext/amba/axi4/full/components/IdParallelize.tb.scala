@@ -85,7 +85,7 @@ class IdParallelizeTestTop1(override val desiredName: String)
         InterfaceKind("axi4"),
         associatedClock = "clock",
         associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfg))
+        args = Map("config" -> TypedObject(axiCfg))
       )
     )
 
@@ -96,7 +96,7 @@ class IdParallelizeTestTop1(override val desiredName: String)
         InterfaceKind("axi4"),
         associatedClock = "clock",
         associatedReset = "reset",
-        args = Map("cfg" -> TypedObject(axiCfg))
+        args = Map("config" -> TypedObject(axiCfg))
       )
     )
 
