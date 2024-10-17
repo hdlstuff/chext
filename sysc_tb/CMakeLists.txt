@@ -27,10 +27,6 @@ function(generate_tb)
         set(GEN_TB_CPP_SOURCES ${GEN_TB_TARGET_NAME}.tb.cpp)
     endif()
 
-    if(NOT GEN_TB_HDL_MODULES)
-        message(FATAL_ERROR "Error: HDL_MODULES must not be empty for target ${GEN_TB_TARGET_NAME}")
-    endif()
-
     get_current_ns(GEN_TB_NS)
     set(GEN_TB_OUTPUT_NAME ${GEN_TB_TARGET_NAME}.tb)
     set(GEN_TB_TARGET_NAME ${GEN_TB_NS}.${GEN_TB_TARGET_NAME}.tb)

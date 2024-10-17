@@ -12,3 +12,7 @@ generate_tb(
     TARGET_NAME Downscale
     HDL_MODULES DownscaleTestTop1_1 DownscaleTestTop1_2
 )
+
+generate_tb(
+    TARGET_NAME Transaction
+)
