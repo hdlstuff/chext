@@ -203,7 +203,14 @@ inline void prepareReadData(sc_dt::sc_bv_base const& in, uint8_t* out, uint8_t l
 
 } // namespace detail
 
-inline void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, uint8_t const*& data, int size = -1) {
+inline void simpleWrite(
+    axi4::full::SlaveBase& target,
+    uint64_t& addr,
+    uint64_t& numBytes,
+    uint8_t const*& data,
+    int size = -1,
+    bool log = false
+) {
     auto const& cfg = target.config();
     unsigned maxSize = log2(cfg.wData / 8u);
     size = (size >= 0 && size <= maxSize) ? size : maxSize;
@@ -233,7 +240,8 @@ inline void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t&
         };
 
         target.sendAW(aw);
-        fmt::print("[t = {}] sent: {}\n", sc_core::sc_time_stamp().to_string(), aw);
+        if (log)
+            fmt::print("simpleWrite: [t = {}] sent: {}\n", sc_core::sc_time_stamp().to_string(), aw);
     };
 
     SC_SPAWN_TO(j) {
@@ -254,7 +262,8 @@ inline void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t&
             };
 
             target.sendW(w);
-            fmt::print("[t = {}] sent: {}\n", sc_core::sc_time_stamp().to_string(), w);
+            if (log)
+                fmt::print("simpleWrite: [t = {}] sent: {}\n", sc_core::sc_time_stamp().to_string(), w);
 
             addr += transferSize;
             data += transferSize;
@@ -264,19 +273,36 @@ inline void simpleWrite(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t&
 
     SC_SPAWN_TO(j) {
         auto b = target.receiveB();
-        fmt::print("[t = {}] received: {}\n", sc_core::sc_time_stamp().to_string(), b);
+
+        if (log)
+            fmt::print("simpleWrite: [t = {}] received: {}\n", sc_core::sc_time_stamp().to_string(), b);
     };
 
     j.wait();
 }
 
-inline void write(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, unsigned char const*& data, int size = -1) {
+inline void write(
+    axi4::full::SlaveBase& target,
+    uint64_t addr,
+    uint64_t numBytes,
+    unsigned char const* data,
+    int size = -1,
+    bool log = false
+) {
     while (numBytes > 0) {
-        simpleWrite(target, addr, numBytes, data, size);
+        simpleWrite(target, addr, numBytes, data, size, log);
+        sc_core::wait(sc_core::SC_ZERO_TIME);
     }
 }
 
-inline void simpleRead(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, uint8_t* data, int size = -1) {
+inline void simpleRead(
+    axi4::full::SlaveBase& target,
+    uint64_t& addr,
+    uint64_t& numBytes,
+    uint8_t*& data,
+    int size = -1,
+    bool log = false
+) {
     auto const& cfg = target.config();
     unsigned maxSize = log2(cfg.wData / 8u);
     size = (size >= 0 && size <= maxSize) ? size : maxSize;
@@ -306,7 +332,8 @@ inline void simpleRead(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& 
         };
 
         target.sendAR(ar);
-        fmt::print("[t = {}] sent: {}\n", sc_core::sc_time_stamp().to_string(), ar);
+        if (log)
+            fmt::print("simpleRead: [t = {}] sent: {}\n", sc_core::sc_time_stamp().to_string(), ar);
     };
 
     SC_SPAWN_TO(j) {
@@ -316,7 +343,8 @@ inline void simpleRead(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& 
 
         while (transaction.nextBeat(b)) {
             auto r = target.receiveR();
-            fmt::print("[t = {}] received: {}\n", sc_core::sc_time_stamp().to_string(), r);
+            if (log)
+                fmt::print("simpleRead: [t = {}] received: {}\n", sc_core::sc_time_stamp().to_string(), r);
 
             uint32_t transferSize = MIN(b.size, numBytes);
             detail::prepareReadData(r.data, data, b.lowerByteIndex, b.lowerByteIndex + transferSize - 1);
@@ -330,9 +358,17 @@ inline void simpleRead(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& 
     j.wait();
 }
 
-void read(axi4::full::SlaveBase& target, uint64_t& addr, uint64_t& numBytes, uint8_t* data, int size = -1) {
+void read(
+    axi4::full::SlaveBase& target,
+    uint64_t addr,
+    uint64_t numBytes,
+    uint8_t* data,
+    int size = -1,
+    bool log = false
+) {
     while (numBytes > 0) {
-        simpleRead(target, addr, numBytes, data, size);
+        simpleRead(target, addr, numBytes, data, size, log);
+        sc_core::wait(sc_core::SC_ZERO_TIME);
     }
 }
 

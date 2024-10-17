@@ -15,4 +15,7 @@ generate_tb(
 
 generate_tb(
     TARGET_NAME Transaction
+    HDL_MODULES
+        UpscaleTestTop1_1
+        DownscaleTestTop1_1
 )
