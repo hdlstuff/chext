@@ -193,17 +193,22 @@ private:
 
     void entry() override {
         fmt::print("Testing for: {}\n", dut1.S_AXI_NORMAL.config());
-        readWriteTestCase(dut1.S_AXI_NORMAL, 0x00, 1024);
+        readWriteTestCase(dut1.S_AXI_NORMAL, dut1.S_AXI_NORMAL, 0x00, 1024);
 
         fmt::print("Testing for: {}\n", dut2.S_AXI_NORMAL.config());
-        readWriteTestCase(dut2.S_AXI_NORMAL, 0x00, 1024);
+        readWriteTestCase(dut2.S_AXI_NORMAL, dut2.S_AXI_NORMAL, 0x00, 1024);
 
         fmt::print("simulation time: {}\n", sc_time_stamp().to_string());
 
         finish();
     }
 
-    void readWriteTestCase(axi4::full::SlaveBase& slave, uint64_t addr, uint64_t numBytes) {
+    void readWriteTestCase(
+        axi4::full::SlaveBase& writeSlave,
+        axi4::full::SlaveBase& readSlave,
+        uint64_t addr,
+        uint64_t numBytes
+    ) {
         using axi4::full::read;
         using axi4::full::write;
 
@@ -214,8 +219,8 @@ private:
             for (int size = -1; size < 2; ++size) {
                 fmt::print("for size = {}\n", size);
                 buffer_utils::linearInit(wrBuffer);
-                write(slave, addr + offset, numBytes, wrBuffer.data(), size, LOG_ENABLED);
-                read(slave, addr + offset, numBytes, rdBuffer.data(), size, LOG_ENABLED);
+                write(writeSlave, addr + offset, numBytes, wrBuffer.data(), size, LOG_ENABLED);
+                read(readSlave, addr + offset, numBytes, rdBuffer.data(), size, LOG_ENABLED);
                 ASSERT_(rdBuffer == wrBuffer);
             }
         }
@@ -225,8 +230,8 @@ private:
             for (int size = -1; size < 2; ++size) {
                 fmt::print("for size = {}\n", size);
                 buffer_utils::randomInit(wrBuffer);
-                write(slave, addr + offset, numBytes, wrBuffer.data(), size, LOG_ENABLED);
-                read(slave, addr + offset, numBytes, rdBuffer.data(), size, LOG_ENABLED);
+                write(writeSlave, addr + offset, numBytes, wrBuffer.data(), size, LOG_ENABLED);
+                read(readSlave, addr + offset, numBytes, rdBuffer.data(), size, LOG_ENABLED);
                 ASSERT_(rdBuffer == wrBuffer);
             }
         }

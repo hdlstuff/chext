@@ -38,7 +38,7 @@
   ],
   "interfaces" : [
     {
-      "name" : "S_AXI_TEST",
+      "name" : "S_AXI_NORMAL",
       "role" : "slave",
       "kind" : "axi4",
       "associatedClock" : "clock",
@@ -49,7 +49,7 @@
           "obj" : {
             "wId" : 0,
             "wAddr" : 14,
-            "wData" : 128,
+            "wData" : 32,
             "read" : true,
             "write" : true,
             "lite" : false,
@@ -69,7 +69,7 @@
       }
     },
     {
-      "name" : "S_AXI_NORMAL",
+      "name" : "S_AXI_TEST",
       "role" : "slave",
       "kind" : "axi4",
       "associatedClock" : "clock",
@@ -80,7 +80,7 @@
           "obj" : {
             "wId" : 0,
             "wAddr" : 14,
-            "wData" : 32,
+            "wData" : 128,
             "read" : true,
             "write" : true,
             "lite" : false,

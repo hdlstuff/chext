@@ -49,9 +49,14 @@ case class DownscaleTestTop1(
   axiBridge2.write.req :=> mem.write2.req
   mem.write2.resp :=> axiBridge2.write.resp
 
+  private val unburstCfg = UnburstConfig(axiCfgWide, 8, 8)
+  private val unburst = Module(new Unburst(unburstCfg))
+
   private val downscaleCfg = DownscaleConfig(axiCfgWide, wDataNarrow)
   private val downscale = Module(new Downscale(downscaleCfg))
-  S_AXI_TEST :=> downscale.s_axi
+
+  S_AXI_TEST :=> unburst.s_axi
+  unburst.m_axi :=> downscale.s_axi
   downscale.m_axi :=> axiBridge2.s_axi
 
   def hdlinfoModule: hdlinfo.Module = {

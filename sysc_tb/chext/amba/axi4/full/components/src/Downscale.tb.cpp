@@ -1,10 +1,12 @@
 #include <DownscaleTestTop1_1.hpp>
+#include <DownscaleTestTop1_2.hpp>
 
 #include <verilated_vcd_sc.h>
 
-#include <chext_test/chext_test.hpp>
-#include <systemc>
 #include <Transaction.hpp>
+#include <chext_test/chext_test.hpp>
+
+#include <systemc>
 
 using namespace sc_core;
 using namespace sc_dt;
@@ -12,144 +14,48 @@ using namespace sc_dt;
 using namespace chext_test;
 using namespace chext_test::amba;
 
-using chext_test::amba::axi4::full::write;
-using chext_test::amba::axi4::full::read;
+#include <chrono>
+#include <random>
 
-#include <climits>
-#include <type_traits>
+#include <iostream>
 
-struct TwoInterfaceTest {
-    TwoInterfaceTest(std::string const& name, axi4::full::SlaveBase& normal, axi4::full::SlaveBase& test)
-        : name_ { name }
-        , normal_ { normal }
-        , test_ { test } {
-    }
+#define LOG_ENABLED false
 
-    void runTest(uint64_t addr_, uint64_t length) {
-        // step 1: fill in the memory range with data, in the form:
-        // fillMemory(normal_, addr + 0x2, length, nullptr);
+namespace buffer_utils {
 
-        uint64_t addr, numBytes;
-        uint8_t const* dataPtr;
-        uint8_t* dataPtr2;
+namespace detail {
 
-        uint8_t data[256], data2[256] = { 0 };
+static std::mt19937 mt(879821);
+static std::uniform_int_distribution<> dist(0, 1024);
 
-        for (unsigned i = 0; i < 256; ++i)
-            data[i] = i;
+} // namespace detail
 
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x00;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 2);
+template<typename BufferT>
+void reset(BufferT& buffer) {
+    using value_type = std::remove_reference_t<decltype(*std::begin(buffer))>;
 
-        wait(5, SC_NS);
+    for (auto it = std::begin(buffer); it != std::end(buffer); ++it)
+        *it = ((value_type)0);
+}
 
-        addr = 0x00;
-        numBytes = 64;
-        dataPtr2 = data2;
-        read(normal_, addr, numBytes, dataPtr2, 2);
+template<typename BufferT>
+void linearInit(BufferT& buffer) {
+    using value_type = std::remove_reference_t<decltype(*std::begin(buffer))>;
 
-        for (unsigned idx = 0; idx < 64; ++idx)
-            fmt::print("data2[{}] = {}\n", idx, data2[idx]);
+    value_type idx = (value_type)0;
+    for (auto it = std::begin(buffer); it != std::end(buffer); ++it)
+        *it = (idx++);
+}
 
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x01;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 2);
+template<typename BufferT>
+void randomInit(BufferT& buffer) {
+    using value_type = std::remove_reference_t<decltype(*std::begin(buffer))>;
 
-        wait(5, SC_NS);
+    for (auto it = std::begin(buffer); it != std::end(buffer); ++it)
+        *it = ((value_type)detail::dist(detail::mt));
+}
 
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x02;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 2);
-
-        wait(5, SC_NS);
-
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x03;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 2);
-
-        wait(5, SC_NS);
-
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x04;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 2);
-
-        wait(5, SC_NS);
-
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x02;
-        numBytes = 4;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 2);
-
-        wait(5, SC_NS);
-
-        fmt::print(" ---- \n");
-
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x00;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 1);
-
-        wait(5, SC_NS);
-
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x01;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 1);
-
-        wait(5, SC_NS);
-
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x02;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 1);
-
-        wait(5, SC_NS);
-
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x03;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 1);
-
-        wait(5, SC_NS);
-
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x04;
-        numBytes = 32;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 1);
-
-        wait(5, SC_NS);
-
-        fmt::print("{} {}:{}\n", __PRETTY_FUNCTION__, __FILE__, __LINE__);
-        addr = 0x02;
-        numBytes = 4;
-        dataPtr = data;
-        write(normal_, addr, numBytes, dataPtr, 1);
-
-        wait(5, SC_NS);
-    }
-
-private:
-    std::string name_;
-    axi4::full::SlaveBase& normal_;
-    axi4::full::SlaveBase& test_;
-};
+} // namespace buffer_utils
 
 class DownscaleTestbench : public TestBenchBase {
 public:
@@ -157,24 +63,89 @@ public:
 
     DownscaleTestbench()
         : TestBenchBase(sc_module_name("tb"))
-        , dut { "dut" }
+        , dut1 { "dut1" }
+        , dut2 { "dut2" }
         , clock { "clock", 2.0, SC_NS }
         , reset { "reset" } {
 
-        dut.clock(clock);
-        dut.reset(reset);
+        dut1.clock(clock);
+        dut1.reset(reset);
+
+        dut2.clock(clock);
+        dut2.reset(reset);
     }
 
-    DownscaleTestTop1_1 dut;
+    DownscaleTestTop1_1 dut1;
+    DownscaleTestTop1_2 dut2;
 
 private:
     sc_clock clock;
     sc_signal<bool> reset;
 
     void entry() override {
-        TwoInterfaceTest test("", dut.S_AXI_NORMAL, dut.S_AXI_TEST);
-        test.runTest(0x0000, 128);
+        resetDUTs();
+
+        SC_SPAWN {
+            while (true) {
+                fmt::print("\r{:=^100}", fmt::format("  t = {}  ", sc_time_stamp().to_string()));
+                std::cout.flush();
+                wait(100, SC_US);
+            }
+        };
+
+        readWriteTestCase(dut1.S_AXI_TEST, dut1.S_AXI_TEST, 0x00, 1024);
+        readWriteTestCase(dut1.S_AXI_NORMAL, dut1.S_AXI_TEST, 0x00, 1024);
+        readWriteTestCase(dut1.S_AXI_TEST, dut1.S_AXI_NORMAL, 0x00, 1024);
+
+        readWriteTestCase(dut2.S_AXI_TEST, dut2.S_AXI_TEST, 0x00, 1024);
+        readWriteTestCase(dut2.S_AXI_NORMAL, dut2.S_AXI_TEST, 0x00, 1024);
+        readWriteTestCase(dut2.S_AXI_TEST, dut2.S_AXI_NORMAL, 0x00, 1024);
+
+        fmt::print("\r{:~^100}\n", fmt::format("  simulation time: {}  ", sc_time_stamp().to_string()));
+
         finish();
+    }
+
+    void readWriteTestCase(
+        axi4::full::SlaveBase& writeSlave,
+        axi4::full::SlaveBase& readSlave,
+        uint64_t addr,
+        uint64_t numBytes
+    ) {
+        using axi4::full::read;
+        using axi4::full::write;
+
+        std::vector<uint8_t> rdBuffer(numBytes), wrBuffer(numBytes);
+
+        for (uint64_t offset = 0; offset < 128; ++offset) {
+            for (int size = -1; size < 2; ++size) {
+                buffer_utils::linearInit(wrBuffer);
+                write(writeSlave, addr + offset, numBytes, wrBuffer.data(), size, false);
+                read(readSlave, addr + offset, numBytes, rdBuffer.data(), size, false);
+                ASSERT_(rdBuffer == wrBuffer);
+            }
+        }
+
+        for (uint64_t offset = 0; offset < 128; ++offset) {
+            for (int size = -1; size < 2; ++size) {
+                buffer_utils::randomInit(wrBuffer);
+                write(writeSlave, addr + offset, numBytes, wrBuffer.data(), size, false);
+                read(readSlave, addr + offset, numBytes, rdBuffer.data(), size, false);
+                ASSERT_(rdBuffer == wrBuffer);
+            }
+        }
+    }
+
+    void resetDUTs() {
+        wait(clock.negedge_event());
+        reset.write(true);
+
+        wait(clock.negedge_event());
+        wait(clock.negedge_event());
+
+        reset.write(false);
+
+        wait(clock.negedge_event());
     }
 };
 
@@ -187,7 +158,8 @@ int sc_main(int argc, char** argv) {
     sc_start(SC_ZERO_TIME);
 
     std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
-    testBench.dut.traceVerilated(trace_file.get(), 99);
+    testBench.dut1.traceVerilated(trace_file.get(), 99);
+    testBench.dut2.traceVerilated(trace_file.get(), 99);
     trace_file->open("DownscaleTestbench.vcd");
 
     testBench.start();
