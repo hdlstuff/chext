@@ -1,5 +1,4 @@
-#include <DownscaleTestTop1_1.hpp>
-#include <DownscaleTestTop1_2.hpp>
+#include <IdSerializeTestTop1_1.hpp>
 
 #include <verilated_vcd_sc.h>
 
@@ -16,25 +15,20 @@ using namespace chext_test::amba;
 
 #define LOG_ENABLED false
 
-struct DownscaleTestbench : virtual TestBenchBase, axi4::full::ReadWriteTester {
-    SC_HAS_PROCESS(DownscaleTestbench);
+struct IdSerializeTestbench : virtual TestBenchBase, axi4::full::ReadWriteTester {
+    SC_HAS_PROCESS(IdSerializeTestbench);
 
-    DownscaleTestbench()
+    IdSerializeTestbench()
         : TestBenchBase(sc_module_name("tb"))
-        , dut1 { "dut1" }
-        , dut2 { "dut2" }
+        , dut { "dut" }
         , clock { "clock", 2.0, SC_NS }
         , reset { "reset" } {
 
-        dut1.clock(clock);
-        dut1.reset(reset);
-
-        dut2.clock(clock);
-        dut2.reset(reset);
+        dut.clock(clock);
+        dut.reset(reset);
     }
 
-    DownscaleTestTop1_1 dut1;
-    DownscaleTestTop1_2 dut2;
+    IdSerializeTestTop1_1 dut;
 
 private:
     sc_clock clock;
@@ -51,13 +45,9 @@ private:
 
         resetDUTs();
 
-        readWriteTest(dut1.S_AXI_TEST, dut1.S_AXI_TEST, 0x00, 1024);
-        readWriteTest(dut1.S_AXI_NORMAL, dut1.S_AXI_TEST, 0x00, 1024);
-        readWriteTest(dut1.S_AXI_TEST, dut1.S_AXI_NORMAL, 0x00, 1024);
-
-        readWriteTest(dut2.S_AXI_TEST, dut2.S_AXI_TEST, 0x00, 1024);
-        readWriteTest(dut2.S_AXI_NORMAL, dut2.S_AXI_TEST, 0x00, 1024);
-        readWriteTest(dut2.S_AXI_TEST, dut2.S_AXI_NORMAL, 0x00, 1024);
+        readWriteTest(dut.S_AXI_TEST, dut.S_AXI_TEST, 0x00, 1024);
+        readWriteTest(dut.S_AXI_NORMAL, dut.S_AXI_TEST, 0x00, 1024);
+        readWriteTest(dut.S_AXI_TEST, dut.S_AXI_NORMAL, 0x00, 1024);
 
         fmt::print("\r{:~^100}\n", fmt::format("  simulation time: {}  ", sc_time_stamp().to_string()));
 
@@ -81,14 +71,13 @@ int sc_main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
     Verilated::traceEverOn(true);
 
-    DownscaleTestbench testBench;
+    IdSerializeTestbench testBench;
 
     sc_start(SC_ZERO_TIME);
 
     std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
-    testBench.dut1.traceVerilated(trace_file.get(), 99);
-    testBench.dut2.traceVerilated(trace_file.get(), 99);
-    trace_file->open("DownscaleTestbench.vcd");
+    testBench.dut.traceVerilated(trace_file.get(), 99);
+    trace_file->open("IdSerializeTestbench.vcd");
 
     testBench.start();
 

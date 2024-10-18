@@ -1,5 +1,5 @@
-#include <DownscaleTestTop1_1.hpp>
-#include <DownscaleTestTop1_2.hpp>
+#include <UpscaleTestTop1_1.hpp>
+#include <UpscaleTestTop1_2.hpp>
 
 #include <verilated_vcd_sc.h>
 
@@ -16,10 +16,10 @@ using namespace chext_test::amba;
 
 #define LOG_ENABLED false
 
-struct DownscaleTestbench : virtual TestBenchBase, axi4::full::ReadWriteTester {
-    SC_HAS_PROCESS(DownscaleTestbench);
+struct UpscaleTestbench : virtual TestBenchBase, axi4::full::ReadWriteTester {
+    SC_HAS_PROCESS(UpscaleTestbench);
 
-    DownscaleTestbench()
+    UpscaleTestbench()
         : TestBenchBase(sc_module_name("tb"))
         , dut1 { "dut1" }
         , dut2 { "dut2" }
@@ -33,8 +33,8 @@ struct DownscaleTestbench : virtual TestBenchBase, axi4::full::ReadWriteTester {
         dut2.reset(reset);
     }
 
-    DownscaleTestTop1_1 dut1;
-    DownscaleTestTop1_2 dut2;
+    UpscaleTestTop1_1 dut1;
+    UpscaleTestTop1_2 dut2;
 
 private:
     sc_clock clock;
@@ -81,14 +81,14 @@ int sc_main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
     Verilated::traceEverOn(true);
 
-    DownscaleTestbench testBench;
+    UpscaleTestbench testBench;
 
     sc_start(SC_ZERO_TIME);
 
     std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
     testBench.dut1.traceVerilated(trace_file.get(), 99);
     testBench.dut2.traceVerilated(trace_file.get(), 99);
-    trace_file->open("DownscaleTestbench.vcd");
+    trace_file->open("UpscaleTestbench.vcd");
 
     testBench.start();
 
