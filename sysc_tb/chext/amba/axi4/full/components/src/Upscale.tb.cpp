@@ -14,8 +14,6 @@ using namespace sc_dt;
 using namespace chext_test;
 using namespace chext_test::amba;
 
-#define LOG_ENABLED false
-
 struct UpscaleTestbench : virtual TestBenchBase, axi4::full::ReadWriteTester {
     SC_HAS_PROCESS(UpscaleTestbench);
 

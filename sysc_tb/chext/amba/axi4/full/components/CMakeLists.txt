@@ -24,6 +24,11 @@ generate_tb(
 )
 
 generate_tb(
+    TARGET_NAME IdParallelize
+    HDL_MODULES IdParallelizeTestTop2_1
+)
+
+generate_tb(
     TARGET_NAME Unburst
     HDL_MODULES UnburstTestTop1_1
 )

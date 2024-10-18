@@ -72,7 +72,7 @@ protected:
         std::vector<uint8_t> rdBuffer(numBytes), wrBuffer(numBytes);
 
         for (uint64_t offset = 0; offset < 128; ++offset) {
-            for (int size = -1; size < 2; ++size) {
+            for (int size = -1; size <= 2; ++size) {
                 buffer_utils::linearInit(wrBuffer);
                 write(writeSlave, addr + offset, numBytes, wrBuffer.data(), size, false);
                 read(readSlave, addr + offset, numBytes, rdBuffer.data(), size, false);

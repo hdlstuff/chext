@@ -79,10 +79,15 @@ class IdParallelize(val cfg: IdParallelizeConfig = IdParallelizeConfig()) extend
     val xIdxDrain = Mem(1 << wIdMaster, UInt(wBufferIdx.W))
     val xComplete = Mem(1 << wIdMaster, Bool())
 
+    // maybe figure out the size in a better way
+    val xCount = Module(new chext.util.Counter((1 << wBufferIdx) + 1))
+    xCount.noDec()
+    xCount.noInc()
+
     val idFreeList = Module(new IdFreeList(wIdMaster))
     val idQueue = Module(new IdQueue(wIdMaster))
 
-    val bufferFree = RegInit((1L << wBufferIdx).U((wBufferIdx + 1).W))
+    val bufferFree = RegInit(0.U((wBufferIdx + 1).W))
     val bufferIdxNext = RegInit(0.U(wBufferIdx.W))
 
     val s_ar = s_axi.ar
@@ -127,6 +132,11 @@ class IdParallelize(val cfg: IdParallelizeConfig = IdParallelizeConfig()) extend
       xIdxFill(idNext) := bufferIdxNext
       xIdxDrain(idNext) := bufferIdxNext
       xComplete(idNext) := false.B
+      xCount.inc()
+    }.otherwise {
+      when(xCount.zero) {
+        bufferFree := (1L << wBufferIdx).U
+      }
     }
 
     when(m_r.fire) {
@@ -137,6 +147,7 @@ class IdParallelize(val cfg: IdParallelizeConfig = IdParallelizeConfig()) extend
 
       when(m_r.bits.last) {
         xComplete(m_r.bits.id) := true.B
+        xCount.dec()
       }
     }
 
