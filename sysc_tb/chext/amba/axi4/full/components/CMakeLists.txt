@@ -15,7 +15,11 @@ generate_tb(
 
 generate_tb(
     TARGET_NAME Upscale
-    HDL_MODULES UpscaleTestTop1_1 UpscaleTestTop1_2
+    HDL_MODULES
+        UpscaleTestTop1_1
+        UpscaleTestTop1_2
+        UpscaleTestTop1_3
+        UpscaleTestTop1_4
 )
 
 generate_tb(
@@ -39,3 +43,30 @@ generate_tb(
         UpscaleTestTop1_1
         DownscaleTestTop1_1
 )
+
+find_package(sctlm REQUIRED)
+add_executable(SctlmTest src/SctlmTest.cpp)
+
+target_link_libraries(
+    SctlmTest
+    PUBLIC
+    SystemC::systemc
+    fmt::fmt
+    chext_test::chext_test
+    sctlm::sctlm
+)
+
+verilate(
+    SctlmTest
+    SYSTEMC
+    SOURCES hdl/SctlmTest.sv
+    VERILATOR_ARGS --trace
+)
+
+hdlscw(
+    TARGET SctlmTest
+    HDLINFO hdl/SctlmTest.hdlinfo.json
+    ARGS -i sctlm
+)
+
+target_compile_definitions(SctlmTest PUBLIC SCTLM_DEBUG)
