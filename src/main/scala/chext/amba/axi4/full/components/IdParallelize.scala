@@ -3,174 +3,195 @@ package chext.amba.axi4.full.components
 import chisel3._
 import chisel3.util._
 
+import chext.bundles.BundleN
+
 import chext.amba.axi4
 import chext.elastic
-import chext.util.BitOps._
 
 import elastic.{Source, Sink, SinkBuffer}
 import elastic.ConnectOp._
+import chisel3.experimental.prefix
 
-case class IdParallelizeConfig(
-    val axiSlaveCfg: axi4.Config = axi4.Config(wId = 0, wAddr = 12, wData = 64),
-    val wIdMaster: Int = 3
-) {
-  require(axiSlaveCfg.wId == 0)
+class BackpressureMonitor[T <: Data](rv: ReadyValidIO[T], name: String)
+    extends chisel3.experimental.AffectsChiselPrefix {
+  val counter = RegInit(0.U(32.W))
+  counter := counter + 1.U
 
-  val axiMasterCfg = axiSlaveCfg.copy(wId = wIdMaster)
-}
+  val doPrint = RegInit(true.B)
 
-class IdFreeList(wId: Int) extends Module {
-  override val desiredName = f"IdFreeList_$wId"
-
-  val genId = UInt(wId.W)
-
-  val source = IO(Source(Irrevocable(genId)))
-  val sink = IO(Sink(Irrevocable(genId)))
-
-  private val index = RegInit(0.U((wId + 1).W))
-  private val queue = Module(new Queue(genId, 1 << wId))
-
-  when(index.dropLsbN(wId) === 1.U) {
-    source :=> queue.io.enq
-    queue.io.deq :=> sink
-  }.otherwise {
-    queue.io.enq.bits := index
-    queue.io.enq.valid := true.B
-
-    when(queue.io.enq.fire) {
-      index := index + 1.U
+  when(rv.valid && !rv.ready) {
+    when(doPrint) {
+      printf("[BackpressureMonitor] counter = %d: Backpressure on " + name + "\n", counter)
+      doPrint := false.B
     }
-
-    queue.io.deq.ready := false.B
-
-    source.ready := false.B
-
-    sink.bits := DontCare
-    sink.valid := false.B
+  }.otherwise {
+    doPrint := true.B
   }
 }
 
-class IdQueue(wId: Int) extends Module {
-  override val desiredName = f"IdQueue_$wId"
+case class IdParallelizeConfig(
+    val axiSlaveCfg: axi4.Config = axi4.Config(wId = 0, wAddr = 12, wData = 64),
+    val wIdMaster: Int = 3,
+    val wBufferIdx: Int = 10,
+    val noReadBursts: Boolean = false
+) {
+  require(axiSlaveCfg.wId == 0)
+  val axiMasterCfg = axiSlaveCfg.copy(wId = wIdMaster)
 
-  val genId = UInt(wId.W)
-
-  val source = IO(Source(Irrevocable(genId)))
-  val sink = IO(Sink(Irrevocable(genId)))
-
-  private val queue = Module(new Queue(genId, 1 << wId))
-
-  source :=> queue.io.enq
-  queue.io.deq :=> sink
+  // pedantic, to avoid overflows in the calculations
+  assert(wIdMaster <= 30)
+  assert(wBufferIdx <= 30)
 }
 
-class IdParallelize(val cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Module {
+class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
-  // NOTE: I use SinkBuffer(...) to avoid combinational loops
-
-  def implRead(): Unit = {
-    val wBufferIdx = 10
-    val buffer = Mem(1 << wBufferIdx, chiselTypeOf(s_axi.r.bits))
-    val xIdxFill = Mem(1 << wIdMaster, UInt(wBufferIdx.W))
-    val xIdxDrain = Mem(1 << wIdMaster, UInt(wBufferIdx.W))
-    val xComplete = Mem(1 << wIdMaster, Bool())
-
-    // maybe figure out the size in a better way
-    val xCount = Module(new chext.util.Counter((1 << wBufferIdx) + 1))
-    xCount.noDec()
-    xCount.noInc()
-
-    val idFreeList = Module(new IdFreeList(wIdMaster))
-    val idQueue = Module(new IdQueue(wIdMaster))
-
-    val bufferFree = RegInit(0.U((wBufferIdx + 1).W))
-    val bufferIdxNext = RegInit(0.U(wBufferIdx.W))
-
+  def implRead(): Unit = prefix("read") {
     val s_ar = s_axi.ar
     val m_ar = SinkBuffer(m_axi.ar)
 
     val s_r = SinkBuffer(s_axi.r)
     val m_r = m_axi.r
 
-    val xLength = s_ar.bits.len + 1.U
+    val genIndex = UInt(wBufferIdx.W)
+    val capacity = (1 << wBufferIdx).U((wBufferIdx + 1).W)
+
+    val stComplete = 0.U
+    val stStarted = 1.U
+
+    val memStatus = Mem(1 << wIdMaster, UInt(2.W))
+    val memIndexFill = Mem(1 << wIdMaster, genIndex)
+    val memRespValid = Mem(1 << wBufferIdx, UInt(1.W))
+    val memRespPayload = Mem(1 << wBufferIdx, chiselTypeOf(s_axi.r.bits))
+
+    val nextIdFill = RegInit(0.U(wIdMaster.W))
+
+    val nextIdxFill = RegInit(0.U(wBufferIdx.W))
+    val nextIdxDrain = RegInit(0.U(wBufferIdx.W))
+
+    val available = RegInit(capacity)
+
+    val transactionCount = Module(new chext.util.Counter((1 << wIdMaster) + 1))
+    transactionCount.noInc()
+    transactionCount.noDec()
 
     s_ar.ready :=
       m_ar.ready &&
-        idFreeList.sink.valid &&
-        idQueue.source.ready &&
-        (bufferFree >= xLength)
+        transactionCount.notFull &&
+        (available >= (s_ar.bits.len + 1.U))
 
     m_ar.bits := s_ar.bits
-    m_ar.bits.id := idFreeList.sink.bits
-    m_ar.valid := s_ar.fire
+    m_ar.bits.id := nextIdFill
+    m_ar.valid := s_ar.fire // m_ar.valid := m_ar.ready (comb loop) && s_ar.valid && ...
 
-    m_r.ready := s_r.ready && idFreeList.source.ready
+    m_r.ready := memStatus(m_r.bits.id) === stStarted
 
-    s_r.valid := idQueue.sink.valid && xComplete(idQueue.sink.bits)
-    s_r.bits := buffer(xIdxDrain(idQueue.sink.bits))
+    s_r.valid := memRespValid(nextIdxDrain)
+    s_r.bits := memRespPayload(nextIdxDrain)
 
-    idFreeList.source.bits := m_r.bits.id
-    idFreeList.source.valid := m_r.fire && m_r.bits.last
+    val mon1 = new BackpressureMonitor(s_ar, "s_ar")
+    val mon2 = new BackpressureMonitor(s_r, "s_r")
+    val mon3 = new BackpressureMonitor(m_ar, "m_ar")
+    val mon4 = new BackpressureMonitor(m_r, "m_r")
 
-    idFreeList.sink.ready := s_ar.fire
+    when(s_ar.fire /* eqv to m_ar.fire */ ) {
+      memStatus(nextIdFill) := stStarted
+      memIndexFill(nextIdFill) := nextIdxFill
 
-    idQueue.source.bits := idFreeList.sink.bits
-    idQueue.source.valid := s_ar.fire
+      nextIdxFill := nextIdxFill + s_ar.bits.len + 1.U
+      nextIdFill := nextIdFill + 1.U
+      available := available - (s_ar.bits.len + 1.U)
 
-    idQueue.sink.ready := s_r.fire && s_r.bits.last
-
-    when(s_ar.fire) {
-      val idNext = idFreeList.sink.bits
-
-      bufferFree := bufferFree - xLength
-      bufferIdxNext := bufferIdxNext + xLength
-
-      xIdxFill(idNext) := bufferIdxNext
-      xIdxDrain(idNext) := bufferIdxNext
-      xComplete(idNext) := false.B
-      xCount.inc()
-    }.otherwise {
-      when(xCount.zero) {
-        bufferFree := (1L << wBufferIdx).U
-      }
+      transactionCount.inc()
     }
 
     when(m_r.fire) {
-      val offset = xIdxFill(m_r.bits.id)
+      memStatus(m_r.bits.id) := !m_r.bits.last
 
-      xIdxFill(m_r.bits.id) := offset + 1.U
-      buffer(offset) := m_r.bits
+      memIndexFill(m_r.bits.id) := memIndexFill(m_r.bits.id) + 1.U
 
-      when(m_r.bits.last) {
-        xComplete(m_r.bits.id) := true.B
-        xCount.dec()
-      }
+      memRespValid(memIndexFill(m_r.bits.id)) := true.B
+      memRespPayload(memIndexFill(m_r.bits.id)) := m_r.bits
     }
 
     when(s_r.fire) {
-      xIdxDrain(idQueue.sink.bits) := xIdxDrain(idQueue.sink.bits) + 1.U
+      when(memRespPayload(nextIdxDrain).last) {
+        transactionCount.dec()
+      }
+
+      memRespValid(nextIdxDrain) := false.B
+      nextIdxDrain := nextIdxDrain + 1.U
+    }
+
+    when(transactionCount.zero && !s_ar.fire && !s_r.fire /* when no init */ ) {
+      nextIdFill := 0.U
+      nextIdxFill := 0.U
+      nextIdxDrain := 0.U
+
+      available := capacity
     }
   }
 
-  def implWrite(): Unit = {
+  def implWrite(): Unit = prefix("write") {
     val s_aw = s_axi.aw
     val m_aw = SinkBuffer(m_axi.aw)
-
-    val s_w = s_axi.w
-    val m_w = SinkBuffer(m_axi.w)
 
     val s_b = SinkBuffer(s_axi.b)
     val m_b = m_axi.b
 
-    s_aw :=> m_aw
-    s_w :=> m_w
-    m_b :=> s_b
+    val mem = Mem(1 << wIdMaster, chext.bundles.BundleN(Bool(), chiselTypeOf(s_axi.b.bits)))
+
+    val nextIdFill = Reg(UInt(wIdMaster.W))
+    val nextIdDrain = Reg(UInt(wIdMaster.W))
+
+    val transactionCount = Module(new chext.util.Counter((1 << wIdMaster) + 1))
+    transactionCount.noInc()
+    transactionCount.noDec()
+
+    s_aw.ready := m_aw.ready && transactionCount.notFull
+
+    m_aw.bits := s_aw.bits
+    m_aw.bits.id := nextIdFill
+    m_aw.valid := s_aw.fire // m_ar.valid := m_ar.ready (comb loop) && s_ar.valid && ...
+
+    m_b.ready := true.B // we always have space in the buffer if the transaction goes through
+
+    s_b.valid := transactionCount.notZero && mem(nextIdDrain)._1
+    s_b.bits := mem(nextIdDrain)._2
+
+    when(s_aw.fire) {
+      assert(s_aw.bits.len === 0.U)
+
+      nextIdFill := nextIdFill + 1.U
+      transactionCount.inc()
+    }
+
+    when(m_b.fire) {
+      mem(m_b.bits.id)._1 := true.B
+      mem(m_b.bits.id)._2 := m_b.bits
+    }
+
+    when(s_b.fire) {
+      mem(nextIdDrain)._1 := false.B
+
+      nextIdDrain := nextIdDrain + 1.U
+      transactionCount.dec()
+    }
+
+    when(transactionCount.zero) {
+      nextIdFill := 0.U
+      nextIdDrain := 0.U
+    }
+
+    s_axi.w :=> m_axi.w
   }
 
-  if (axiSlaveCfg.read) implRead()
-  if (axiSlaveCfg.write) implWrite()
+  if (axiSlaveCfg.read)
+    implRead()
+
+  if (axiSlaveCfg.write)
+    implWrite()
 }

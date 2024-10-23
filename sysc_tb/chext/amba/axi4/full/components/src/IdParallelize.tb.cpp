@@ -42,8 +42,8 @@ private:
         auto const& axiSlaveCfg = dut.S_AXI.config();
         auto const& axiMasterCfg = dut.S_AXI.config();
 
-        unsigned numAddress = 1024;
-        unsigned numBeat = 16;
+        unsigned numAddress = 1024 * 16;
+        unsigned numBeat = 1;
         unsigned idMask = (1 << axiMasterCfg.wId) - 1;
         unsigned addrOffset = 16;
 
@@ -70,7 +70,12 @@ private:
                     auto r = dut.S_AXI.receiveR();
                     fmt::print("t = {}, dut.S_AXI.receiveR() = {}\n", sc_time_stamp().to_string(), r);
 
-                    ASSERT_EQ(r.data.to_uint64(), (i << addrOffset) + j);
+                    auto received = r.data.to_uint64();
+                    auto expected = (i << addrOffset) + j;
+
+                    fmt::print("t = {}, received = {:#010x}, expected = {:#010x}, {}\n", sc_time_stamp().to_string(), received, expected, received == expected ? "" : "*");
+
+                    ASSERT_EQ(received, expected);
                 }
             }
         };
