@@ -183,6 +183,6 @@ class IdParallelizeTestTop2(val wId: Int, val wBufferIdx: Int, override val desi
 object IdParallelize_TB extends chext.TestBench {
   // emit(new IdParallelizeTestTop1("IdParallelizeTestTop1_1"))
   emit(new IdParallelizeTestTop2(2, 5, "IdParallelizeTestTop2_1"))
-  emit(new IdParallelizeTestTop2(1, 5, "IdParallelizeTestTop2_2"))
+  emit(new IdParallelizeTestTop2(3, 5, "IdParallelizeTestTop2_2"))
   emit(new IdParallelizeTestTop2(6, 8, "IdParallelizeTestTop2_3"))
 }

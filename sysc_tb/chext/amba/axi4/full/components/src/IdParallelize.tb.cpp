@@ -235,6 +235,8 @@ int sc_main(int argc, char** argv) {
 
     std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
     testBench.tester1.dut.traceVerilated(trace_file.get(), 99);
+    testBench.tester2.dut.traceVerilated(trace_file.get(), 99);
+    testBench.tester3.dut.traceVerilated(trace_file.get(), 99);
     trace_file->open("MyTestBench.vcd");
 
     testBench.start();

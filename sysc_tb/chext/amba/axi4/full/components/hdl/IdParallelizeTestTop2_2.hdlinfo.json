@@ -78,7 +78,7 @@
         "config" : {
           "typeName" : "chext.amba.axi4.Config",
           "obj" : {
-            "wId" : 2,
+            "wId" : 3,
             "wAddr" : 32,
             "wData" : 64,
             "read" : true,
