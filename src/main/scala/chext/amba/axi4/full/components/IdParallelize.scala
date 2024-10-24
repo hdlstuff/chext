@@ -11,29 +11,12 @@ import chext.elastic
 import elastic.{Source, Sink, SinkBuffer}
 import elastic.ConnectOp._
 import chisel3.experimental.prefix
-
-class BackpressureMonitor[T <: Data](rv: ReadyValidIO[T], name: String)
-    extends chisel3.experimental.AffectsChiselPrefix {
-  val counter = RegInit(0.U(32.W))
-  counter := counter + 1.U
-
-  val doPrint = RegInit(true.B)
-
-  when(rv.valid && !rv.ready) {
-    when(doPrint) {
-      printf("[BackpressureMonitor] counter = %d: Backpressure on " + name + "\n", counter)
-      doPrint := false.B
-    }
-  }.otherwise {
-    doPrint := true.B
-  }
-}
+import chext.util.BitOps.UIntOps_impl
 
 case class IdParallelizeConfig(
     val axiSlaveCfg: axi4.Config = axi4.Config(wId = 0, wAddr = 12, wData = 64),
     val wIdMaster: Int = 3,
-    val wBufferIdx: Int = 10,
-    val noReadBursts: Boolean = false
+    val wBufferIdx: Int = 10
 ) {
   require(axiSlaveCfg.wId == 0)
   val axiMasterCfg = axiSlaveCfg.copy(wId = wIdMaster)
@@ -67,7 +50,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     val memRespValid = Mem(1 << wBufferIdx, UInt(1.W))
     val memRespPayload = Mem(1 << wBufferIdx, chiselTypeOf(s_axi.r.bits))
 
-    val nextIdFill = RegInit(0.U(wIdMaster.W))
+    val nextIdFill = RegInit(0.U((wIdMaster + 1).W))
 
     val nextIdxFill = RegInit(0.U(wBufferIdx.W))
     val nextIdxDrain = RegInit(0.U(wBufferIdx.W))
@@ -80,7 +63,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
 
     s_ar.ready :=
       m_ar.ready &&
-        transactionCount.notFull &&
+        !nextIdFill.dropLsbN(wIdMaster) &&
         (available >= (s_ar.bits.len + 1.U))
 
     m_ar.bits := s_ar.bits
@@ -92,10 +75,13 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     s_r.valid := memRespValid(nextIdxDrain)
     s_r.bits := memRespPayload(nextIdxDrain)
 
-    val mon1 = new BackpressureMonitor(s_ar, "s_ar")
-    val mon2 = new BackpressureMonitor(s_r, "s_r")
-    val mon3 = new BackpressureMonitor(m_ar, "m_ar")
-    val mon4 = new BackpressureMonitor(m_r, "m_r")
+    if (true) {
+      // debug messages, enable them if needed
+      val mon1 = new chext.util.BackpressureMonitor(s_ar, "s_ar")
+      val mon2 = new chext.util.BackpressureMonitor(s_r, "s_r")
+      val mon3 = new chext.util.BackpressureMonitor(m_ar, "m_ar")
+      val mon4 = new chext.util.BackpressureMonitor(m_r, "m_r")
+    }
 
     when(s_ar.fire /* eqv to m_ar.fire */ ) {
       memStatus(nextIdFill) := stStarted
@@ -126,7 +112,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
       nextIdxDrain := nextIdxDrain + 1.U
     }
 
-    when(transactionCount.zero && !s_ar.fire && !s_r.fire /* when no init */ ) {
+    when(transactionCount.zero && !s_ar.fire && !s_r.fire && !m_r.fire /* protect writes */ ) {
       nextIdFill := 0.U
       nextIdxFill := 0.U
       nextIdxDrain := 0.U

@@ -29,7 +29,10 @@ generate_tb(
 
 generate_tb(
     TARGET_NAME IdParallelize
-    HDL_MODULES IdParallelizeTestTop2_1
+    HDL_MODULES
+        IdParallelizeTestTop2_1
+        IdParallelizeTestTop2_2
+        IdParallelizeTestTop2_3
 )
 
 generate_tb(

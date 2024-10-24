@@ -109,11 +109,11 @@ class IdParallelizeTestTop1(override val desiredName: String)
   }
 }
 
-class IdParallelizeTestTop2(override val desiredName: String)
+class IdParallelizeTestTop2(val wId: Int, val wBufferIdx: Int, override val desiredName: String)
     extends Module
     with chext.HasHdlinfoModule {
 
-  private val cfg = IdParallelizeConfig(axi4.Config(wId = 0, wAddr = 32, wData = 64), 4)
+  private val cfg = IdParallelizeConfig(axi4.Config(wId = 0, wAddr = 32, wData = 64), wId, wBufferIdx)
   private val dut = Module(new IdParallelize(cfg))
 
   val S_AXI = IO(axi4.Slave(cfg.axiSlaveCfg))
@@ -182,5 +182,7 @@ class IdParallelizeTestTop2(override val desiredName: String)
 
 object IdParallelize_TB extends chext.TestBench {
   // emit(new IdParallelizeTestTop1("IdParallelizeTestTop1_1"))
-  emit(new IdParallelizeTestTop2("IdParallelizeTestTop2_1"))
+  emit(new IdParallelizeTestTop2(2, 5, "IdParallelizeTestTop2_1"))
+  emit(new IdParallelizeTestTop2(1, 5, "IdParallelizeTestTop2_2"))
+  emit(new IdParallelizeTestTop2(6, 8, "IdParallelizeTestTop2_3"))
 }

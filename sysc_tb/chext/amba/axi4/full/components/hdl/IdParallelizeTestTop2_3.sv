@@ -1226,7 +1226,7 @@ module IdParallelize(	// src/main/scala/chext/amba/axi4/full/components/IdParall
   assign m_axi_w_bits_last = s_axi_w_bits_last;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
 endmodule
 
-module IdParallelizeTestTop2_1(	// src/test/scala/chext/amba/axi4/full/components/IdParallelize.tb.scala:112:7
+module IdParallelizeTestTop2_3(	// src/test/scala/chext/amba/axi4/full/components/IdParallelize.tb.scala:112:7
   input         clock,	// <stdin>:584:11
                 reset,	// <stdin>:585:11
   output        S_AXI_ARREADY,	// src/test/scala/chext/amba/axi4/full/components/IdParallelize.tb.scala:119:17
