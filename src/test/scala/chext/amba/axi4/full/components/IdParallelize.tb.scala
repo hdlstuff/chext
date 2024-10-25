@@ -113,7 +113,7 @@ class IdParallelizeTestTop2(val wId: Int, val wBufferIdx: Int, val useSyncMem: B
     extends Module
     with chext.HasHdlinfoModule {
 
-  private val cfg = IdParallelizeConfig(axi4.Config(wId = 0, wAddr = 32, wData = 64), wId, wBufferIdx, useSyncMem)
+  private val cfg = IdParallelizeConfig(axi4.Config(wId = 0, wAddr = 32, wData = 64, wUserB = 32 /* for testing purposes */), wId, wBufferIdx, useSyncMem)
   private val dut = Module(new IdParallelize(cfg))
 
   val S_AXI = IO(axi4.Slave(cfg.axiSlaveCfg))

@@ -63,7 +63,7 @@
             "wUserR" : 0,
             "wUserAW" : 0,
             "wUserW" : 0,
-            "wUserB" : 0
+            "wUserB" : 32
           }
         }
       }
@@ -94,7 +94,7 @@
             "wUserR" : 0,
             "wUserAW" : 0,
             "wUserW" : 0,
-            "wUserB" : 0
+            "wUserB" : 32
           }
         }
       }
