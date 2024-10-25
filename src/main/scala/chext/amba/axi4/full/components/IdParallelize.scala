@@ -38,16 +38,16 @@ case class IdParallelizeConfig(
   * @param numOutstandingRead
   */
 private class SyncWriteElasticReadMemory[T <: Data](
-    wAddr: Int,
-    gen: T,
-    numOutstandingRead: Int = 4
+    val wAddr: Int,
+    val gen: T,
+    val useSyncMem: Boolean = true
 ) extends Module {
   require(wAddr >= 0)
   require(wAddr <= 30)
-  require(numOutstandingRead >= 0)
 
   private val genAddr = UInt(wAddr.W)
   private val rdLatency = 1
+  private val numOutstandingRead = 4
 
   val io = IO(new Bundle {
     val wrEn = Input(Bool())
@@ -58,7 +58,7 @@ private class SyncWriteElasticReadMemory[T <: Data](
     val rdResp = Decoupled(gen)
   })
 
-  if (numOutstandingRead > 0) {
+  if (useSyncMem) {
     val sram = SRAM(1 << wAddr, gen, 1, 1, 0)
 
     sram.writePorts(0).enable := io.wrEn
@@ -90,11 +90,10 @@ private class SyncWriteElasticReadMemory[T <: Data](
     when(io.rdResp.fire) {
       rdCounter.dec()
     }
-  }
-  else {
+  } else {
     val mem = Mem(1 << wAddr, gen)
 
-    when (io.wrEn) {
+    when(io.wrEn) {
       mem.write(io.wrAddr, io.wrData)
     }
 
@@ -132,7 +131,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
       new SyncWriteElasticReadMemory(
         wBufferIdx,
         chiselTypeOf(s_axi.r.bits),
-        if (useSyncMem) (1 << wIdMaster) else 0
+        useSyncMem
       )
     )
 
