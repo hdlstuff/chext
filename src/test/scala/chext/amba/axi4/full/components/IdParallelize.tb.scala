@@ -109,11 +109,22 @@ class IdParallelizeTestTop1(override val desiredName: String)
   }
 }
 
-class IdParallelizeTestTop2(val wId: Int, val wBufferIdx: Int, val useSyncMem: Boolean, override val desiredName: String)
-    extends Module
+class IdParallelizeTestTop2(
+    val wId: Int,
+    val wBufferIdx: Int,
+    val readUseSyncMem: Boolean,
+    val writeUseSyncMem: Boolean,
+    override val desiredName: String
+) extends Module
     with chext.HasHdlinfoModule {
 
-  private val cfg = IdParallelizeConfig(axi4.Config(wId = 0, wAddr = 32, wData = 64, wUserB = 32 /* for testing purposes */), wId, wBufferIdx, useSyncMem)
+  private val cfg = IdParallelizeConfig(
+    axi4.Config(wId = 0, wAddr = 32, wData = 64, wUserB = 32 /* for testing purposes */ ),
+    wId,
+    wBufferIdx,
+    readUseSyncMem,
+    writeUseSyncMem
+  )
   private val dut = Module(new IdParallelize(cfg))
 
   val S_AXI = IO(axi4.Slave(cfg.axiSlaveCfg))
@@ -182,11 +193,11 @@ class IdParallelizeTestTop2(val wId: Int, val wBufferIdx: Int, val useSyncMem: B
 
 object IdParallelize_TB extends chext.TestBench {
   // emit(new IdParallelizeTestTop1("IdParallelizeTestTop1_1"))
-  emit(new IdParallelizeTestTop2(2, 5, false, "IdParallelizeTestTop2_1"))
-  emit(new IdParallelizeTestTop2(3, 5, false, "IdParallelizeTestTop2_2"))
-  emit(new IdParallelizeTestTop2(6, 8, false, "IdParallelizeTestTop2_3"))
+  emit(new IdParallelizeTestTop2(2, 5, false, false, "IdParallelizeTestTop2_1"))
+  emit(new IdParallelizeTestTop2(3, 5, false, false, "IdParallelizeTestTop2_2"))
+  emit(new IdParallelizeTestTop2(6, 8, false, false, "IdParallelizeTestTop2_3"))
 
-  emit(new IdParallelizeTestTop2(2, 5, true, "IdParallelizeTestTop2_4"))
-  emit(new IdParallelizeTestTop2(3, 5, true, "IdParallelizeTestTop2_5"))
-  emit(new IdParallelizeTestTop2(6, 8, true, "IdParallelizeTestTop2_6"))
+  emit(new IdParallelizeTestTop2(2, 5, true, true, "IdParallelizeTestTop2_4"))
+  emit(new IdParallelizeTestTop2(3, 5, true, true, "IdParallelizeTestTop2_5"))
+  emit(new IdParallelizeTestTop2(6, 8, true, true, "IdParallelizeTestTop2_6"))
 }
