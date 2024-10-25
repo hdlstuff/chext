@@ -66,7 +66,7 @@ private:
     sc_fifo<axi4::full::Packets::WriteResponse> bFifo;
 
     // test params
-    unsigned numReadTransactions = 0;
+    unsigned numReadTransactions = 4096;
     unsigned numWriteTransactions = 4096;
     unsigned addrOffset = 16;
 
@@ -120,7 +120,7 @@ private:
             j.wait();
         };
 
-#if 0
+#if 1
         enableWaits = false;
         zeroLen = false;
         test();
@@ -134,7 +134,7 @@ private:
         zeroLen = true;
         test();
 
-#if 0
+#if 1
         enableWaits = true;
         zeroLen = true;
         test();

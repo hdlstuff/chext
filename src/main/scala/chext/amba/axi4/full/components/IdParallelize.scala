@@ -18,15 +18,16 @@ import chext.ip.memory
 case class IdParallelizeConfig(
     val axiSlaveCfg: axi4.Config = axi4.Config(wId = 0, wAddr = 12, wData = 64),
     val wIdMaster: Int = 3,
-    val wBufferIdx: Int = 10,
-    val useSyncMem: Boolean = true
+    val wBufferIndex: Int = 10,
+    val readUseSyncMem: Boolean = true,
+    val writeUseSyncMem: Boolean = true
 ) {
   require(axiSlaveCfg.wId == 0)
   val axiMasterCfg = axiSlaveCfg.copy(wId = wIdMaster)
 
   // pedantic, to avoid overflows in the calculations
   assert(wIdMaster <= 30)
-  assert(wBufferIdx <= 30)
+  assert(wBufferIndex <= 30)
 }
 
 /** Creates a memory that supports synchronous writes, elastic reads. If `numOutstandingRead` is
@@ -101,7 +102,6 @@ private class SyncWriteElasticReadMemory[T <: Data](
     io.rdResp.valid := io.rdReq.valid
     io.rdResp.bits := mem.read(io.rdReq.bits)
   }
-
 }
 
 class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Module {
@@ -114,101 +114,87 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     val s_ar = s_axi.ar
     val m_ar = SinkBuffer(m_axi.ar)
 
-    val s_r = s_axi.r
+    val s_r = SinkBuffer(s_axi.r)
     val m_r = m_axi.r
 
-    val genIndex = UInt(wBufferIdx.W)
-    val capacity = (1 << wBufferIdx).U((wBufferIdx + 1).W)
+    val genIndex = UInt(wBufferIndex.W)
+    val bufferCapacity = (1 << wBufferIndex).U((wBufferIndex + 1).W)
 
-    val stComplete = 0.U
-    val stStarted = 1.U
+    val xIndexFill = Mem(1 << wIdMaster, genIndex)
 
-    val memStatus = Mem(1 << wIdMaster, Bool())
-    val memIdxFill = Mem(1 << wIdMaster, genIndex)
-
-    val memRespValid = Mem(1 << wBufferIdx, Bool())
-    val memRespPayload = Module(
+    val bufferValid = Mem(1 << wBufferIndex, Bool())
+    val bufferPayload = Module(
       new SyncWriteElasticReadMemory(
-        wBufferIdx,
+        wBufferIndex,
         chiselTypeOf(s_axi.r.bits),
-        useSyncMem
+        readUseSyncMem
       )
     )
 
     // 1 extra bit set when no more IDs are available
     val nextIdFill = RegInit(0.U((wIdMaster + 1).W))
 
-    val nextIdxFill = RegInit(0.U(wBufferIdx.W))
-    val nextIdxDrain = RegInit(0.U(wBufferIdx.W))
+    val nextIndexFill = RegInit(0.U(wBufferIndex.W))
+    val nextIndexDrain = RegInit(0.U(wBufferIndex.W))
 
-    val available = RegInit(capacity)
+    val bufferAvailable = RegInit(bufferCapacity)
 
-    val transactionCount = Module(new chext.util.Counter((1 << wIdMaster) + 1))
-    transactionCount.noInc()
-    transactionCount.noDec()
+    val xCount = Module(new chext.util.Counter((1 << wIdMaster) + 1))
+    xCount.noInc()
+    xCount.noDec()
 
     s_ar.ready :=
       m_ar.ready &&
         !nextIdFill.dropLsbN(wIdMaster) &&
-        (available >= (s_ar.bits.len + 1.U))
+        (bufferAvailable >= (s_ar.bits.len + 1.U))
 
     m_ar.bits := s_ar.bits
     m_ar.bits.id := nextIdFill
     m_ar.valid := s_ar.fire // m_ar.valid := m_ar.ready (comb loop) && s_ar.valid && ...
 
-    m_r.ready := memStatus(m_r.bits.id) === stStarted
+    m_r.ready := true.B // we always have space in the buffer if the transaction goes through
 
-    memRespPayload.io.rdResp :=> s_r
-
-    if (false) {
-      // debug messages, enable them if needed
-      val mon1 = new chext.util.BackpressureMonitor(s_ar, "s_ar")
-      val mon2 = new chext.util.BackpressureMonitor(s_r, "s_r")
-      val mon3 = new chext.util.BackpressureMonitor(m_ar, "m_ar")
-      val mon4 = new chext.util.BackpressureMonitor(m_r, "m_r")
-    }
+    bufferPayload.io.rdResp :=> s_r
 
     when(s_ar.fire /* eqv to m_ar.fire */ ) {
-      memStatus(nextIdFill) := stStarted
-      memIdxFill(nextIdFill) := nextIdxFill
+      xIndexFill.write(nextIdFill, nextIndexFill)
 
-      nextIdxFill := nextIdxFill + s_ar.bits.len + 1.U
+      nextIndexFill := nextIndexFill + s_ar.bits.len + 1.U
       nextIdFill := nextIdFill + 1.U
-      available := available - (s_ar.bits.len + 1.U)
+      bufferAvailable := bufferAvailable - (s_ar.bits.len + 1.U)
 
-      transactionCount.inc()
+      xCount.inc()
     }
 
-    memRespPayload.io.wrEn := m_r.fire
-    memRespPayload.io.wrAddr := memIdxFill(m_r.bits.id)
-    memRespPayload.io.wrData := m_r.bits
+    bufferPayload.io.wrEn := m_r.fire
+    bufferPayload.io.wrAddr := xIndexFill(m_r.bits.id)
+    bufferPayload.io.wrData := m_r.bits
 
     when(m_r.fire) {
-      memStatus(m_r.bits.id) := !m_r.bits.last
-      memIdxFill(m_r.bits.id) := memIdxFill(m_r.bits.id) + 1.U
-      memRespValid.write(memIdxFill(m_r.bits.id), true.B)
+      xIndexFill.write(m_r.bits.id, xIndexFill.read(m_r.bits.id) + 1.U)
+      bufferValid.write(xIndexFill(m_r.bits.id), true.B)
     }
 
-    memRespPayload.io.rdReq.bits := nextIdxDrain
-    memRespPayload.io.rdReq.valid := memRespValid.read(nextIdxDrain)
+    bufferPayload.io.rdReq.bits := nextIndexDrain
+    bufferPayload.io.rdReq.valid := bufferValid.read(nextIndexDrain)
 
-    when(memRespPayload.io.rdReq.fire) {
-      memRespValid.write(nextIdxDrain, false.B)
-      nextIdxDrain := nextIdxDrain + 1.U
+    when(bufferPayload.io.rdReq.fire) {
+      bufferValid.write(nextIndexDrain, false.B)
+      nextIndexDrain := nextIndexDrain + 1.U
     }
 
     when(s_r.fire) {
       when(s_r.bits.last) {
-        transactionCount.dec()
+        xCount.dec()
       }
     }
 
-    when(transactionCount.zero && !s_ar.fire && !s_r.fire /* protect writes */ ) {
+    when(xCount.zero && !s_ar.fire) {
       nextIdFill := 0.U
-      nextIdxFill := 0.U
-      nextIdxDrain := 0.U
+      nextIndexFill := 0.U
+      nextIndexDrain := 0.U
 
-      available := capacity
+      bufferAvailable := bufferCapacity
     }
   }
 
@@ -219,16 +205,25 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     val s_b = SinkBuffer(s_axi.b)
     val m_b = m_axi.b
 
-    val mem = Mem(1 << wIdMaster, chext.bundles.BundleN(Bool(), chiselTypeOf(s_axi.b.bits)))
+    val bufferValid = Mem(1 << wIdMaster, Bool())
+    val bufferPayload = Module(
+      new SyncWriteElasticReadMemory(
+        wIdMaster,
+        chiselTypeOf(s_axi.b.bits),
+        writeUseSyncMem
+      )
+    )
 
     val nextIdFill = Reg(UInt((wIdMaster + 1).W))
     val nextIdDrain = Reg(UInt(wIdMaster.W))
 
-    val transactionCount = Module(new chext.util.Counter((1 << wIdMaster) + 1))
-    transactionCount.noInc()
-    transactionCount.noDec()
+    val xCount = Module(new chext.util.Counter((1 << wIdMaster) + 1))
+    xCount.noInc()
+    xCount.noDec()
 
-    s_aw.ready := m_aw.ready && !nextIdFill.dropLsbN(wIdMaster)
+    s_aw.ready :=
+      m_aw.ready &&
+        !nextIdFill.dropLsbN(wIdMaster)
 
     m_aw.bits := s_aw.bits
     m_aw.bits.id := nextIdFill
@@ -236,27 +231,34 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
 
     m_b.ready := true.B // we always have space in the buffer if the transaction goes through
 
-    s_b.valid := transactionCount.notZero && mem(nextIdDrain)._1
-    s_b.bits := mem(nextIdDrain)._2
+    bufferPayload.io.rdResp :=> s_b
 
     when(s_aw.fire) {
       nextIdFill := nextIdFill + 1.U
-      transactionCount.inc()
+      xCount.inc()
     }
 
+    bufferPayload.io.wrEn := m_b.fire
+    bufferPayload.io.wrAddr := m_b.bits.id
+    bufferPayload.io.wrData := m_b.bits
+
     when(m_b.fire) {
-      mem(m_b.bits.id)._1 := true.B
-      mem(m_b.bits.id)._2 := m_b.bits
+      bufferValid.write(m_b.bits.id, true.B)
+    }
+
+    bufferPayload.io.rdReq.bits := nextIdDrain
+    bufferPayload.io.rdReq.valid := bufferValid.read(nextIdDrain)
+
+    when(bufferPayload.io.rdReq.fire) {
+      bufferValid.write(nextIdDrain, false.B)
+      nextIdDrain := nextIdDrain + 1.U
     }
 
     when(s_b.fire) {
-      mem(nextIdDrain)._1 := false.B
-
-      nextIdDrain := nextIdDrain + 1.U
-      transactionCount.dec()
+      xCount.dec()
     }
 
-    when(transactionCount.zero && !s_aw.fire && !s_b.fire) {
+    when(xCount.zero && !s_aw.fire) {
       nextIdFill := 0.U
       nextIdDrain := 0.U
     }
