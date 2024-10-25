@@ -489,3 +489,5 @@ gensrc
 output/
 
 .trash
+
+*.vcd

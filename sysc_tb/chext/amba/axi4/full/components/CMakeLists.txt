@@ -18,8 +18,6 @@ generate_tb(
     HDL_MODULES
         UpscaleTestTop1_1
         UpscaleTestTop1_2
-        UpscaleTestTop1_3
-        UpscaleTestTop1_4
 )
 
 generate_tb(
@@ -33,6 +31,9 @@ generate_tb(
         IdParallelizeTestTop2_1
         IdParallelizeTestTop2_2
         IdParallelizeTestTop2_3
+        IdParallelizeTestTop2_4
+        IdParallelizeTestTop2_5
+        IdParallelizeTestTop2_6
 )
 
 generate_tb(

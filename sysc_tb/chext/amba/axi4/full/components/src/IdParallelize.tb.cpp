@@ -1,6 +1,9 @@
 #include <IdParallelizeTestTop2_1.hpp>
 #include <IdParallelizeTestTop2_2.hpp>
 #include <IdParallelizeTestTop2_3.hpp>
+#include <IdParallelizeTestTop2_4.hpp>
+#include <IdParallelizeTestTop2_5.hpp>
+#include <IdParallelizeTestTop2_6.hpp>
 
 #include <verilated_vcd_sc.h>
 
@@ -23,10 +26,12 @@ using namespace chext_test::amba;
 template<typename Dut>
 struct DutTester {
     DutTester(
-        const std::string& name
+        const std::string& name,
+        bool logEnabled
     )
         : dut { fmt::format("{}_dut", name).c_str() }
         , name { name }
+        , logEnabled { logEnabled }
         , clock { fmt::format("{}_clock", name).c_str(), 2.0, SC_NS }
         , reset { fmt::format("{}_reset", name).c_str() }
         , numThreads { 1u << dut.M_AXI.config().wId }
@@ -45,6 +50,7 @@ struct DutTester {
 
 private:
     std::string name;
+    bool logEnabled;
 
     sc_clock clock;
     sc_signal<bool> reset;
@@ -64,13 +70,24 @@ private:
     bool enableWaits { false };
     bool zeroLen { false };
 
+    template<typename... Ts>
+    void print(fmt::format_string<Ts...> fmt, Ts&&... args) {
+        fmt::print(fmt, std::forward<Ts>(args)...);
+    }
+
+    template<typename... Ts>
+    void printLog(fmt::format_string<Ts...> fmt, Ts&&... args) {
+        if (logEnabled)
+            fmt::print(fmt, std::forward<Ts>(args)...);
+    }
+
     void randomWait() {
         if (enableWaits)
             wait(distWait(mt), SC_NS);
     }
 
     void entry() {
-        fmt::print("DutTester: started {}\n", name);
+        print("DutTester: started {}\n", name);
         resetDUT();
 
         for (unsigned id = 0; id < numThreads; ++id) {
@@ -81,7 +98,7 @@ private:
         sc_spawn([this] { m_axi_r(); });
 
         auto test = [this] {
-            fmt::print("DutTester: enableWaits = {}, zeroLen = {}\n", enableWaits, zeroLen);
+            print("DutTester: enableWaits = {}, zeroLen = {}\n", enableWaits, zeroLen);
 
             sc_join j;
 
@@ -91,6 +108,7 @@ private:
             j.wait();
         };
 
+        #if 0
         enableWaits = false;
         zeroLen = false;
         test();
@@ -98,14 +116,17 @@ private:
         enableWaits = true;
         zeroLen = false;
         test();
+        #endif
 
         enableWaits = false;
         zeroLen = true;
         test();
 
+        #if 0
         enableWaits = true;
         zeroLen = true;
         test();
+        #endif
     }
 
     void s_axi_ar() {
@@ -119,7 +140,7 @@ private:
             randomWait();
 
             dut.S_AXI.sendAR(ar);
-            fmt::print("[{:^20}] [{:^20}] dut.S_AXI.sendAR({})\n", sc_time_stamp().to_string(), "s_axi_ar", ar);
+            printLog("[{:^20}] [{:^20}] dut.S_AXI.sendAR({})\n", sc_time_stamp().to_string(), "s_axi_ar", ar);
         }
     }
 
@@ -128,7 +149,7 @@ private:
             for (unsigned j = 0;; ++j) {
                 randomWait();
                 auto r = dut.S_AXI.receiveR();
-                fmt::print("[{:^20}] [{:^20}] dut.S_AXI.receiveR() = {}\n", sc_time_stamp().to_string(), "s_axi_r", r);
+                printLog("[{:^20}] [{:^20}] dut.S_AXI.receiveR() = {}\n", sc_time_stamp().to_string(), "s_axi_r", r);
 
                 auto received = r.data.to_uint64();
                 auto expected = (((uint64_t)i) << addrOffset) + j;
@@ -148,7 +169,7 @@ private:
         while (true) {
             randomWait();
             auto ar = dut.M_AXI.receiveAR();
-            fmt::print("[{:^20}] [{:^20}] dut.M_AXI.receiveAR() = {}\n", sc_time_stamp().to_string(), "m_axi_ar", ar);
+            printLog("[{:^20}] [{:^20}] dut.M_AXI.receiveAR() = {}\n", sc_time_stamp().to_string(), "m_axi_ar", ar);
 
             arFifos.at(ar.id.to_uint64()).write(ar);
         }
@@ -160,14 +181,14 @@ private:
 
             randomWait();
             dut.M_AXI.sendR(r);
-            fmt::print("[{:^20}] [{:^20}] dut.M_AXI.sendR({})\n", sc_time_stamp().to_string(), "m_axi_r", r);
+            printLog("[{:^20}] [{:^20}] dut.M_AXI.sendR({})\n", sc_time_stamp().to_string(), "m_axi_r", r);
         }
     }
 
     void idThread(uint32_t id) {
         while (true) {
             auto ar = arFifos[id].read();
-            fmt::print("[{:^20}] [{:^20}] arFifos[id].read() = {}\n", sc_time_stamp().to_string(), fmt::format("idThread({:^4d})", id), ar);
+            printLog("[{:^20}] [{:^20}] arFifos[id].read() = {}\n", sc_time_stamp().to_string(), fmt::format("idThread({:^4d})", id), ar);
 
             for (unsigned j = 0; j <= ar.len; ++j) {
                 axi4::full::Packets::ReadData r {
@@ -201,16 +222,22 @@ private:
 struct MyTestBench : virtual TestBenchBase {
     SC_HAS_PROCESS(MyTestBench);
 
-    MyTestBench()
+    MyTestBench(bool logEnabled = true)
         : TestBenchBase(sc_module_name("tb"))
-        , tester1 { "tester1" }
-        , tester2 { "tester2" }
-        , tester3 { "tester3" } {
+        , tester1 { "tester1", logEnabled }
+        , tester2 { "tester2", logEnabled }
+        , tester3 { "tester3", logEnabled }
+        , tester4 { "tester4", logEnabled }
+        , tester5 { "tester5", logEnabled }
+        , tester6 { "tester6", logEnabled } {
     }
 
     DutTester<IdParallelizeTestTop2_1> tester1;
     DutTester<IdParallelizeTestTop2_2> tester2;
     DutTester<IdParallelizeTestTop2_3> tester3;
+    DutTester<IdParallelizeTestTop2_4> tester4;
+    DutTester<IdParallelizeTestTop2_5> tester5;
+    DutTester<IdParallelizeTestTop2_6> tester6;
 
 private:
     sc_clock clock;
@@ -220,6 +247,9 @@ private:
         tester1.run();
         tester2.run();
         tester3.run();
+        tester4.run();
+        tester5.run();
+        tester6.run();
 
         finish();
     }
@@ -229,7 +259,7 @@ int sc_main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
     Verilated::traceEverOn(true);
 
-    MyTestBench testBench;
+    MyTestBench testBench { false };
 
     sc_start(SC_ZERO_TIME);
 

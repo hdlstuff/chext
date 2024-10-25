@@ -55,35 +55,6 @@
   `endif // not def ENABLE_INITIAL_MEM_
 `endif // not def SYNTHESIS
 
-// Standard header to adapt well known macros for prints and assertions.
-
-// Users can define 'PRINTF_COND' to add an extra gate to prints.
-`ifndef PRINTF_COND_
-  `ifdef PRINTF_COND
-    `define PRINTF_COND_ (`PRINTF_COND)
-  `else  // PRINTF_COND
-    `define PRINTF_COND_ 1
-  `endif // PRINTF_COND
-`endif // not def PRINTF_COND_
-
-// Users can define 'ASSERT_VERBOSE_COND' to add an extra gate to assert error printing.
-`ifndef ASSERT_VERBOSE_COND_
-  `ifdef ASSERT_VERBOSE_COND
-    `define ASSERT_VERBOSE_COND_ (`ASSERT_VERBOSE_COND)
-  `else  // ASSERT_VERBOSE_COND
-    `define ASSERT_VERBOSE_COND_ 1
-  `endif // ASSERT_VERBOSE_COND
-`endif // not def ASSERT_VERBOSE_COND_
-
-// Users can define 'STOP_COND' to add an extra gate to stop conditions.
-`ifndef STOP_COND_
-  `ifdef STOP_COND
-    `define STOP_COND_ (`STOP_COND)
-  `else  // STOP_COND
-    `define STOP_COND_ 1
-  `endif // STOP_COND
-`endif // not def STOP_COND_
-
 // VCS coverage exclude_file
 module ram_2x64(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
   input         R0_addr,
@@ -226,127 +197,85 @@ module Queue2_ReadAddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala
 endmodule
 
 // VCS coverage exclude_file
-module ram_2x67(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  input         R0_addr,
-                R0_en,
+module mem_32x67(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+  input  [4:0]  R0_addr,
+  input         R0_en,
                 R0_clk,
   output [66:0] R0_data,
-  input         W0_addr,
-                W0_en,
+  input  [4:0]  W0_addr,
+  input         W0_en,
                 W0_clk,
   input  [66:0] W0_data
 );
 
-  reg [66:0] Memory[0:1];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  always @(posedge W0_clk) begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    if (W0_en & 1'h1)	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      Memory[W0_addr] <= W0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  reg [66:0] Memory[0:31];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+    if (W0_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+      Memory[W0_addr] <= W0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    reg [95:0] _RANDOM_MEM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-        for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
+  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+    reg [95:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+        for (logic [5:0] i = 6'h0; i < 6'h20; i += 6'h1) begin
           for (logic [6:0] j = 7'h0; j < 7'h60; j += 7'h20) begin
-            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-          Memory[i[0]] = _RANDOM_MEM[66:0];	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-        end	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+          end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+          Memory[i[4:0]] = _RANDOM_MEM[66:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
       `endif // RANDOMIZE_MEM_INIT
     end // initial
   `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 67'bx;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+  assign R0_data = R0_en ? Memory[R0_addr] : 67'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
 endmodule
 
-module Queue2_ReadDataChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+module SyncWriteElasticReadMemory(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:40:15
   input         clock,	// <stdin>:96:11
-                reset,	// <stdin>:97:11
-  output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [63:0] io_enq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input  [1:0]  io_enq_bits_resp,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  input         io_enq_bits_last,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-                io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output        io_deq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [63:0] io_deq_bits_data,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output [1:0]  io_deq_bits_resp,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
-  output        io_deq_bits_last	// src/main/scala/chisel3/util/Decoupled.scala:255:14
+                io_wrEn,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  input  [4:0]  io_wrAddr,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  input  [63:0] io_wrData_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  input  [1:0]  io_wrData_resp,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  input         io_wrData_last,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  output        io_rdReq_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  input         io_rdReq_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  input  [4:0]  io_rdReq_bits,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  input         io_rdResp_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  output        io_rdResp_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  output [63:0] io_rdResp_bits_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  output [1:0]  io_rdResp_bits_resp,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
+  output        io_rdResp_bits_last	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:52:14
 );
 
-  wire [66:0] _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-  reg         wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27
-  wire        ptr_match = wrap == wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:260:33
-  wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
-  wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
-  wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:96:11
-    if (reset) begin	// <stdin>:96:11
-      wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-      wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-      maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
-    end
-    else begin	// <stdin>:96:11
-      automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
-      if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        wrap_1 <= wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(do_enq == do_deq))	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27, :276:{15,27}, :277:16
-        maybe_full <= do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :259:27
-    end
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        `INIT_RANDOM_PROLOG_	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-        wrap = _RANDOM[/*Zero width*/ 1'b0][0];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        wrap_1 = _RANDOM[/*Zero width*/ 1'b0][1];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
-        maybe_full = _RANDOM[/*Zero width*/ 1'b0][2];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
-      `endif // RANDOMIZE_REG_INIT
-    end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-      `FIRRTL_AFTER_INITIAL	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-    `endif // FIRRTL_AFTER_INITIAL
-  `endif // ENABLE_INITIAL_REG_
-  ram_2x67 ram_ext (	// src/main/scala/chisel3/util/Decoupled.scala:256:91
-    .R0_addr (wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .R0_en   (1'h1),	// src/main/scala/chisel3/util/Decoupled.scala:243:7
+  wire [66:0] _mem_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+  mem_32x67 mem_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
+    .R0_addr (io_rdReq_bits),
+    .R0_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:40:15
     .R0_clk  (clock),
-    .R0_data (_ram_ext_R0_data),
-    .W0_addr (wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .W0_en   (do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .R0_data (_mem_ext_R0_data),
+    .W0_addr (io_wrAddr),
+    .W0_en   (io_wrEn),
     .W0_clk  (clock),
-    .W0_data ({io_enq_bits_last, io_enq_bits_resp, io_enq_bits_data})	// src/main/scala/chisel3/util/Decoupled.scala:256:91
+    .W0_data ({io_wrData_last, io_wrData_resp, io_wrData_data})	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:95:18
   );
-  assign io_enq_ready = ~full;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :262:24, :286:19
-  assign io_deq_valid = ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :261:25, :285:19
-  assign io_deq_bits_data = _ram_ext_R0_data[63:0];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_resp = _ram_ext_R0_data[65:64];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
-  assign io_deq_bits_last = _ram_ext_R0_data[66];	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91
+  assign io_rdReq_ready = io_rdResp_ready;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:40:15
+  assign io_rdResp_valid = io_rdReq_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:40:15
+  assign io_rdResp_bits_data = _mem_ext_R0_data[63:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:40:15, :95:18
+  assign io_rdResp_bits_resp = _mem_ext_R0_data[65:64];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:40:15, :95:18
+  assign io_rdResp_bits_last = _mem_ext_R0_data[66];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:40:15, :95:18
 endmodule
 
 module Counter(	// src/main/scala/chext/util/Counter.scala:6:7
-  input  clock,	// <stdin>:147:11, :273:11
-         reset,	// <stdin>:148:11, :274:11
+  input  clock,	// <stdin>:110:11, :236:11
+         reset,	// <stdin>:111:11, :237:11
          io_incEn,	// src/main/scala/chext/util/Counter.scala:7:14
          io_decEn,	// src/main/scala/chext/util/Counter.scala:7:14
-  output io_empty,	// src/main/scala/chext/util/Counter.scala:7:14
-         io_full	// src/main/scala/chext/util/Counter.scala:7:14
+  output io_empty	// src/main/scala/chext/util/Counter.scala:7:14
 );
 
   reg [3:0] rCounter;	// src/main/scala/chext/util/Counter.scala:16:33
-  always @(posedge clock) begin	// <stdin>:147:11, :273:11
-    if (reset)	// <stdin>:147:11, :273:11
+  always @(posedge clock) begin	// <stdin>:110:11, :236:11
+    if (reset)	// <stdin>:110:11, :236:11
       rCounter <= 4'h0;	// src/main/scala/chext/util/Counter.scala:16:33
     else if (~(io_incEn & io_decEn)) begin	// src/main/scala/chext/util/Counter.scala:18:17
       if (io_incEn)	// src/main/scala/chext/util/Counter.scala:7:14
@@ -374,12 +303,11 @@ module Counter(	// src/main/scala/chext/util/Counter.scala:6:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   assign io_empty = rCounter == 4'h0;	// src/main/scala/chext/util/Counter.scala:6:7, :16:33, :26:24
-  assign io_full = rCounter == 4'h8;	// src/main/scala/chext/util/Counter.scala:6:7, :16:33, :27:23
 endmodule
 
 module Queue2_WriteAddressChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:171:11
-                reset,	// <stdin>:172:11
+  input         clock,	// <stdin>:134:11
+                reset,	// <stdin>:135:11
   output        io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [2:0]  io_enq_bits_id,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -414,13 +342,13 @@ module Queue2_WriteAddressChannel(	// src/main/scala/chisel3/util/Decoupled.scal
   wire        empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire        full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire        do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:171:11
-    if (reset) begin	// <stdin>:171:11
+  always @(posedge clock) begin	// <stdin>:134:11
+    if (reset) begin	// <stdin>:134:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:171:11
+    else begin	// <stdin>:134:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -517,8 +445,8 @@ module ram_2x2(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue2_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input        clock,	// <stdin>:222:11
-               reset,	// <stdin>:223:11
+  input        clock,	// <stdin>:185:11
+               reset,	// <stdin>:186:11
   output       io_enq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input        io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [1:0] io_enq_bits_resp,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -534,13 +462,13 @@ module Queue2_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.sca
   wire empty = ptr_match & ~maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :261:{25,28}
   wire full = ptr_match & maybe_full;	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24
   wire do_enq = ~full & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :262:24, :286:19
-  always @(posedge clock) begin	// <stdin>:222:11
-    if (reset) begin	// <stdin>:222:11
+  always @(posedge clock) begin	// <stdin>:185:11
+    if (reset) begin	// <stdin>:185:11
       wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       wrap_1 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/chisel3/util/Decoupled.scala:243:7
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:222:11
+    else begin	// <stdin>:185:11
       automatic logic do_deq = io_deq_ready & ~empty;	// src/main/scala/chisel3/util/Decoupled.scala:51:35, :261:25, :285:19
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -585,49 +513,53 @@ module Queue2_WriteResponseChannel(	// src/main/scala/chisel3/util/Decoupled.sca
 endmodule
 
 // VCS coverage exclude_file
-module read_memStatus_8x2(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
+module read_memStatus_8x1(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
   input  [2:0] R0_addr,
   input        R0_en,
                R0_clk,
-  output [1:0] R0_data,
+  output       R0_data,
   input  [2:0] W0_addr,
   input        W0_en,
                W0_clk,
-  input  [1:0] W0_data,
+               W0_data,
   input  [2:0] W1_addr,
   input        W1_en,
                W1_clk,
-  input  [1:0] W1_data
+               W1_data
 );
 
-  reg [1:0] Memory[0:7];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-    if (W0_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-      Memory[W0_addr] <= W0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-    if (W1_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-      Memory[W1_addr] <= W1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
+  reg Memory[0:7];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+    if (W0_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+      Memory[W0_addr] <= W0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+    if (W1_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+      Memory[W1_addr] <= W1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-    reg [31:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
+  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+    reg [31:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
         for (logic [3:0] i = 4'h0; i < 4'h8; i += 4'h1) begin
-          _RANDOM_MEM = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-          Memory[i[2:0]] = _RANDOM_MEM[1:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
+          _RANDOM_MEM = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+          Memory[i[2:0]] = _RANDOM_MEM[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
       `endif // RANDOMIZE_MEM_INIT
     end // initial
   `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 2'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
+  assign R0_data = R0_en ? Memory[R0_addr] : 1'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
 endmodule
 
 // VCS coverage exclude_file
-module read_memIndexFill_8x5(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
+module read_memIdxFill_8x5(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
   input  [2:0] R0_addr,
   input        R0_en,
                R0_clk,
   output [4:0] R0_data,
+  input  [2:0] R1_addr,
+  input        R1_en,
+               R1_clk,
+  output [4:0] R1_data,
   input  [2:0] W0_addr,
   input        W0_en,
                W0_clk,
@@ -638,30 +570,31 @@ module read_memIndexFill_8x5(	// src/main/scala/chext/amba/axi4/full/components/
   input  [4:0] W1_data
 );
 
-  reg [4:0] Memory[0:7];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-    if (W0_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-      Memory[W0_addr] <= W0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-    if (W1_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-      Memory[W1_addr] <= W1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
+  reg [4:0] Memory[0:7];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+    if (W0_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+      Memory[W0_addr] <= W0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+    if (W1_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+      Memory[W1_addr] <= W1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-    reg [31:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
+  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+    reg [31:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
         for (logic [3:0] i = 4'h0; i < 4'h8; i += 4'h1) begin
-          _RANDOM_MEM = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-          Memory[i[2:0]] = _RANDOM_MEM[4:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
+          _RANDOM_MEM = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+          Memory[i[2:0]] = _RANDOM_MEM[4:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
       `endif // RANDOMIZE_MEM_INIT
     end // initial
   `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 5'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
+  assign R0_data = R0_en ? Memory[R0_addr] : 5'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+  assign R1_data = R1_en ? Memory[R1_addr] : 5'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
 endmodule
 
 // VCS coverage exclude_file
-module read_memRespValid_32x1(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
+module read_memRespValid_32x1(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
   input  [4:0] R0_addr,
   input        R0_en,
                R0_clk,
@@ -676,69 +609,30 @@ module read_memRespValid_32x1(	// src/main/scala/chext/amba/axi4/full/components
                W1_data
 );
 
-  reg Memory[0:31];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-    if (W0_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-      Memory[W0_addr] <= W0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-    if (W1_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-      Memory[W1_addr] <= W1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
+  reg Memory[0:31];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+    if (W0_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+      Memory[W0_addr] <= W0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+    if (W1_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+      Memory[W1_addr] <= W1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-    reg [31:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
+  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+    reg [31:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
         for (logic [5:0] i = 6'h0; i < 6'h20; i += 6'h1) begin
-          _RANDOM_MEM = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-          Memory[i[4:0]] = _RANDOM_MEM[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
+          _RANDOM_MEM = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+          Memory[i[4:0]] = _RANDOM_MEM[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
       `endif // RANDOMIZE_MEM_INIT
     end // initial
   `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 1'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
+  assign R0_data = R0_en ? Memory[R0_addr] : 1'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
 endmodule
 
 // VCS coverage exclude_file
-module read_memRespPayload_32x67(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-  input  [4:0]  R0_addr,
-  input         R0_en,
-                R0_clk,
-  output [66:0] R0_data,
-  input  [4:0]  R1_addr,
-  input         R1_en,
-                R1_clk,
-  output [66:0] R1_data,
-  input  [4:0]  W0_addr,
-  input         W0_en,
-                W0_clk,
-  input  [66:0] W0_data
-);
-
-  reg [66:0] Memory[0:31];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-    if (W0_en & 1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-      Memory[W0_addr] <= W0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-  end // always @(posedge)
-  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-    reg [95:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-        for (logic [5:0] i = 6'h0; i < 6'h20; i += 6'h1) begin
-          for (logic [6:0] j = 7'h0; j < 7'h60; j += 7'h20) begin
-            _RANDOM_MEM[j +: 32] = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-          end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-          Memory[i[4:0]] = _RANDOM_MEM[66:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-      `endif // RANDOMIZE_MEM_INIT
-    end // initial
-  `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 67'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-  assign R1_data = R1_en ? Memory[R1_addr] : 67'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-endmodule
-
-// VCS coverage exclude_file
-module write_mem_8x3(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
+module write_mem_8x3(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
   input  [2:0] R0_addr,
   input        R0_en,
                R0_clk,
@@ -764,278 +658,212 @@ module write_mem_8x3(	// src/main/scala/chext/amba/axi4/full/components/IdParall
                W2_mask
 );
 
-  reg [2:0] Memory[0:7];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    if (W0_en & W0_mask[0])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      Memory[W0_addr][32'h0 +: 1] <= W0_data[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    if (W0_en & W0_mask[1])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      Memory[W0_addr][32'h1 +: 1] <= W0_data[1];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    if (W0_en & W0_mask[2])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      Memory[W0_addr][32'h2 +: 1] <= W0_data[2];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    if (W1_en & W1_mask[0])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      Memory[W1_addr][32'h0 +: 1] <= W1_data[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    if (W1_en & W1_mask[1])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      Memory[W1_addr][32'h1 +: 1] <= W1_data[1];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    if (W1_en & W1_mask[2])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      Memory[W1_addr][32'h2 +: 1] <= W1_data[2];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    if (W2_en & W2_mask[0])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      Memory[W2_addr][32'h0 +: 1] <= W2_data[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    if (W2_en & W2_mask[1])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      Memory[W2_addr][32'h1 +: 1] <= W2_data[1];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    if (W2_en & W2_mask[2])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      Memory[W2_addr][32'h2 +: 1] <= W2_data[2];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
+  reg [2:0] Memory[0:7];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+  always @(posedge W0_clk) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    if (W0_en & W0_mask[0])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      Memory[W0_addr][32'h0 +: 1] <= W0_data[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    if (W0_en & W0_mask[1])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      Memory[W0_addr][32'h1 +: 1] <= W0_data[1];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    if (W0_en & W0_mask[2])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      Memory[W0_addr][32'h2 +: 1] <= W0_data[2];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    if (W1_en & W1_mask[0])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      Memory[W1_addr][32'h0 +: 1] <= W1_data[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    if (W1_en & W1_mask[1])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      Memory[W1_addr][32'h1 +: 1] <= W1_data[1];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    if (W1_en & W1_mask[2])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      Memory[W1_addr][32'h2 +: 1] <= W1_data[2];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    if (W2_en & W2_mask[0])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      Memory[W2_addr][32'h0 +: 1] <= W2_data[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    if (W2_en & W2_mask[1])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      Memory[W2_addr][32'h1 +: 1] <= W2_data[1];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    if (W2_en & W2_mask[2])	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      Memory[W2_addr][32'h2 +: 1] <= W2_data[2];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    reg [31:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
+  `ifdef ENABLE_INITIAL_MEM_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    reg [31:0] _RANDOM_MEM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+      `ifdef RANDOMIZE_MEM_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
         for (logic [3:0] i = 4'h0; i < 4'h8; i += 4'h1) begin
-          _RANDOM_MEM = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-          Memory[i[2:0]] = _RANDOM_MEM[2:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
+          _RANDOM_MEM = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+          Memory[i[2:0]] = _RANDOM_MEM[2:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
       `endif // RANDOMIZE_MEM_INIT
     end // initial
   `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 3'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-  assign R1_data = R1_en ? Memory[R1_addr] : 3'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
+  assign R0_data = R0_en ? Memory[R0_addr] : 3'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+  assign R1_data = R1_en ? Memory[R1_addr] : 3'bx;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
 endmodule
 
-module IdParallelize(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-  input         clock,	// <stdin>:297:11
-                reset,	// <stdin>:298:11
-  output        s_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input         s_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [31:0] s_axi_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [7:0]  s_axi_ar_bits_len,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [2:0]  s_axi_ar_bits_size,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [1:0]  s_axi_ar_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input         s_axi_ar_bits_lock,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [3:0]  s_axi_ar_bits_cache,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [2:0]  s_axi_ar_bits_prot,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [3:0]  s_axi_ar_bits_qos,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-                s_axi_ar_bits_region,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input         s_axi_r_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  output        s_axi_r_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  output [63:0] s_axi_r_bits_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  output [1:0]  s_axi_r_bits_resp,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  output        s_axi_r_bits_last,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-                s_axi_aw_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input         s_axi_aw_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [31:0] s_axi_aw_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [7:0]  s_axi_aw_bits_len,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [2:0]  s_axi_aw_bits_size,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [1:0]  s_axi_aw_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input         s_axi_aw_bits_lock,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [3:0]  s_axi_aw_bits_cache,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [2:0]  s_axi_aw_bits_prot,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [3:0]  s_axi_aw_bits_qos,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-                s_axi_aw_bits_region,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  output        s_axi_w_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input         s_axi_w_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [63:0] s_axi_w_bits_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input  [7:0]  s_axi_w_bits_strb,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input         s_axi_w_bits_last,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-                s_axi_b_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  output        s_axi_b_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  output [1:0]  s_axi_b_bits_resp,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17
-  input         m_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output        m_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [2:0]  m_axi_ar_bits_id,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [31:0] m_axi_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [7:0]  m_axi_ar_bits_len,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [2:0]  m_axi_ar_bits_size,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [1:0]  m_axi_ar_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output        m_axi_ar_bits_lock,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [3:0]  m_axi_ar_bits_cache,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [2:0]  m_axi_ar_bits_prot,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [3:0]  m_axi_ar_bits_qos,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-                m_axi_ar_bits_region,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output        m_axi_r_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  input         m_axi_r_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  input  [2:0]  m_axi_r_bits_id,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  input  [63:0] m_axi_r_bits_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  input  [1:0]  m_axi_r_bits_resp,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  input         m_axi_r_bits_last,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-                m_axi_aw_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output        m_axi_aw_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [2:0]  m_axi_aw_bits_id,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [31:0] m_axi_aw_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [7:0]  m_axi_aw_bits_len,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [2:0]  m_axi_aw_bits_size,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [1:0]  m_axi_aw_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output        m_axi_aw_bits_lock,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [3:0]  m_axi_aw_bits_cache,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [2:0]  m_axi_aw_bits_prot,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [3:0]  m_axi_aw_bits_qos,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-                m_axi_aw_bits_region,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  input         m_axi_w_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output        m_axi_w_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [63:0] m_axi_w_bits_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output [7:0]  m_axi_w_bits_strb,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  output        m_axi_w_bits_last,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  input         m_axi_b_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  input  [2:0]  m_axi_b_bits_id,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
-  input  [1:0]  m_axi_b_bits_resp	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:33:17
+module IdParallelize(	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+  input         clock,	// <stdin>:260:11
+                reset,	// <stdin>:261:11
+  output        s_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input         s_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [31:0] s_axi_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [7:0]  s_axi_ar_bits_len,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [2:0]  s_axi_ar_bits_size,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [1:0]  s_axi_ar_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input         s_axi_ar_bits_lock,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [3:0]  s_axi_ar_bits_cache,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [2:0]  s_axi_ar_bits_prot,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [3:0]  s_axi_ar_bits_qos,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+                s_axi_ar_bits_region,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input         s_axi_r_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  output        s_axi_r_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  output [63:0] s_axi_r_bits_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  output [1:0]  s_axi_r_bits_resp,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  output        s_axi_r_bits_last,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+                s_axi_aw_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input         s_axi_aw_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [31:0] s_axi_aw_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [7:0]  s_axi_aw_bits_len,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [2:0]  s_axi_aw_bits_size,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [1:0]  s_axi_aw_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input         s_axi_aw_bits_lock,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [3:0]  s_axi_aw_bits_cache,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [2:0]  s_axi_aw_bits_prot,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [3:0]  s_axi_aw_bits_qos,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+                s_axi_aw_bits_region,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  output        s_axi_w_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input         s_axi_w_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [63:0] s_axi_w_bits_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input  [7:0]  s_axi_w_bits_strb,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input         s_axi_w_bits_last,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+                s_axi_b_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  output        s_axi_b_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  output [1:0]  s_axi_b_bits_resp,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17
+  input         m_axi_ar_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output        m_axi_ar_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [2:0]  m_axi_ar_bits_id,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [31:0] m_axi_ar_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [7:0]  m_axi_ar_bits_len,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [2:0]  m_axi_ar_bits_size,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [1:0]  m_axi_ar_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output        m_axi_ar_bits_lock,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [3:0]  m_axi_ar_bits_cache,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [2:0]  m_axi_ar_bits_prot,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [3:0]  m_axi_ar_bits_qos,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+                m_axi_ar_bits_region,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output        m_axi_r_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  input         m_axi_r_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  input  [2:0]  m_axi_r_bits_id,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  input  [63:0] m_axi_r_bits_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  input  [1:0]  m_axi_r_bits_resp,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  input         m_axi_r_bits_last,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+                m_axi_aw_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output        m_axi_aw_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [2:0]  m_axi_aw_bits_id,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [31:0] m_axi_aw_bits_addr,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [7:0]  m_axi_aw_bits_len,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [2:0]  m_axi_aw_bits_size,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [1:0]  m_axi_aw_bits_burst,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output        m_axi_aw_bits_lock,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [3:0]  m_axi_aw_bits_cache,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [2:0]  m_axi_aw_bits_prot,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [3:0]  m_axi_aw_bits_qos,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+                m_axi_aw_bits_region,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  input         m_axi_w_ready,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output        m_axi_w_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [63:0] m_axi_w_bits_data,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output [7:0]  m_axi_w_bits_strb,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  output        m_axi_w_bits_last,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  input         m_axi_b_valid,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  input  [2:0]  m_axi_b_bits_id,	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
+  input  [1:0]  m_axi_b_bits_resp	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:112:17
 );
 
-  wire        _write_transactionCount_io_empty;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:136:34
-  wire        _write_transactionCount_io_full;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:136:34
-  wire [2:0]  _write_mem_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-  wire [2:0]  _write_mem_ext_R1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-  wire        _write_s_b_sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
-  wire        _write_m_aw_sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
-  wire        _read_transactionCount_io_empty;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:60:34
-  wire [66:0] _read_memRespPayload_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-  wire [66:0] _read_memRespPayload_ext_R1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-  wire        _read_memRespValid_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-  wire [4:0]  _read_memIndexFill_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-  wire [1:0]  _read_memStatus_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
-  wire        _read_s_r_sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
-  wire        _read_m_ar_sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
-  reg  [3:0]  read_nextIdFill;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:53:29
-  reg  [4:0]  read_nextIdxFill;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:55:30
-  reg  [4:0]  read_nextIdxDrain;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:56:31
-  reg  [5:0]  read_available;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:58:28
-  wire [7:0]  _read_available_T = s_axi_ar_bits_len + 8'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:67:38
-  wire        s_axi_ar_ready_0 =
+  wire       _write_transactionCount_io_empty;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:228:34
+  wire [2:0] _write_mem_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+  wire [2:0] _write_mem_ext_R1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+  wire       _write_s_b_sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire       _write_m_aw_sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  wire       _read_transactionCount_io_empty;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:147:34
+  wire       _read_memRespPayload_io_rdReq_ready;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:32
+  wire       _read_memRespPayload_io_rdResp_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:32
+  wire       _read_memRespPayload_io_rdResp_bits_last;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:32
+  wire       _read_memRespValid_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+  wire [4:0] _read_memIdxFill_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+  wire [4:0] _read_memIdxFill_ext_R1_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+  wire       _read_memStatus_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
+  wire       _read_m_ar_sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30
+  reg  [3:0] read_nextIdFill;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:29
+  reg  [4:0] read_nextIdxFill;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:142:30
+  reg  [4:0] read_nextIdxDrain;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:143:31
+  reg  [5:0] read_available;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:145:28
+  wire [7:0] _read_available_T = s_axi_ar_bits_len + 8'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:154:38
+  wire       s_axi_ar_ready_0 =
     _read_m_ar_sinkBuffer_io_enq_ready & ~(read_nextIdFill[3])
-    & {2'h0, read_available} >= _read_available_T;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:53:29, :58:28, :66:{9,41}, :67:{20,38}, src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/util/BitOps.scala:82:10
-  wire        read_m_ar_valid = s_axi_ar_ready_0 & s_axi_ar_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:66:41, src/main/scala/chisel3/util/Decoupled.scala:51:35
-  wire        m_axi_r_ready_0 = _read_memStatus_ext_R0_data == 2'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24, :73:41, :87:29
-  reg  [31:0] read_mon1_counter;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-  reg         read_mon1_doPrint;	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24
-  wire        _read_mon1_T_1 = s_axi_ar_valid & ~s_axi_ar_ready_0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:66:41, src/main/scala/chext/util/BackpressureMonitor.scala:13:{17,20}
-  reg  [31:0] read_mon2_counter;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-  reg         read_mon2_doPrint;	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24
-  wire        _read_mon2_T_1 =
-    _read_memRespValid_ext_R0_data & ~_read_s_r_sinkBuffer_io_enq_ready;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27, src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/util/BackpressureMonitor.scala:13:{17,20}
-  reg  [31:0] read_mon3_counter;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-  reg         read_mon3_doPrint;	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24
-  wire        _read_mon3_T_1 = read_m_ar_valid & ~_read_m_ar_sinkBuffer_io_enq_ready;	// src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/util/BackpressureMonitor.scala:13:{17,20}, src/main/scala/chisel3/util/Decoupled.scala:51:35
-  reg  [31:0] read_mon4_counter;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-  reg         read_mon4_doPrint;	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24
-  wire        _read_mon4_T_1 = m_axi_r_valid & ~m_axi_r_ready_0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:73:41, src/main/scala/chext/util/BackpressureMonitor.scala:13:{17,20}
-  wire        read_memRespPayload_read_MPORT_8_en = m_axi_r_ready_0 & m_axi_r_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:73:41, src/main/scala/chisel3/util/Decoupled.scala:51:35
-  wire        read_memRespPayload_read_MPORT_9_en =
-    _read_s_r_sinkBuffer_io_enq_ready & _read_memRespValid_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27, src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chisel3/util/Decoupled.scala:51:35
-  reg  [2:0]  write_nextIdFill;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:133:25
-  reg  [2:0]  write_nextIdDrain;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:134:26
-  wire        s_axi_aw_ready_0 =
-    _write_m_aw_sinkBuffer_io_enq_ready & ~_write_transactionCount_io_full;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:136:34, :140:30, src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/util/Counter.scala:33:17
-  wire        write_m_aw_valid = s_axi_aw_ready_0 & s_axi_aw_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:30, src/main/scala/chisel3/util/Decoupled.scala:51:35
-  wire        write_s_b_valid =
-    ~_write_transactionCount_io_empty & _write_mem_ext_R0_data[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18, :136:34, :148:43, src/main/scala/chext/util/Counter.scala:30:17
-  `ifndef SYNTHESIS	// src/main/scala/chext/util/BackpressureMonitor.scala:15:13
-    always @(posedge clock) begin	// src/main/scala/chext/util/BackpressureMonitor.scala:15:13
-      if ((`PRINTF_COND_) & _read_mon1_T_1 & read_mon1_doPrint & ~reset)	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24, :13:17, :15:13
-        $fwrite(32'h80000002,
-                "[BackpressureMonitor] counter = %d: Backpressure on s_ar\n",
-                read_mon1_counter);	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :15:13
-      if ((`PRINTF_COND_) & _read_mon2_T_1 & read_mon2_doPrint & ~reset)	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24, :13:17, :15:13
-        $fwrite(32'h80000002, "[BackpressureMonitor] counter = %d: Backpressure on s_r\n",
-                read_mon2_counter);	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :15:13
-      if ((`PRINTF_COND_) & _read_mon3_T_1 & read_mon3_doPrint & ~reset)	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24, :13:17, :15:13
-        $fwrite(32'h80000002,
-                "[BackpressureMonitor] counter = %d: Backpressure on m_ar\n",
-                read_mon3_counter);	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :15:13
-      if ((`PRINTF_COND_) & _read_mon4_T_1 & read_mon4_doPrint & ~reset)	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24, :13:17, :15:13
-        $fwrite(32'h80000002, "[BackpressureMonitor] counter = %d: Backpressure on m_r\n",
-                read_mon4_counter);	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :15:13
-      if (write_m_aw_valid & ~reset & (|s_axi_aw_bits_len)) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:152:{13,28}, src/main/scala/chisel3/util/Decoupled.scala:51:35
-        if (`ASSERT_VERBOSE_COND_)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:152:13
-          $error("Assertion failed\n    at IdParallelize.scala:152 assert(s_aw.bits.len === 0.U)\n");	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:152:13
-        if (`STOP_COND_)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:152:13
-          $fatal;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:152:13
-      end
-    end // always @(posedge)
-  `endif // not def SYNTHESIS
-  wire        write_mem_write_MPORT_2_en =
-    _write_s_b_sinkBuffer_io_enq_ready & write_s_b_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:148:43, src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chisel3/util/Decoupled.scala:51:35
-  always @(posedge clock) begin	// <stdin>:297:11
-    if (reset) begin	// <stdin>:297:11
-      read_nextIdFill <= 4'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:53:29
-      read_nextIdxFill <= 5'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:55:30
-      read_nextIdxDrain <= 5'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:55:30, :56:31
-      read_available <= 6'h20;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:58:28
-      read_mon1_counter <= 32'h0;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-      read_mon1_doPrint <= 1'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:11:24
-      read_mon2_counter <= 32'h0;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-      read_mon2_doPrint <= 1'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:11:24
-      read_mon3_counter <= 32'h0;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-      read_mon3_doPrint <= 1'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:11:24
-      read_mon4_counter <= 32'h0;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-      read_mon4_doPrint <= 1'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:11:24
+    & {2'h0, read_available} >= _read_available_T;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:29, :145:28, :153:{9,41}, :154:{20,38}, src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/util/BitOps.scala:82:10
+  wire       read_m_ar_valid = s_axi_ar_ready_0 & s_axi_ar_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:153:41, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  wire       _read_T_3 = _read_memStatus_ext_R0_data & m_axi_r_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  wire       _read_T_7 =
+    _read_memRespPayload_io_rdReq_ready & _read_memRespValid_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27, :131:32, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  wire       _read_T_12 = s_axi_r_ready & _read_memRespPayload_io_rdResp_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:32, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  reg  [3:0] write_nextIdFill;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:225:25
+  reg  [2:0] write_nextIdDrain;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:226:26
+  wire       s_axi_aw_ready_0 =
+    _write_m_aw_sinkBuffer_io_enq_ready & ~(write_nextIdFill[3]);	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:225:25, :232:{30,33}, src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chext/util/BitOps.scala:82:10
+  wire       write_m_aw_valid = s_axi_aw_ready_0 & s_axi_aw_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:232:30, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  wire       write_s_b_valid =
+    ~_write_transactionCount_io_empty & _write_mem_ext_R0_data[0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18, :228:34, :240:43, src/main/scala/chext/util/Counter.scala:30:17
+  wire       write_mem_write_MPORT_2_en =
+    _write_s_b_sinkBuffer_io_enq_ready & write_s_b_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:240:43, src/main/scala/chext/elastic/Buffer.scala:148:30, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  always @(posedge clock) begin	// <stdin>:260:11
+    if (reset) begin	// <stdin>:260:11
+      read_nextIdFill <= 4'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:29
+      read_nextIdxFill <= 5'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:142:30
+      read_nextIdxDrain <= 5'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:142:30, :143:31
+      read_available <= 6'h20;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:145:28
     end
-    else begin	// <stdin>:297:11
-      if (_read_transactionCount_io_empty & ~read_m_ar_valid
-          & ~read_memRespPayload_read_MPORT_9_en
-          & ~read_memRespPayload_read_MPORT_8_en) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:60:34, :115:{35,49,59,62}, src/main/scala/chisel3/util/Decoupled.scala:51:35
-        read_nextIdFill <= 4'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:53:29
-        read_nextIdxFill <= 5'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:55:30
-        read_nextIdxDrain <= 5'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:55:30, :56:31
-        read_available <= 6'h20;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:58:28
-      end
-      else begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:115:59
-        if (read_m_ar_valid) begin	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-          read_nextIdFill <= read_nextIdFill + 4'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:53:29, :91:32, :154:32
-          read_nextIdxFill <= read_nextIdxFill + s_axi_ar_bits_len[4:0] + 5'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:32:17, :55:30, :90:50, :91:32
-          read_available <= read_available - _read_available_T[5:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:58:28, :67:38, :92:30
-        end
-        if (read_memRespPayload_read_MPORT_9_en)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-          read_nextIdxDrain <= read_nextIdxDrain + 5'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:56:31, :91:32, :112:36
-      end
-      read_mon1_counter <= read_mon1_counter + 32'h1;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :9:22
-      read_mon1_doPrint <= ~_read_mon1_T_1;	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24, :13:{17,31}, :14:19, :19:13
-      read_mon2_counter <= read_mon2_counter + 32'h1;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :9:22
-      read_mon2_doPrint <= ~_read_mon2_T_1;	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24, :13:{17,31}, :14:19, :19:13
-      read_mon3_counter <= read_mon3_counter + 32'h1;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :9:22
-      read_mon3_doPrint <= ~_read_mon3_T_1;	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24, :13:{17,31}, :14:19, :19:13
-      read_mon4_counter <= read_mon4_counter + 32'h1;	// src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :9:22
-      read_mon4_doPrint <= ~_read_mon4_T_1;	// src/main/scala/chext/util/BackpressureMonitor.scala:11:24, :13:{17,31}, :14:19, :19:13
+    else if (_read_transactionCount_io_empty & ~read_m_ar_valid & ~_read_T_12) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:147:34, :207:{35,46,49}, src/main/scala/chisel3/util/Decoupled.scala:51:35
+      read_nextIdFill <= 4'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:29
+      read_nextIdxFill <= 5'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:142:30
+      read_nextIdxDrain <= 5'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:142:30, :143:31
+      read_available <= 6'h20;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:145:28
     end
-    if (_write_transactionCount_io_empty) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:136:34
-      write_nextIdFill <= 3'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :133:25
-      write_nextIdDrain <= 3'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :134:26
+    else begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:207:46
+      if (read_m_ar_valid) begin	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        read_nextIdFill <= read_nextIdFill + 4'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:29, :177:32, :256:34
+        read_nextIdxFill <= read_nextIdxFill + s_axi_ar_bits_len[4:0] + 5'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:111:17, :142:30, :176:50, :177:32
+        read_available <= read_available - _read_available_T[5:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:145:28, :154:38, :178:30
+      end
+      if (_read_T_7)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+        read_nextIdxDrain <= read_nextIdxDrain + 5'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:143:31, :177:32, :198:36
     end
-    else begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:136:34
+    if (_write_transactionCount_io_empty & ~write_m_aw_valid
+        & ~write_mem_write_MPORT_2_en) begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:228:34, :260:{35,46,49}, src/main/scala/chisel3/util/Decoupled.scala:51:35
+      write_nextIdFill <= 4'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:29, :225:25
+      write_nextIdDrain <= 3'h0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:226:26, :262:19
+    end
+    else begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:260:46
       if (write_m_aw_valid)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        write_nextIdFill <= write_nextIdFill + 3'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :133:25, :154:32
+        write_nextIdFill <= write_nextIdFill + 4'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:225:25, :244:32, :256:34
       if (write_mem_write_MPORT_2_en)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-        write_nextIdDrain <= write_nextIdDrain + 3'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :134:26, :166:34
+        write_nextIdDrain <= write_nextIdDrain + 3'h1;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18, :226:26, :256:34
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-      automatic logic [31:0] _RANDOM[0:4];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-        `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+    initial begin	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-        for (logic [2:0] i = 3'h0; i < 3'h5; i += 3'h1) begin
-          _RANDOM[i] = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-        end	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-        read_nextIdFill = _RANDOM[3'h0][3:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :53:29
-        read_nextIdxFill = _RANDOM[3'h0][8:4];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :53:29, :55:30
-        read_nextIdxDrain = _RANDOM[3'h0][13:9];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :53:29, :56:31
-        read_available = _RANDOM[3'h0][19:14];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :53:29, :58:28
-        read_mon1_counter = {_RANDOM[3'h0][31:20], _RANDOM[3'h1][19:0]};	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :53:29, src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-        read_mon1_doPrint = _RANDOM[3'h1][20];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :11:24
-        read_mon2_counter = {_RANDOM[3'h1][31:21], _RANDOM[3'h2][20:0]};	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-        read_mon2_doPrint = _RANDOM[3'h2][21];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :11:24
-        read_mon3_counter = {_RANDOM[3'h2][31:22], _RANDOM[3'h3][21:0]};	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-        read_mon3_doPrint = _RANDOM[3'h3][22];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :11:24
-        read_mon4_counter = {_RANDOM[3'h3][31:23], _RANDOM[3'h4][22:0]};	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-        read_mon4_doPrint = _RANDOM[3'h4][23];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, src/main/scala/chext/util/BackpressureMonitor.scala:8:24, :11:24
-        write_nextIdFill = _RANDOM[3'h4][26:24];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :133:25, src/main/scala/chext/util/BackpressureMonitor.scala:8:24
-        write_nextIdDrain = _RANDOM[3'h4][29:27];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :134:26, src/main/scala/chext/util/BackpressureMonitor.scala:8:24
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+        read_nextIdFill = _RANDOM[/*Zero width*/ 1'b0][3:0];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :140:29
+        read_nextIdxFill = _RANDOM[/*Zero width*/ 1'b0][8:4];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :140:29, :142:30
+        read_nextIdxDrain = _RANDOM[/*Zero width*/ 1'b0][13:9];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :140:29, :143:31
+        read_available = _RANDOM[/*Zero width*/ 1'b0][19:14];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :140:29, :145:28
+        write_nextIdFill = _RANDOM[/*Zero width*/ 1'b0][23:20];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :140:29, :225:25
+        write_nextIdDrain = _RANDOM[/*Zero width*/ 1'b0][26:24];	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :140:29, :226:26
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-      `FIRRTL_AFTER_INITIAL	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   Queue2_ReadAddressChannel read_m_ar_sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:148:30
@@ -1043,7 +871,7 @@ module IdParallelize(	// src/main/scala/chext/amba/axi4/full/components/IdParall
     .reset              (reset),
     .io_enq_ready       (_read_m_ar_sinkBuffer_io_enq_ready),
     .io_enq_valid       (read_m_ar_valid),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .io_enq_bits_id     (read_nextIdFill[2:0]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:53:29, :70:18
+    .io_enq_bits_id     (read_nextIdFill[2:0]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:29, :157:18
     .io_enq_bits_addr   (s_axi_ar_bits_addr),
     .io_enq_bits_len    (s_axi_ar_bits_len),
     .io_enq_bits_size   (s_axi_ar_bits_size),
@@ -1066,91 +894,81 @@ module IdParallelize(	// src/main/scala/chext/amba/axi4/full/components/IdParall
     .io_deq_bits_qos    (m_axi_ar_bits_qos),
     .io_deq_bits_region (m_axi_ar_bits_region)
   );
-  Queue2_ReadDataChannel read_s_r_sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:148:30
-    .clock            (clock),
-    .reset            (reset),
-    .io_enq_ready     (_read_s_r_sinkBuffer_io_enq_ready),
-    .io_enq_valid     (_read_memRespValid_ext_R0_data),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-    .io_enq_bits_data (_read_memRespPayload_ext_R0_data[63:0]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-    .io_enq_bits_resp (_read_memRespPayload_ext_R0_data[65:64]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-    .io_enq_bits_last (_read_memRespPayload_ext_R0_data[66]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-    .io_deq_ready     (s_axi_r_ready),
-    .io_deq_valid     (s_axi_r_valid),
-    .io_deq_bits_data (s_axi_r_bits_data),
-    .io_deq_bits_resp (s_axi_r_bits_resp),
-    .io_deq_bits_last (s_axi_r_bits_last)
-  );
-  read_memStatus_8x2 read_memStatus_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:48:24
+  read_memStatus_8x1 read_memStatus_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:127:24
     .R0_addr (m_axi_r_bits_id),
-    .R0_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+    .R0_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
     .R0_clk  (clock),
     .R0_data (_read_memStatus_ext_R0_data),
     .W0_addr (m_axi_r_bits_id),
-    .W0_en   (read_memRespPayload_read_MPORT_8_en),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .W0_en   (_read_T_3),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .W0_clk  (clock),
-    .W0_data ({1'h0, ~m_axi_r_bits_last}),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :98:{30,33}
-    .W1_addr (read_nextIdFill[2:0]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:53:29, :87:16
+    .W0_data (~m_axi_r_bits_last),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:188:33
+    .W1_addr (read_nextIdFill[2:0]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:29, :173:16
     .W1_en   (read_m_ar_valid),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .W1_clk  (clock),
-    .W1_data (2'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:87:29
+    .W1_data (1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
   );
-  read_memIndexFill_8x5 read_memIndexFill_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
+  read_memIdxFill_8x5 read_memIdxFill_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
     .R0_addr (m_axi_r_bits_id),
-    .R0_en   (read_memRespPayload_read_MPORT_8_en),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .R0_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
     .R0_clk  (clock),
-    .R0_data (_read_memIndexFill_ext_R0_data),
+    .R0_data (_read_memIdxFill_ext_R0_data),
+    .R1_addr (m_axi_r_bits_id),
+    .R1_en   (_read_T_3),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .R1_clk  (clock),
+    .R1_data (_read_memIdxFill_ext_R1_data),
     .W0_addr (m_axi_r_bits_id),
-    .W0_en   (read_memRespPayload_read_MPORT_8_en),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .W0_en   (_read_T_3),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .W0_clk  (clock),
-    .W0_data (_read_memIndexFill_ext_R0_data + 5'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27, :91:32, :100:62
-    .W1_addr (read_nextIdFill[2:0]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:53:29, :87:16
+    .W0_data (_read_memIdxFill_ext_R1_data + 5'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25, :177:32, :189:58
+    .W1_addr (read_nextIdFill[2:0]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:140:29, :173:16
     .W1_en   (read_m_ar_valid),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .W1_clk  (clock),
-    .W1_data (read_nextIdxFill)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:55:30
+    .W1_data (read_nextIdxFill)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:142:30
   );
-  read_memRespValid_32x1 read_memRespValid_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:50:27
-    .R0_addr (read_nextIdxDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:56:31
-    .R0_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+  read_memRespValid_32x1 read_memRespValid_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+    .R0_addr (read_nextIdxDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:143:31
+    .R0_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
     .R0_clk  (clock),
     .R0_data (_read_memRespValid_ext_R0_data),
-    .W0_addr (_read_memIndexFill_ext_R0_data),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-    .W0_en   (read_memRespPayload_read_MPORT_8_en),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .W0_addr (read_nextIdxDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:143:31
+    .W0_en   (_read_T_7),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .W0_clk  (clock),
-    .W0_data (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-    .W1_addr (read_nextIdxDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:56:31
-    .W1_en   (read_memRespPayload_read_MPORT_9_en),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .W0_data (1'h0),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+    .W1_addr (_read_memIdxFill_ext_R1_data),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+    .W1_en   (_read_T_3),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .W1_clk  (clock),
-    .W1_data (1'h0)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+    .W1_data (1'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
   );
-  read_memRespPayload_32x67 read_memRespPayload_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
-    .R0_addr (read_nextIdxDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:56:31
-    .R0_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-    .R0_clk  (clock),
-    .R0_data (_read_memRespPayload_ext_R0_data),
-    .R1_addr (read_nextIdxDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:56:31
-    .R1_en   (read_memRespPayload_read_MPORT_9_en),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .R1_clk  (clock),
-    .R1_data (_read_memRespPayload_ext_R1_data),
-    .W0_addr (_read_memIndexFill_ext_R0_data),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:49:27
-    .W0_en   (read_memRespPayload_read_MPORT_8_en),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .W0_clk  (clock),
-    .W0_data ({m_axi_r_bits_last, m_axi_r_bits_resp, m_axi_r_bits_data})	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29
+  SyncWriteElasticReadMemory read_memRespPayload (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:32
+    .clock               (clock),
+    .io_wrEn             (_read_T_3),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .io_wrAddr           (_read_memIdxFill_ext_R0_data),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:128:25
+    .io_wrData_data      (m_axi_r_bits_data),
+    .io_wrData_resp      (m_axi_r_bits_resp),
+    .io_wrData_last      (m_axi_r_bits_last),
+    .io_rdReq_ready      (_read_memRespPayload_io_rdReq_ready),
+    .io_rdReq_valid      (_read_memRespValid_ext_R0_data),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:130:27
+    .io_rdReq_bits       (read_nextIdxDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:143:31
+    .io_rdResp_ready     (s_axi_r_ready),
+    .io_rdResp_valid     (_read_memRespPayload_io_rdResp_valid),
+    .io_rdResp_bits_data (s_axi_r_bits_data),
+    .io_rdResp_bits_resp (s_axi_r_bits_resp),
+    .io_rdResp_bits_last (_read_memRespPayload_io_rdResp_bits_last)
   );
-  Counter read_transactionCount (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:60:34
+  Counter read_transactionCount (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:147:34
     .clock    (clock),
     .reset    (reset),
     .io_incEn (read_m_ar_valid),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .io_decEn
-      (read_memRespPayload_read_MPORT_9_en & _read_memRespPayload_ext_R1_data[66]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:51:29, :106:20, :107:47, src/main/scala/chext/util/Counter.scala:38:26, src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .io_empty (_read_transactionCount_io_empty),
-    .io_full  (/* unused */)
+    .io_decEn (_read_T_12 & _read_memRespPayload_io_rdResp_bits_last),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:32, :201:20, :202:27, src/main/scala/chext/util/Counter.scala:38:26, src/main/scala/chisel3/util/Decoupled.scala:51:35
+    .io_empty (_read_transactionCount_io_empty)
   );
   Queue2_WriteAddressChannel write_m_aw_sinkBuffer (	// src/main/scala/chext/elastic/Buffer.scala:148:30
     .clock              (clock),
     .reset              (reset),
     .io_enq_ready       (_write_m_aw_sinkBuffer_io_enq_ready),
     .io_enq_valid       (write_m_aw_valid),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .io_enq_bits_id     (write_nextIdFill),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:133:25
+    .io_enq_bits_id     (write_nextIdFill[2:0]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:225:25, :235:18
     .io_enq_bits_addr   (s_axi_aw_bits_addr),
     .io_enq_bits_len    (s_axi_aw_bits_len),
     .io_enq_bits_size   (s_axi_aw_bits_size),
@@ -1177,58 +995,59 @@ module IdParallelize(	// src/main/scala/chext/amba/axi4/full/components/IdParall
     .clock            (clock),
     .reset            (reset),
     .io_enq_ready     (_write_s_b_sinkBuffer_io_enq_ready),
-    .io_enq_valid     (write_s_b_valid),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:148:43
-    .io_enq_bits_resp (_write_mem_ext_R1_data[2:1]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
+    .io_enq_valid     (write_s_b_valid),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:240:43
+    .io_enq_bits_resp (_write_mem_ext_R1_data[2:1]),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
     .io_deq_ready     (s_axi_b_ready),
     .io_deq_valid     (s_axi_b_valid),
     .io_deq_bits_resp (s_axi_b_bits_resp)
   );
-  write_mem_8x3 write_mem_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
-    .R0_addr (write_nextIdDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:134:26
-    .R0_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+  write_mem_8x3 write_mem_ext (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    .R0_addr (write_nextIdDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:226:26
+    .R0_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
     .R0_clk  (clock),
     .R0_data (_write_mem_ext_R0_data),
-    .R1_addr (write_nextIdDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:134:26
-    .R1_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+    .R1_addr (write_nextIdDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:226:26
+    .R1_en   (1'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
     .R1_clk  (clock),
     .R1_data (_write_mem_ext_R1_data),
-    .W0_addr (write_nextIdDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:134:26
+    .W0_addr (write_nextIdDrain),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:226:26
     .W0_en   (write_mem_write_MPORT_2_en),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .W0_clk  (clock),
-    .W0_data (3'h0),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-    .W0_mask (3'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+    .W0_data (3'h0),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:262:19
+    .W0_mask (3'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
     .W1_addr (m_axi_b_bits_id),
     .W1_en   (m_axi_b_valid),
     .W1_clk  (clock),
-    .W1_data ({m_axi_b_bits_resp, 1'h0}),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :131:18
-    .W1_mask (3'h6),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:131:18
+    .W1_data ({m_axi_b_bits_resp, 1'h0}),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :223:18
+    .W1_mask (3'h6),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
     .W2_addr (m_axi_b_bits_id),
     .W2_en   (m_axi_b_valid),
     .W2_clk  (clock),
-    .W2_data (3'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-    .W2_mask (3'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+    .W2_data (3'h1),	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
+    .W2_mask (3'h1)	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:223:18
   );
-  Counter write_transactionCount (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:136:34
+  Counter write_transactionCount (	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:228:34
     .clock    (clock),
     .reset    (reset),
     .io_incEn (write_m_aw_valid),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
     .io_decEn (write_mem_write_MPORT_2_en),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .io_empty (_write_transactionCount_io_empty),
-    .io_full  (_write_transactionCount_io_full)
+    .io_empty (_write_transactionCount_io_empty)
   );
-  assign s_axi_ar_ready = s_axi_ar_ready_0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :66:41
-  assign s_axi_aw_ready = s_axi_aw_ready_0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :140:30
-  assign s_axi_w_ready = m_axi_w_ready;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-  assign m_axi_r_ready = m_axi_r_ready_0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7, :73:41
-  assign m_axi_w_valid = s_axi_w_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-  assign m_axi_w_bits_data = s_axi_w_bits_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-  assign m_axi_w_bits_strb = s_axi_w_bits_strb;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
-  assign m_axi_w_bits_last = s_axi_w_bits_last;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:29:7
+  assign s_axi_ar_ready = s_axi_ar_ready_0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :153:41
+  assign s_axi_r_valid = _read_memRespPayload_io_rdResp_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :131:32
+  assign s_axi_r_bits_last = _read_memRespPayload_io_rdResp_bits_last;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :131:32
+  assign s_axi_aw_ready = s_axi_aw_ready_0;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :232:30
+  assign s_axi_w_ready = m_axi_w_ready;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+  assign m_axi_r_ready = _read_memStatus_ext_R0_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7, :127:24
+  assign m_axi_w_valid = s_axi_w_valid;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+  assign m_axi_w_bits_data = s_axi_w_bits_data;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+  assign m_axi_w_bits_strb = s_axi_w_bits_strb;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
+  assign m_axi_w_bits_last = s_axi_w_bits_last;	// src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala:108:7
 endmodule
 
 module IdParallelizeTestTop2_2(	// src/test/scala/chext/amba/axi4/full/components/IdParallelize.tb.scala:112:7
-  input         clock,	// <stdin>:584:11
-                reset,	// <stdin>:585:11
+  input         clock,	// <stdin>:476:11
+                reset,	// <stdin>:477:11
   output        S_AXI_ARREADY,	// src/test/scala/chext/amba/axi4/full/components/IdParallelize.tb.scala:119:17
   input         S_AXI_ARVALID,	// src/test/scala/chext/amba/axi4/full/components/IdParallelize.tb.scala:119:17
   input  [31:0] S_AXI_ARADDR,	// src/test/scala/chext/amba/axi4/full/components/IdParallelize.tb.scala:119:17
