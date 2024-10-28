@@ -12,7 +12,6 @@
 #include <Util.hpp>
 #include <chext_test/chext_test.hpp>
 
-#include <chrono>
 #include <random>
 
 using namespace sc_core;
