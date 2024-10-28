@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(sysc_tb)
 
 add_compile_definitions(SC_DISABLE_API_VERSION_CHECK)
+add_compile_definitions(SC_ALLOW_DEPRECATED_IEEE_API)
 
 find_package(SystemCLanguage REQUIRED)
 find_package(verilator REQUIRED)
