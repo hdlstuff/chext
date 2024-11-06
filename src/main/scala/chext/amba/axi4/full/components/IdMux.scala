@@ -49,7 +49,7 @@ class IdMux(val cfg: IdMuxConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      elastic.Arbiter(s_axi_.map { _.ar }, m_axi_.ar, arbiterPolicy)
+      elastic.BasicArbiter(s_axi_.map { _.ar }, m_axi_.ar, arbiterPolicy)
     }
 
     def rLogic: Unit = {
@@ -75,7 +75,7 @@ class IdMux(val cfg: IdMuxConfig) extends Module {
     val portQueue = Module(new Queue(genSelect, 32, flow = true, pipe = true))
 
     def awLogic: Unit = {
-      elastic.Arbiter(
+      elastic.BasicArbiter(
         s_axi_.map { _.aw },
         m_axi_.aw,
         arbiterPolicy,

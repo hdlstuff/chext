@@ -86,7 +86,7 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
       }
 
       // R channel supports burst interleaving, so no isLastFn
-      elastic.Arbiter(
+      elastic.BasicArbiter(
         r,
         s_axi_.r,
         arbiterPolicy
@@ -153,7 +153,7 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
         }
       }
 
-      elastic.Arbiter(
+      elastic.BasicArbiter(
         b,
         s_axi_.b,
         arbiterPolicy
