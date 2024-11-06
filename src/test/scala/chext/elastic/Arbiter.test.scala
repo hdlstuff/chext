@@ -10,6 +10,131 @@ import chiseltest._
 
 import org.scalatest.freespec.AnyFreeSpec
 
+class BasicArbiterSpec extends AnyFreeSpec with ChiselScalatestTester {
+  class DataLast extends Bundle {
+    val data = UInt(32.W)
+    val last = Bool()
+  }
+
+  val genDataLast = new DataLast
+  def dataLast(data: BigInt, last: Boolean) =
+    genDataLast.Lit(_.data -> data.U, _.last -> last.B)
+
+  "elastic.BasicArbiter Basic functionality" in {
+    test(
+      new elastic.BasicArbiter(UInt(32.W), 4, chext.elastic.Chooser.priority)
+    ).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      {
+        dut.io.sources.foreach { _.initSource() }
+        dut.io.sink.initSink()
+        dut.io.select.initSink()
+
+        fork {
+          dut.io.sources(0).enqueue(0xa0.U)
+          dut.io.sources(0).enqueue(0xa1.U)
+          dut.io.sources(0).enqueue(0xa2.U)
+        }.fork {
+          dut.io.sources(1).enqueue(0xb0.U)
+          dut.io.sources(1).enqueue(0xb1.U)
+          dut.io.sources(1).enqueue(0xb2.U)
+        }.fork {
+          dut.io.sources(2).enqueue(0xc0.U)
+          dut.io.sources(2).enqueue(0xc1.U)
+          dut.io.sources(2).enqueue(0xc2.U)
+        }.fork {
+          dut.io.sources(3).enqueue(0xd0.U)
+          dut.io.sources(3).enqueue(0xd1.U)
+          dut.io.sources(3).enqueue(0xd2.U)
+        }.fork {
+          dut.io.sink.expectDequeue(0xa0.U)
+          dut.io.sink.expectDequeue(0xa1.U)
+          dut.io.sink.expectDequeue(0xa2.U)
+          dut.io.sink.expectDequeue(0xb0.U)
+          dut.io.sink.expectDequeue(0xb1.U)
+          dut.io.sink.expectDequeue(0xb2.U)
+          dut.io.sink.expectDequeue(0xc0.U)
+          dut.io.sink.expectDequeue(0xc1.U)
+          dut.io.sink.expectDequeue(0xc2.U)
+          dut.io.sink.expectDequeue(0xd0.U)
+          dut.io.sink.expectDequeue(0xd1.U)
+          dut.io.sink.expectDequeue(0xd2.U)
+        }.fork {
+          dut.io.select.expectDequeue(0.U)
+          dut.io.select.expectDequeue(0.U)
+          dut.io.select.expectDequeue(0.U)
+          dut.io.select.expectDequeue(1.U)
+          dut.io.select.expectDequeue(1.U)
+          dut.io.select.expectDequeue(1.U)
+          dut.io.select.expectDequeue(2.U)
+          dut.io.select.expectDequeue(2.U)
+          dut.io.select.expectDequeue(2.U)
+          dut.io.select.expectDequeue(3.U)
+          dut.io.select.expectDequeue(3.U)
+          dut.io.select.expectDequeue(3.U)
+        }.join()
+      }
+    }
+  }
+
+  "elastic.BasicArbiter Round Robin" in {
+    test(
+      new elastic.BasicArbiter(UInt(32.W), 4, chext.elastic.Chooser.rr)
+    ).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      {
+        dut.io.sources.foreach { _.initSource() }
+        dut.io.sink.initSink()
+        dut.io.select.initSink()
+
+        fork {
+          dut.io.sources(0).enqueue(0xa0.U)
+          dut.io.sources(0).enqueue(0xa1.U)
+        }.fork {
+          dut.io.sources(1).enqueue(0xb0.U)
+          dut.io.sources(1).enqueue(0xb1.U)
+        }.fork {
+          dut.io.sources(2).enqueue(0xc0.U)
+          dut.io.sources(2).enqueue(0xc1.U)
+        }.fork {
+          dut.io.sources(3).enqueue(0xd0.U)
+          dut.io.sources(3).enqueue(0xd1.U)
+        }.fork {
+          dut.io.sink.expectDequeue(0xb0.U)
+          dut.io.sink.expectDequeue(0xc0.U)
+          dut.io.sink.expectDequeue(0xd0.U)
+          dut.io.sink.expectDequeue(0xa0.U)
+          dut.io.sink.expectDequeue(0xb1.U)
+          dut.io.sink.expectDequeue(0xc1.U)
+          dut.io.sink.expectDequeue(0xd1.U)
+          dut.io.sink.expectDequeue(0xa1.U)
+        }.fork {
+          dut.io.select.expectDequeue(1.U)
+          dut.io.select.expectDequeue(2.U)
+          dut.io.select.expectDequeue(3.U)
+          dut.io.select.expectDequeue(0.U)
+          dut.io.select.expectDequeue(1.U)
+          dut.io.select.expectDequeue(2.U)
+          dut.io.select.expectDequeue(3.U)
+          dut.io.select.expectDequeue(0.U)
+        }.join()
+
+        dut.clock.step(3)
+
+        fork {
+          dut.io.sources(1).enqueue(0xb2.U)
+        }.fork {
+          dut.io.sources(3).enqueue(0xd2.U)
+        }.fork {
+          dut.io.sink.expectDequeue(0xb2.U)
+          dut.io.sink.expectDequeue(0xd2.U)
+        }.fork {
+          dut.io.select.expectDequeue(1.U)
+          dut.io.select.expectDequeue(3.U)
+        }.join()
+      }
+    }
+  }
+}
+
 class ArbiterSpec extends AnyFreeSpec with ChiselScalatestTester {
   class DataLast extends Bundle {
     val data = UInt(32.W)

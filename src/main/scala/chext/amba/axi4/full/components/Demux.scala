@@ -119,7 +119,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
 
     def rLogic: Unit = {
       // R channel supports burst interleaving, so no isLastFn
-      chext.elastic.Arbiter(
+      chext.elastic.BasicArbiter(
         m_axi_.map { _.r },
         s_axi_.r,
         arbiterPolicy
@@ -204,7 +204,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
     }
 
     def bLogic: Unit = {
-      chext.elastic.Arbiter(
+      chext.elastic.BasicArbiter(
         m_axi_.map { _.b },
         s_axi_.b,
         arbiterPolicy

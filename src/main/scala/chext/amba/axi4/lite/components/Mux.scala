@@ -62,7 +62,7 @@ class Mux(val cfg: MuxConfig) extends Module {
     )
 
     def arLogic: Unit = {
-      chext.elastic.Arbiter(
+      chext.elastic.BasicArbiter(
         s_axil_.map { _.ar },
         m_axil_.ar,
         arbiterPolicy,
@@ -100,7 +100,7 @@ class Mux(val cfg: MuxConfig) extends Module {
     def awLogic: Unit = {
       val arbiterSelect = Wire(Irrevocable(genPort))
 
-      chext.elastic.Arbiter(
+      chext.elastic.BasicArbiter(
         s_axil_.map { _.aw },
         m_axil_.aw,
         arbiterPolicy,
