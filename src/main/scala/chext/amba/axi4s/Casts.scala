@@ -9,7 +9,13 @@ object Casts {
     import FullChannel._
     import BasicChannel._
 
+    @deprecated("Please use asLite instead, this will be removed.")
     def lite = x.viewAs[IrrevocableIO[Bits]]
+
+    @deprecated("Please use asFull instead, this will be removed.")
     def full = x.viewAs[IrrevocableIO[FullChannel]]
+
+    def asLite = x.viewAs[IrrevocableIO[Bits]]
+    def asFull = x.viewAs[IrrevocableIO[FullChannel]]
   }
 }
