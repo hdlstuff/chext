@@ -12,9 +12,10 @@ import chisel3.experimental._
   */
 abstract class Arrival[Tin <: Data, T <: Data](
     source: ReadyValidIO[Tin],
-    sink: ReadyValidIO[T]
+    sink: ReadyValidIO[T],
+    flow: Boolean = false
 ) extends AffectsChiselPrefix {
-  private val sinkBuffered_ = SinkBuffer.decoupled(sink)
+  private val sinkBuffered_ = SinkBuffer.decoupled(sink, flow = flow)
   protected val in = source.bits
   protected val out = sinkBuffered_.bits
 
