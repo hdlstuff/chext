@@ -4,8 +4,8 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
-/**
-  * @note Never declare registers inside `onAccept`!
+/** @note
+  *   Never declare registers inside `onAccept`!
   *
   * @param source
   * @param sink
@@ -13,9 +13,11 @@ import chisel3.experimental._
 abstract class Arrival[Tin <: Data, T <: Data](
     source: ReadyValidIO[Tin],
     sink: ReadyValidIO[T],
-    flow: Boolean = false
+    flow: Boolean = false,
+    pipe: Boolean = false,
+    depth: Int = 2
 ) extends AffectsChiselPrefix {
-  private val sinkBuffered_ = SinkBuffer.decoupled(sink, flow = flow)
+  private val sinkBuffered_ = SinkBuffer.decoupled(sink, n = depth, flow = flow, pipe = pipe)
   protected val in = source.bits
   protected val out = sinkBuffered_.bits
 
