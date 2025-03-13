@@ -234,9 +234,9 @@ inline void simpleWrite(
         axi4::full::Packets::WriteAddress aw {
             .id = util::bv_from(0, cfg.wId),
             .addr = util::bv_from(addr, cfg.wAddr),
+            .len = (uint8_t)len,
             .size = (uint8_t)size,
-            .burst = 1,
-            .len = (uint8_t)len
+            .burst = 1
         };
 
         target.sendAW(aw);
@@ -326,9 +326,9 @@ inline void simpleRead(
         axi4::full::Packets::ReadAddress ar {
             .id = util::bv_from(0, cfg.wId),
             .addr = util::bv_from(addr, cfg.wAddr),
+            .len = (uint8_t)len,
             .size = (uint8_t)size,
-            .burst = 1,
-            .len = (uint8_t)len
+            .burst = 1
         };
 
         target.sendAR(ar);
