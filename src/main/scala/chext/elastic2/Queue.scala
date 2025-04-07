@@ -68,6 +68,34 @@ private class ChiselQueue[T <: Data](
   override def desiredName = s"ChiselQueue_${entries}_${gen.typeName}"
 }
 
+package verilog {
+  class chext_queue(
+      val count: Int,
+      val addrWidth: Int,
+      val dataWidth: Int,
+      val pipe: Boolean,
+      val flow: Boolean,
+      val useSyncmem: Boolean
+  ) extends BlackBox(
+        Map(
+          "COUNT" -> count,
+          "ADDR_WIDTH" -> addrWidth,
+          "DATA_WIDTH" -> dataWidth,
+          "PIPE" -> (if (pipe) 1 else 0),
+          "FLOW" -> (if (flow) 1 else 0),
+          "USE_SYNCMEM" -> (if (useSyncmem) 1 else 0)
+        )
+      )
+      with HasBlackBoxResource {
+    val io = IO(new Bundle {
+      val clock = Input(Clock())
+      val reset = Input(Bool())
+      val source = Source(UInt(dataWidth.W))
+      val sink = Sink(UInt(dataWidth.W))
+    })
+  }
+}
+
 object Queue {
   def apply[T <: Data](
       source: Interface[T],
@@ -75,7 +103,8 @@ object Queue {
       count: Int,
       pipe: Boolean = false,
       flow: Boolean = false,
-      syncReadMem: Boolean = false
+      syncReadMem: Boolean = false,
+      useVerilog: Boolean = true
   ) = {
     requireIsHardware(source, "Queue source must be hardware.")
     requireIsHardware(sink, "Queue sink must be hardware.")
@@ -84,16 +113,28 @@ object Queue {
     if (count == 0) {
       import ConnectOp._
       source :=> sink
+    } else if (useVerilog) {
+      val addrWidth = chisel3.util.log2Ceil(count)
+      val dataWidth = source.bits.getWidth
+
+      val queue =
+        Module(new verilog.chext_queue(count, addrWidth, dataWidth, flow, pipe, syncReadMem))
+
+      queue.io.clock := Module.clock
+      queue.io.reset := Module.reset
+
+      new Transform(source, queue.io.source) {}
+      new Transform(queue.io.sink, sink) {}
     } else {
       // TODO: Chisel queue implementation causes a verilog code size explosion
       // We should provide our own Chisel-compatible queue implementation
       // This queue must be parametrized and it must be self-contained
-      val queueImpl =
+      val queue =
         Module(new ChiselQueue(chiselTypeOf(source.bits), count, pipe, flow, syncReadMem))
 
       import ConnectOp._
-      source :=> queueImpl.source
-      queueImpl.sink :=> sink
+      source :=> queue.source
+      queue.sink :=> sink
     }
   }
 }

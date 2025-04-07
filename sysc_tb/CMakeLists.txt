@@ -58,7 +58,7 @@ function(generate_tb)
             ${GEN_TB_TARGET_NAME}
             SYSTEMC
             SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hdl/${MODULE}.sv
-            VERILATOR_ARGS --trace
+            VERILATOR_ARGS --trace -I${CMAKE_SOURCE_DIR}/../verilog
         )
 
         hdlscw(
@@ -72,4 +72,5 @@ endfunction()
 add_subdirectory(chext/amba/axi4/full/components/)
 add_subdirectory(chext/amba/axi4/lite/components/)
 add_subdirectory(chext/elastic/)
+add_subdirectory(chext/elastic2/)
 add_subdirectory(chext/ip/memory/)

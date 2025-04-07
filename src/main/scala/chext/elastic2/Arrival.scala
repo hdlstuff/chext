@@ -12,11 +12,11 @@ import chisel3.experimental.{AffectsChiselPrefix, prefix}
 abstract class Arrival[Tin <: Data, T <: Data](
     source: Interface[Tin],
     sink: Interface[T],
+    count: Int = 2,
     flow: Boolean = false,
-    pipe: Boolean = false,
-    depth: Int = 2
+    pipe: Boolean = false
 ) extends AffectsChiselPrefix {
-  private val sinkBuffered_ = SinkBuffer(sink, count = depth, flow = flow, pipe = pipe)
+  private val sinkBuffered_ = SinkBuffer(sink, count = count, flow = flow, pipe = pipe)
 
   protected val in = source.bits
   protected val out = sinkBuffered_.bits

@@ -2,6 +2,7 @@ package chext.elastic2
 
 import chisel3._
 import chisel3.experimental.{prefix, AffectsChiselPrefix}
+import chext.HasHdlinfoModule
 
 class MyConnect extends AffectsChiselPrefix {
   private val q = RegInit(0.U(0.W))
@@ -52,11 +53,20 @@ class MyModule extends Module {
   }
 }
 
-class MyModule2 extends Module {
-  val source = IO(Source(Bool()))
-  val sink = IO(Sink(Bool()))
+class MyBundle extends Bundle {
+  val a = UInt(8.W)
+  val b = UInt(16.W)
+}
 
-  Queue(source, sink, 18)
+class MyModule2 extends Module {
+  val sourceA = IO(Source(UInt(32.W)))
+  val sinkA = IO(Sink(UInt(32.W)))
+
+  val sourceB = IO(Source(new MyBundle))
+  val sinkB = IO(Sink(new MyBundle))
+
+  Queue(sourceA, sinkA, 18, flow = true, pipe = true, useVerilog = false)
+  Queue(sourceB, sinkB, 18, flow = true, pipe = true, useVerilog = true)
 }
 
 class MyModule3 extends Module {
@@ -75,8 +85,94 @@ class MyModule3 extends Module {
   }
 }
 
+class MyModule4 extends Module {
+  val in = IO(Source(UInt(4.W)))
+  val out = IO(Sink(UInt(4.W)))
+
+  val count = IO(Output(UInt(32.W)))
+
+  private val count_ = RegInit(0.U(32.W))
+  count := count_
+
+  val arrival0 = new Arrival(in, out) {
+    when(arrived) {
+      count_ := count_ + 1.U
+      accept()
+    }
+  }
+}
+
+class QueueTestTop1 extends Module with HasHdlinfoModule {
+  val source = IO(Source(UInt(32.W)))
+  val sink = IO(Sink(UInt(32.W)))
+
+  Queue(source, sink, 18, flow = true, pipe = true, useVerilog = true)
+
+  def hdlinfoModule: hdlinfo.Module = {
+    import hdlinfo._
+    import io.circe.generic.auto._
+    import scala.collection.mutable.ArrayBuffer
+
+    val ports = ArrayBuffer.empty[Port]
+    val interfaces = ArrayBuffer.empty[Interface]
+
+    ports.append(
+      Port(
+        "clock",
+        PortDirection.input,
+        PortKind.clock,
+        PortSensitivity.clockRising,
+        associatedReset = "reset"
+      )
+    )
+    ports.append(
+      Port(
+        "reset",
+        PortDirection.input,
+        PortKind.reset,
+        PortSensitivity.resetActiveHigh,
+        associatedClock = "clock"
+      )
+    )
+
+    interfaces.append(
+      Interface(
+        "source",
+        InterfaceRole("source"),
+        InterfaceKind("readyValid[chext.elastic.Data]"),
+        associatedClock = "clock",
+        associatedReset = "reset",
+        args = Map("width" -> TypedObject(32))
+      )
+    )
+
+    interfaces.append(
+      Interface(
+        "sink",
+        InterfaceRole("sink"),
+        InterfaceKind("readyValid[chext.elastic.Data]"),
+        associatedClock = "clock",
+        associatedReset = "reset",
+        args = Map("width" -> TypedObject(32))
+      )
+    )
+
+    Module(
+      "QueueTestTop1",
+      ports.toSeq,
+      interfaces.toSeq
+    )
+  }
+}
+
+object Queue_TB extends App with chext.TestBench {
+  emit(new QueueTestTop1)
+}
+
 object EmitMyModule extends App {
-  emitVerilog(new MyModule)
-  emitVerilog(new MyModule2)
-  emitVerilog(new MyModule3)
+  // emitVerilog(new MyModule)
+  // emitVerilog(new MyModule2)
+  // emitVerilog(new MyModule3)
+  // emitVerilog(new MyModule4)
+  emitVerilog(new QueueTestTop1)
 }
