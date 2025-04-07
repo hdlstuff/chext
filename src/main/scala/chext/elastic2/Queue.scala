@@ -85,8 +85,7 @@ package verilog {
           "FLOW" -> (if (flow) 1 else 0),
           "USE_SYNCMEM" -> (if (useSyncmem) 1 else 0)
         )
-      )
-      with HasBlackBoxResource {
+      ) {
     val io = IO(new Bundle {
       val clock = Input(Clock())
       val reset = Input(Bool())

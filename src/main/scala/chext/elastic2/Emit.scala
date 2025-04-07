@@ -66,7 +66,17 @@ class MyModule2 extends Module {
   val sinkB = IO(Sink(new MyBundle))
 
   Queue(sourceA, sinkA, 18, flow = true, pipe = true, useVerilog = false)
-  Queue(sourceB, sinkB, 18, flow = true, pipe = true, useVerilog = true)
+
+  val buffer1 = LeftBuffer(sourceB)
+  val buffer2 = RightBuffer(sinkB)
+  Queue(
+    buffer1,
+    buffer2,
+    18,
+    flow = true,
+    pipe = true,
+    useVerilog = true
+  )
 }
 
 class MyModule3 extends Module {
@@ -165,6 +175,15 @@ class QueueTestTop1 extends Module with HasHdlinfoModule {
   }
 }
 
+class MyModule5 extends Module {
+  val sel = IO(Input(UInt(3.W)))
+
+  val in = IO(Input(Vec(8, UInt(32.W))))
+  val out = IO(Output(UInt(32.W)))
+
+  out := in(sel)
+}
+
 object Queue_TB extends App with chext.TestBench {
   emit(new QueueTestTop1)
 }
@@ -174,5 +193,6 @@ object EmitMyModule extends App {
   // emitVerilog(new MyModule2)
   // emitVerilog(new MyModule3)
   // emitVerilog(new MyModule4)
-  emitVerilog(new QueueTestTop1)
+  // emitVerilog(new QueueTestTop1)
+  emitVerilog(new MyModule5)
 }
