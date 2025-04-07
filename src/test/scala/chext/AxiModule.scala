@@ -9,6 +9,7 @@ import chext.ip.memory
 
 import elastic.ConnectOp._
 import axi4.Ops._
+import chisel3.internal.instantiable
 
 class AxiModule extends Module {
   val axiCfg = axi4.Config(wId = 8, wAddr = 12, wData = 64)
@@ -72,3 +73,6 @@ class AxiModule extends Module {
 object EmitAxiModule extends App {
   emitVerilog(new AxiModule)
 }
+
+@instantiable
+class X extends Module {}

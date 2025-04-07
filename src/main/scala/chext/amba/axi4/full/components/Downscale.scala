@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental.prefix
 
 import chext.amba.axi4
-import chext.elastic
+import chext.{elastic2 => elastic}
 
 import chext.util.BitOps._
 import elastic.ConnectOp._
@@ -48,52 +48,44 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataSlave >> 3)))
-    val offsetLastQueue = Module(new Queue(genOffsetLast, readOffsetLastQueueLength))
+    val offsetLastQueue = elastic.Queue(genOffsetLast, readOffsetLastQueueLength)
 
     def implAR(): Unit = prefix("ar") {
       val arTransformed = Wire(chiselTypeOf(m_axi.ar))
 
       new elastic.Transform(s_axi.ar, arTransformed) {
-        protected def onTransform: Unit = {
-          out := in
+        out := in
 
-          out.burst := axi4.BurstType.INCR
+        out.burst := axi4.BurstType.INCR
 
-          when(in.size <= axsizeMaxMaster.U) {
-            out.size := in.size
-            out.len := 0.U
-          }.otherwise {
-            out.size := axsizeMaxMaster.U
-            out.len := (1.U << (in.size - axsizeMaxMaster.U)) - 1.U
-          }
+        when(in.size <= axsizeMaxMaster.U) {
+          out.size := in.size
+          out.len := 0.U
+        }.otherwise {
+          out.size := axsizeMaxMaster.U
+          out.len := (1.U << (in.size - axsizeMaxMaster.U)) - 1.U
         }
       }
 
       new elastic.Fork(arTransformed) {
-        override protected def onFork: Unit = {
-          new elastic.Transform(fork(), addressGenerator.source) {
-            override protected def onTransform: Unit = {
-              out.addr := in.addr
-              out.len := in.len
-              out.size := in.size
-              out.burst := axi4.BurstType.INCR
-            }
-          }
-
-          fork() :=> m_axi.ar
+        new elastic.Transform(fork(), addressGenerator.source) {
+          out.addr := in.addr
+          out.len := in.len
+          out.size := in.size
+          out.burst := axi4.BurstType.INCR
         }
+
+        fork() :=> m_axi.ar
       }
 
-      new elastic.Transform(addressGenerator.sink, offsetLastQueue.io.enq) {
-        protected def onTransform: Unit = {
-          out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
-          out._2 := in.last
-        }
+      new elastic.Transform(addressGenerator.sink, offsetLastQueue.source) {
+        out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
+        out._2 := in.last
       }
     }
 
     def implR(): Unit = prefix("r") {
-      val zipped = elastic.Zip(m_axi.r, offsetLastQueue.io.deq)
+      val zipped = elastic.Zip(m_axi.r, offsetLastQueue.sink)
 
       val dataReg = RegInit(0.U(axiSlaveCfg.wData.W))
       val respReg = RegInit(0.U(2.W))
@@ -104,7 +96,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         steerLeft.dataIn := in._1.data
         steerLeft.offsetIn := in._2._1 /* offset */
 
-        protected def onArrival: Unit = {
+        when(arrived) {
           // we reduce on the largest value of response
           out.id := in._1.id
 
@@ -140,52 +132,44 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
   private def implWrite(): Unit = prefix("write") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataSlave >> 3)))
-    val offsetLastQueue = Module(new Queue(genOffsetLast, writeOffsetLastQueueLength))
+    val offsetLastQueue = elastic.Queue(genOffsetLast, writeOffsetLastQueueLength)
 
     def implAW(): Unit = prefix("aw") {
       val awTransformed = Wire(chiselTypeOf(m_axi.aw))
 
       new elastic.Transform(s_axi.aw, awTransformed) {
-        protected def onTransform: Unit = {
-          out := in
+        out := in
 
-          out.burst := axi4.BurstType.INCR
+        out.burst := axi4.BurstType.INCR
 
-          when(in.size <= axsizeMaxMaster.U) {
-            out.size := in.size
-            out.len := 0.U
-          }.otherwise {
-            out.size := axsizeMaxMaster.U
-            out.len := (1.U << (in.size - axsizeMaxMaster.U)) - 1.U
-          }
+        when(in.size <= axsizeMaxMaster.U) {
+          out.size := in.size
+          out.len := 0.U
+        }.otherwise {
+          out.size := axsizeMaxMaster.U
+          out.len := (1.U << (in.size - axsizeMaxMaster.U)) - 1.U
         }
       }
 
       new elastic.Fork(awTransformed) {
-        override protected def onFork: Unit = {
-          new elastic.Transform(fork(), addressGenerator.source) {
-            override protected def onTransform: Unit = {
-              out.addr := in.addr
-              out.len := in.len
-              out.size := in.size
-              out.burst := axi4.BurstType.INCR
-            }
-          }
-
-          fork() :=> m_axi.aw
+        new elastic.Transform(fork(), addressGenerator.source) {
+          out.addr := in.addr
+          out.len := in.len
+          out.size := in.size
+          out.burst := axi4.BurstType.INCR
         }
+
+        fork() :=> m_axi.aw
       }
 
-      new elastic.Transform(addressGenerator.sink, offsetLastQueue.io.enq) {
-        protected def onTransform: Unit = {
-          out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
-          out._2 := in.last
-        }
+      new elastic.Transform(addressGenerator.sink, offsetLastQueue.source) {
+        out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
+        out._2 := in.last
       }
     }
 
     def implW(): Unit = prefix("w") {
-      val offsetLastQueueDeq = offsetLastQueue.io.deq
+      val offsetLastQueueDeq = offsetLastQueue.sink
       offsetLastQueueDeq.nodeq()
 
       val steerRight = Module(new SteerRight(wDataSlave, wDataMaster))
@@ -200,7 +184,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         steerRightStrobe.dataIn := in.strb
         steerRightStrobe.offsetIn := offset._1 /* offset */
 
-        protected def onArrival: Unit = {
+        when (arrived) {
           out.data := steerRight.dataOut
           out.strb := steerRightStrobe.dataOut
 

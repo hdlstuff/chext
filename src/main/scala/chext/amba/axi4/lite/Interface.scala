@@ -8,6 +8,8 @@ import chisel3.reflect.DataMirror
 import chext.amba.axi4
 import chext.amba.axi4.util._
 
+import chext.{elastic2 => elastic}
+
 /** Address channel. (AR and AW)
   *
   * @param cfg
@@ -83,19 +85,19 @@ abstract class Interface extends Bundle {
   def cfg: axi4.Config
 
   /** read address channel */
-  def ar: IrrevocableIO[AddressChannel] = throw NotSupported("read")
+  def ar: elastic.Interface[AddressChannel] = throw NotSupported("read")
 
   /** read data channel */
-  def r: IrrevocableIO[ReadDataChannel] = throw NotSupported("read")
+  def r: elastic.Interface[ReadDataChannel] = throw NotSupported("read")
 
   /** write address channel */
-  def aw: IrrevocableIO[AddressChannel] = throw NotSupported("write")
+  def aw: elastic.Interface[AddressChannel] = throw NotSupported("write")
 
   /** write data channel */
-  def w: IrrevocableIO[WriteDataChannel] = throw NotSupported("write")
+  def w: elastic.Interface[WriteDataChannel] = throw NotSupported("write")
 
   /** write response channel */
-  def b: IrrevocableIO[WriteResponseChannel] = throw NotSupported("write")
+  def b: elastic.Interface[WriteResponseChannel] = throw NotSupported("write")
 }
 
 object Interface {
@@ -184,21 +186,21 @@ object Master {
 }
 
 private class ReadInterface(implicit val cfg: axi4.Config) extends Interface {
-  override val ar = Irrevocable(new AddressChannel)
-  override val r = Flipped(Irrevocable(new ReadDataChannel))
+  override val ar = elastic.Interface(new AddressChannel)
+  override val r = Flipped(elastic.Interface(new ReadDataChannel))
 }
 
 private class WriteInterface(implicit val cfg: axi4.Config) extends Interface {
-  override val aw = Irrevocable(new AddressChannel)
-  override val w = Irrevocable(new WriteDataChannel)
-  override val b = Flipped(Irrevocable(new WriteResponseChannel))
+  override val aw = elastic.Interface(new AddressChannel)
+  override val w = elastic.Interface(new WriteDataChannel)
+  override val b = Flipped(elastic.Interface(new WriteResponseChannel))
 }
 private class ReadWriteInterface(implicit val cfg: axi4.Config) extends Interface {
-  override val ar = Irrevocable(new AddressChannel)
-  override val r = Flipped(Irrevocable(new ReadDataChannel))
-  override val aw = Irrevocable(new AddressChannel)
-  override val w = Irrevocable(new WriteDataChannel)
-  override val b = Flipped(Irrevocable(new WriteResponseChannel))
+  override val ar = elastic.Interface(new AddressChannel)
+  override val r = Flipped(elastic.Interface(new ReadDataChannel))
+  override val aw = elastic.Interface(new AddressChannel)
+  override val w = elastic.Interface(new WriteDataChannel)
+  override val b = Flipped(elastic.Interface(new WriteResponseChannel))
 }
 
 private object main extends App {

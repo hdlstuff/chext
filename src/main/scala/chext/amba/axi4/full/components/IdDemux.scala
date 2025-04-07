@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental.prefix
 
 import chext.amba.axi4
-import chext.elastic
+import chext.{elastic2 => elastic}
 
 import elastic.ConnectOp._
 import chext.util.BitOps._
@@ -48,20 +48,18 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      val demuxInput = Wire(Irrevocable(axi4.full.ReadAddressChannel(axiMasterCfg)))
-      val demuxSelect = Wire(Irrevocable(genSelect))
+      val demuxInput = Wire(elastic.Interface(axi4.full.ReadAddressChannel(axiMasterCfg)))
+      val demuxSelect = Wire(elastic.Interface(genSelect))
 
       new elastic.Fork(s_axi_.ar) {
-        override protected def onFork = {
-          val sel = in.id.lsbN(wIdSel)
-          val ar = Wire(axi4.full.ReadAddressChannel(axiMasterCfg))
+        val sel = in.id.lsbN(wIdSel)
+        val ar = Wire(axi4.full.ReadAddressChannel(axiMasterCfg))
 
-          ar := in
-          ar.id := in.id.dropLsbN(wIdSel)
+        ar := in
+        ar.id := in.id.dropLsbN(wIdSel)
 
-          fork(ar) :=> demuxInput
-          fork(sel) :=> demuxSelect
-        }
+        fork(ar) :=> demuxInput
+        fork(sel) :=> demuxSelect
       }
 
       elastic.Demux(
@@ -72,15 +70,13 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     }
 
     def rLogic: Unit = {
-      val r = Wire(Vec(numMasters, Irrevocable(axi4.full.ReadDataChannel(axiMasterCfg))))
+      val r = Wire(Vec(numMasters, elastic.Interface(axi4.full.ReadDataChannel(axiMasterCfg))))
 
       m_axi_.map { _.r }.zip(r).zipWithIndex.foreach {
         case ((source, sink), index) => {
           new elastic.Transform(source, sink) {
-            protected def onTransform: Unit = {
-              out := in
-              out.id := in.id ## index.U(wIdSel.W)
-            }
+            out := in
+            out.id := in.id ## index.U(wIdSel.W)
           }
         }
       }
@@ -98,31 +94,27 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val portQueue = Module(
-      new Queue(
-        genSelect,
-        capacityPortQueueW,
-        flow = true,
-        pipe = true
-      )
+    val portQueue = elastic.Queue(
+      genSelect,
+      capacityPortQueueW,
+      flow = true,
+      pipe = true
     )
 
     def awLogic: Unit = {
-      val demuxInput = Wire(Irrevocable(axi4.full.WriteAddressChannel(axiMasterCfg)))
-      val demuxSelect = Wire(Irrevocable(genSelect))
+      val demuxInput = Wire(elastic.Interface(axi4.full.WriteAddressChannel(axiMasterCfg)))
+      val demuxSelect = Wire(elastic.Interface(genSelect))
 
       new elastic.Fork(s_axi_.aw) {
-        override protected def onFork = {
-          val sel = in.id.lsbN(wIdSel)
-          val aw = Wire(axi4.full.WriteAddressChannel(axiMasterCfg))
+        val sel = in.id.lsbN(wIdSel)
+        val aw = Wire(axi4.full.WriteAddressChannel(axiMasterCfg))
 
-          aw := in
-          aw.id := in.id.dropLsbN(wIdSel)
+        aw := in
+        aw.id := in.id.dropLsbN(wIdSel)
 
-          fork(aw) :=> demuxInput
-          fork(sel) :=> demuxSelect
-          fork(sel) :=> portQueue.io.enq
-        }
+        fork(aw) :=> demuxInput
+        fork(sel) :=> demuxSelect
+        fork(sel) :=> portQueue.source
       }
 
       elastic.Demux(demuxInput, m_axi_.map { _.aw }, demuxSelect)
@@ -134,21 +126,19 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
       elastic.Demux(
         s_axi_.w,
         m_axi_.map { _.w },
-        portQueue.io.deq,
+        portQueue.sink,
         isLastFn = (x: WriteDataChannel) => x.last
       )
     }
 
     def bLogic: Unit = {
-      val b = Wire(Vec(numMasters, Irrevocable(axi4.full.WriteResponseChannel(axiMasterCfg))))
+      val b = Wire(Vec(numMasters, elastic.Interface(axi4.full.WriteResponseChannel(axiMasterCfg))))
 
       m_axi_.map { _.b }.zip(b).zipWithIndex.foreach {
         case ((source, sink), index) => {
           new elastic.Transform(source, sink) {
-            protected def onTransform: Unit = {
-              out := in
-              out.id := in.id ## index.U(wIdSel.W)
-            }
+            out := in
+            out.id := in.id ## index.U(wIdSel.W)
           }
         }
       }

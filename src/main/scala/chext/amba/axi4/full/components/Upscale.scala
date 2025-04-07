@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental.prefix
 
 import chext.amba.axi4
-import chext.elastic
+import chext.{elastic2 => elastic}
 
 import elastic.ConnectOp._
 import axi4.Ops._
@@ -42,28 +42,22 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataMaster >> 3)))
-    val offsetQueue = Module(new Queue(UInt(wOffset.W), readOffsetQueueLength))
+    val offsetQueue = elastic.Queue(UInt(wOffset.W), readOffsetQueueLength)
 
     def implAR(): Unit = prefix("ar") {
       new elastic.Fork(s_axi.ar) {
-        override protected def onFork: Unit = {
-          new elastic.Transform(fork(), addressGenerator.source) {
-            override protected def onTransform: Unit = {
-              out.addr := in.addr
-              out.len := in.len
-              out.size := in.size
-              out.burst := in.burst
-            }
-          }
-
-          fork() :=> m_axi.ar
+        new elastic.Transform(fork(), addressGenerator.source) {
+          out.addr := in.addr
+          out.len := in.len
+          out.size := in.size
+          out.burst := in.burst
         }
+
+        fork() :=> m_axi.ar
       }
 
-      new elastic.Transform(addressGenerator.sink, offsetQueue.io.enq) {
-        protected def onTransform: Unit = {
-          out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
-        }
+      new elastic.Transform(addressGenerator.sink, offsetQueue.source) {
+        out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
       }
     }
 
@@ -71,20 +65,18 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
       val steerRight = Module(new SteerRight(wDataMaster, wDataSlave))
 
       new elastic.Join(s_axi.r) {
-        override protected def onJoin: Unit = {
-          val beat = join(m_axi.r)
-          val offset = join(offsetQueue.io.deq)
+        val beat = join(m_axi.r)
+        val offset = join(offsetQueue.sink)
 
-          steerRight.dataIn := beat.data
-          steerRight.offsetIn := offset
+        steerRight.dataIn := beat.data
+        steerRight.offsetIn := offset
 
-          out.data := steerRight.dataOut
+        out.data := steerRight.dataOut
 
-          out.id := beat.id // must be zero
-          out.resp := beat.resp
-          out.user := beat.user
-          out.last := beat.last
-        }
+        out.id := beat.id // must be zero
+        out.resp := beat.resp
+        out.user := beat.user
+        out.last := beat.last
       }
     }
 
@@ -94,28 +86,22 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
 
   private def implWrite(): Unit = prefix("write") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataMaster >> 3)))
-    val offsetQueue = Module(new Queue(UInt(wOffset.W), writeOffsetQueueLength))
+    val offsetQueue = elastic.Queue(UInt(wOffset.W), writeOffsetQueueLength)
 
     def implAW(): Unit = prefix("aw") {
       new elastic.Fork(s_axi.aw) {
-        override protected def onFork: Unit = {
-          new elastic.Transform(fork(), addressGenerator.source) {
-            override protected def onTransform: Unit = {
-              out.addr := in.addr
-              out.len := in.len
-              out.size := in.size
-              out.burst := in.burst
-            }
-          }
-
-          fork() :=> m_axi.aw
+        new elastic.Transform(fork(), addressGenerator.source) {
+          out.addr := in.addr
+          out.len := in.len
+          out.size := in.size
+          out.burst := in.burst
         }
+
+        fork() :=> m_axi.aw
       }
 
-      new elastic.Transform(addressGenerator.sink, offsetQueue.io.enq) {
-        protected def onTransform: Unit = {
-          out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
-        }
+      new elastic.Transform(addressGenerator.sink, offsetQueue.source) {
+        out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
       }
     }
 
@@ -124,21 +110,19 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
       val steerLeftStrobe = Module(new SteerLeft(wStrobeSlave, wStrobeMaster))
 
       new elastic.Join(m_axi.w) {
-        override protected def onJoin: Unit = {
-          val beat = join(s_axi.w)
-          val offset = join(offsetQueue.io.deq)
+        val beat = join(s_axi.w)
+        val offset = join(offsetQueue.sink)
 
-          steerLeft.dataIn := beat.data
-          steerLeft.offsetIn := offset
+        steerLeft.dataIn := beat.data
+        steerLeft.offsetIn := offset
 
-          steerLeftStrobe.dataIn := beat.strb
-          steerLeftStrobe.offsetIn := offset
+        steerLeftStrobe.dataIn := beat.strb
+        steerLeftStrobe.offsetIn := offset
 
-          out.data := steerLeft.dataOut
-          out.strb := steerLeftStrobe.dataOut
-          out.last := beat.last
-          out.user := beat.user
-        }
+        out.data := steerLeft.dataOut
+        out.strb := steerLeftStrobe.dataOut
+        out.last := beat.last
+        out.user := beat.user
       }
     }
 

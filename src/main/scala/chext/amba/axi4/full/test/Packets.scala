@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental.BundleLiterals._
 
-import chext.elastic
+import chext.{elastic2 => elastic}
 import chext.amba.axi4.full.{
   Interface,
   AddressChannel,

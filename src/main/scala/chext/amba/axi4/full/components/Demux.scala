@@ -1,23 +1,21 @@
 package chext.amba.axi4.full.components
 
 import chext.amba.axi4
-import chext.elastic
+
+import chext.{elastic2 => elastic}
+import elastic.ConnectOp._
+
 import chext.bundles
 
 import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
-import elastic._
-import elastic.ConnectOp._
-
 import axi4.Casts._
 import axi4.BufferConfig
 import axi4.full.{SlaveBuffer, MasterBuffer, ReadDataChannel, WriteDataChannel}
 
 import bundles._
-
-import elastic.{Chooser, Arrival, Fork}
 
 case class DemuxConfig(
     val axiSlaveCfg: chext.amba.axi4.Config,
@@ -30,7 +28,7 @@ case class DemuxConfig(
     val capacityPortQueueW: Int = 8,
     val slaveBuffers: BufferConfig = BufferConfig.all(2),
     val masterBuffers: BufferConfig = BufferConfig.all(0),
-    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
+    val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr
 ) {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
@@ -80,17 +78,17 @@ class Demux(val cfg: DemuxConfig) extends Module {
 
     def arLogic: Unit = {
       val genArPort = new Bundle2(s_axi_.ar.bits.cloneType, genPort)
-      val arPort = Wire(Irrevocable(genArPort))
+      val arPort = Wire(elastic.Interface(genArPort))
 
-      new Arrival(s_axi_.ar, arPort) {
-        override protected def onArrival: Unit = {
-          val id = in.id
-          val addr = in.addr
-          val port = decodeFn(addr)
+      new elastic.Arrival(s_axi_.ar, arPort) {
+        val id = in.id
+        val addr = in.addr
+        val port = decodeFn(addr)
 
-          out._1 := in
-          out._2 := port
+        out._1 := in
+        out._2 := port
 
+        when(arrived) {
           when(transactionTracker.canInitiate(id, port)) {
             transactionTracker.initiate(id, port)
             accept()
@@ -100,17 +98,15 @@ class Demux(val cfg: DemuxConfig) extends Module {
         }
       }
 
-      val demuxInput = Wire(Irrevocable(s_axi_.ar.bits.cloneType))
-      val demuxSelect = Wire(Irrevocable(genPort))
+      val demuxInput = Wire(elastic.Interface(s_axi_.ar.bits.cloneType))
+      val demuxSelect = Wire(elastic.Interface(genPort))
 
-      new Fork(arPort) {
-        override protected def onFork = {
-          fork(in._1) :=> demuxInput
-          fork(in._2) :=> demuxSelect
-        }
+      new elastic.Fork(arPort) {
+        fork(in._1) :=> demuxInput
+        fork(in._2) :=> demuxSelect
       }
 
-      chext.elastic.Demux(
+      elastic.Demux(
         demuxInput,
         m_axi_.map { _.ar },
         demuxSelect
@@ -119,7 +115,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
 
     def rLogic: Unit = {
       // R channel supports burst interleaving, so no isLastFn
-      chext.elastic.BasicArbiter(
+      elastic.BasicArbiter(
         m_axi_.map { _.r },
         s_axi_.r,
         arbiterPolicy
@@ -147,28 +143,26 @@ class Demux(val cfg: DemuxConfig) extends Module {
     transactionTracker.noComplete()
     transactionTracker.noInitiate()
 
-    val portQueue = Module(
-      new Queue(
-        genPort,
-        capacityPortQueueW,
-        flow = true,
-        pipe = true
-      )
+    val portQueue = elastic.Queue(
+      genPort,
+      capacityPortQueueW,
+      flow = true,
+      pipe = true
     )
 
     def awLogic: Unit = {
       val genAwPort = new Bundle2(s_axi_.aw.bits.cloneType, genPort)
-      val awPort = Wire(Irrevocable(genAwPort))
+      val awPort = Wire(elastic.Interface(genAwPort))
 
-      new Arrival(s_axi_.aw, awPort) {
-        protected def onArrival: Unit = {
-          val id = in.id
-          val addr = in.addr
-          val port = decodeFn(addr)
+      new elastic.Arrival(s_axi_.aw, awPort) {
+        val id = in.id
+        val addr = in.addr
+        val port = decodeFn(addr)
 
-          out._1 := in
-          out._2 := port
+        out._1 := in
+        out._2 := port
 
+        when(arrived) {
           when(transactionTracker.canInitiate(id, port)) {
             transactionTracker.initiate(id, port)
             accept()
@@ -178,15 +172,13 @@ class Demux(val cfg: DemuxConfig) extends Module {
         }
       }
 
-      val demuxInput = Wire(Irrevocable(s_axi_.aw.bits.cloneType))
-      val demuxSelect = Wire(Irrevocable(genPort))
+      val demuxInput = Wire(elastic.Interface(s_axi_.aw.bits.cloneType))
+      val demuxSelect = Wire(elastic.Interface(genPort))
 
-      new Fork(awPort) {
-        override protected def onFork = {
-          fork(in._1) :=> demuxInput
-          fork(in._2) :=> demuxSelect
-          fork(in._2) :=> portQueue.io.enq
-        }
+      new elastic.Fork(awPort) {
+        fork(in._1) :=> demuxInput
+        fork(in._2) :=> demuxSelect
+        fork(in._2) :=> portQueue.source
       }
 
       chext.elastic.Demux(demuxInput, m_axi_.map { _.aw }, demuxSelect)
@@ -198,13 +190,13 @@ class Demux(val cfg: DemuxConfig) extends Module {
       chext.elastic.Demux(
         s_axi_.w,
         m_axi_.map { _.w },
-        portQueue.io.deq,
+        portQueue.sink,
         isLastFn = (x: WriteDataChannel) => x.last
       )
     }
 
     def bLogic: Unit = {
-      chext.elastic.BasicArbiter(
+      elastic.BasicArbiter(
         m_axi_.map { _.b },
         s_axi_.b,
         arbiterPolicy

@@ -1,14 +1,13 @@
 package chext.amba.axi4.full.components
 
 import chext.amba.axi4
-import chext.elastic
+
+import chext.{elastic2 => elastic}
+import elastic.ConnectOp._
 
 import chisel3._
 import chisel3.util._
 import chisel3.experimental._
-
-import elastic._
-import elastic.ConnectOp._
 
 import axi4.Casts._
 import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
@@ -18,7 +17,7 @@ case class MuxConfig(
     val numSlaves: Int = 4,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
-    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
+    val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr
 ) {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
@@ -59,14 +58,12 @@ class Mux(val cfg: MuxConfig) extends Module {
     }
 
     def rLogic: Unit = {
-      val demuxInput = Wire(Irrevocable(m_axi_.r.bits.cloneType))
-      val demuxSelect = Wire(Irrevocable(UInt(wPort.W)))
+      val demuxInput = Wire(elastic.Interface(m_axi_.r.bits.cloneType))
+      val demuxSelect = Wire(elastic.Interface(UInt(wPort.W)))
 
-      new Fork(m_axi_.r) {
-        protected def onFork: Unit = {
-          fork { in } :=> demuxInput
-          fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
-        }
+      new elastic.Fork(m_axi_.r) {
+        fork { in } :=> demuxInput
+        fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
       }
 
       // R channel supports burst interleaving, so no isLastFn
@@ -78,14 +75,14 @@ class Mux(val cfg: MuxConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val portQueue = Module(new Queue(genPort, 32, flow = true, pipe = true))
+    val portQueue = elastic.Queue(genPort, 32, flow = true, pipe = true)
 
     def awLogic: Unit = {
       elastic.BasicArbiter(
         s_axi_.map { _.aw },
         m_axi_.aw,
         arbiterPolicy,
-        Some(portQueue.io.enq)
+        Some(portQueue.source)
       )
     }
 
@@ -95,20 +92,18 @@ class Mux(val cfg: MuxConfig) extends Module {
       elastic.Mux(
         s_axi_.map { _.w },
         m_axi_.w,
-        portQueue.io.deq,
+        portQueue.sink,
         isLastFn = (x: WriteDataChannel) => x.last
       )
     }
 
     def bLogic: Unit = {
-      val demuxInput = Wire(Irrevocable(m_axi_.b.bits.cloneType))
-      val demuxSelect = Wire(Irrevocable(UInt(wPort.W)))
+      val demuxInput = Wire(elastic.Interface(m_axi_.b.bits.cloneType))
+      val demuxSelect = Wire(elastic.Interface(UInt(wPort.W)))
 
-      new Fork(m_axi_.b) {
-        protected def onFork: Unit = {
-          fork { in } :=> demuxInput
-          fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
-        }
+      new elastic.Fork(m_axi_.b) {
+        fork { in } :=> demuxInput
+        fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
       }
 
       elastic.Demux(demuxInput, s_axi_.map { _.b }, demuxSelect)

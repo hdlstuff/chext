@@ -65,11 +65,11 @@ class MyModule2 extends Module {
   val sourceB = IO(Source(new MyBundle))
   val sinkB = IO(Sink(new MyBundle))
 
-  Queue(sourceA, sinkA, 18, flow = true, pipe = true, useVerilog = false)
+  Queue.between(sourceA, sinkA, 18, flow = true, pipe = true, useVerilog = false)
 
   val buffer1 = LeftBuffer(sourceB)
   val buffer2 = RightBuffer(sinkB)
-  Queue(
+  Queue.between(
     buffer1,
     buffer2,
     18,
@@ -116,7 +116,7 @@ class QueueTestTop1 extends Module with HasHdlinfoModule {
   val source = IO(Source(UInt(32.W)))
   val sink = IO(Sink(UInt(32.W)))
 
-  Queue(source, sink, 18, flow = true, pipe = true, useVerilog = true)
+  Queue.between(source, sink, 18, flow = true, pipe = true, useVerilog = true)
 
   def hdlinfoModule: hdlinfo.Module = {
     import hdlinfo._

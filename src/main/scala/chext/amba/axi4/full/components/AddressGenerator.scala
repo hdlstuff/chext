@@ -1,7 +1,7 @@
 package chext.amba.axi4.full.components
 
 import chext.amba.axi4
-import chext.elastic
+import chext.{elastic2 => elastic}
 
 import chisel3._
 import chisel3.util._
@@ -51,8 +51,8 @@ class AddressGenerator(val wAddr: Int) extends Module {
   val genSource = new AddrLenSizeBurstBundle(wAddr)
   val genSink = new AddrSizeLastBundle(wAddr)
 
-  val source = IO(Source(Irrevocable(genSource)))
-  val sink = IO(Sink(Irrevocable(genSink)))
+  val source = IO(Source(genSource))
+  val sink = IO(Sink(genSink))
 
   private val source_ = SourceBuffer(source)
   private val sink_ = SinkBuffer(sink)
@@ -136,37 +136,35 @@ class StrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
   val genInput = new AddrSizeLastBundle(wAddr)
   val genOutput = new AddrSizeStrobeLastBundle(wAddr, wData)
 
-  val source = IO(Source(Irrevocable(genInput)))
-  val sink = IO(Sink(Irrevocable(genOutput)))
+  val source = IO(Source(genInput))
+  val sink = IO(Sink(genOutput))
 
   private val wStrobe = genOutput.wStrobe
   private val log2strobe = log2Ceil(wStrobe)
 
   new elastic.Transform(source, sink) {
-    protected def onTransform: Unit = {
-      val addr = in.addr(log2strobe - 1, 0)
+    val addr = in.addr(log2strobe - 1, 0)
 
-      // we should preserve the lower bits for unaligned transactions
-      val lowerByteIndex = addr
+    // we should preserve the lower bits for unaligned transactions
+    val lowerByteIndex = addr
 
-      // we should not preserve the lower bits
-      val upperByteIndex = ((1.U + (addr >> in.size)) << in.size) - 1.U
+    // we should not preserve the lower bits
+    val upperByteIndex = ((1.U + (addr >> in.size)) << in.size) - 1.U
 
-      /* pass through */
-      out.addr := in.addr
-      out.size := in.size
-      out.last := in.last
+    /* pass through */
+    out.addr := in.addr
+    out.size := in.size
+    out.last := in.last
 
-      out.lowerByteIndex := lowerByteIndex
-      out.upperByteIndex := upperByteIndex
+    out.lowerByteIndex := lowerByteIndex
+    out.upperByteIndex := upperByteIndex
 
-      /* TODO: is there a better way to optimize this? */
-      out.strb := VecInit
-        .tabulate(wStrobe) { (idx) =>
-          (idx.U <= upperByteIndex) && (idx.U >= lowerByteIndex)
-        }
-        .asUInt
-    }
+    /* TODO: is there a better way to optimize this? */
+    out.strb := VecInit
+      .tabulate(wStrobe) { (idx) =>
+        (idx.U <= upperByteIndex) && (idx.U >= lowerByteIndex)
+      }
+      .asUInt
   }
 }
 
@@ -177,8 +175,8 @@ class AddressStrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
   val genInput = addressGenerator.genSource
   val genOutput = strobeGenerator.genOutput
 
-  val source = IO(Source(Irrevocable(genInput)))
-  val sink = IO(Sink(Irrevocable(genOutput)))
+  val source = IO(Source(genInput))
+  val sink = IO(Sink(genOutput))
 
   source :=> addressGenerator.source
   addressGenerator.sink :=> strobeGenerator.source

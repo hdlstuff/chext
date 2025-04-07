@@ -12,7 +12,7 @@ package detail {
         pipe: Boolean = false
     ): Interface[T] = {
       val interface = Wire(chiselTypeOf(source))
-      Queue(source, interface, count, flow, pipe, false)
+      Queue.between(source, interface, count, flow, pipe, false)
       interface
     }
   }
@@ -26,7 +26,7 @@ package detail {
         name: String = "sourceBuffer_#"
     ): Interface[T] = {
       val interface = Wire(chiselTypeOf(sink))
-      Queue(interface, sink, count, flow, pipe, false)
+      Queue.between(interface, sink, count, flow, pipe, false)
       interface
     }
   }

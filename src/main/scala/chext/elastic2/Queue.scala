@@ -3,24 +3,30 @@ package chext.elastic2
 import chisel3._
 import chisel3.experimental.{requireIsHardware, requireIsChiselType, AffectsChiselPrefix, prefix}
 
-private class ChiselQueue[T <: Data](
+trait Queue[T <: Data] {
+  def source: Interface[T]
+  def sink: Interface[T]
+}
+
+private class QueueImpl[T <: Data](
     val gen: T,
-    val entries: Int,
+    val count: Int,
     val pipe: Boolean = false,
     val flow: Boolean = false,
     val useSyncReadMem: Boolean = false,
     val hasFlush: Boolean = false
-) extends Module() {
-  require(entries > -1, "Queue must have non-negative number of entries")
-  require(entries != 0, "Use companion object Queue.apply for zero entries")
+) extends Module
+    with Queue[T] {
+  require(count > -1, "Queue must have non-negative count.")
+  require(count != 0, "Use companion object Queue.apply for empty queue.")
   requireIsChiselType(gen)
 
   val source = IO(Source(gen))
   val sink = IO(Sink(gen))
   val ram =
-    if (useSyncReadMem) SyncReadMem(entries, gen, SyncReadMem.WriteFirst) else Mem(entries, gen)
-  val enq_ptr = chisel3.util.Counter(entries)
-  val deq_ptr = chisel3.util.Counter(entries)
+    if (useSyncReadMem) SyncReadMem(count, gen, SyncReadMem.WriteFirst) else Mem(count, gen)
+  val enq_ptr = chisel3.util.Counter(count)
+  val deq_ptr = chisel3.util.Counter(count)
   val maybe_full = RegInit(false.B)
   val ptr_match = enq_ptr.value === deq_ptr.value
   val empty = ptr_match && !maybe_full
@@ -45,7 +51,7 @@ private class ChiselQueue[T <: Data](
   source.ready := !full
 
   if (useSyncReadMem) {
-    val deq_ptr_next = Mux(deq_ptr.value === (entries.U - 1.U), 0.U, deq_ptr.value + 1.U)
+    val deq_ptr_next = Mux(deq_ptr.value === (count.U - 1.U), 0.U, deq_ptr.value + 1.U)
     val r_addr = WireDefault(Mux(do_deq, deq_ptr_next, deq_ptr.value))
     sink.bits := ram.read(r_addr)
   } else {
@@ -65,7 +71,7 @@ private class ChiselQueue[T <: Data](
     when(sink.ready) { source.ready := true.B }
   }
 
-  override def desiredName = s"ChiselQueue_${entries}_${gen.typeName}"
+  override def desiredName = s"ChiselQueue_${count}_${gen.typeName}"
 }
 
 package verilog {
@@ -96,7 +102,7 @@ package verilog {
 }
 
 object Queue {
-  def apply[T <: Data](
+  def between[T <: Data](
       source: Interface[T],
       sink: Interface[T],
       count: Int,
@@ -129,11 +135,49 @@ object Queue {
       // We should provide our own Chisel-compatible queue implementation
       // This queue must be parametrized and it must be self-contained
       val queue =
-        Module(new ChiselQueue(chiselTypeOf(source.bits), count, pipe, flow, syncReadMem))
+        Module(new QueueImpl(chiselTypeOf(source.bits), count, pipe, flow, syncReadMem))
 
       import ConnectOp._
       source :=> queue.source
       queue.sink :=> sink
+    }
+  }
+
+  def apply[T <: Data](
+      gen: T,
+      count: Int,
+      pipe: Boolean = false,
+      flow: Boolean = false,
+      syncReadMem: Boolean = false,
+      useVerilog: Boolean = true
+  ): Queue[T] = {
+    require(count > 0, "Length must be positive.")
+
+    if (useVerilog) {
+      val addrWidth = chisel3.util.log2Ceil(count)
+      val dataWidth = gen.getWidth
+
+      val queue =
+        Module(new verilog.chext_queue(count, addrWidth, dataWidth, flow, pipe, syncReadMem))
+
+      queue.io.clock := Module.clock
+      queue.io.reset := Module.reset
+
+      val queueSource = Wire(Interface(gen))
+      val queueSink = Wire(Interface(gen))
+
+      new Transform(queueSource, queue.io.source) {}
+      new Transform(queue.io.sink, queueSink) {}
+
+      new Queue[T] {
+        def source: Interface[T] = queueSource
+        def sink: Interface[T] = queueSink
+      }
+    } else {
+      // TODO: Chisel queue implementation causes a verilog code size explosion
+      // We should provide our own Chisel-compatible queue implementation
+      // This queue must be parametrized and it must be self-contained
+      Module(new QueueImpl(gen, count, pipe, flow, syncReadMem))
     }
   }
 }

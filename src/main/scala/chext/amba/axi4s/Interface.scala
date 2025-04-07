@@ -1,8 +1,9 @@
 package chext.amba.axi4s
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.dataview._
+
+import chext.{elastic2 => elastic}
 
 case class Config(
     val wData: Int,
@@ -48,8 +49,8 @@ object Interface {
   def apply(cfg: Config): Interface = new Interface(cfg)
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
-  implicit val view = DataView[Interface, IrrevocableIO[UInt]](
-    interface => Irrevocable(UInt(interface.cfg.wData.W)),
+  implicit val view = DataView[Interface, elastic.Interface[UInt]](
+    interface => elastic.Interface(UInt(interface.cfg.wData.W)),
     _.TREADY -> _.ready,
     _.TVALID -> _.valid,
     _.TDATA -> _.bits

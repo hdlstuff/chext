@@ -1,14 +1,13 @@
 package chext.amba.axi4.lite.components
 
 import chext.amba.axi4
-import chext.elastic
+
+import chext.{elastic2 => elastic}
+import elastic.ConnectOp._
 
 import chisel3._
 import chisel3.util._
 import chisel3.experimental._
-
-import elastic._
-import elastic.ConnectOp._
 
 import axi4.Casts._
 import axi4.lite.{SlaveBuffer, MasterBuffer}
@@ -21,7 +20,7 @@ case class MuxConfig(
     val capacityPortQueueB: Int = 8,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
-    val arbiterPolicy: Chooser.ChooserFn = Chooser.rr
+    val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr
 ) {
   require(axiSlaveCfg.lite, "should use AXI4 lite")
   require(axiSlaveCfg.read || axiSlaveCfg.write, "must be at least read or write")
@@ -52,26 +51,24 @@ class Mux(val cfg: MuxConfig) extends Module {
   private val m_axil_ = MasterBuffer(m_axil, masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
-    val portQueue = Module(
-      new Queue(
-        genPort,
-        capacityPortQueueR,
-        flow = true,
-        pipe = true
-      )
+    val portQueue = elastic.Queue(
+      genPort,
+      capacityPortQueueR,
+      flow = true,
+      pipe = true
     )
 
     def arLogic: Unit = {
-      chext.elastic.BasicArbiter(
+      elastic.BasicArbiter(
         s_axil_.map { _.ar },
         m_axil_.ar,
         arbiterPolicy,
-        Some(portQueue.io.enq)
+        Some(portQueue.source)
       )
     }
 
     def rLogic: Unit = {
-      chext.elastic.Demux(m_axil_.r, s_axil_.map { _.r }, portQueue.io.deq)
+      chext.elastic.Demux(m_axil_.r, s_axil_.map { _.r }, portQueue.sink)
     }
 
     arLogic
@@ -79,48 +76,42 @@ class Mux(val cfg: MuxConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val portQueueW = Module(
-      new Queue(
-        genPort,
-        capacityPortQueueW,
-        flow = true,
-        pipe = true
-      )
+    val portQueueW = elastic.Queue(
+      genPort,
+      capacityPortQueueW,
+      flow = true,
+      pipe = true
     )
 
-    val portQueueB = Module(
-      new Queue(
-        genPort,
-        capacityPortQueueB,
-        flow = true,
-        pipe = true
-      )
+    val portQueueB = elastic.Queue(
+      genPort,
+      capacityPortQueueB,
+      flow = true,
+      pipe = true
     )
 
     def awLogic: Unit = {
-      val arbiterSelect = Wire(Irrevocable(genPort))
+      val arbiterSelect = Wire(elastic.Interface(genPort))
 
-      chext.elastic.BasicArbiter(
+      elastic.BasicArbiter(
         s_axil_.map { _.aw },
         m_axil_.aw,
         arbiterPolicy,
         Some(arbiterSelect)
       )
 
-      new Fork(arbiterSelect) {
-        protected def onFork: Unit = {
-          fork() :=> portQueueW.io.enq
-          fork() :=> portQueueB.io.enq
-        }
+      new elastic.Fork(arbiterSelect) {
+        fork() :=> portQueueW.source
+        fork() :=> portQueueB.source
       }
     }
 
     def wLogic: Unit = {
-      chext.elastic.Mux(s_axil_.map { _.w }, m_axil_.w, portQueueW.io.deq)
+      chext.elastic.Mux(s_axil_.map { _.w }, m_axil_.w, portQueueW.sink)
     }
 
     def bLogic: Unit = {
-      chext.elastic.Demux(m_axil_.b, s_axil_.map { _.b }, portQueueB.io.deq)
+      chext.elastic.Demux(m_axil_.b, s_axil_.map { _.b }, portQueueB.sink)
     }
 
     awLogic

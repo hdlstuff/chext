@@ -4,8 +4,10 @@ import chisel3._
 import chisel3.util._
 
 import chext.amba.axi4.BufferConfig
-import chext.elastic.{SinkBuffer, SourceBuffer}
-import chext.elastic.ConnectOp._
+
+import chext.{elastic2 => elastic}
+import elastic.{SinkBuffer, SourceBuffer}
+import elastic.ConnectOp._
 
 object buffer {
   private[full] def insertBufferR(

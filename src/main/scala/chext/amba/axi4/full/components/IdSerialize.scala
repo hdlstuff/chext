@@ -1,17 +1,15 @@
 package chext.amba.axi4.full.components
 
 import chext.amba.axi4
-import chext.elastic
+
+import chext.{elastic2 => elastic}
+import elastic.ConnectOp._
 
 import chisel3._
 import chisel3.util._
 import chisel3.experimental._
 
 import axi4.Casts._
-
-import elastic._
-import elastic.TransformOp._
-import elastic.ConnectOp._
 
 case class IdSerializeConfig(
     val axiSlaveCfg: axi4.Config,
@@ -39,68 +37,54 @@ class IdSerialize(val cfg: IdSerializeConfig) extends Module {
   private val genId = UInt(axiSlaveCfg.wId.W)
 
   private def implRead(): Unit = prefix("read") {
-    val idQueue = Module(
-      new Queue(
-        genId,
-        cfg.capacityIdQueueR,
-        flow = true,
-        pipe = true
-      )
+    val idQueue = elastic.Queue(
+      genId,
+      cfg.capacityIdQueueR,
+      flow = true,
+      pipe = true
     )
 
-    idQueue.io.deq.nodeq()
+    idQueue.sink.nodeq()
 
-    new Fork(s_axi.ar) {
-      protected def onFork: Unit = {
-        new Replicate(fork(in), idQueue.io.enq) {
-          protected def onReplicate: Unit = {
-            len := in.len +& 1.U
-            out := in.id
-          }
-        }
-
-        fork(in) :=> m_axi.ar
+    new elastic.Fork(s_axi.ar) {
+      new elastic.Replicate(fork(in), idQueue.source) {
+        len := in.len +& 1.U
+        out := in.id
       }
+
+      fork(in) :=> m_axi.ar
     }
 
-    new Transform(m_axi.r, s_axi.r) {
-      protected def onTransform: Unit = {
-        out := in
-        out.id := idQueue.io.deq.bits
-      }
+    new elastic.Transform(m_axi.r, s_axi.r) {
+      out := in
+      out.id := idQueue.sink.bits
     }
 
     when(s_axi.r.fire) {
-      idQueue.io.deq.deq()
+      idQueue.sink.deq()
     }
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val idQueue = Module(
-      new Queue(
-        genId,
-        cfg.capacityIdQueueR,
-        flow = true,
-        pipe = true
-      )
+    val idQueue = elastic.Queue(
+      genId,
+      cfg.capacityIdQueueR,
+      flow = true,
+      pipe = true
     )
 
-    new Fork(s_axi.aw) {
-      protected def onFork: Unit = {
-        fork(in.id) :=> idQueue.io.enq
-        fork(in) :=> m_axi.aw
-      }
+    new elastic.Fork(s_axi.aw) {
+      fork(in.id) :=> idQueue.source
+      fork(in) :=> m_axi.aw
     }
 
     s_axi.w :=> m_axi.w
 
-    new Join(s_axi.b) {
-      protected def onJoin: Unit = {
-        val id = join(idQueue.io.deq)
+    new elastic.Join(s_axi.b) {
+      val id = join(idQueue.sink)
 
-        out := join(m_axi.b)
-        out.id := id
-      }
+      out := join(m_axi.b)
+      out.id := id
     }
   }
 

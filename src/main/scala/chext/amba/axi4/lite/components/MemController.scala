@@ -1,13 +1,13 @@
 package chext.amba.axi4.lite.components
 
 import chext.amba.axi4
-import chext.elastic
+
+import chext.{elastic2 => elastic}
+import elastic.ConnectOp._
 
 import chisel3._
 import chisel3.util._
 import chisel3.experimental.BundleLiterals._
-
-import elastic._
 
 import axi4.lite.WriteResponseChannel
 import chext.amba.axi4.{Config, ResponseFlag}
@@ -38,8 +38,7 @@ class MemController(
   require(log2numElements > 0)
   require(addrBitHigh < axiCfg.wAddr)
 
-  /** AXI4-Lite slave interface for reading from and writing to the Synchronous
-    * Read Memory.
+  /** AXI4-Lite slave interface for reading from and writing to the Synchronous Read Memory.
     *
     * @note
     *   byte-addressed.
@@ -49,8 +48,7 @@ class MemController(
   /** Debug port.
     *
     * @note
-    *   Addresses the BRAM elements directly, this is different from the
-    *   AXI4-Lite convention.
+    *   Addresses the BRAM elements directly, this is different from the AXI4-Lite convention.
     */
   val debug: MemDebugPort =
     if (debugEnabled) IO(new MemDebugPort(axiCfg.wAddr, axiCfg.wData)) else null
@@ -58,12 +56,12 @@ class MemController(
   private val counter = RegInit(0.U(32.W))
   counter := counter + 1.U
 
-  private val ar = SourceBuffer.irrevocable(s_axil.ar, 4)
-  private val r = SinkBuffer.irrevocable(s_axil.r)
+  private val ar = elastic.SourceBuffer(s_axil.ar, 4)
+  private val r = elastic.SinkBuffer(s_axil.r)
 
-  private val aw = SourceBuffer.irrevocable(s_axil.aw, 4)
-  private val w = SourceBuffer.irrevocable(s_axil.w, 4)
-  private val b = SinkBuffer.irrevocable(s_axil.b)
+  private val aw = elastic.SourceBuffer(s_axil.aw, 4)
+  private val w = elastic.SourceBuffer(s_axil.w, 4)
+  private val b = elastic.SinkBuffer(s_axil.b)
 
   val mem = Mem(1 << log2numElements, genData)
 

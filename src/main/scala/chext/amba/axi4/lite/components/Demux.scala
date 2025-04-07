@@ -1,16 +1,15 @@
 package chext.amba.axi4.lite.components
 
 import chext.amba.axi4
-import chext.elastic
+
+import chext.{elastic2 => elastic}
+import elastic.ConnectOp._
+
 import chext.bundles
 
 import chisel3._
 import chisel3.util._
 import chisel3.experimental._
-
-import elastic._
-import elastic.TransformOp._
-import elastic.ConnectOp._
 
 import axi4.Casts._
 import axi4.lite.{SlaveBuffer, MasterBuffer}
@@ -56,43 +55,36 @@ class Demux(val cfg: DemuxConfig) extends Module {
   }
 
   private def implRead(): Unit = prefix("read") {
-    val portQueue = Module(
-      new Queue(
-        genPort,
-        capacityPortQueueR,
-        flow = true,
-        pipe = true
-      )
+    val portQueue = elastic.Queue(
+      genPort,
+      capacityPortQueueR,
+      flow = true,
+      pipe = true
     )
 
     def arLogic: Unit = {
       val genArPort = new Bundle2(s_axil_.ar.bits.cloneType, genPort)
-      val arPort = Wire(Irrevocable(genArPort))
+      val arPort = Wire(elastic.Interface(genArPort))
 
-      s_axil_.ar
-        .transform(genArPort) {
-          case (source, sink) => {
-            sink._1 := source
-            sink._2 := decodeFn(source.addr)
-          }
-        } :=> arPort
-
-      val demuxInput = Wire(Irrevocable(s_axil_.ar.bits.cloneType))
-      val demuxSelect = Wire(Irrevocable(genPort))
-
-      new Fork(arPort) {
-        protected def onFork: Unit = {
-          fork(in._1) :=> demuxInput
-          fork(in._2) :=> demuxSelect
-          fork(in._2) :=> portQueue.io.enq
-        }
+      new elastic.Transform(s_axil_.ar, arPort) {
+        out._1 := in
+        out._2 := decodeFn(in.addr)
       }
 
-      chext.elastic.Demux(demuxInput, m_axil_.map(_.ar), demuxSelect)
+      val demuxInput = Wire(elastic.Interface(s_axil_.ar.bits.cloneType))
+      val demuxSelect = Wire(elastic.Interface(genPort))
+
+      new elastic.Fork(arPort) {
+        fork(in._1) :=> demuxInput
+        fork(in._2) :=> demuxSelect
+        fork(in._2) :=> portQueue.source
+      }
+
+      elastic.Demux(demuxInput, m_axil_.map(_.ar), demuxSelect)
     }
 
     def rLogic: Unit = {
-      chext.elastic.Mux(m_axil_.map { _.r }, s_axil_.r, portQueue.io.deq)
+      elastic.Mux(m_axil_.map { _.r }, s_axil_.r, portQueue.sink)
     }
 
     arLogic
@@ -100,58 +92,49 @@ class Demux(val cfg: DemuxConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val portQueueW = Module(
-      new Queue(
-        genPort,
-        capacityPortQueueW,
-        flow = true,
-        pipe = true
-      )
+    val portQueueW = elastic.Queue(
+      genPort,
+      capacityPortQueueW,
+      flow = true,
+      pipe = true
     )
 
-    val portQueueB = Module(
-      new Queue(
-        genPort,
-        capacityPortQueueB,
-        flow = true,
-        pipe = true
-      )
+    val portQueueB = elastic.Queue(
+      genPort,
+      capacityPortQueueB,
+      flow = true,
+      pipe = true
     )
 
     def awLogic: Unit = {
       val genAwPort = new Bundle2(s_axil_.aw.bits.cloneType, genPort)
-      val awPort = Wire(Irrevocable(genAwPort))
+      val awPort = Wire(elastic.Interface(genAwPort))
 
-      s_axil_.aw
-        .transform(genAwPort) {
-          case (source, sink) => {
-            sink._1 := source
-            sink._2 := decodeFn(source.addr)
-          }
-        } :=> awPort
+      new elastic.Transform(s_axil_.aw, awPort) {
+        out._1 := in
+        out._2 := decodeFn(in.addr)
+      }
 
-      val demuxAwInput = Wire(Irrevocable(s_axil_.aw.bits.cloneType))
-      val demuxAwSelect = Wire(Irrevocable(genPort))
+      val demuxAwInput = Wire(elastic.Interface(s_axil_.aw.bits.cloneType))
+      val demuxAwSelect = Wire(elastic.Interface(genPort))
 
-      new Fork(awPort) {
-        protected def onFork: Unit = {
-          fork(in._1) :=> demuxAwInput
+      new elastic.Fork(awPort) {
+        fork(in._1) :=> demuxAwInput
 
-          fork(in._2) :=> demuxAwSelect
-          fork(in._2) :=> portQueueW.io.enq
-          fork(in._2) :=> portQueueB.io.enq
-        }
+        fork(in._2) :=> demuxAwSelect
+        fork(in._2) :=> portQueueW.source
+        fork(in._2) :=> portQueueB.source
       }
 
       chext.elastic.Demux(demuxAwInput, m_axil_.map { _.aw }, demuxAwSelect)
     }
 
     def wLogic: Unit = {
-      chext.elastic.Demux(s_axil_.w, m_axil_.map { _.w }, portQueueW.io.deq)
+      chext.elastic.Demux(s_axil_.w, m_axil_.map { _.w }, portQueueW.sink)
     }
 
     def bLogic: Unit = {
-      chext.elastic.Mux(m_axil_.map { _.b }, s_axil_.b, portQueueB.io.deq)
+      chext.elastic.Mux(m_axil_.map { _.b }, s_axil_.b, portQueueB.sink)
     }
 
     awLogic

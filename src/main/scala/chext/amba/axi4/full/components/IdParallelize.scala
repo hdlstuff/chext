@@ -8,7 +8,7 @@ import chext.util.BitOps._
 import chext.bundles.BundleN
 
 import chext.amba.axi4
-import chext.elastic
+import chext.{elastic2 => elastic}
 
 import elastic.{Source, Sink, SinkBuffer}
 import elastic.ConnectOp._
@@ -55,8 +55,8 @@ private class SyncWriteElasticReadMemory[T <: Data](
     val wrAddr = Input(genAddr)
     val wrData = Input(gen)
 
-    val rdReq = Flipped(Decoupled(genAddr))
-    val rdResp = Decoupled(gen)
+    val rdReq = elastic.Source(genAddr)
+    val rdResp = elastic.Sink(gen)
   })
 
   if (useSyncMem) {
@@ -70,11 +70,11 @@ private class SyncWriteElasticReadMemory[T <: Data](
     rdCounter.noInc()
     rdCounter.noDec()
 
-    val rdQueue = Module(new Queue(gen, numOutstandingRead))
-    rdQueue.io.enq.noenq()
+    val rdQueue = elastic.Queue(gen, numOutstandingRead)
+    rdQueue.source.noenq()
 
     io.rdReq.ready := rdCounter.notFull
-    rdQueue.io.deq :=> io.rdResp
+    rdQueue.sink :=> io.rdResp
 
     sram.readPorts(0).address := DontCare
     sram.readPorts(0).enable := true.B // TODO check this
@@ -85,7 +85,7 @@ private class SyncWriteElasticReadMemory[T <: Data](
     }
 
     when(ShiftRegister(io.rdReq.fire, rdLatency)) {
-      rdQueue.io.enq.enq(sram.readPorts(0).data)
+      rdQueue.source.enq(sram.readPorts(0).data)
     }
 
     when(io.rdResp.fire) {

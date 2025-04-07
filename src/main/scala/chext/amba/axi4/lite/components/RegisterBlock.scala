@@ -1,13 +1,12 @@
 package chext.amba.axi4.lite.components
 
 import chext.amba.axi4
-import chext.elastic
+
+import chext.{elastic2 => elastic}
+import elastic.ConnectOp._
 
 import chisel3._
 import chisel3.util._
-
-import elastic._
-import elastic.ConnectOp._
 
 import axi4.Casts._
 import axi4.lite.SlaveBuffer
@@ -166,21 +165,21 @@ class RegisterBlock(
 
   val mask = (-1).S(wMask.W).asUInt ^ (addrIncr - 1).U
 
-  private val rdReq_ = Queue.irrevocable(s_axil_.ar, 1)
+  private val rdReq_ = elastic.SourceBuffer(s_axil_.ar)
 
   // We need to place a queue of length 1 to be fully AXI-compliant
   // Otherwise, valid signal waits for the ready signal
-  private val rdRespQueue_ = Module(new Queue(chiselTypeOf(s_axil_.r.bits), 1))
-  private val rdResp_ = rdRespQueue_.io.enq
-  rdRespQueue_.io.deq :=> s_axil_.r
+  private val rdRespQueue_ = elastic.Queue(chiselTypeOf(s_axil_.r.bits), 1)
+  private val rdResp_ = rdRespQueue_.source
+  rdRespQueue_.sink :=> s_axil_.r
 
-  private val wrReq_ = Queue.irrevocable(s_axil_.aw, 1)
-  private val wrReqData_ = Queue.irrevocable(s_axil_.w, 1)
+  private val wrReq_ = elastic.SourceBuffer(s_axil_.aw, 1)
+  private val wrReqData_ = elastic.SourceBuffer(s_axil_.w, 1)
 
   // Same as before
-  private val wrRespQueue_ = Module(new Queue(chiselTypeOf(s_axil_.b.bits), 1))
-  private val wrResp_ = wrRespQueue_.io.enq
-  wrRespQueue_.io.deq :=> s_axil_.b
+  private val wrRespQueue_ = elastic.Queue(chiselTypeOf(s_axil_.b.bits), 1)
+  private val wrResp_ = wrRespQueue_.source
+  wrRespQueue_.sink :=> s_axil_.b
 
   rdReq_.nodeq()
   rdResp_.noenq()
