@@ -105,8 +105,13 @@ abstract class Reduce[T1 <: Data, T2 <: Data](
 
       val temp = dontTouch { Wire(Interface(gen)) }
 
-      val mux0 = elastic.Mux(Seq(temp, stage0_init), stage1_opB, SourceBuffer(fork { in.first }))
-      val demux0 = Demux(stage1_res, Seq(temp, stage0_res), SourceBuffer(fork { in.last }))
+      val mux0 = elastic.Mux(
+        Seq(temp, stage0_init),
+        stage1_opB,
+        SourceBuffer(fork { in.first }, flow = true)
+      )
+      val demux0 =
+        Demux(stage1_res, Seq(temp, stage0_res), SourceBuffer(fork { in.last }, flow = true))
     }
   }
 

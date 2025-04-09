@@ -254,7 +254,7 @@ module ReduceTestTop1(	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(1),
-    .FLOW(0),
+    .FLOW(1),
     .PIPE(0),
     .USE_SYNCMEM(0)
   ) reduce_stage1_fork0_queue (	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
@@ -287,7 +287,7 @@ module ReduceTestTop1(	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(1),
-    .FLOW(0),
+    .FLOW(1),
     .PIPE(0),
     .USE_SYNCMEM(0)
   ) reduce_stage1_fork0_queue_1 (	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
