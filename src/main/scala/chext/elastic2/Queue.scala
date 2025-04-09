@@ -2,10 +2,13 @@ package chext.elastic2
 
 import chisel3._
 import chisel3.experimental.{requireIsHardware, requireIsChiselType, AffectsChiselPrefix, prefix}
+import chisel3.experimental.BaseModule
 
 trait Queue[T <: Data] {
   def source: Interface[T]
   def sink: Interface[T]
+
+  def module: BaseModule
 }
 
 private class QueueImpl[T <: Data](
@@ -20,6 +23,8 @@ private class QueueImpl[T <: Data](
   require(count > -1, "Queue must have non-negative count.")
   require(count != 0, "Use companion object Queue.apply for empty queue.")
   requireIsChiselType(gen)
+
+  def module: BaseModule = this
 
   val source = IO(Source(gen))
   val sink = IO(Sink(gen))
@@ -71,7 +76,7 @@ private class QueueImpl[T <: Data](
     when(sink.ready) { source.ready := true.B }
   }
 
-  override def desiredName = s"ChiselQueue_${count}_${gen.typeName}"
+  override def desiredName = s"chext_queue_${count}_${gen.typeName}"
 }
 
 package verilog {
@@ -91,13 +96,18 @@ package verilog {
           "FLOW" -> (if (flow) 1 else 0),
           "USE_SYNCMEM" -> (if (useSyncmem) 1 else 0)
         )
-      ) {
+      )
+      with chisel3.util.HasBlackBoxResource {
     val io = IO(new Bundle {
       val clock = Input(Clock())
       val reset = Input(Bool())
       val source = Source(UInt(dataWidth.W))
       val sink = Sink(UInt(dataWidth.W))
     })
+
+    // addResource("/chext/chext_queue.sv")
+    // addResource("/chext/chext_mem_1w1r.sv")
+    // addResource("/chext/chext_syncmem_1w1r.sv")
   }
 }
 
@@ -172,6 +182,7 @@ object Queue {
       new Queue[T] {
         def source: Interface[T] = queueSource
         def sink: Interface[T] = queueSink
+        def module: BaseModule = queue
       }
     } else {
       // TODO: Chisel queue implementation causes a verilog code size explosion

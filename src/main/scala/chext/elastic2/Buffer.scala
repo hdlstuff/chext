@@ -22,8 +22,7 @@ package detail {
         sink: Interface[T],
         count: Int = 2,
         flow: Boolean = false,
-        pipe: Boolean = false,
-        name: String = "sourceBuffer_#"
+        pipe: Boolean = false
     ): Interface[T] = {
       val interface = Wire(chiselTypeOf(sink))
       Queue.between(interface, sink, count, flow, pipe, false)
