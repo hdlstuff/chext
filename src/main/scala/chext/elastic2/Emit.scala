@@ -1,8 +1,11 @@
 package chext.elastic2
 
+
 import chisel3._
 import chisel3.experimental.{prefix, AffectsChiselPrefix}
 import chext.HasHdlinfoModule
+import circt.stage.ChiselStage
+import chisel3.stage.ChiselGeneratorAnnotation
 
 class MyConnect extends AffectsChiselPrefix {
   private val q = RegInit(0.U(0.W))
@@ -27,7 +30,7 @@ class MyModule extends Module {
   val outData = IO(UInt(64.W))
 
   import chext.util.BitOps._
-  import chext.elastic.ConnectOp._
+  import ConnectOp._
 
   prefix("myPrefix") {
     val buffered = SourceBuffer(source)
@@ -65,7 +68,7 @@ class MyModule2 extends Module {
   val sourceB = IO(Source(new MyBundle))
   val sinkB = IO(Sink(new MyBundle))
 
-  Queue.between(sourceA, sinkA, 18, flow = true, pipe = true, useVerilog = false)
+  Queue.between(sourceA, sinkA, 18, flow = true, pipe = true)
 
   val buffer1 = LeftBuffer(sourceB)
   val buffer2 = RightBuffer(sinkB)
@@ -74,8 +77,7 @@ class MyModule2 extends Module {
     buffer2,
     18,
     flow = true,
-    pipe = true,
-    useVerilog = true
+    pipe = true
   )
 }
 
@@ -149,7 +151,7 @@ class QueueTestTop1 extends Module with HasHdlinfoModule {
       Interface(
         "source",
         InterfaceRole("source"),
-        InterfaceKind("readyValid[chext.elastic.Data]"),
+        InterfaceKind("readyValid[chext.Data]"),
         associatedClock = "clock",
         associatedReset = "reset",
         args = Map("width" -> TypedObject(32))
@@ -160,7 +162,7 @@ class QueueTestTop1 extends Module with HasHdlinfoModule {
       Interface(
         "sink",
         InterfaceRole("sink"),
-        InterfaceKind("readyValid[chext.elastic.Data]"),
+        InterfaceKind("readyValid[chext.Data]"),
         associatedClock = "clock",
         associatedReset = "reset",
         args = Map("width" -> TypedObject(32))
@@ -190,9 +192,13 @@ object Queue_TB extends App with chext.TestBench {
 
 object EmitMyModule extends App {
   // emitVerilog(new MyModule)
-  // emitVerilog(new MyModule2)
+  (new circt.stage.ChiselStage).execute( // "--split-verilog"
+    Array("--target", "systemverilog"),
+    Seq(ChiselGeneratorAnnotation(() => new MyModule2))
+  )
+
   // emitVerilog(new MyModule3)
   // emitVerilog(new MyModule4)
   // emitVerilog(new QueueTestTop1)
-  emitVerilog(new MyModule5)
+  // emitVerilog(new MyModule5)
 }

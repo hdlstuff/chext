@@ -1,5 +1,6 @@
 package chext.elastic2
 
+
 import chisel3._
 import chisel3.experimental.{requireIsHardware, requireIsChiselType, AffectsChiselPrefix, prefix}
 import chisel3.experimental.BaseModule
@@ -138,8 +139,13 @@ object Queue {
       queue.io.clock := Module.clock
       queue.io.reset := Module.reset
 
-      new Transform(source, queue.io.source) {}
-      new Transform(queue.io.sink, sink) {}
+      new Transform(source, queue.io.source) {
+        out := in.asTypeOf(out)
+      }
+
+      new Transform(queue.io.sink, sink) {
+        out := in.asTypeOf(out)
+      }
     } else {
       // TODO: Chisel queue implementation causes a verilog code size explosion
       // We should provide our own Chisel-compatible queue implementation
@@ -176,8 +182,13 @@ object Queue {
       val queueSource = Wire(Interface(gen))
       val queueSink = Wire(Interface(gen))
 
-      new Transform(queueSource, queue.io.source) {}
-      new Transform(queue.io.sink, queueSink) {}
+      new Transform(queueSource, queue.io.source) {
+        out := in.asTypeOf(out)
+      }
+
+      new Transform(queue.io.sink, queueSink) {
+        out := in.asTypeOf(out)
+      }
 
       new Queue[T] {
         def source: Interface[T] = queueSource
