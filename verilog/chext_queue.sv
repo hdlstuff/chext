@@ -74,6 +74,7 @@ module chext_queue #(
     end else begin
       if (do_enq) enq_ptr <= enq_ptr_next;
       if (do_deq) deq_ptr <= deq_ptr_next;
+      if (do_enq != do_deq) maybe_full <= do_enq;
     end
   end
 
