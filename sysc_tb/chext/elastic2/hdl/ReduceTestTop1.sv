@@ -52,145 +52,184 @@
 
 // external module chext_queue
 
-module elasticMux(	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7
-  output        io_sources_0_ready,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  input         io_sources_0_valid,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  input  [31:0] io_sources_0_bits,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  input         io_sink_ready,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  output        io_sink_valid,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  output [31:0] io_sink_bits,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  output        io_select_ready,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  input         io_select_valid,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-                io_select_bits	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+// external module chext_queue
+
+module elasticMux(	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7
+  output        io_sources_0_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  input         io_sources_0_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  input  [31:0] io_sources_0_bits,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  output        io_sources_1_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  input         io_sources_1_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  input  [31:0] io_sources_1_bits,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  input         io_sink_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  output        io_sink_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  output [31:0] io_sink_bits,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  output        io_select_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  input         io_select_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+                io_select_bits	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
 );
 
-  wire valid = io_select_valid & (io_select_bits | io_sources_0_valid);	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:25:39
-  wire fire = valid & io_sink_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:25:39, :26:28
-  assign io_sources_0_ready = fire & ~io_select_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7, :26:28, :30:{21,28}
-  assign io_sink_valid = valid;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7, :25:39
-  assign io_sink_bits = io_select_bits ? 32'h0 : io_sources_0_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7, :19:14, :25:39
-  assign io_select_ready = fire;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7, :26:28
+  wire valid =
+    io_select_valid & (io_select_bits ? io_sources_1_valid : io_sources_0_valid);	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:25:39
+  wire fire = valid & io_sink_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:25:39, :26:28
+  assign io_sources_0_ready = fire & ~io_select_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7, :26:28, :30:{21,28}
+  assign io_sources_1_ready = fire & io_select_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7, :26:28, :30:21
+  assign io_sink_valid = valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7, :25:39
+  assign io_sink_bits = io_select_bits ? io_sources_1_bits : io_sources_0_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7, :25:39
+  assign io_select_ready = fire;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:9:7, :26:28
+endmodule
+
+module elasticDemux(	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7
+  output        io_source_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  input         io_source_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  input  [31:0] io_source_bits,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  input         io_sinks_0_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  output        io_sinks_0_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  output [31:0] io_sinks_0_bits,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  input         io_sinks_1_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  output        io_sinks_1_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  output [31:0] io_sinks_1_bits,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  output        io_select_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  input         io_select_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+                io_select_bits	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+);
+
+  wire valid = io_select_valid & io_source_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:25:39
+  wire fire = valid & (io_select_bits ? io_sinks_1_ready : io_sinks_0_ready);	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:25:39, :26:28
+  assign io_source_ready = fire;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7, :26:28
+  assign io_sinks_0_valid = valid & ~io_select_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7, :25:39, :33:{22,30}
+  assign io_sinks_0_bits = io_source_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7
+  assign io_sinks_1_valid = valid & io_select_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7, :25:39, :33:22
+  assign io_sinks_1_bits = io_source_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7
+  assign io_select_ready = fire;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7, :26:28
 endmodule
 
 // external module chext_queue
 
-module elasticDemux(	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7
-  output        io_source_ready,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  input         io_source_valid,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  input  [31:0] io_source_bits,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  input         io_sinks_0_ready,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  output        io_sinks_0_valid,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  output [31:0] io_sinks_0_bits,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  input         io_sinks_1_ready,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  output        io_sinks_1_valid,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  output [31:0] io_sinks_1_bits,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  output        io_select_ready,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  input         io_select_valid,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-                io_select_bits	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+module ReduceTestTop1(	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+  input         clock,	// <stdin>:269:11
+                reset,	// <stdin>:270:11
+  output        sourceElem_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:22
+  input         sourceElem_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:22
+  input  [31:0] sourceElem_bits,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:22
+  input         sinkRes_ready,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:142:19
+  output        sinkRes_valid,	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:142:19
+  output [31:0] sinkRes_bits	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:142:19
 );
 
-  wire valid = io_select_valid & io_source_valid;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:25:39
-  wire fire = valid & (io_select_bits ? io_sinks_1_ready : io_sinks_0_ready);	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:25:39, :26:28
-  assign io_source_ready = fire;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7, :26:28
-  assign io_sinks_0_valid = valid & ~io_select_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7, :25:39, :33:{22,30}
-  assign io_sinks_0_bits = io_source_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7
-  assign io_sinks_1_valid = valid & io_select_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7, :25:39, :33:22
-  assign io_sinks_1_bits = io_source_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7
-  assign io_select_ready = fire;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:9:7, :26:28
-endmodule
-
-module ReduceTestTop1(	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-  input         clock,	// <stdin>:93:11
-                reset,	// <stdin>:94:11
-  output        sourceElem_ready,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:142:22
-  input         sourceElem_valid,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:142:22
-  input  [31:0] sourceElem_bits_bits,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:142:22
-  input         sourceElem_bits_last,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:142:22
-                sinkRes_ready,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:143:19
-  output        sinkRes_valid,	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:143:19
-  output [31:0] sinkRes_bits	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:143:19
-);
-
-  wire        reduce_join0_fire;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:43:27
-  reg         reduce_stage0_arrival0_isFirst;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30
-  wire        _reduce_stage1_fork0_demux_io_source_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
-  wire        _reduce_stage1_fork0_demux_io_sinks_0_valid;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
-  wire [31:0] _reduce_stage1_fork0_demux_io_sinks_0_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
-  wire        _reduce_stage1_fork0_demux_io_select_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
-  wire        _reduce_stage1_fork0_resBuffered_queue_source_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-  wire        _reduce_stage1_fork0_resBuffered_queue_sink_valid;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-  wire [31:0] _reduce_stage1_fork0_resBuffered_queue_sink_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-  wire        _reduce_stage1_fork0_mux_io_sources_0_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
-  wire        _reduce_stage1_fork0_mux_io_sink_valid;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
-  wire [31:0] _reduce_stage1_fork0_mux_io_sink_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
-  wire        _reduce_stage1_fork0_mux_io_select_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
-  wire        _reduce_stage0_arrival0_sinkBuffered__queue_source_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-  wire        _reduce_stage0_arrival0_sinkBuffered__queue_sink_valid;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-  wire [34:0] _reduce_stage0_arrival0_sinkBuffered__queue_sink_bits;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire        reduce_stage1_res_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:58:36
+  wire [31:0] reduce_stage0_res_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:54:36
+  wire        reduce_stage0_res_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:54:36
+  wire        reduce_stage1_fork0_temp_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:106:34
+  wire        reduce_stage0_init_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:53:37
+  reg         reduce_stage0_arrival0_isFirst;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30
+  wire        reduce_op_sinkB_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:21:44
+  wire        reduce_stage0_elem_bits_zero;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+  wire [31:0] reduce_stage0_elem_bits_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+  wire        reduce_op_sinkA_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44
+  wire        _reduce_join0_queue_source_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire        _reduce_stage1_fork0_demux_io_select_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
+  wire        _reduce_stage1_fork0_queue_1_source_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire        _reduce_stage1_fork0_queue_1_sink_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire        _reduce_stage1_fork0_queue_1_sink_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire        _reduce_stage1_fork0_mux_io_select_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
+  wire        _reduce_stage1_fork0_queue_source_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire        _reduce_stage1_fork0_queue_sink_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire        _reduce_stage1_fork0_queue_sink_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire        _reduce_stage0_arrival0_sinkBuffered__queue_source_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire [34:0] _reduce_stage0_arrival0_sinkBuffered__queue_sink_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  wire        reduce_stage0_res_ready = sinkRes_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:54:36
+  wire        reduce_stage0_init_valid = 1'h1;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:53:37, :140:7
+  wire        reduce_first = 1'h0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:24:41, :140:7
+  wire        reduce_zero = 1'h0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:26:40, :140:7
+  wire [31:0] reduce_stage0_init_bits = 32'h0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Connect.scala:10:15, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:53:37
+  wire        reduce_stage1_opA_ready = reduce_op_sinkA_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44, :56:36
+  wire        reduce_stage1_opA_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:56:36
+  wire [31:0] reduce_stage1_opA_bits_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:56:36
+  wire        reduce_stage1_opB_ready = reduce_op_sinkB_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:21:44, :57:36
+  wire        reduce_stage1_opB_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:57:36
+  wire [31:0] reduce_stage1_opB_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:57:36
+  assign reduce_stage1_opA_bits_bits = reduce_stage0_elem_bits_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37, :56:36
+  wire        reduce_stage1_opA_bits_zero = reduce_stage0_elem_bits_zero;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37, :56:36
+  wire        reduce_op_sinkA_valid = reduce_stage1_opA_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44, :56:36
+  wire [31:0] reduce_op_sinkA_bits = reduce_stage1_opA_bits_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44, :56:36
+  wire        reduce_op_sinkB_valid = reduce_stage1_opB_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:21:44, :57:36
+  wire [31:0] reduce_op_sinkB_bits = reduce_stage1_opB_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:21:44, :57:36
+  wire        reduce_last;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:25:40
+  wire [31:0] reduce_data;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:28:40
+  assign reduce_stage0_elem_bits_zero =
+    _reduce_stage0_arrival0_sinkBuffered__queue_sink_bits[0];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15, :147:27, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+  wire        reduce_stage0_elem_bits_last =
+    _reduce_stage0_arrival0_sinkBuffered__queue_sink_bits[1];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15, :147:27, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+  wire        reduce_stage0_elem_bits_first =
+    _reduce_stage0_arrival0_sinkBuffered__queue_sink_bits[2];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15, :147:27, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+  assign reduce_stage0_elem_bits_bits =
+    _reduce_stage0_arrival0_sinkBuffered__queue_sink_bits[34:3];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15, :147:27, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
   wire        sourceElem_ready_0 =
-    _reduce_stage0_arrival0_sinkBuffered__queue_source_ready & sourceElem_valid;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Arrival.scala:24:47, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-  reg         reduce_stage1_fork0_regs_0;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23
-  reg         reduce_stage1_fork0_regs_1;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23
-  reg         reduce_stage1_fork0_regs_2;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23
+    _reduce_stage0_arrival0_sinkBuffered__queue_source_ready & sourceElem_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Arrival.scala:24:47, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  assign reduce_last = sourceElem_bits[31];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:25:40, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/util/BitOps.scala:82:10
+  assign reduce_data = {1'h0, sourceElem_bits[30:0]};	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:28:40, :140:7, :148:10, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/util/BitOps.scala:70:10
+  reg         reduce_stage1_fork0_regs_0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23
+  reg         reduce_stage1_fork0_regs_1;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23
+  reg         reduce_stage1_fork0_regs_2;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23
   wire        reduce_stage1_fork0_ready_qual1_0 =
-    reduce_join0_fire | reduce_stage1_fork0_regs_0;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:43:27
+    reduce_stage1_opA_ready | reduce_stage1_fork0_regs_0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:56:36
   wire        reduce_stage1_fork0_ready_qual1_1 =
-    _reduce_stage1_fork0_mux_io_select_ready | reduce_stage1_fork0_regs_1;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
+    _reduce_stage1_fork0_queue_source_ready | reduce_stage1_fork0_regs_1;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
   wire        reduce_stage1_fork0_ready_qual1_2 =
-    _reduce_stage1_fork0_demux_io_select_ready | reduce_stage1_fork0_regs_2;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20
+    _reduce_stage1_fork0_queue_1_source_ready | reduce_stage1_fork0_regs_2;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
   wire        reduce_stage0_elem_ready =
     reduce_stage1_fork0_ready_qual1_0 & reduce_stage1_fork0_ready_qual1_1
-    & reduce_stage1_fork0_ready_qual1_2;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:48:20, :50:21
-  wire        reduce_join0_allValid =
-    _reduce_stage0_arrival0_sinkBuffered__queue_sink_valid & ~reduce_stage1_fork0_regs_0
-    & _reduce_stage1_fork0_mux_io_sink_valid;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :55:39, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:42:53, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-  assign reduce_join0_fire =
-    _reduce_stage1_fork0_resBuffered_queue_source_ready & reduce_join0_allValid;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:42:53, :43:27, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-  always @(posedge clock) begin	// <stdin>:93:11
-    if (reset) begin	// <stdin>:93:11
-      reduce_stage0_arrival0_isFirst <= 1'h1;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :141:7
-      reduce_stage1_fork0_regs_0 <= 1'h0;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-      reduce_stage1_fork0_regs_1 <= 1'h0;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-      reduce_stage1_fork0_regs_2 <= 1'h0;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
+    & reduce_stage1_fork0_ready_qual1_2;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:48:20, :50:21, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+  wire        reduce_stage0_elem_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+  assign reduce_stage1_opA_valid = reduce_stage0_elem_valid & ~reduce_stage1_fork0_regs_0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :55:{36,39}, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37, :56:36
+  wire        reduce_join0_allValid = reduce_op_sinkA_valid & reduce_op_sinkB_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:42:53, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44, :21:44
+  wire        reduce_join0_fire =
+    _reduce_join0_queue_source_ready & reduce_join0_allValid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:42:53, :43:27, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  assign reduce_op_sinkA_ready = reduce_join0_fire;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:43:27, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44
+  assign reduce_op_sinkB_ready = reduce_join0_fire;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:43:27, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:21:44
+  always @(posedge clock) begin	// <stdin>:269:11
+    if (reset) begin	// <stdin>:269:11
+      reduce_stage0_arrival0_isFirst <= 1'h1;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :140:7
+      reduce_stage1_fork0_regs_0 <= 1'h0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+      reduce_stage1_fork0_regs_1 <= 1'h0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+      reduce_stage1_fork0_regs_2 <= 1'h0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
     end
-    else begin	// <stdin>:93:11
-      if (sourceElem_ready_0)	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Arrival.scala:24:47
+    else begin	// <stdin>:269:11
+      if (sourceElem_ready_0)	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Arrival.scala:24:47
         reduce_stage0_arrival0_isFirst <=
           ~reduce_stage0_arrival0_isFirst
-          & (sourceElem_bits_last | reduce_stage0_arrival0_isFirst);	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :74:25, :75:21, :76:32, :77:21
+          & (reduce_last | reduce_stage0_arrival0_isFirst);	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:25:40, :65:30, :74:25, :75:21, :76:32, :77:21
       reduce_stage1_fork0_regs_0 <=
-        reduce_stage1_fork0_ready_qual1_0
-        & _reduce_stage0_arrival0_sinkBuffered__queue_sink_valid
-        & ~reduce_stage0_elem_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, :50:21, :62:{52,55}, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+        reduce_stage1_fork0_ready_qual1_0 & reduce_stage0_elem_valid
+        & ~reduce_stage0_elem_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, :62:{52,55}, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
       reduce_stage1_fork0_regs_1 <=
-        reduce_stage1_fork0_ready_qual1_1
-        & _reduce_stage0_arrival0_sinkBuffered__queue_sink_valid
-        & ~reduce_stage0_elem_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, :50:21, :62:{52,55}, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+        reduce_stage1_fork0_ready_qual1_1 & reduce_stage0_elem_valid
+        & ~reduce_stage0_elem_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, :62:{52,55}, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
       reduce_stage1_fork0_regs_2 <=
-        reduce_stage1_fork0_ready_qual1_2
-        & _reduce_stage0_arrival0_sinkBuffered__queue_sink_valid
-        & ~reduce_stage0_elem_ready;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, :50:21, :62:{52,55}, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+        reduce_stage1_fork0_ready_qual1_2 & reduce_stage0_elem_valid
+        & ~reduce_stage0_elem_ready;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :48:20, :62:{52,55}, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-      `FIRRTL_BEFORE_INITIAL	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
+  `ifdef ENABLE_INITIAL_REG_	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+      `FIRRTL_BEFORE_INITIAL	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-      automatic logic [31:0] _RANDOM[0:0];	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-      `ifdef INIT_RANDOM_PROLOG_	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-        `INIT_RANDOM_PROLOG_	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
+    initial begin	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+      automatic logic [31:0] _RANDOM[0:0];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+      `ifdef INIT_RANDOM_PROLOG_	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+        `INIT_RANDOM_PROLOG_	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-        reduce_stage0_arrival0_isFirst = _RANDOM[/*Zero width*/ 1'b0][0];	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :141:7
-        reduce_stage1_fork0_regs_0 = _RANDOM[/*Zero width*/ 1'b0][1];	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :141:7
-        reduce_stage1_fork0_regs_1 = _RANDOM[/*Zero width*/ 1'b0][2];	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :141:7
-        reduce_stage1_fork0_regs_2 = _RANDOM[/*Zero width*/ 1'b0][3];	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :141:7
+      `ifdef RANDOMIZE_REG_INIT	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+        reduce_stage0_arrival0_isFirst = _RANDOM[/*Zero width*/ 1'b0][0];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :140:7
+        reduce_stage1_fork0_regs_0 = _RANDOM[/*Zero width*/ 1'b0][1];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :140:7
+        reduce_stage1_fork0_regs_1 = _RANDOM[/*Zero width*/ 1'b0][2];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :140:7
+        reduce_stage1_fork0_regs_2 = _RANDOM[/*Zero width*/ 1'b0][3];	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :140:7
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
-      `FIRRTL_AFTER_INITIAL	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
+    `ifdef FIRRTL_AFTER_INITIAL	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+      `FIRRTL_AFTER_INITIAL	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   chext_queue #(
@@ -200,32 +239,82 @@ module ReduceTestTop1(	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chex
     .FLOW(0),
     .PIPE(0),
     .USE_SYNCMEM(0)
-  ) reduce_stage0_arrival0_sinkBuffered__queue (	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  ) reduce_stage0_arrival0_sinkBuffered__queue (	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
     .clock        (clock),
     .reset        (reset),
     .source_ready (_reduce_stage0_arrival0_sinkBuffered__queue_source_ready),
-    .source_valid (sourceElem_ready_0),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Arrival.scala:24:47
+    .source_valid (sourceElem_ready_0),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Arrival.scala:24:47
     .source_bits
-      ({sourceElem_bits_bits,
-        reduce_stage0_arrival0_isFirst,
-        sourceElem_bits_last,
-        1'h0}),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:143:27, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:65:30, :141:7
-    .sink_ready   (reduce_stage0_elem_ready),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:50:21
-    .sink_valid   (_reduce_stage0_arrival0_sinkBuffered__queue_sink_valid),
+      ({reduce_data, reduce_stage0_arrival0_isFirst, reduce_last, reduce_zero}),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:143:27, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:25:40, :26:40, :28:40, :65:30
+    .sink_ready   (reduce_stage0_elem_ready),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+    .sink_valid   (reduce_stage0_elem_valid),
     .sink_bits    (_reduce_stage0_arrival0_sinkBuffered__queue_sink_bits)
   );
-  elasticMux reduce_stage1_fork0_mux (	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
-    .io_sources_0_ready (_reduce_stage1_fork0_mux_io_sources_0_ready),
-    .io_sources_0_valid (_reduce_stage1_fork0_demux_io_sinks_0_valid),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
-    .io_sources_0_bits  (_reduce_stage1_fork0_demux_io_sinks_0_bits),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
-    .io_sink_ready      (reduce_join0_fire),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:43:27
-    .io_sink_valid      (_reduce_stage1_fork0_mux_io_sink_valid),
-    .io_sink_bits       (_reduce_stage1_fork0_mux_io_sink_bits),
+  chext_queue #(
+    .ADDR_WIDTH(1),
+    .COUNT(2),
+    .DATA_WIDTH(1),
+    .FLOW(0),
+    .PIPE(0),
+    .USE_SYNCMEM(0)
+  ) reduce_stage1_fork0_queue (	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+    .clock        (clock),
+    .reset        (reset),
+    .source_ready (_reduce_stage1_fork0_queue_source_ready),
+    .source_valid (reduce_stage0_elem_valid & ~reduce_stage1_fork0_regs_1),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :55:{36,39}, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+    .source_bits  (reduce_stage0_elem_bits_first),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+    .sink_ready   (_reduce_stage1_fork0_mux_io_select_ready),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
+    .sink_valid   (_reduce_stage1_fork0_queue_sink_valid),
+    .sink_bits    (_reduce_stage1_fork0_queue_sink_bits)
+  );
+  wire        reduce_stage1_fork0_temp_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:106:34
+  wire [31:0] reduce_stage1_fork0_temp_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:106:34
+  elasticMux reduce_stage1_fork0_mux (	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
+    .io_sources_0_ready (reduce_stage1_fork0_temp_ready),
+    .io_sources_0_valid (reduce_stage1_fork0_temp_valid),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:106:34
+    .io_sources_0_bits  (reduce_stage1_fork0_temp_bits),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:106:34
+    .io_sources_1_ready (reduce_stage0_init_ready),
+    .io_sources_1_valid (reduce_stage0_init_valid),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:53:37
+    .io_sources_1_bits  (reduce_stage0_init_bits),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:53:37
+    .io_sink_ready      (reduce_stage1_opB_ready),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:57:36
+    .io_sink_valid      (reduce_stage1_opB_valid),
+    .io_sink_bits       (reduce_stage1_opB_bits),
     .io_select_ready    (_reduce_stage1_fork0_mux_io_select_ready),
-    .io_select_valid
-      (_reduce_stage0_arrival0_sinkBuffered__queue_sink_valid
-       & ~reduce_stage1_fork0_regs_1),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :55:{36,39}, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-    .io_select_bits     (_reduce_stage0_arrival0_sinkBuffered__queue_sink_bits[2])	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15, :147:27
+    .io_select_valid    (_reduce_stage1_fork0_queue_sink_valid),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+    .io_select_bits     (_reduce_stage1_fork0_queue_sink_bits)	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  );
+  chext_queue #(
+    .ADDR_WIDTH(1),
+    .COUNT(2),
+    .DATA_WIDTH(1),
+    .FLOW(0),
+    .PIPE(0),
+    .USE_SYNCMEM(0)
+  ) reduce_stage1_fork0_queue_1 (	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+    .clock        (clock),
+    .reset        (reset),
+    .source_ready (_reduce_stage1_fork0_queue_1_source_ready),
+    .source_valid (reduce_stage0_elem_valid & ~reduce_stage1_fork0_regs_2),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :55:{36,39}, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+    .source_bits  (reduce_stage0_elem_bits_last),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:52:37
+    .sink_ready   (_reduce_stage1_fork0_demux_io_select_ready),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
+    .sink_valid   (_reduce_stage1_fork0_queue_1_sink_valid),
+    .sink_bits    (_reduce_stage1_fork0_queue_1_sink_bits)
+  );
+  wire        reduce_stage1_res_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:58:36
+  wire [31:0] reduce_stage1_res_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:58:36
+  elasticDemux reduce_stage1_fork0_demux (	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
+    .io_source_ready  (reduce_stage1_res_ready),
+    .io_source_valid  (reduce_stage1_res_valid),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:58:36
+    .io_source_bits   (reduce_stage1_res_bits),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:58:36
+    .io_sinks_0_ready (reduce_stage1_fork0_temp_ready),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:106:34
+    .io_sinks_0_valid (reduce_stage1_fork0_temp_valid),
+    .io_sinks_0_bits  (reduce_stage1_fork0_temp_bits),
+    .io_sinks_1_ready (reduce_stage0_res_ready),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:54:36
+    .io_sinks_1_valid (reduce_stage0_res_valid),
+    .io_sinks_1_bits  (reduce_stage0_res_bits),
+    .io_select_ready  (_reduce_stage1_fork0_demux_io_select_ready),
+    .io_select_valid  (_reduce_stage1_fork0_queue_1_sink_valid),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+    .io_select_bits   (_reduce_stage1_fork0_queue_1_sink_bits)	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
   );
   chext_queue #(
     .ADDR_WIDTH(1),
@@ -234,34 +323,18 @@ module ReduceTestTop1(	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chex
     .FLOW(0),
     .PIPE(0),
     .USE_SYNCMEM(0)
-  ) reduce_stage1_fork0_resBuffered_queue (	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
+  ) reduce_join0_queue (	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
     .clock        (clock),
     .reset        (reset),
-    .source_ready (_reduce_stage1_fork0_resBuffered_queue_source_ready),
-    .source_valid (reduce_join0_allValid),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:42:53
-    .source_bits
-      (_reduce_stage0_arrival0_sinkBuffered__queue_sink_bits[34:3]
-       + _reduce_stage1_fork0_mux_io_sink_bits),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15, :147:27, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:150:29
-    .sink_ready   (_reduce_stage1_fork0_demux_io_source_ready),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
-    .sink_valid   (_reduce_stage1_fork0_resBuffered_queue_sink_valid),
-    .sink_bits    (_reduce_stage1_fork0_resBuffered_queue_sink_bits)
+    .source_ready (_reduce_join0_queue_source_ready),
+    .source_valid (reduce_join0_allValid),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Join.scala:42:53
+    .source_bits  (reduce_op_sinkA_bits + reduce_op_sinkB_bits),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44, :21:44, :151:29
+    .sink_ready   (reduce_stage1_res_ready),	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:58:36
+    .sink_valid   (reduce_stage1_res_valid),
+    .sink_bits    (reduce_stage1_res_bits)
   );
-  elasticDemux reduce_stage1_fork0_demux (	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
-    .io_source_ready  (_reduce_stage1_fork0_demux_io_source_ready),
-    .io_source_valid  (_reduce_stage1_fork0_resBuffered_queue_sink_valid),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-    .io_source_bits   (_reduce_stage1_fork0_resBuffered_queue_sink_bits),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-    .io_sinks_0_ready (_reduce_stage1_fork0_mux_io_sources_0_ready),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
-    .io_sinks_0_valid (_reduce_stage1_fork0_demux_io_sinks_0_valid),
-    .io_sinks_0_bits  (_reduce_stage1_fork0_demux_io_sinks_0_bits),
-    .io_sinks_1_ready (sinkRes_ready),
-    .io_sinks_1_valid (sinkRes_valid),
-    .io_sinks_1_bits  (sinkRes_bits),
-    .io_select_ready  (_reduce_stage1_fork0_demux_io_select_ready),
-    .io_select_valid
-      (_reduce_stage0_arrival0_sinkBuffered__queue_sink_valid
-       & ~reduce_stage1_fork0_regs_2),	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Fork.scala:44:23, :55:{36,39}, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15
-    .io_select_bits   (_reduce_stage0_arrival0_sinkBuffered__queue_sink_bits[1])	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Queue.scala:137:15, :147:27
-  );
-  assign sourceElem_ready = sourceElem_ready_0;	// Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Arrival.scala:24:47, Users/soenmez/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:141:7
+  assign sourceElem_ready = sourceElem_ready_0;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Arrival.scala:24:47, home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:140:7
+  assign sinkRes_valid = reduce_stage0_res_valid;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:54:36, :140:7
+  assign sinkRes_bits = reduce_stage0_res_bits;	// home/janberq/repos/hdlstuff/chext/src/main/scala/chext/elastic2/Reduce.scala:54:36, :140:7
 endmodule
 

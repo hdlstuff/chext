@@ -17,19 +17,19 @@ abstract class Reduce[T1 <: Data, T2 <: Data](
   protected val elem = sourceElem.bits
   protected val gen = chiselTypeOf(sinkRes.bits)
 
-  protected val op_sinkA = Wire(Interface(gen))
-  protected val op_sinkB = Wire(Interface(gen))
-  protected val op_sourceRes = Wire(Interface(gen))
+  protected val op_sinkA = dontTouch { Wire(Interface(gen)) }
+  protected val op_sinkB = dontTouch { Wire(Interface(gen)) }
+  protected val op_sourceRes = { Wire(Interface(gen)) }
 
-  protected var first = Wire(Bool())
-  protected var last = Wire(Bool())
-  protected var zero = Wire(Bool())
+  protected var first = dontTouch { Wire(Bool()) }
+  protected var last = dontTouch { Wire(Bool()) }
+  protected var zero = dontTouch { Wire(Bool()) }
 
-  protected var data = Wire(gen)
+  protected var data = dontTouch { Wire(gen) }
 
   if (!explicitZeros)
     zero := false.B
-  
+
   if (noFirstBit)
     first := false.B
 
@@ -49,13 +49,13 @@ abstract class Reduce[T1 <: Data, T2 <: Data](
     val zero = Bool()
   }
 
-  val stage0_elem = Wire(Interface(genStage0))
-  val stage0_init = Wire(Interface(gen))
-  val stage0_res = Wire(Interface(gen))
+  val stage0_elem = dontTouch { Wire(Interface(genStage0)) }
+  val stage0_init = dontTouch { Wire(Interface(gen)) }
+  val stage0_res = dontTouch { Wire(Interface(gen)) }
 
-  val stage1_opA = Wire(Interface(genStage1))
-  val stage1_opB = Wire(Interface(gen))
-  val stage1_res = Wire(Interface(gen))
+  val stage1_opA = dontTouch { Wire(Interface(genStage1)) }
+  val stage1_opB = dontTouch { Wire(Interface(gen)) }
+  val stage1_res = dontTouch { Wire(Interface(gen)) }
 
   def stage0(): Unit = prefix("stage0") {
     // stage0 implements the first logic
@@ -103,11 +103,10 @@ abstract class Reduce[T1 <: Data, T2 <: Data](
         out.zero := in.zero
       }
 
-      val temp = Wire(Interface(gen))
+      val temp = dontTouch { Wire(Interface(gen)) }
 
-      val mux0 = elastic.Mux(Seq(temp, stage0_init), stage1_opB, fork { in.first })
-      val resBuffered = SourceBuffer(stage1_res)
-      val demux0 = Demux(resBuffered, Seq(temp, stage0_res), fork { in.last })
+      val mux0 = elastic.Mux(Seq(temp, stage0_init), stage1_opB, SourceBuffer(fork { in.first }))
+      val demux0 = Demux(stage1_res, Seq(temp, stage0_res), SourceBuffer(fork { in.last }))
     }
   }
 
@@ -139,14 +138,16 @@ abstract class Reduce[T1 <: Data, T2 <: Data](
 }
 
 class ReduceTestTop1 extends Module with chext.HasHdlinfoModule {
-  val sourceElem = IO(Source(new DataLast(UInt(32.W))))
+  val sourceElem = IO(Source(UInt(32.W)))
   val sinkRes = IO(Sink(UInt(32.W)))
 
   private val reduce = new Reduce(sourceElem, Constant(0.U), sinkRes) {
-    last := elem.last
-    data := elem.bits
+    import chext.util.BitOps._
 
-    val join0 = new Join(op_sourceRes) {
+    last := elem.msbN(1)
+    data := elem.dropMsbN(1)
+
+    val join0 = new Join(SinkBuffer(op_sourceRes)) {
       out := join(op_sinkA) + join(op_sinkB)
     }
   }
@@ -182,7 +183,7 @@ class ReduceTestTop1 extends Module with chext.HasHdlinfoModule {
       Interface(
         "sourceElem",
         InterfaceRole("source"),
-        InterfaceKind("readyValid[chext.DataLast]"),
+        InterfaceKind("readyValid[chext.elastic.Data]"),
         associatedClock = "clock",
         associatedReset = "reset",
         args = Map("width" -> TypedObject(32))
@@ -191,9 +192,9 @@ class ReduceTestTop1 extends Module with chext.HasHdlinfoModule {
 
     interfaces.append(
       Interface(
-        "sink",
+        "sinkRes",
         InterfaceRole("sink"),
-        InterfaceKind("readyValid[chext.Data]"),
+        InterfaceKind("readyValid[chext.elastic.Data]"),
         associatedClock = "clock",
         associatedReset = "reset",
         args = Map("width" -> TypedObject(32))

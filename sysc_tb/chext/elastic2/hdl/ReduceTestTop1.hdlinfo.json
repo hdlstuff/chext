@@ -40,7 +40,7 @@
     {
       "name" : "sourceElem",
       "role" : "source",
-      "kind" : "readyValid[chext.DataLast]",
+      "kind" : "readyValid[chext.elastic.Data]",
       "associatedClock" : "clock",
       "associatedReset" : "reset",
       "args" : {
@@ -51,9 +51,9 @@
       }
     },
     {
-      "name" : "sink",
+      "name" : "sinkRes",
       "role" : "sink",
-      "kind" : "readyValid[chext.Data]",
+      "kind" : "readyValid[chext.elastic.Data]",
       "associatedClock" : "clock",
       "associatedReset" : "reset",
       "args" : {
