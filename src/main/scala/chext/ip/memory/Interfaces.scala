@@ -3,6 +3,8 @@ package chext.ip.memory
 import chisel3._
 import chisel3.util._
 
+import chext.{elastic2 => elastic}
+
 // TODO: also support EN
 class RawInterface(
     val wAddr: Int,
@@ -31,8 +33,8 @@ class RawInterface(
 class ReadInterface(wAddr: Int, wData: Int) extends Bundle {
   require(isPow2(wData))
 
-  val req = Flipped(new IrrevocableIO(UInt(wAddr.W)))
-  val resp = new IrrevocableIO(UInt(wData.W))
+  val req = Flipped(new elastic.Interface(UInt(wAddr.W)))
+  val resp = new elastic.Interface(UInt(wData.W))
 }
 
 class WriteRequest(wAddr: Int, wData: Int) extends Bundle {
@@ -46,6 +48,6 @@ class WriteRequest(wAddr: Int, wData: Int) extends Bundle {
 }
 
 class WriteInterface(wAddr: Int, wData: Int) extends Bundle {
-  val req = Flipped(new IrrevocableIO(new WriteRequest(wAddr, wData)))
-  val resp = new IrrevocableIO(UInt(0.W))
+  val req = Flipped(new elastic.Interface(new WriteRequest(wAddr, wData)))
+  val resp = new elastic.Interface(UInt(0.W))
 }

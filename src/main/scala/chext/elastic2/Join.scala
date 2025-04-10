@@ -1,6 +1,5 @@
 package chext.elastic2
 
-
 import chisel3._
 import chisel3.experimental.AffectsChiselPrefix
 import chisel3.hacks.deferred
@@ -11,6 +10,8 @@ abstract class Join[T <: Data](val sink: Interface[T]) extends AffectsChiselPref
   private val sourceList = ListBuffer.empty[Interface[Data]]
 
   protected val out: T = sink.bits
+
+  protected final def onJoin: Unit = throw new NotImplementedError("Shall not be used!")
 
   /** Adds a new elastic interface to join.
     *

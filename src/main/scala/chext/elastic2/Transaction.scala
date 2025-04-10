@@ -154,18 +154,6 @@ abstract class Transaction extends AffectsChiselPrefix {
   }
 }
 
-class DataLast[T <: Data](gen: T) extends Bundle {
-  val bits = gen.cloneType
-  val last = Bool()
-}
-
-class DataFirstLast[T <: Data](gen: T) extends Bundle {
-  val bits = gen.cloneType
-  val first = Bool()
-  val last = Bool()
-  val zero = Bool()
-}
-
 class TransactionTestModule extends Module {
   val source1 = IO(Source(UInt(32.W)))
   val source2 = IO(Source(UInt(32.W)))
@@ -181,7 +169,7 @@ class TransactionTestModule extends Module {
   sink2.noenq()
 
   val sourceA = IO(Source(new DataLast(UInt(32.W))))
-  val sinkA = IO(Sink(new DataFirstLast(UInt(32.W))))
+  val sinkA = IO(Sink(new DataFirstLastZero(UInt(32.W))))
 
   sourceA.nodeq()
   sinkA.noenq()
@@ -193,7 +181,7 @@ class TransactionTestModule extends Module {
       val (_, h1) = recvKeep(sourceA)
       val h2 = send(sinkA) {
         case (x) => {
-          x.bits := DontCare
+          x.data := DontCare
           x.first := true.B
           x.last := false.B
           x.zero := true.B
@@ -207,7 +195,7 @@ class TransactionTestModule extends Module {
       val (data, h1) = recv(sourceA)
       val h2 = send(sinkA) {
         case (x) => {
-          x.bits := data.bits
+          x.data := data.data
           x.first := false.B
           x.last := false.B
           x.zero := false.B
@@ -220,7 +208,7 @@ class TransactionTestModule extends Module {
     block(state === 2.U) {
       val h1 = send(sinkA) {
         case (x) => {
-          x.bits := DontCare
+          x.data := DontCare
           x.first := false.B
           x.last := true.B
           x.zero := true.B

@@ -3,7 +3,8 @@ package chext.ip.memory
 import chisel3._
 import chisel3.util._
 import chisel3.experimental.prefix
-import chext.elastic.SinkBuffer
+
+import chext.{elastic2 => elastic}
 
 class ReadToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = PortConfig())
     extends Module {
@@ -15,7 +16,7 @@ class ReadToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Por
   // NOTE: response should be buffered to avoid a combinational connection
   // between ready and valid signals (which would cause a combinational)
   // loop down the line.
-  private val rdResp = SinkBuffer(read.resp)
+  private val rdResp = elastic.SinkBuffer(read.resp)
 
   private val ctr = Module(new chext.util.Counter(portCfg.numOutstandingRead + 1))
   ctr.noInc()
@@ -71,7 +72,7 @@ class WriteToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Po
   val raw = IO(Flipped(new RawInterface(rawMemCfg.wAddr, rawMemCfg.wData, true, false)))
 
   private val wrReq = write.req
-  private val wrResp = SinkBuffer(write.resp)
+  private val wrResp = elastic.SinkBuffer(write.resp)
 
   private val ctr = Module(new chext.util.Counter(portCfg.numOutstandingWrite + 1))
   ctr.noInc()
@@ -120,10 +121,10 @@ class ReadWriteToRawBridge(
   val raw = IO(Flipped(new RawInterface(rawMemCfg.wAddr, rawMemCfg.wData, true, true)))
 
   private val rdReq = read.req
-  private val rdResp = SinkBuffer(read.resp)
+  private val rdResp = elastic.SinkBuffer(read.resp)
 
   private val wrReq = write.req
-  private val wrResp = SinkBuffer(write.resp)
+  private val wrResp = elastic.SinkBuffer(write.resp)
 
   private val ctrRead = Module(new chext.util.Counter(portCfg.numOutstandingRead + 1))
   ctrRead.noInc()

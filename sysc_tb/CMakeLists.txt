@@ -45,12 +45,21 @@ function(generate_tb)
     endforeach()
 
     target_include_directories(${GEN_TB_TARGET_NAME} PUBLIC include/)
+    target_include_directories(${GEN_TB_TARGET_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/common/include)
+
     target_link_libraries(
         ${GEN_TB_TARGET_NAME}
         PUBLIC
         SystemC::systemc
         fmt::fmt
         chext_test::chext_test
+    )
+
+    target_sources(
+        ${GEN_TB_TARGET_NAME}
+        PUBLIC
+        ${CMAKE_SOURCE_DIR}/common/src/hal/hal.cpp
+        ${CMAKE_SOURCE_DIR}/common/src/chext_test/util/hal.cpp
     )
 
     foreach(MODULE IN LISTS GEN_TB_HDL_MODULES)
@@ -74,3 +83,4 @@ add_subdirectory(chext/amba/axi4/lite/components/)
 add_subdirectory(chext/elastic/)
 add_subdirectory(chext/elastic2/)
 add_subdirectory(chext/ip/memory/)
+add_subdirectory(chext/ip/stream/)

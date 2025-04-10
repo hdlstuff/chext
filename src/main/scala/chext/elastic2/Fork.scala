@@ -1,6 +1,5 @@
 package chext.elastic2
 
-
 import chisel3._
 import chisel3.experimental.AffectsChiselPrefix
 import chisel3.hacks._
@@ -14,6 +13,8 @@ abstract class Fork[T <: Data](
   private val sinkList = ListBuffer.empty[Interface[Data]]
 
   protected val in = source.bits
+
+  protected final def onFork: Unit = throw new NotImplementedError("Shall not be used!")
 
   /** Branches a new elastic interface from the fork.
     *

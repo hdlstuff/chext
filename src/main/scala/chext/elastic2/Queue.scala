@@ -1,24 +1,61 @@
 package chext.elastic2
 
-
 import chisel3._
-import chisel3.experimental.{requireIsHardware, requireIsChiselType, AffectsChiselPrefix, prefix}
-import chisel3.experimental.BaseModule
+import chisel3.experimental._
 
 trait Queue[T <: Data] {
+  def module: BaseModule
+
   def source: Interface[T]
   def sink: Interface[T]
-
-  def module: BaseModule
 }
 
-private class QueueImpl[T <: Data](
+object Queue {
+  def between[T <: Data](
+      source: Interface[T],
+      sink: Interface[T],
+      count: Int,
+      pipe: Boolean = false,
+      flow: Boolean = false,
+      useSyncReadMem: Boolean = false,
+      useVerilog: Boolean = true
+  ) = {
+    requireIsHardware(source, "Queue source must be hardware.")
+    requireIsHardware(sink, "Queue sink must be hardware.")
+    require(count >= 0, "Length must be non-negative.")
+
+    if (count == 0) {
+      import ConnectOp._
+      source :=> sink
+    } else if (useVerilog)
+      VerilogQueue.between(source, sink, count, pipe, flow, useSyncReadMem)
+    else
+      ChiselQueue.between(source, sink, count, pipe, flow, useSyncReadMem)
+  }
+
+  def apply[T <: Data](
+      gen: T,
+      count: Int,
+      pipe: Boolean = false,
+      flow: Boolean = false,
+      syncReadMem: Boolean = false,
+      useVerilog: Boolean = true
+  ): Queue[T] = {
+    require(count > 0, "Length must be positive.")
+
+    if (useVerilog)
+      VerilogQueue(gen, count, pipe, flow, syncReadMem)
+    else
+      ChiselQueue(gen, count, pipe, flow, syncReadMem)
+  }
+}
+
+class ChiselQueue[T <: Data](
     val gen: T,
     val count: Int,
     val pipe: Boolean = false,
     val flow: Boolean = false,
-    val useSyncReadMem: Boolean = false,
-    val hasFlush: Boolean = false
+    val useSyncReadMem: Boolean = false
 ) extends Module
     with Queue[T] {
   require(count > -1, "Queue must have non-negative count.")
@@ -80,7 +117,123 @@ private class QueueImpl[T <: Data](
   override def desiredName = s"chext_queue_${count}_${gen.typeName}"
 }
 
+object ChiselQueue {
+  def apply[T <: Data](
+      gen: T,
+      count: Int,
+      pipe: Boolean = false,
+      flow: Boolean = false,
+      useSyncReadMem: Boolean = false,
+      hasFlush: Boolean = false
+  ): Queue[T] = Module(new ChiselQueue(gen, count, pipe, flow, useSyncReadMem))
+
+  def between[T <: Data](
+      source: Interface[T],
+      sink: Interface[T],
+      count: Int,
+      pipe: Boolean = false,
+      flow: Boolean = false,
+      useSyncReadMem: Boolean = false
+  ): Unit = {
+    val x_queue =
+      Module(
+        new ChiselQueue(source.bits.cloneType, count, pipe, flow, useSyncReadMem)
+      )
+
+    import ConnectOp._
+
+    source :=> x_queue.source
+    x_queue.sink :=> sink
+  }
+}
+
+trait VerilogQueue extends BlackBox {
+  def clock: Clock
+  def reset: Reset
+
+  def source: Interface[UInt]
+  def sink: Interface[UInt]
+}
+
+object VerilogQueue {
+  def apply[T <: Data](
+      gen: T,
+      count: Int,
+      pipe: Boolean = false,
+      flow: Boolean = false,
+      useSyncReadMem: Boolean = false
+  ): Queue[T] = {
+    val addrWidth = chisel3.util.log2Ceil(count)
+    val dataWidth = gen.getWidth
+
+    val x_queue =
+      if (dataWidth == 0)
+        Module(
+          new verilog.chext_queue_no_data(count, addrWidth, pipe, flow)
+        )
+      else
+        Module(
+          new verilog.chext_queue(count, addrWidth, dataWidth, pipe, flow, useSyncReadMem)
+        )
+
+    x_queue.clock := Module.clock
+    x_queue.reset := Module.reset
+
+    val x_source = Wire(Interface(gen))
+    val x_sink = Wire(Interface(gen))
+
+    new Transform(x_source, x_queue.source) {
+      out := in.asTypeOf(out)
+    }
+
+    new Transform(x_queue.sink, x_sink) {
+      out := in.asTypeOf(out)
+    }
+
+    new Queue[T] {
+      val module: BaseModule = x_queue
+
+      val source: Interface[T] = x_source
+      val sink: Interface[T] = x_sink
+    }
+  }
+
+  def between[T <: Data](
+      source: Interface[T],
+      sink: Interface[T],
+      count: Int,
+      pipe: Boolean = false,
+      flow: Boolean = false,
+      useSyncReadMem: Boolean = false
+  ): Unit = {
+    val addrWidth = chisel3.util.log2Ceil(count)
+    val dataWidth = source.bits.getWidth
+
+    val x_queue =
+      if (dataWidth == 0)
+        Module(
+          new verilog.chext_queue_no_data(count, addrWidth, pipe, flow)
+        )
+      else
+        Module(
+          new verilog.chext_queue(count, addrWidth, dataWidth, pipe, flow, useSyncReadMem)
+        )
+
+    x_queue.clock := Module.clock
+    x_queue.reset := Module.reset
+
+    new Transform(source, x_queue.source) {
+      out := in.asTypeOf(out)
+    }
+
+    new Transform(x_queue.sink, sink) {
+      out := in.asTypeOf(out)
+    }
+  }
+}
+
 package verilog {
+
   class chext_queue(
       val count: Int,
       val addrWidth: Int,
@@ -98,7 +251,7 @@ package verilog {
           "USE_SYNCMEM" -> (if (useSyncmem) 1 else 0)
         )
       )
-      with chisel3.util.HasBlackBoxResource {
+      with VerilogQueue {
     val io = IO(new Bundle {
       val clock = Input(Clock())
       val reset = Input(Bool())
@@ -106,100 +259,36 @@ package verilog {
       val sink = Sink(UInt(dataWidth.W))
     })
 
-    // addResource("/chext/chext_queue.sv")
-    // addResource("/chext/chext_mem_1w1r.sv")
-    // addResource("/chext/chext_syncmem_1w1r.sv")
-  }
-}
-
-object Queue {
-  def between[T <: Data](
-      source: Interface[T],
-      sink: Interface[T],
-      count: Int,
-      pipe: Boolean = false,
-      flow: Boolean = false,
-      syncReadMem: Boolean = false,
-      useVerilog: Boolean = true
-  ) = {
-    requireIsHardware(source, "Queue source must be hardware.")
-    requireIsHardware(sink, "Queue sink must be hardware.")
-    require(count >= 0, "Length must be non-negative.")
-
-    if (count == 0) {
-      import ConnectOp._
-      source :=> sink
-    } else if (useVerilog) {
-      val addrWidth = chisel3.util.log2Ceil(count)
-      val dataWidth = source.bits.getWidth
-
-      val queue =
-        Module(new verilog.chext_queue(count, addrWidth, dataWidth, flow, pipe, syncReadMem))
-
-      queue.io.clock := Module.clock
-      queue.io.reset := Module.reset
-
-      new Transform(source, queue.io.source) {
-        out := in.asTypeOf(out)
-      }
-
-      new Transform(queue.io.sink, sink) {
-        out := in.asTypeOf(out)
-      }
-    } else {
-      // TODO: Chisel queue implementation causes a verilog code size explosion
-      // We should provide our own Chisel-compatible queue implementation
-      // This queue must be parametrized and it must be self-contained
-      val queue =
-        Module(new QueueImpl(chiselTypeOf(source.bits), count, pipe, flow, syncReadMem))
-
-      import ConnectOp._
-      source :=> queue.source
-      queue.sink :=> sink
-    }
+    def clock: Clock = io.clock
+    def reset: Reset = io.reset
+    def source: Interface[UInt] = io.source
+    def sink: Interface[UInt] = io.sink
   }
 
-  def apply[T <: Data](
-      gen: T,
-      count: Int,
-      pipe: Boolean = false,
-      flow: Boolean = false,
-      syncReadMem: Boolean = false,
-      useVerilog: Boolean = true
-  ): Queue[T] = {
-    require(count > 0, "Length must be positive.")
+  class chext_queue_no_data(
+      val count: Int,
+      val addrWidth: Int,
+      val pipe: Boolean,
+      val flow: Boolean
+  ) extends BlackBox(
+        Map(
+          "COUNT" -> count,
+          "ADDR_WIDTH" -> addrWidth,
+          "PIPE" -> (if (pipe) 1 else 0),
+          "FLOW" -> (if (flow) 1 else 0)
+        )
+      )
+      with VerilogQueue {
+    val io = IO(new Bundle {
+      val clock = Input(Clock())
+      val reset = Input(Bool())
+      val source = Source(UInt(0.W))
+      val sink = Sink(UInt(0.W))
+    })
 
-    if (useVerilog) {
-      val addrWidth = chisel3.util.log2Ceil(count)
-      val dataWidth = gen.getWidth
-
-      val queue =
-        Module(new verilog.chext_queue(count, addrWidth, dataWidth, flow, pipe, syncReadMem))
-
-      queue.io.clock := Module.clock
-      queue.io.reset := Module.reset
-
-      val queueSource = Wire(Interface(gen))
-      val queueSink = Wire(Interface(gen))
-
-      new Transform(queueSource, queue.io.source) {
-        out := in.asTypeOf(out)
-      }
-
-      new Transform(queue.io.sink, queueSink) {
-        out := in.asTypeOf(out)
-      }
-
-      new Queue[T] {
-        def source: Interface[T] = queueSource
-        def sink: Interface[T] = queueSink
-        def module: BaseModule = queue
-      }
-    } else {
-      // TODO: Chisel queue implementation causes a verilog code size explosion
-      // We should provide our own Chisel-compatible queue implementation
-      // This queue must be parametrized and it must be self-contained
-      Module(new QueueImpl(gen, count, pipe, flow, syncReadMem))
-    }
+    def clock: Clock = io.clock
+    def reset: Reset = io.reset
+    def source: Interface[UInt] = io.source
+    def sink: Interface[UInt] = io.sink
   }
 }

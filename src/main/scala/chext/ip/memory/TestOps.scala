@@ -6,7 +6,7 @@ import chisel3.experimental.BundleLiterals._
 
 import chiseltest._
 
-import chext.elastic
+import chext.{elastic2 => elastic}
 import chext.test.Expect
 import elastic.test.PacketOps._
 

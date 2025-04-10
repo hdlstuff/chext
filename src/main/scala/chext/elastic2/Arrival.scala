@@ -23,6 +23,8 @@ abstract class Arrival[Tin <: Data, T <: Data](
   protected val out = sinkBuffered_.bits
   protected val arrived = sinkBuffered_.ready && source.valid
 
+  protected final def onArrival: Unit = throw new NotImplementedError("Shall not be used!")
+
   out := in.asTypeOf(out)
 
   /** Accepts the current packet, optionally transforming it.
