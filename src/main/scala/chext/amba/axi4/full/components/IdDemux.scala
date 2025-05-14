@@ -70,7 +70,7 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     }
 
     def rLogic: Unit = {
-      val r = Wire(Vec(numMasters, elastic.Interface(axi4.full.ReadDataChannel(axiMasterCfg))))
+      val r = Wire(Vec(numMasters, elastic.Interface(axi4.full.ReadDataChannel(axiSlaveCfg))))
 
       m_axi_.map { _.r }.zip(r).zipWithIndex.foreach {
         case ((source, sink), index) => {
@@ -132,7 +132,7 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     }
 
     def bLogic: Unit = {
-      val b = Wire(Vec(numMasters, elastic.Interface(axi4.full.WriteResponseChannel(axiMasterCfg))))
+      val b = Wire(Vec(numMasters, elastic.Interface(axi4.full.WriteResponseChannel(axiSlaveCfg))))
 
       m_axi_.map { _.b }.zip(b).zipWithIndex.foreach {
         case ((source, sink), index) => {
