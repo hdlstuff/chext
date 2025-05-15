@@ -1,3 +1,6 @@
+#ifndef PROTOCOLS_HPP_INCLUDED
+#define PROTOCOLS_HPP_INCLUDED
+
 #include <systemc>
 
 #include <jqr/comp_eq.hpp>
@@ -101,3 +104,5 @@ struct WriteResponseSignals {
 };
 
 } // namespace protocols
+
+#endif // PROTOCOLS_HPP_INCLUDED
