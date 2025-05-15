@@ -64,6 +64,12 @@ private:
         sendTask(true, false, 0, 5);
         retrieveResult();
 
+        sendTask(true, true, 0, 0);
+        retrieveResult();
+
+        sendTask(true, false, 0, 5);
+        retrieveResult();
+
         finish();
     }
 

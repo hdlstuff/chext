@@ -22,7 +22,7 @@ class UpdateMemTop1(
 
   private val dut = Module(new UpdateMem(cfg))
 
-  val sourceTask = IO(elastic.Source(UInt(64.W)))
+  val sourceItem = IO(elastic.Source(UInt(64.W)))
   val sinkResult = IO(elastic.Sink(UInt(64.W)))
 
   val S_AXI = IO(axi4.Slave(axiCfg))
@@ -56,7 +56,7 @@ class UpdateMemTop1(
   dut.m_axi :=> s_axi1
   S_AXI :=> s_axi2
 
-  new elastic.Transform(sourceTask, dut.sourceTask) {
+  new elastic.Transform(sourceItem, dut.sourceItem) {
     out.last := in(63)
     out.zero := in(62)
 
@@ -91,7 +91,7 @@ class UpdateMemTop1(
 
     val interfaces = Seq(
       Interface(
-        "sourceTask",
+        "sourceItem",
         InterfaceRole("source"),
         InterfaceKind(f"readyValid[chext.elastic.Data]"),
         associatedClock = "clock",

@@ -9,18 +9,10 @@ import elastic._
 import chext.amba.axi4
 import axi4.Ops._
 
-class Task extends Bundle {
-  val zero = Bool()
-  val last = Bool()
-
-  val bucket = UInt(64.W)
-  val value = UInt(64.W)
-}
-
 case class UpdateMemConfig() {
   val axiCfg = axi4.Config(wId = 0, wAddr = 64, wData = 64)
 
-  val genTask = new Task
+  val genItem = new Item
   val genResult = UInt(0.W)
 }
 
@@ -29,7 +21,7 @@ class UpdateMem(cfg: UpdateMemConfig) extends Module {
 
   val m_axi = IO(axi4.Master(axiCfg))
 
-  val sourceTask = IO(Source(genTask))
+  val sourceItem = IO(Source(genItem))
   val sinkResult = IO(Sink(genResult))
 
   // here is the idea
@@ -58,7 +50,7 @@ class UpdateMem(cfg: UpdateMemConfig) extends Module {
   m_axi_.w.noenq()
   m_axi_.b.nodeq()
 
-  new Arrival(sourceTask, sinkResult) {
+  new Arrival(sourceItem, sinkResult) {
     out := 0.U
 
     when(arrived) {
