@@ -38,29 +38,43 @@
   ],
   "interfaces" : [
     {
-      "name" : "sourceTask",
+      "name" : "sourceItem",
       "role" : "source",
-      "kind" : "readyValid[chext.elastic.Data]",
+      "kind" : "readyValid[Item]",
       "associatedClock" : "clock",
       "associatedReset" : "reset",
       "args" : {
-        "width" : {
-          "typeName" : "scala.Int",
-          "obj" : 64
-        }
+        
       }
     },
     {
       "name" : "sinkResult",
       "role" : "sink",
-      "kind" : "readyValid[chext.elastic.Data]",
+      "kind" : "readyValid[Result]",
       "associatedClock" : "clock",
       "associatedReset" : "reset",
       "args" : {
-        "width" : {
-          "typeName" : "scala.Int",
-          "obj" : 64
-        }
+        
+      }
+    },
+    {
+      "name" : "sourceTest",
+      "role" : "source",
+      "kind" : "readyValid[Test]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "sourceZero",
+      "role" : "source",
+      "kind" : "readyValid[Zero]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
       }
     },
     {
@@ -100,6 +114,73 @@
       "typeName" : "chext.ip.histogram.UpdateMemConfig",
       "obj" : {
         
+      }
+    },
+    "encodedDataList" : {
+      "typeName" : "chext.util.EncodedDataList",
+      "obj" : {
+        "seq" : [
+          {
+            "name" : "Item",
+            "entries" : [
+              {
+                "path" : "zero",
+                "width" : 1,
+                "tpe" : "Bool"
+              },
+              {
+                "path" : "last",
+                "width" : 1,
+                "tpe" : "Bool"
+              },
+              {
+                "path" : "bucket",
+                "width" : 64,
+                "tpe" : "UInt<64>"
+              },
+              {
+                "path" : "value",
+                "width" : 64,
+                "tpe" : "UInt<64>"
+              }
+            ]
+          },
+          {
+            "name" : "Result",
+            "entries" : [
+              {
+                "path" : "",
+                "width" : 2,
+                "tpe" : "UInt<2>"
+              }
+            ]
+          },
+          {
+            "name" : "Test",
+            "entries" : [
+              {
+                "path" : "f0",
+                "width" : 0,
+                "tpe" : "UInt<0>"
+              },
+              {
+                "path" : "f1",
+                "width" : 0,
+                "tpe" : "UInt<0>"
+              }
+            ]
+          },
+          {
+            "name" : "Zero",
+            "entries" : [
+              {
+                "path" : "",
+                "width" : 0,
+                "tpe" : "UInt<0>"
+              }
+            ]
+          }
+        ]
       }
     }
   }

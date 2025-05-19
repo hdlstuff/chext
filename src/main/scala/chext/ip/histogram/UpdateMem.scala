@@ -13,7 +13,7 @@ case class UpdateMemConfig() {
   val axiCfg = axi4.Config(wId = 0, wAddr = 64, wData = 64)
 
   val genItem = new Item
-  val genResult = UInt(0.W)
+  val genResult = UInt(2.W)
 }
 
 class UpdateMem(cfg: UpdateMemConfig) extends Module {

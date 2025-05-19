@@ -37,18 +37,8 @@ private:
         val value = UInt(64.W)
     */
     void sendTask(bool last, bool zero, uint16_t bucket, uint16_t value) {
-        uint64_t result = 0;
-
-        if (last)
-            result |= ((uint64_t)1) << 63;
-
-        if (zero)
-            result |= ((uint64_t)1) << 62;
-
-        result |= (((uint64_t)bucket) & 0xFFFFull) << 0;
-        result |= (((uint64_t)value) & 0xFFFFull) << 16;
-
-        dut.sourceTask.send(result);
+        UpdateMemTop1::Item_value item { zero, last, bucket, value };
+        dut.sourceItem.send(item);
     }
 
     void retrieveResult() {

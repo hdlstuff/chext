@@ -12,6 +12,7 @@ import axi4.Ops._
 import chext.util.BitOps._
 
 import chext.{HasHdlinfoModule, TestBench}
+import chext.util.TestApp.encodedData
 
 class UpdateMemTop1(
     val cfg: UpdateMemConfig = UpdateMemConfig(),
@@ -22,10 +23,20 @@ class UpdateMemTop1(
 
   private val dut = Module(new UpdateMem(cfg))
 
-  val sourceItem = IO(elastic.Source(UInt(64.W)))
-  val sinkResult = IO(elastic.Sink(UInt(64.W)))
+  val sourceItem = IO(elastic.Source(cfg.genItem))
+  val sinkResult = IO(elastic.Sink(cfg.genResult))
+
+  val sourceTest = IO(elastic.Source(new Bundle {
+    val f0 = UInt(0.W)
+    val f1 = UInt(0.W)
+  }))
+
+  val sourceZero = IO(elastic.Source(UInt(0.W)))
 
   val S_AXI = IO(axi4.Slave(axiCfg))
+
+  sourceTest.nodeq()
+  sourceZero.nodeq()
 
   private val (s_axi1, s_axi2) = {
     import chext.ip.memory._
@@ -56,21 +67,18 @@ class UpdateMemTop1(
   dut.m_axi :=> s_axi1
   S_AXI :=> s_axi2
 
-  new elastic.Transform(sourceItem, dut.sourceItem) {
-    out.last := in(63)
-    out.zero := in(62)
-
-    out.bucket := in(15, 0)
-    out.value := in(31, 16)
-  }
-
-  new elastic.Transform(dut.sinkResult, sinkResult) {
-    out := in
-  }
+  sourceItem :=> dut.sourceItem
+  dut.sinkResult :=> sinkResult
 
   def hdlinfoModule: hdlinfo.Module = {
     import hdlinfo._
     import io.circe.generic.auto._
+
+    val encodedDataBuilder = new chext.util.EncodedDataBuilder()
+    encodedDataBuilder.add("Item", cfg.genItem)
+    encodedDataBuilder.add("Result", cfg.genResult)
+    encodedDataBuilder.add("Test", chiselTypeOf(sourceTest.bits))
+    encodedDataBuilder.add("Zero", chiselTypeOf(sourceZero.bits))
 
     val ports = Seq(
       Port(
@@ -93,18 +101,30 @@ class UpdateMemTop1(
       Interface(
         "sourceItem",
         InterfaceRole("source"),
-        InterfaceKind(f"readyValid[chext.elastic.Data]"),
+        InterfaceKind(f"readyValid[Item]"),
         associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("width" -> TypedObject(64))
+        associatedReset = "reset"
       ),
       Interface(
         "sinkResult",
         InterfaceRole("sink"),
-        InterfaceKind(f"readyValid[chext.elastic.Data]"),
+        InterfaceKind(f"readyValid[Result]"),
         associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("width" -> TypedObject(64))
+        associatedReset = "reset"
+      ),
+      Interface(
+        "sourceTest",
+        InterfaceRole("source"),
+        InterfaceKind(f"readyValid[Test]"),
+        associatedClock = "clock",
+        associatedReset = "reset"
+      ),
+      Interface(
+        "sourceZero",
+        InterfaceRole("source"),
+        InterfaceKind(f"readyValid[Zero]"),
+        associatedClock = "clock",
+        associatedReset = "reset"
       ),
       Interface(
         "S_AXI",
@@ -116,7 +136,8 @@ class UpdateMemTop1(
       )
     )
     val args = Map(
-      "cfg" -> TypedObject(cfg)
+      "cfg" -> TypedObject(cfg),
+      encodedDataBuilder.build()
     )
 
     Module(desiredName, ports, interfaces, args)
