@@ -9,6 +9,7 @@ case class EncodedDataEntry(
 )
 
 case class EncodedData(
+    val name: String,
     val entries: Seq[EncodedDataEntry]
 ) {
   assert(entries.length >= 1)
@@ -17,7 +18,9 @@ case class EncodedData(
     assert(entries.head.path == "")
 }
 
-private class Encoder(gen: Data) {
+case class EncodedDataList(val seq: Seq[EncodedData])
+
+private class Encoder(name: String, gen: Data) {
   private val buffer = scala.collection.mutable.ArrayBuffer.empty[EncodedDataEntry]
   private var pathStack = scala.collection.mutable.Stack.empty[String]
 
@@ -60,21 +63,36 @@ private class Encoder(gen: Data) {
 
   processData(gen)
 
-  val encodedData = EncodedData(buffer.toSeq)
+  val encodedData = EncodedData(name, buffer.toSeq)
 }
 
 object EncodedData {
-  def encode(gen: Data): EncodedData = {
-    (new Encoder(gen)).encodedData
+  def encode(name: String, gen: Data): EncodedData = {
+    (new Encoder(name, gen)).encodedData
+  }
+}
+
+class EncodedDataBuilder {
+  private val encodedDataBuffer = scala.collection.mutable.ArrayBuffer.empty[EncodedData]
+  private val addedNames = scala.collection.mutable.Set.empty[String]
+
+  def add[T <: Data](name: String, gen: T) = {
+    if (addedNames.contains(name))
+      throw new RuntimeException(f"a data with the given name '$name' is already added!")
+
+    encodedDataBuffer.addOne(EncodedData.encode(name, gen))
+    addedNames.addOne(name)
+  }
+  def build() = {
+    import io.circe.generic.auto._
+    "encodedDataList" -> hdlinfo.TypedObject(EncodedDataList(encodedDataBuffer.toSeq))
   }
 }
 
 // TODO: Make the following a proper test
-/*
-
 import chisel3._
 
-class MyTestBundle extends Bundle {
+class MyTestBundle1 extends Bundle {
   val f0 = UInt(8.W)
   val f1 = UInt(18.W)
 
@@ -85,8 +103,23 @@ class MyTestBundle extends Bundle {
   }
 }
 
-object TestApp extends App {
-  println(EncodedData.encode(new MyTestBundle))
+class MyTestBundle2 extends Bundle {
+  val f0 = Vec(4, UInt(6.W))
+  val f1 = new Bundle {
+    val f0 = UInt(15.W)
+    val f1 = Bool()
+  }
 }
 
-*/
+object TestApp extends App {
+  val encodedData = EncodedData.encode("MyTestBundle", new MyTestBundle1)
+  import io.circe.generic.auto._
+  import io.circe.syntax._
+
+  println(hdlinfo.TypedObject(encodedData.asJson).toString())
+
+  val encodedDataBuilder = new EncodedDataBuilder
+  encodedDataBuilder.add("MyTestBundle1", new MyTestBundle1)
+  encodedDataBuilder.add("MyTestBundle2", new MyTestBundle2)
+  println(encodedDataBuilder.build().asJson.toString())
+}
