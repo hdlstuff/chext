@@ -11,12 +11,7 @@ case class EncodedDataEntry(
 case class EncodedData(
     val name: String,
     val entries: Seq[EncodedDataEntry]
-) {
-  assert(entries.length >= 1)
-
-  if (entries.length == 1)
-    assert(entries.head.path == "")
-}
+)
 
 case class EncodedDataList(val seq: Seq[EncodedData])
 
