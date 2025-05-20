@@ -38,6 +38,7 @@ private:
     */
     void sendTask(bool last, bool zero, uint16_t bucket, uint16_t value) {
         UpdateMemTop1::Item_value item { zero, last, bucket, value };
+        fmt::print("sending task: {}\n", item);
         dut.sourceItem.send(item);
     }
 
