@@ -1,13 +1,9 @@
 package chext.elastic2
 
-
 import chisel3._
 import chisel3.experimental.{AffectsChiselPrefix, prefix}
 
-/** @note
-  *   Never declare registers inside `onAccept`!
-  *
-  * @param source
+/** @param source
   * @param sink
   */
 abstract class Arrival[Tin <: Data, T <: Data](

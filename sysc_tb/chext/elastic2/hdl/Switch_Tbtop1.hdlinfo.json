@@ -1,0 +1,100 @@
+{
+  "name" : "Switch_Tbtop1",
+  "ports" : [
+    {
+      "name" : "clock",
+      "direction" : "input",
+      "kind" : "clock",
+      "sensitivity" : "clockRising",
+      "isBus" : false,
+      "busRange" : [
+        0,
+        0
+      ],
+      "frequencyMHz" : 100.0,
+      "associatedClock" : "",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "reset",
+      "direction" : "input",
+      "kind" : "reset",
+      "sensitivity" : "resetActiveHigh",
+      "isBus" : false,
+      "busRange" : [
+        0,
+        0
+      ],
+      "frequencyMHz" : 100.0,
+      "associatedClock" : "clock",
+      "associatedReset" : "",
+      "args" : {
+        
+      }
+    }
+  ],
+  "interfaces" : [
+    {
+      "name" : "sourceTask",
+      "role" : "source",
+      "kind" : "readyValid[Task]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "sinkResult",
+      "role" : "sink",
+      "kind" : "readyValid[Result]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    }
+  ],
+  "args" : {
+    "encodedDataList" : {
+      "typeName" : "chext.util.EncodedDataList",
+      "obj" : {
+        "seq" : [
+          {
+            "name" : "Task",
+            "entries" : [
+              {
+                "path" : "target",
+                "width" : 2,
+                "tpe" : "UInt<2>"
+              },
+              {
+                "path" : "operand",
+                "width" : 32,
+                "tpe" : "UInt<32>"
+              },
+              {
+                "path" : "delay",
+                "width" : 8,
+                "tpe" : "UInt<8>"
+              }
+            ]
+          },
+          {
+            "name" : "Result",
+            "entries" : [
+              {
+                "path" : "",
+                "width" : 32,
+                "tpe" : "UInt<32>"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
