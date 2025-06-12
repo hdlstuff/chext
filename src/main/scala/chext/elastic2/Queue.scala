@@ -18,7 +18,7 @@ object Queue {
       pipe: Boolean = false,
       flow: Boolean = false,
       useSyncReadMem: Boolean = false,
-      useVerilog: Boolean = true
+      useVerilog: Boolean = false
   ) = {
     requireIsHardware(source, "Queue source must be hardware.")
     requireIsHardware(sink, "Queue sink must be hardware.")
@@ -39,7 +39,7 @@ object Queue {
       pipe: Boolean = false,
       flow: Boolean = false,
       syncReadMem: Boolean = false,
-      useVerilog: Boolean = true
+      useVerilog: Boolean = false
   ): Queue[T] = {
     require(count > 0, "Length must be positive.")
 
