@@ -27,7 +27,12 @@ case class DownscaleConfig(
   require(isPow2(wDataMaster))
 
   require(axiSlaveCfg.wUserR == 0, "User data is not supported on channel R.")
-  require(!axiSlaveCfg.axi3Compat, "Downscale cannot work in Axi3 compatibility mode!")
+
+  require(
+    axiSlaveCfg.wData / wDataMaster <=
+      (if (axiSlaveCfg.axi3Compat) 16 else 256),
+    "axiSlaveCfg.wData / wDataMaster must be less than 16 or 256 depending on the AXI version!"
+  )
 
   val wDataSlave = axiSlaveCfg.wData
   val wStrobeMaster = wDataMaster / 8
@@ -184,7 +189,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         steerRightStrobe.dataIn := in.strb
         steerRightStrobe.offsetIn := offset._1 /* offset */
 
-        when (arrived) {
+        when(arrived) {
           out.data := steerRight.dataOut
           out.strb := steerRightStrobe.dataOut
 
