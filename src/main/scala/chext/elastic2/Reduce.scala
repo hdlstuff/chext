@@ -35,7 +35,7 @@ abstract class Reduce[T1 <: Data, T2 <: Data](
 
   import ConnectOp._
 
-  val genStage0 = new Bundle {
+  protected val genStage0 = new Bundle {
     val bits = gen.cloneType
 
     val first = Bool()
@@ -43,41 +43,46 @@ abstract class Reduce[T1 <: Data, T2 <: Data](
     val zero = Bool()
   }
 
-  val genStage1 = new Bundle {
+  protected val genStage1 = new Bundle {
     val bits = gen.cloneType
 
     val zero = Bool()
   }
 
-  val stage0_elem = dontTouch { Wire(Interface(genStage0)) }
-  val stage0_init = dontTouch { Wire(Interface(gen)) }
-  val stage0_res = dontTouch { Wire(Interface(gen)) }
+  protected val stage0_elem = dontTouch { Wire(Interface(genStage0)) }
+  protected val stage0_init = dontTouch { Wire(Interface(gen)) }
+  protected val stage0_res = dontTouch { Wire(Interface(gen)) }
 
-  val stage1_opA = dontTouch { Wire(Interface(genStage1)) }
-  val stage1_opB = dontTouch { Wire(Interface(gen)) }
-  val stage1_res = dontTouch { Wire(Interface(gen)) }
+  protected val stage1_opA = dontTouch { Wire(Interface(genStage1)) }
+  protected val stage1_opB = dontTouch { Wire(Interface(gen)) }
+  protected val stage1_res = dontTouch { Wire(Interface(gen)) }
 
   def stage0(): Unit = prefix("stage0") {
     // stage0 implements the first logic
 
     if (noFirstBit) {
       val arrival0 = new Arrival(sourceElem, stage0_elem) {
-        val isFirst = RegInit(true.B)
+        val rState = RegInit(true.B)
 
         out.bits := data
 
-        out.first := isFirst
+        out.first := rState
         out.last := last
         out.zero := zero
 
         when(arrived) {
-          when(isFirst) {
-            isFirst := false.B
-          }.elsewhen(out.last) {
-            isFirst := true.B
-          }
+          when(rState) {
+            when(out.last) {
+              accept()
+            }.otherwise {
+              accept()
 
-          accept()
+              rState := false.B
+            }
+          }.otherwise {
+            rState := out.last
+            accept()
+          }
         }
       }
     } else {
@@ -125,7 +130,10 @@ abstract class Reduce[T1 <: Data, T2 <: Data](
 
         val demux0 = Demux(fork { in.bits }, Seq(op_sinkA, disposed), fork { in.zero })
         val demux1 = Demux(stage1_opB, Seq(op_sinkB, temp), fork { in.zero })
-        val mux0 = elastic.Mux(Seq(op_sourceRes, temp), stage1_res, fork { in.zero })
+        val mux0 =
+          elastic.Mux(Seq(op_sourceRes, temp), elastic.SinkBuffer(stage1_res), fork { in.zero })
+
+        disposed.deq()
       }
     } else {
       val transform0 = new Transform(stage1_opA, op_sinkA) {
@@ -216,4 +224,38 @@ class ReduceTestTop1 extends Module with chext.HasHdlinfoModule {
 
 object Reduce_TB extends App with chext.TestBench {
   emit(new ReduceTestTop1)
+}
+
+class ReduceTest1_Tbtop extends Module with chext.TestBenchTop {
+  val source = IO(elastic.Source(new Bundle {
+    val zero = Bool()
+    val last = Bool()
+    val data = SInt(32.W)
+  }))
+
+  val sink = IO(elastic.Sink(SInt(32.W)))
+
+  private val reduce0 = new elastic.Reduce(
+    source,
+    elastic.Constant(0.S),
+    sink,
+    true
+  ) {
+    zero := elem.zero
+    last := elem.last
+    data := elem.data
+
+    new elastic.Join(elastic.SinkBuffer(op_sourceRes)) {
+      out := join(op_sinkA) + join(op_sinkB)
+    }
+  }
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(source, "Task")
+  declareElasticInterface(sink, "Result")
+}
+
+object ReduceTest1_Tb extends chext.TestBench {
+  emit(new ReduceTest1_Tbtop)
 }

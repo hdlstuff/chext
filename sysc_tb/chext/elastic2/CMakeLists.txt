@@ -12,3 +12,8 @@ generate_tb(
     TARGET_NAME Switch
     HDL_MODULES Switch_Tbtop1
 )
+
+generate_tb(
+    TARGET_NAME ReduceTest1
+    HDL_MODULES ReduceTest1_Tbtop
+)
