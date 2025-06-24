@@ -40,8 +40,8 @@ struct Testbench : public sc_module {
             dut.source.send({ .zero = true, .last = false, .data = 32 });
             dut.source.send({ .zero = false, .last = true, .data = 32 });
 
-            for (uint32_t i = 0; i < 32; ++i) {
-                dut.source.send({ .zero = false, .last = i == 31, .data = i });
+            for (int i = 0; i < 32; ++i) {
+                dut.source.send({ .zero = false, .last = i == 31, .data = -i });
             }
 
             dut.source.send({ .zero = false, .last = true, .data = 32 });
@@ -49,11 +49,11 @@ struct Testbench : public sc_module {
         };
 
         SC_SPAWN_TO(j) {
-            fmt::println("result: {}", dut.sink.receive().to_int64());
-            fmt::println("result: {}", dut.sink.receive().to_int64());
-            fmt::println("result: {}", dut.sink.receive().to_int64());
-            fmt::println("result: {}", dut.sink.receive().to_int64());
-            fmt::println("result: {}", dut.sink.receive().to_int64());
+            fmt::println("result: {}", dut.sink.receive());
+            fmt::println("result: {}", dut.sink.receive());
+            fmt::println("result: {}", dut.sink.receive());
+            fmt::println("result: {}", dut.sink.receive());
+            fmt::println("result: {}", dut.sink.receive());
         };
 
         j.wait();

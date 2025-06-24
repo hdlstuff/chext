@@ -56,37 +56,37 @@
 `endif // not def SYNTHESIS
 
 // VCS coverage exclude_file
-module ram_2x35(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+module ram_2x67(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
   input         R0_addr,
                 R0_en,
                 R0_clk,
-  output [34:0] R0_data,
+  output [66:0] R0_data,
   input         W0_addr,
                 W0_en,
                 W0_clk,
-  input  [34:0] W0_data
+  input  [66:0] W0_data
 );
 
-  reg [34:0] Memory[0:1];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+  reg [66:0] Memory[0:1];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
   always @(posedge W0_clk) begin	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
     if (W0_en & 1'h1)	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
       Memory[W0_addr] <= W0_data;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_MEM_	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
-    reg [63:0] _RANDOM_MEM;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+    reg [95:0] _RANDOM_MEM;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
     initial begin	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
       `INIT_RANDOM_PROLOG_	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
       `ifdef RANDOMIZE_MEM_INIT	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
         for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
-          for (logic [6:0] j = 7'h0; j < 7'h40; j += 7'h20) begin
+          for (logic [6:0] j = 7'h0; j < 7'h60; j += 7'h20) begin
             _RANDOM_MEM[j +: 32] = `RANDOM;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
           end	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
-          Memory[i[0]] = _RANDOM_MEM[34:0];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+          Memory[i[0]] = _RANDOM_MEM[66:0];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
         end	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
       `endif // RANDOMIZE_MEM_INIT
     end // initial
   `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 35'bx;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+  assign R0_data = R0_en ? Memory[R0_addr] : 67'bx;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
 endmodule
 
 module chext_queue_2_Reduce_Anon(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7
@@ -94,19 +94,19 @@ module chext_queue_2_Reduce_Anon(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos
                 reset,	// <stdin>:201:11
   output        source_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
   input         source_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
-  input  [31:0] source_bits_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
+  input  [63:0] source_bits_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
   input         source_bits_first,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
                 source_bits_last,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
                 source_bits_zero,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
                 sink_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
   output        sink_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
-  output [31:0] sink_bits_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
+  output [63:0] sink_bits_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
   output        sink_bits_first,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
                 sink_bits_last,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
                 sink_bits_zero	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
 );
 
-  wire [34:0] _ram_ext_R0_data;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+  wire [66:0] _ram_ext_R0_data;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
   reg         wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         maybe_full;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:73:27
@@ -150,7 +150,7 @@ module chext_queue_2_Reduce_Anon(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos
       `FIRRTL_AFTER_INITIAL	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  ram_2x35 ram_ext (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+  ram_2x67 ram_ext (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
     .R0_addr (wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .R0_en   (1'h1),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7
     .R0_clk  (clock),
@@ -162,10 +162,10 @@ module chext_queue_2_Reduce_Anon(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos
   );
   assign source_ready = ~full;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :76:24, :94:19
   assign sink_valid = ~empty;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :75:25, :93:17
-  assign sink_bits_bits = _ram_ext_R0_data[31:0];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :70:81
-  assign sink_bits_first = _ram_ext_R0_data[32];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :70:81
-  assign sink_bits_last = _ram_ext_R0_data[33];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :70:81
-  assign sink_bits_zero = _ram_ext_R0_data[34];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :70:81
+  assign sink_bits_bits = _ram_ext_R0_data[63:0];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :70:81
+  assign sink_bits_first = _ram_ext_R0_data[64];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :70:81
+  assign sink_bits_last = _ram_ext_R0_data[65];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :70:81
+  assign sink_bits_zero = _ram_ext_R0_data[66];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7, :70:81
 endmodule
 
 // VCS coverage exclude_file
@@ -272,13 +272,13 @@ endmodule
 module elasticMux(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:9:7
   output        io_sources_0_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
   input         io_sources_0_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  input  [31:0] io_sources_0_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  input  [63:0] io_sources_0_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
   output        io_sources_1_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
   input         io_sources_1_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  input  [31:0] io_sources_1_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  input  [63:0] io_sources_1_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
   input         io_sink_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
   output        io_sink_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
-  output [31:0] io_sink_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
+  output [63:0] io_sink_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
   output        io_select_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
   input         io_select_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
                 io_select_bits	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:19:14
@@ -297,13 +297,13 @@ endmodule
 module elasticDemux(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:9:7
   output        io_source_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
   input         io_source_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  input  [31:0] io_source_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  input  [63:0] io_source_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
   input         io_sinks_0_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
   output        io_sinks_0_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  output [31:0] io_sinks_0_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  output [63:0] io_sinks_0_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
   input         io_sinks_1_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
   output        io_sinks_1_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
-  output [31:0] io_sinks_1_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
+  output [63:0] io_sinks_1_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
   output        io_select_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
   input         io_select_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
                 io_select_bits	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:19:14
@@ -320,46 +320,48 @@ module elasticDemux(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/ma
 endmodule
 
 // VCS coverage exclude_file
-module ram_2x32(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+module ram_2x64(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
   input         R0_addr,
                 R0_en,
                 R0_clk,
-  output [31:0] R0_data,
+  output [63:0] R0_data,
   input         W0_addr,
                 W0_en,
                 W0_clk,
-  input  [31:0] W0_data
+  input  [63:0] W0_data
 );
 
-  reg [31:0] Memory[0:1];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+  reg [63:0] Memory[0:1];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
   always @(posedge W0_clk) begin	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
     if (W0_en & 1'h1)	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
       Memory[W0_addr] <= W0_data;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_MEM_	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
-    reg [31:0] _RANDOM_MEM;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+    reg [63:0] _RANDOM_MEM;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
     initial begin	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
       `INIT_RANDOM_PROLOG_	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
       `ifdef RANDOMIZE_MEM_INIT	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
         for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
-          _RANDOM_MEM = `RANDOM;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+          for (logic [6:0] j = 7'h0; j < 7'h40; j += 7'h20) begin
+            _RANDOM_MEM[j +: 32] = `RANDOM;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+          end	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
           Memory[i[0]] = _RANDOM_MEM;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
         end	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
       `endif // RANDOMIZE_MEM_INIT
     end // initial
   `endif // ENABLE_INITIAL_MEM_
-  assign R0_data = R0_en ? Memory[R0_addr] : 32'bx;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+  assign R0_data = R0_en ? Memory[R0_addr] : 64'bx;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
 endmodule
 
-module chext_queue_2_SInt32(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7
+module chext_queue_2_SInt64(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7
   input         clock,	// <stdin>:407:11, :467:11
                 reset,	// <stdin>:408:11, :468:11
   output        source_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
   input         source_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
-  input  [31:0] source_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
+  input  [63:0] source_bits,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:67:18
   input         sink_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
   output        sink_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
-  output [31:0] sink_bits	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
+  output [63:0] sink_bits	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:68:16
 );
 
   reg  wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
@@ -405,7 +407,7 @@ module chext_queue_2_SInt32(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chex
       `FIRRTL_AFTER_INITIAL	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  ram_2x32 ram_ext (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
+  ram_2x64 ram_ext (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:70:81
     .R0_addr (wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .R0_en   (1'h1),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:53:7
     .R0_clk  (clock),
@@ -429,31 +431,30 @@ module ReduceTest1_Tbtop(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/s
   input  [31:0] source_bits_data,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:230:18
   input         sink_ready,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:236:16
   output        sink_valid,	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:236:16
-  output [31:0] sink_bits	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:236:16
+  output [31:0] sink_bits_result	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:236:16
 );
 
   wire        reduce0_stage1_res_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:58:46
-  wire [31:0] reduce0_stage0_res_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:54:46
   wire        reduce0_stage0_res_valid;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:54:46
   wire        reduce0_stage1_fork0_temp_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:111:34
-  wire [31:0] reduce0_stage1_opB_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:57:46
+  wire [63:0] reduce0_stage1_opB_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:57:46
   wire        reduce0_stage1_opB_valid;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:57:46
   wire        reduce0_stage0_init_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:53:47
   wire        reduce0_stage0_elem_bits_last;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:52:47
   wire        reduce0_stage0_elem_bits_first;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:52:47
   wire        reduce0_stage0_elem_bits_zero;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:52:47
-  wire [31:0] reduce0_stage0_elem_bits_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:52:47
+  wire [63:0] reduce0_stage0_elem_bits_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:52:47
   wire        _reduce0_x_queue_source_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
   wire        _reduce0_x_queue_sink_valid;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
-  wire [31:0] _reduce0_x_queue_sink_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
+  wire [63:0] _reduce0_x_queue_sink_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
   wire        _reduce0_stage2_fork0_mux_io_sources_0_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
   wire        _reduce0_stage2_fork0_mux_io_sources_1_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
   wire        _reduce0_stage2_fork0_mux_io_sink_valid;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
-  wire [31:0] _reduce0_stage2_fork0_mux_io_sink_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
+  wire [63:0] _reduce0_stage2_fork0_mux_io_sink_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
   wire        _reduce0_stage2_fork0_mux_io_select_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
   wire        _reduce0_stage2_fork0_x_queue_source_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
   wire        _reduce0_stage2_fork0_demux_1_io_sinks_1_valid;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
-  wire [31:0] _reduce0_stage2_fork0_demux_1_io_sinks_1_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
+  wire [63:0] _reduce0_stage2_fork0_demux_1_io_sinks_1_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
   wire        _reduce0_stage2_fork0_demux_1_io_select_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
   wire        _reduce0_stage2_fork0_demux_io_source_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
   wire        _reduce0_stage2_fork0_demux_io_select_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
@@ -468,18 +469,19 @@ module ReduceTest1_Tbtop(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/s
   wire        _reduce0_stage0_arrival0_sinkBuffered__x_queue_source_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
   wire        reduce0_last = source_bits_last;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:25:40
   wire        reduce0_zero = source_bits_zero;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:26:40
-  wire [31:0] reduce0_data = source_bits_data;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:28:40
   wire        reduce0_stage0_res_ready = sink_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:54:46
   wire        reduce0_stage0_init_valid = 1'h1;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:53:47, :229:7
   wire        reduce0_first = 1'h0;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:24:41, :229:7
-  wire [31:0] reduce0_stage0_init_bits = 32'h0;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Connect.scala:10:15, Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:53:47
-  wire [31:0] reduce0_stage1_opA_bits_bits = reduce0_stage0_elem_bits_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:52:47, :56:46
+  wire [63:0] reduce0_stage0_init_bits = 64'h0;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Connect.scala:10:15, Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:53:47
+  wire [63:0] reduce0_stage1_opA_bits_bits = reduce0_stage0_elem_bits_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:52:47, :56:46
   wire        reduce0_stage1_opA_bits_zero = reduce0_stage0_elem_bits_zero;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:52:47, :56:46
   wire        source_ready_0 =
     _reduce0_stage0_arrival0_sinkBuffered__x_queue_source_ready & source_valid;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Arrival.scala:20:47, Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
   reg         reduce0_stage0_arrival0_rState;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:65:29
-  wire [31:0] reduce0_op_sinkA_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44
-  wire [31:0] reduce0_op_sinkB_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:21:44
+  wire [63:0] reduce0_op_sinkA_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44
+  wire [63:0] reduce0_op_sinkB_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:21:44
+  wire [63:0] reduce0_data = {{32{source_bits_data[31]}}, source_bits_data};	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:28:40, :250:10
+  wire [63:0] reduce0_stage0_res_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:54:46
   reg         reduce0_stage1_fork0_regs_0;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Fork.scala:45:23
   reg         reduce0_stage1_fork0_regs_1;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Fork.scala:45:23
   reg         reduce0_stage1_fork0_regs_2;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Fork.scala:45:23
@@ -609,7 +611,7 @@ module ReduceTest1_Tbtop(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/s
   );
   wire        reduce0_stage1_opB_ready;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:57:46
   wire        reduce0_stage1_fork0_temp_valid;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:111:34
-  wire [31:0] reduce0_stage1_fork0_temp_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:111:34
+  wire [63:0] reduce0_stage1_fork0_temp_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:111:34
   elasticMux reduce0_stage1_fork0_mux (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
     .io_sources_0_ready (reduce0_stage1_fork0_temp_ready),
     .io_sources_0_valid (reduce0_stage1_fork0_temp_valid),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:111:34
@@ -635,7 +637,7 @@ module ReduceTest1_Tbtop(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/s
     .sink_bits    (_reduce0_stage1_fork0_x_queue_1_sink_bits)
   );
   wire        reduce0_stage1_res_valid;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:58:46
-  wire [31:0] reduce0_stage1_res_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:58:46
+  wire [63:0] reduce0_stage1_res_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:58:46
   elasticDemux reduce0_stage1_fork0_demux (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Demux.scala:47:23
     .io_source_ready  (reduce0_stage1_res_ready),
     .io_source_valid  (reduce0_stage1_res_valid),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:58:46
@@ -678,7 +680,7 @@ module ReduceTest1_Tbtop(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/s
     .io_select_valid  (reduce0_stage1_opA_valid & ~reduce0_stage2_fork0_regs_2),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Fork.scala:45:23, :56:{36,39}, Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:56:46
     .io_select_bits   (reduce0_stage1_opA_bits_zero)	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:56:46
   );
-  chext_queue_2_SInt32 reduce0_stage2_fork0_x_queue (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
+  chext_queue_2_SInt64 reduce0_stage2_fork0_x_queue (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
     .clock        (clock),
     .reset        (reset),
     .source_ready (_reduce0_stage2_fork0_x_queue_source_ready),
@@ -702,18 +704,18 @@ module ReduceTest1_Tbtop(	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/s
     .io_select_valid    (reduce0_stage1_opA_valid & ~reduce0_stage2_fork0_regs_3),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Fork.scala:45:23, :56:{36,39}, Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:56:46
     .io_select_bits     (reduce0_stage1_opA_bits_zero)	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:56:46
   );
-  chext_queue_2_SInt32 reduce0_x_queue (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
+  chext_queue_2_SInt64 reduce0_x_queue (	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Queue.scala:139:13
     .clock        (clock),
     .reset        (reset),
     .source_ready (_reduce0_x_queue_source_ready),
     .source_valid (reduce0_allValid),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Join.scala:43:53
-    .source_bits  (reduce0_op_sinkA_bits + reduce0_op_sinkB_bits),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44, :21:44, :249:29
+    .source_bits  (reduce0_op_sinkA_bits + reduce0_op_sinkB_bits),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:20:44, :21:44, :253:29
     .sink_ready   (_reduce0_stage2_fork0_mux_io_sources_0_ready),	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Mux.scala:49:21
     .sink_valid   (_reduce0_x_queue_sink_valid),
     .sink_bits    (_reduce0_x_queue_sink_bits)
   );
   assign source_ready = source_ready_0;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Arrival.scala:20:47, Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:229:7
   assign sink_valid = reduce0_stage0_res_valid;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:54:46, :229:7
-  assign sink_bits = reduce0_stage0_res_bits;	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:54:46, :229:7
+  assign sink_bits_result = reduce0_stage0_res_bits[31:0];	// Users/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic2/Reduce.scala:54:46, :229:7, :258:16
 endmodule
 

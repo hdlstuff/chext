@@ -233,12 +233,16 @@ class ReduceTest1_Tbtop extends Module with chext.TestBenchTop {
     val data = SInt(32.W)
   }))
 
-  val sink = IO(elastic.Sink(SInt(32.W)))
+  val sink = IO(elastic.Sink(new Bundle {
+    val result = SInt(32.W)
+  }))
+
+  private val wire0 = Wire(elastic.Interface(SInt(64.W)))
 
   private val reduce0 = new elastic.Reduce(
     source,
     elastic.Constant(0.S),
-    sink,
+    wire0,
     true
   ) {
     zero := elem.zero
@@ -248,6 +252,10 @@ class ReduceTest1_Tbtop extends Module with chext.TestBenchTop {
     new elastic.Join(elastic.SinkBuffer(op_sourceRes)) {
       out := join(op_sinkA) + join(op_sinkB)
     }
+  }
+
+  private val transform0 = new elastic.Transform(wire0, sink) {
+    out.result := in
   }
 
   declareClock(clock)

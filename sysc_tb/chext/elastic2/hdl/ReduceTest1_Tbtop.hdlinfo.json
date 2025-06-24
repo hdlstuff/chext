@@ -87,7 +87,7 @@
             "name" : "Result",
             "entries" : [
               {
-                "path" : "",
+                "path" : "result",
                 "width" : 32,
                 "tpe" : "SInt<32>"
               }
