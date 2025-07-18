@@ -1,11 +1,13 @@
 package chisel3.hacks
 
-
 import chisel3.internal.Builder
 import chisel3.internal.HasId
 
 import chisel3.RawModule
 import chisel3.ChiselException
+
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.Queue
 
 // Based on the experimental prefix
 object PrefixManager {
@@ -51,30 +53,59 @@ object PrefixManager {
 }
 
 object deferred {
+  private val hooks =
+    HashMap.empty[RawModule, Queue[() => Unit]]
+
+  private def addHook(fn: => Unit): Unit = {
+    // This is a little bit too hacky
+    val currentModule = Builder.currentModule
+      .getOrElse(throw new ChiselException("There is no active module!"))
+      .asInstanceOf[RawModule]
+
+    hooks
+      .getOrElseUpdate(
+        currentModule, {
+          val queue = Queue.empty[() => Unit]
+
+          val method = {
+            val methods = classOf[RawModule].getDeclaredMethods()
+            methods.filter(_.getName() == "atModuleBodyEnd").head
+          }
+
+          method.invoke(
+            currentModule,
+            () => {
+              while (queue.nonEmpty) {
+                val item = queue.dequeue()
+                item()
+              }
+
+              hooks.remove(currentModule)
+            }
+          )
+
+          queue
+        }
+      )
+      .addOne(() => fn)
+  }
 
   /** Defers the execution of the code block after the end of the current module body. Unlike
     * `atModuleBodyEnd`, can be called from outside the module class. It respects the prefix.
     *
     * @param gen
     */
-  def apply(gen: => Unit): Unit = {
+  def apply(fn: => Unit): Unit = {
     val currentPrefix = PrefixManager.current
 
-    // This is a little bit too hacky
-    val currentModule = Builder.currentModule
-      .getOrElse(throw new ChiselException("There is no active module!"))
-      .asInstanceOf[RawModule]
+    addHook {
+      PrefixManager.withAbsolute(currentPrefix) { fn }
+    }
+  }
 
-    val methods = classOf[RawModule].getDeclaredMethods()
-    val method = methods.filter(_.getName() == "atModuleBodyEnd").head
-
-    method.invoke(
-      currentModule,
-      () => {
-        PrefixManager.withAbsolute(currentPrefix) {
-          gen
-        }
-      }
-    )
+  def apply(prefix: String)(fn: => Unit): Unit = {
+    PrefixManager.withRelative(prefix) {
+      apply { fn }
+    }
   }
 }
