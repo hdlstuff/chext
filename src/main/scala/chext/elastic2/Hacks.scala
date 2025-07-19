@@ -103,7 +103,7 @@ object deferred {
     }
   }
 
-  def apply(prefix: String)(fn: => Unit): Unit = {
+  def prefix(prefix: String)(fn: => Unit): Unit = {
     PrefixManager.withRelative(prefix) {
       apply { fn }
     }
