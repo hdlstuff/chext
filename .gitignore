@@ -491,3 +491,5 @@ output/
 .trash
 
 *.vcd
+
+.old/

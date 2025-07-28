@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chext.amba.axi4
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 import elastic.ConnectOp._
 
 import chisel3._
@@ -13,8 +13,8 @@ import axi4.Casts._
 
 case class IdSerializeConfig(
     val axiSlaveCfg: axi4.Config,
-    val capacityIdQueueR: Int = 4,
-    val capacityIdQueueW: Int = 4,
+    val numOutstandingRead: Int = 4,
+    val numOutstandingWrite: Int = 4,
     val wIdSelect: Int = 0
 ) {
   require(!axiSlaveCfg.lite)
@@ -37,54 +37,40 @@ class IdSerialize(val cfg: IdSerializeConfig) extends Module {
   private val genId = UInt(axiSlaveCfg.wId.W)
 
   private def implRead(): Unit = prefix("read") {
-    val idQueue = elastic.Queue(
-      genId,
-      cfg.capacityIdQueueR,
-      flow = true,
-      pipe = true
-    )
+    val wire0 = elastic.EWire(genId)
 
-    idQueue.sink.nodeq()
-
-    new elastic.Fork(s_axi.ar) {
-      new elastic.Replicate(fork(in), idQueue.source) {
-        len := in.len +& 1.U
-        out := in.id
+    val fork0 = new elastic.Fork(s_axi.ar) {
+      new elastic.Repeat(
+        elastic.SourceBuffer(fork(), numOutstandingRead, pipe = true, flow = true),
+        wire0,
+        9
+      ) {
+        len { (in) => in.len +& 1.U }
+        out { (in, _, _, _) => in.id }
       }
 
-      fork(in) :=> m_axi.ar
+      fork() :=> m_axi.ar
     }
 
-    new elastic.Transform(m_axi.r, s_axi.r) {
-      out := in
-      out.id := idQueue.sink.bits
-    }
-
-    when(s_axi.r.fire) {
-      idQueue.sink.deq()
+    val join0 = new elastic.Join(s_axi.r) {
+      out := join(m_axi.r)
+      out.id := join(wire0)
     }
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val idQueue = elastic.Queue(
-      genId,
-      cfg.capacityIdQueueR,
-      flow = true,
-      pipe = true
-    )
+    val wire0 = elastic.EWire(genId)
 
     new elastic.Fork(s_axi.aw) {
-      fork(in.id) :=> idQueue.source
-      fork(in) :=> m_axi.aw
+      fork { in.id } :=> wire0
+      fork() :=> m_axi.aw
     }
 
     s_axi.w :=> m_axi.w
 
     new elastic.Join(s_axi.b) {
-      val id = join(idQueue.sink)
-
       out := join(m_axi.b)
-      out.id := id
+      out.id := join(wire0)
     }
   }
 

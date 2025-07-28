@@ -1,31 +1,34 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.util._
-import chisel3.experimental._
+import chisel3.experimental.AffectsChiselPrefix
+import chisel3.hacks.deferred
+
 import scala.collection.mutable.ListBuffer
 
-abstract class Join[T <: Data](val sink: ReadyValidIO[T]) extends AffectsChiselPrefix {
-  private val sources = ListBuffer.empty[ReadyValidIO[Data]]
+abstract class Join[T <: Data](val sink: Interface[T]) extends AffectsChiselPrefix {
+  private val sourceList = ListBuffer.empty[Interface[Data]]
+
   protected val out: T = sink.bits
 
-  /** Adds a new RV interface to join.
+  protected final def onJoin: Unit = throw new NotImplementedError("Shall not be used!")
+
+  /** Adds a new elastic interface to join.
     *
     * @param sink
     * @return
     */
-  def join[V <: Data](source: ReadyValidIO[V]): V = {
-    sources.addOne(source)
+  def join[TT <: Data](source: Interface[TT]): TT = {
+    sourceList.addOne(source)
     source.bits
   }
 
-  protected def onJoin: Unit
-
-  onJoin
-  JoinUtils.join(sources.toSeq, sink)
+  deferred {
+    joinImpl.join(sourceList.toSeq, sink)
+  }
 }
 
-private[elastic] object JoinUtils {
+private[elastic] object joinImpl {
 
   /** Implements a join.
     *
@@ -33,14 +36,13 @@ private[elastic] object JoinUtils {
     * @param sink
     */
   def join[T <: Data](
-      sources: Seq[ReadyValidIO[Data]],
-      sink: ReadyValidIO[Data]
-  ): Unit =
-    prefix("mkJoin") {
-      val allValid =
-        VecInit(sources.map { _.valid }).reduceTree(_ && _)
-      val fire = sink.ready && allValid
-      sources.foreach { _.ready := fire }
-      sink.valid := allValid
-    }
+      sources: Seq[Interface[Data]],
+      sink: Interface[Data]
+  ): Unit = {
+    val allValid =
+      VecInit(sources.map { _.valid }).reduceTree(_ && _)
+    val fire = sink.ready && allValid
+    sources.foreach { _.ready := fire }
+    sink.valid := allValid
+  }
 }

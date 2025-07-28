@@ -3,7 +3,7 @@ package chext.amba.axi4.full.components
 import chisel3._
 import chisel3.util._
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 import chext.amba.axi4
 
 import elastic.ConnectOp._

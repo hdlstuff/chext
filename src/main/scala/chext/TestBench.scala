@@ -63,7 +63,9 @@ trait TestBenchTop extends HasHdlinfoModule {
   private def hasEncodedDataNamed(x: String) = encodedDataNames(x)
 
   private def nameFor(x: Data, defaultName: Option[String]) = {
-    defaultName.getOrElse(chisel3.reflect.DataMirror.queryNameGuess(x))
+    defaultName.getOrElse(
+      chisel3.reflect.DataMirror.queryNameGuess(x).replace('.', '_')
+    )
   }
 
   private def getValidDirection(x: Data): hdlinfo.PortDirection = {
@@ -267,7 +269,7 @@ trait TestBenchTop extends HasHdlinfoModule {
   }
 
   final def declareElasticInterface[T <: Data](
-      interface: chext.elastic2.Interface[T],
+      interface: chext.elastic.Interface[T],
       dataTypeName: String,
       associatedClock: String = "clock",
       associatedReset: String = "reset",

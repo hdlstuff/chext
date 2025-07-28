@@ -8,7 +8,7 @@ import chisel3.reflect.DataMirror
 import chext.amba.axi4
 import chext.amba.axi4.util._
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 /** Address channel. (AR and AW)
   *

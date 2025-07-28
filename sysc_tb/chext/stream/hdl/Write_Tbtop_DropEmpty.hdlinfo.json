@@ -1,0 +1,185 @@
+{
+  "name" : "Write_Tbtop_DropEmpty",
+  "ports" : [
+    {
+      "name" : "clock",
+      "direction" : "input",
+      "kind" : "clock",
+      "sensitivity" : "clockRising",
+      "isBus" : false,
+      "busRange" : [
+        0,
+        0
+      ],
+      "frequencyMHz" : 100.0,
+      "associatedClock" : "",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "reset",
+      "direction" : "input",
+      "kind" : "reset",
+      "sensitivity" : "resetActiveHigh",
+      "isBus" : false,
+      "busRange" : [
+        0,
+        0
+      ],
+      "frequencyMHz" : 100.0,
+      "associatedClock" : "clock",
+      "associatedReset" : "",
+      "args" : {
+        
+      }
+    }
+  ],
+  "interfaces" : [
+    {
+      "name" : "wr_sourceTask",
+      "role" : "source",
+      "kind" : "readyValid[Wr_Task]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "wr_sinkResult",
+      "role" : "sink",
+      "kind" : "readyValid[Wr_Result]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "wr_sourceData",
+      "role" : "source",
+      "kind" : "readyValid[Wr_Data]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rd_sourceTask",
+      "role" : "source",
+      "kind" : "readyValid[Rd_Task]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rd_sinkResult",
+      "role" : "sink",
+      "kind" : "readyValid[Rd_Result]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    }
+  ],
+  "args" : {
+    "encodedDataList" : {
+      "typeName" : "chext.util.EncodedDataList",
+      "obj" : {
+        "seq" : [
+          {
+            "name" : "Wr_Task",
+            "entries" : [
+              {
+                "path" : "address",
+                "width" : 20,
+                "tpe" : "UInt<20>"
+              },
+              {
+                "path" : "length",
+                "width" : 32,
+                "tpe" : "UInt<32>"
+              },
+              {
+                "path" : "user",
+                "width" : 0,
+                "tpe" : "UInt<0>"
+              }
+            ]
+          },
+          {
+            "name" : "Wr_Result",
+            "entries" : [
+              {
+                "path" : "user",
+                "width" : 0,
+                "tpe" : "UInt<0>"
+              }
+            ]
+          },
+          {
+            "name" : "Wr_Data",
+            "entries" : [
+              {
+                "path" : "",
+                "width" : 32,
+                "tpe" : "UInt<32>"
+              }
+            ]
+          },
+          {
+            "name" : "Rd_Task",
+            "entries" : [
+              {
+                "path" : "address",
+                "width" : 20,
+                "tpe" : "UInt<20>"
+              },
+              {
+                "path" : "length",
+                "width" : 32,
+                "tpe" : "UInt<32>"
+              },
+              {
+                "path" : "user",
+                "width" : 0,
+                "tpe" : "UInt<0>"
+              }
+            ]
+          },
+          {
+            "name" : "Rd_Result",
+            "entries" : [
+              {
+                "path" : "data",
+                "width" : 32,
+                "tpe" : "UInt<32>"
+              },
+              {
+                "path" : "index",
+                "width" : 32,
+                "tpe" : "UInt<32>"
+              },
+              {
+                "path" : "user",
+                "width" : 0,
+                "tpe" : "UInt<0>"
+              },
+              {
+                "path" : "last",
+                "width" : 1,
+                "tpe" : "Bool"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

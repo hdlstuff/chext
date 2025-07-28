@@ -5,7 +5,7 @@ import chisel3.util._
 
 import chext.amba.axi4.BufferConfig
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 import elastic.{SinkBuffer, SourceBuffer}
 import elastic.ConnectOp._
 

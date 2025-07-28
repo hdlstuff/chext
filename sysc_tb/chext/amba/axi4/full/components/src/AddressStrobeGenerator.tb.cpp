@@ -1,13 +1,9 @@
-#define SC_ALLOW_DEPRECATED_IEEE_API
-
-#include <AddressStrobeGeneratorTestTop1_1.hpp>
+#include <AddressStrobeGenerator_Tbtop_1.hpp>
 #include <chext_test/chext_test.hpp>
 
 using namespace sc_core;
 using namespace sc_dt;
 using namespace chext_test;
-
-using namespace protocols;
 
 // TODO make these ones an enum later (and include in protocol?)
 // The same goes for other flags, too.
@@ -30,7 +26,10 @@ public:
     }
 
 private:
-    AddressStrobeGeneratorTestTop1_1 dut;
+    AddressStrobeGenerator_Tbtop_1 dut;
+
+    using AddrLenSizeBurst = AddressStrobeGenerator_Tbtop_1::Task_value;
+    using AddrSizeStrobeLast = AddressStrobeGenerator_Tbtop_1::Result_value;
 
     sc_clock clock;
     sc_signal<bool> reset;
@@ -76,35 +75,35 @@ private:
         std::vector<AddrLenSizeBurst> sourcePackets;
         std::vector<AddrSizeStrobeLast> sinkPackets;
 
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0x3000), .len = 0, .size = 0, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0x5024), .len = 1, .size = 0, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0x6008), .len = 3, .size = 0, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0xA000), .len = 3, .size = 3, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0xA001), .len = 3, .size = 3, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0xA009), .len = 1, .size = 3, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0x3000, .len = 0, .size = 0, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0x5024, .len = 1, .size = 0, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0x6008, .len = 3, .size = 0, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0xA000, .len = 3, .size = 3, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0xA001, .len = 3, .size = 3, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0xA009, .len = 1, .size = 3, .burst = 1 });
 
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0x3000), 0, sc_bv<16>(0x0001), sc_bv<4>(0), sc_bv<4>(0), true });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0x3000, 0, 0x0001, 0, 0, true });
 
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0x5024), 0, sc_bv<16>(0x0010), sc_bv<4>(4), sc_bv<4>(4), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0x5025), 0, sc_bv<16>(0x0020), sc_bv<4>(5), sc_bv<4>(5), true });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0x5024, 0, 0x0010, 4, 4, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0x5025, 0, 0x0020, 5, 5, true });
 
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0x6008), 0, sc_bv<16>(0x0100), sc_bv<4>(8), sc_bv<4>(8), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0x6009), 0, sc_bv<16>(0x0200), sc_bv<4>(9), sc_bv<4>(9), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0x600a), 0, sc_bv<16>(0x0400), sc_bv<4>(10), sc_bv<4>(10), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0x600b), 0, sc_bv<16>(0x0800), sc_bv<4>(11), sc_bv<4>(11), true });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0x6008, 0, 0x0100, 8, 8, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0x6009, 0, 0x0200, 9, 9, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0x600a, 0, 0x0400, 10, 10, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0x600b, 0, 0x0800, 11, 11, true });
 
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA000), 3, sc_bv<16>(0x00FF), sc_bv<4>(0), sc_bv<4>(7), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA008), 3, sc_bv<16>(0xFF00), sc_bv<4>(8), sc_bv<4>(15), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA010), 3, sc_bv<16>(0x00FF), sc_bv<4>(0), sc_bv<4>(7), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA018), 3, sc_bv<16>(0xFF00), sc_bv<4>(8), sc_bv<4>(15), true });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA000, 3, 0x00FF, 0, 7, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA008, 3, 0xFF00, 8, 15, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA010, 3, 0x00FF, 0, 7, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA018, 3, 0xFF00, 8, 15, true });
 
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA001), 3, sc_bv<16>(0x00FE), sc_bv<4>(1), sc_bv<4>(7), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA008), 3, sc_bv<16>(0xFF00), sc_bv<4>(8), sc_bv<4>(15), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA010), 3, sc_bv<16>(0x00FF), sc_bv<4>(0), sc_bv<4>(7), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA018), 3, sc_bv<16>(0xFF00), sc_bv<4>(8), sc_bv<4>(15), true });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA001, 3, 0x00FE, 1, 7, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA008, 3, 0xFF00, 8, 15, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA010, 3, 0x00FF, 0, 7, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA018, 3, 0xFF00, 8, 15, true });
 
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA009), 3, sc_bv<16>(0xFE00), sc_bv<4>(9), sc_bv<4>(15), false });
-        sinkPackets.push_back(AddrSizeStrobeLast { sc_bv<32>(0xA010), 3, sc_bv<16>(0x00FF), sc_bv<4>(0), sc_bv<4>(7), true });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA009, 3, 0xFE00, 9, 15, false });
+        sinkPackets.push_back(AddrSizeStrobeLast { 0xA010, 3, 0x00FF, 0, 7, true });
 
         runTest(sourcePackets, sinkPackets);
     }

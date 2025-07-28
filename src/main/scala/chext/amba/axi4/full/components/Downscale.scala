@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental.prefix
 
 import chext.amba.axi4
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 import chext.util.BitOps._
 import elastic.ConnectOp._
@@ -78,6 +78,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
           out.len := in.len
           out.size := in.size
           out.burst := axi4.BurstType.INCR
+          out.user := 0.U
         }
 
         fork() :=> m_axi.ar
@@ -92,40 +93,32 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
     def implR(): Unit = prefix("r") {
       val zipped = elastic.Zip(m_axi.r, offsetLastQueue.sink)
 
-      val dataReg = RegInit(0.U(axiSlaveCfg.wData.W))
-      val respReg = RegInit(0.U(2.W))
+      val reduceResp = new elastic.Transducer(zipped, s_axi.r) {
+        val dataReg = RegInit(0.U(axiSlaveCfg.wData.W))
+        val respReg = RegInit(0.U(2.W))
 
-      val steerLeft = Module(new SteerLeft(wDataMaster, wDataSlave))
+        val steerLeft = Module(new SteerLeft(wDataMaster, wDataSlave))
 
-      new elastic.Arrival(zipped, s_axi.r) {
         steerLeft.dataIn := in._1.data
         steerLeft.offsetIn := in._2._1 /* offset */
 
-        when(arrived) {
-          // we reduce on the largest value of response
-          out.id := in._1.id
+        out.id := in._1.id
+        out.data := dataReg | steerLeft.dataOut
+        out.resp := Mux(in._1.resp > respReg, in._1.resp, respReg)
+        out.last := true.B
+        out.user := in._1.user
 
-          when(in._1.resp > respReg) {
-            respReg := in._1.resp
-            out.resp := in._1.resp
-          }.otherwise {
-            out.resp := respReg
-          }
-
-          val outputData = dataReg | steerLeft.dataOut
-
-          out.data := outputData
-          dataReg := outputData
-
-          out.last := true.B
-
+        packet {
           when(in._1.last) {
-            dataReg := 0.U
-
-            consume()
-            produce()
+            accept {
+              dataReg := 0.U
+              respReg := 0.U
+            }
           }.otherwise {
-            consume()
+            consume {
+              dataReg := out.data
+              respReg := out.resp
+            }
           }
         }
       }
@@ -162,6 +155,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
           out.len := in.len
           out.size := in.size
           out.burst := axi4.BurstType.INCR
+          out.user := 0.U
         }
 
         fork() :=> m_axi.aw
@@ -174,35 +168,34 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
     }
 
     def implW(): Unit = prefix("w") {
-      val offsetLastQueueDeq = offsetLastQueue.sink
-      offsetLastQueueDeq.nodeq()
+      offsetLastQueue.sink.nodeq()
+      val repeatData = new elastic.Transducer(s_axi.w, m_axi.w) {
+        val bits = offsetLastQueue.sink.bits
+        val valid = offsetLastQueue.sink.valid
 
-      val steerRight = Module(new SteerRight(wDataSlave, wDataMaster))
-      val steerRightStrobe = Module(new SteerRight(wStrobeSlave, wStrobeMaster))
-
-      new elastic.Arrival(s_axi.w, m_axi.w) {
-        val offset = offsetLastQueueDeq.bits
+        val steerRight = Module(new SteerRight(wDataSlave, wDataMaster))
+        val steerRightStrobe = Module(new SteerRight(wStrobeSlave, wStrobeMaster))
 
         steerRight.dataIn := in.data
-        steerRight.offsetIn := offset._1 /* offset */
+        steerRight.offsetIn := bits._1 /* offset */
 
         steerRightStrobe.dataIn := in.strb
-        steerRightStrobe.offsetIn := offset._1 /* offset */
+        steerRightStrobe.offsetIn := bits._1 /* offset */
 
-        when(arrived) {
-          out.data := steerRight.dataOut
-          out.strb := steerRightStrobe.dataOut
+        out.data := steerRight.dataOut
+        out.strb := steerRightStrobe.dataOut
+        out.last := bits._2 /* last */
+        out.user := in.user
 
-          out.last := offsetLastQueueDeq.bits._2 /* last */
-          out.user := in.user
-
-          when(offsetLastQueueDeq.valid) {
-            offsetLastQueueDeq.deq()
-            produce()
-
-            when(offsetLastQueueDeq.bits._2 /* last */ ) {
-              consume()
+        packet {
+          when(valid) {
+            when(bits._2 /* last */ ) {
+              accept { offsetLastQueue.sink.deq() }
+            }.otherwise {
+              produce { offsetLastQueue.sink.deq() }
             }
+          }.otherwise {
+            stall {}
           }
         }
       }

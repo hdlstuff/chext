@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chext.amba.axi4
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 import elastic.ConnectOp._
 
 import chext.bundles
@@ -80,7 +80,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
       val genArPort = new Bundle2(s_axi_.ar.bits.cloneType, genPort)
       val arPort = Wire(elastic.Interface(genArPort))
 
-      new elastic.Arrival(s_axi_.ar, arPort) {
+      new elastic.Stall(s_axi_.ar, arPort) {
         val id = in.id
         val addr = in.addr
         val port = decodeFn(addr)
@@ -88,14 +88,8 @@ class Demux(val cfg: DemuxConfig) extends Module {
         out._1 := in
         out._2 := port
 
-        when(arrived) {
-          when(transactionTracker.canInitiate(id, port)) {
-            transactionTracker.initiate(id, port)
-            accept()
-          }.otherwise {
-            noAccept()
-          }
-        }
+        cond { !transactionTracker.canInitiate(id, port) }
+        fire { transactionTracker.initiate(id, port) }
       }
 
       val demuxInput = Wire(elastic.Interface(s_axi_.ar.bits.cloneType))
@@ -154,7 +148,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
       val genAwPort = new Bundle2(s_axi_.aw.bits.cloneType, genPort)
       val awPort = Wire(elastic.Interface(genAwPort))
 
-      new elastic.Arrival(s_axi_.aw, awPort) {
+      new elastic.Stall(s_axi_.aw, awPort) {
         val id = in.id
         val addr = in.addr
         val port = decodeFn(addr)
@@ -162,14 +156,8 @@ class Demux(val cfg: DemuxConfig) extends Module {
         out._1 := in
         out._2 := port
 
-        when(arrived) {
-          when(transactionTracker.canInitiate(id, port)) {
-            transactionTracker.initiate(id, port)
-            accept()
-          }.otherwise {
-            noAccept()
-          }
-        }
+        cond { !transactionTracker.canInitiate(id, port) }
+        fire { transactionTracker.initiate(id, port) }
       }
 
       val demuxInput = Wire(elastic.Interface(s_axi_.aw.bits.cloneType))
@@ -181,13 +169,13 @@ class Demux(val cfg: DemuxConfig) extends Module {
         fork(in._2) :=> portQueue.source
       }
 
-      chext.elastic.Demux(demuxInput, m_axi_.map { _.aw }, demuxSelect)
+      elastic.Demux(demuxInput, m_axi_.map { _.aw }, demuxSelect)
     }
 
     def wLogic: Unit = {
       // W channel does not support burst interleaving due to the selection logic
       // so isLastFn
-      chext.elastic.Demux(
+      elastic.Demux(
         s_axi_.w,
         m_axi_.map { _.w },
         portQueue.sink,

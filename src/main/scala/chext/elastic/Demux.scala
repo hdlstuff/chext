@@ -1,11 +1,10 @@
 package chext.elastic
 
-import chext.elastic
 
 import chisel3._
 import chisel3.util._
 
-import elastic.ConnectOp._
+import ConnectOp._
 
 class Demux[T <: Data](
     val gen: T,
@@ -18,9 +17,9 @@ class Demux[T <: Data](
   val genSelect = UInt(chisel3.util.log2Up(n).W)
 
   val io = IO(new Bundle {
-    val source = Source(Decoupled(gen))
-    val sinks = Vec(n, Sink(Decoupled(gen)))
-    val select = Source(Irrevocable(genSelect))
+    val source = Source(gen)
+    val sinks = Vec(n, Sink(gen))
+    val select = Source(genSelect)
   })
 
   private val valid = io.select.valid && io.source.valid
@@ -40,9 +39,9 @@ class Demux[T <: Data](
 
 object Demux {
   def apply[T <: Data](
-      source: ReadyValidIO[T],
-      sinks: Seq[ReadyValidIO[T]],
-      select: ReadyValidIO[UInt],
+      source: Interface[T],
+      sinks: Seq[Interface[T]],
+      select: Interface[UInt],
       isLastFn: T => Bool = (_: T) => true.B
   ): Unit = {
     val demux = Module(

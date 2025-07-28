@@ -4,8 +4,8 @@ import chisel3._
 import chisel3.experimental.requireIsChiselType
 
 /** @todo
-  *   This class creates a "Vec" of a custom naming scheme. It is meant as a
-  *   simple adapter, not to be used in general.
+  *   This class creates a "Vec" of a custom naming scheme. It is meant as a simple adapter, not to
+  *   be used in general.
   */
 class VecCustomNamed[T <: Data](
     gen: T,
@@ -35,7 +35,6 @@ class VecCustomNamed[T <: Data](
 
   override def className: String = "VecCustomNamed"
 
-  Vec(1, UInt())
 }
 
 object VecCustomNamed {

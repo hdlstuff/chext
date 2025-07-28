@@ -2,7 +2,7 @@ package chext.amba.axi4.lite.components
 
 import chext.amba.axi4
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 import elastic.ConnectOp._
 
 import chext.bundles
@@ -126,15 +126,15 @@ class Demux(val cfg: DemuxConfig) extends Module {
         fork(in._2) :=> portQueueB.source
       }
 
-      chext.elastic.Demux(demuxAwInput, m_axil_.map { _.aw }, demuxAwSelect)
+      elastic.Demux(demuxAwInput, m_axil_.map { _.aw }, demuxAwSelect)
     }
 
     def wLogic: Unit = {
-      chext.elastic.Demux(s_axil_.w, m_axil_.map { _.w }, portQueueW.sink)
+      elastic.Demux(s_axil_.w, m_axil_.map { _.w }, portQueueW.sink)
     }
 
     def bLogic: Unit = {
-      chext.elastic.Mux(m_axil_.map { _.b }, s_axil_.b, portQueueB.sink)
+      elastic.Mux(m_axil_.map { _.b }, s_axil_.b, portQueueB.sink)
     }
 
     awLogic

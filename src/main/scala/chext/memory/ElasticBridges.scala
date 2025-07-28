@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental.prefix
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 class ReadToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = PortConfig())
     extends Module {

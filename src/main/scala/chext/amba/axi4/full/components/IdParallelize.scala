@@ -8,7 +8,7 @@ import chext.util.BitOps._
 import chext.bundles.BundleN
 
 import chext.amba.axi4
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 import elastic.{Source, Sink, SinkBuffer}
 import elastic.ConnectOp._

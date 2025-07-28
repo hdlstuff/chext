@@ -2,78 +2,31 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.reflect._
 
-class AddressStrobeGeneratorTestTop1(
+import chext.elastic
+import elastic.ConnectOp._
+
+class AddressStrobeGenerator_Tbtop(
     val wAddr: Int,
     val wData: Int,
     override val desiredName: String
 ) extends Module
-    with chext.HasHdlinfoModule {
+    with chext.TestBenchTop {
 
   private val dut = Module(new AddressStrobeGenerator(wAddr, wData))
-  chext.exportIO.module(this, dut)
 
-  def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
+  val source = IO(elastic.Source.like(dut.source))
+  val sink = IO(elastic.Sink.like(dut.sink))
 
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
+  source :=> dut.source
+  dut.sink :=> sink
 
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "source",
-        InterfaceRole("source") /* TODO define InterfaceRole.source */,
-        InterfaceKind("readyValid[chext.amba.axi4.full.components.addrgen.AddrLenSizeBurstBundle]"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("wAddr" -> TypedObject(wAddr))
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "sink",
-        InterfaceRole("sink"),
-        InterfaceKind(
-          "readyValid[chext.amba.axi4.full.components.addrgen.AddrSizeStrobeLastBundle]"
-        ),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("wAddr" -> TypedObject(wAddr), "wData" -> TypedObject(wData))
-      )
-    )
-
-    Module(
-      desiredName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map("wAddr" -> TypedObject(wAddr), "wData" -> TypedObject(wData))
-    )
-  }
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(source, "Task")
+  declareElasticInterface(sink, "Result")
 }
 
-object AddressStrobeGenerator_TB extends App with chext.TestBench {
-  emit(new AddressStrobeGeneratorTestTop1(32, 128, "AddressStrobeGeneratorTestTop1_1"))
+object AddressStrobeGenerator_Tb extends App with chext.TestBench {
+  emit(new AddressStrobeGenerator_Tbtop(32, 128, "AddressStrobeGenerator_Tbtop_1"))
 }

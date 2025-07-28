@@ -10,12 +10,12 @@ import chext.memory
 import axi4.Ops._
 import elastic.ConnectOp._
 
-case class DownscaleTestTop1(
+case class Downscale_Tbtop(
     val wDataWide: Int,
     val wDataNarrow: Int,
     override val desiredName: String
 ) extends Module
-    with chext.HasHdlinfoModule {
+    with chext.TestBenchTop {
   val log2bytesTotal = 14
 
   val rawMemCfg = memory.RawMemConfig(log2bytesTotal - log2Ceil(wDataNarrow / 8), wDataNarrow, 4, 4)
@@ -59,67 +59,13 @@ case class DownscaleTestTop1(
   unburst.m_axi :=> downscale.s_axi
   downscale.m_axi :=> axiBridge2.s_axi
 
-  def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
-
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
-
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI_NORMAL",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfgNarrow))
-      )
-    )
-    interfaces.append(
-      Interface(
-        "S_AXI_TEST",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfgWide))
-      )
-    )
-
-    Module(
-      desiredName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map(
-        "wDataWide" -> TypedObject(wDataWide),
-        "wDataNarrow" -> TypedObject(wDataNarrow)
-      )
-    )
-  }
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(S_AXI_NORMAL)
+  declareAxi4Interface(S_AXI_TEST)
 }
 
-object Downscale_TB extends chext.TestBench {
-  emit(new DownscaleTestTop1(128, 32, "DownscaleTestTop1_1"))
-  emit(new DownscaleTestTop1(128, 64, "DownscaleTestTop1_2"))
+object Downscale_Tb extends chext.TestBench {
+  emit(new Downscale_Tbtop(128, 32, "Downscale_Tbtop_1"))
+  emit(new Downscale_Tbtop(128, 64, "Downscale_Tbtop_2"))
 }

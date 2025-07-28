@@ -1,7 +1,7 @@
 package chext.amba.axi4.lite.components
 
 import chext.amba.axi4
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 import chisel3._
 import chisel3.util._

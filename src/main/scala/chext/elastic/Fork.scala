@@ -1,97 +1,79 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.util._
-import chisel3.experimental._
+import chisel3.experimental.AffectsChiselPrefix
+import chisel3.hacks._
+
 import scala.collection.mutable.ListBuffer
 
-abstract class Fork[T <: Data](source: ReadyValidIO[T]) extends AffectsChiselPrefix {
-  private val sinkList = ListBuffer.empty[ReadyValidIO[Data]]
+abstract class Fork[T <: Data](
+    source: Interface[T],
+    eager: Boolean = true
+) extends AffectsChiselPrefix {
+  private val sinkList = ListBuffer.empty[Interface[Data]]
+
   protected val in = source.bits
 
-  object fork {
-    def apply[TT <: Data](tt: TT = in): DecoupledIO[TT] = {
-      val result = Wire(new DecoupledIO(chiselTypeOf(tt)))
-      result.bits := tt
-      sinkList.addOne(result)
-      result
-    }
+  protected final def onFork: Unit = throw new NotImplementedError("Shall not be used!")
 
-    def irrevocable[TT <: Data](tt: TT = in): IrrevocableIO[TT] = {
-      val result = Wire(new IrrevocableIO(chiselTypeOf(tt)))
-      result.bits := tt
-      sinkList.addOne(result)
-      result
-    }
-  }
-
-  protected def onFork: Unit
-
-  onFork
-  eagerFork(source, sinkList.toSeq)
-}
-
-object Clone {
-  def apply[T <: Data](
-      source: ReadyValidIO[T],
-      n: Int
-  ): Seq[DecoupledIO[T]] = {
-    val sinks = Seq.fill(n) {
-      val r = Wire(new DecoupledIO(chiselTypeOf(source.bits)))
-      r.bits := source.bits
-      r
-    }
-    eagerFork(source, sinks)
-    sinks
-  }
-
-  def irrevocable[T <: Data](
-      source: ReadyValidIO[T],
-      n: Int
-  ): Seq[IrrevocableIO[T]] = {
-    val sinks = Seq.fill(n) {
-      val r = Wire(new IrrevocableIO(chiselTypeOf(source.bits)))
-      r.bits := source.bits
-      r
-    }
-    eagerFork(source, sinks)
-    sinks
-  }
-}
-
-object eagerFork {
-
-  /** Implements an eager fork.
+  /** Branches a new elastic interface from the fork.
     *
-    * @param f
+    * @param tt
     * @return
     */
-  def apply[T <: Data](
-      source: ReadyValidIO[T],
-      sinks: Seq[ReadyValidIO[Data]]
+  protected def fork[TT <: Data](tt: TT = in): Interface[TT] = {
+    val result = Wire(new Interface(chiselTypeOf(tt)))
+    result.bits := tt
+    sinkList.addOne(result)
+    result
+  }
+
+  deferred {
+    if (eager)
+      forkImpl.eagerFork(source, sinkList.toSeq)
+    else
+      forkImpl.lazyFork(source, sinkList.toSeq)
+  }
+}
+
+private[elastic] object forkImpl {
+  def eagerFork[T <: Data](
+      source: Interface[T],
+      sinks: Seq[Interface[Data]]
   ): Unit = {
-    prefix("eagerFork") {
-      // registers to remember if transmission already took place
-      val regs = RegInit(VecInit(Seq.fill(sinks.length) { false.B }))
+    // registers to remember if transmission already took place
+    val regs = RegInit(VecInit(Seq.fill(sinks.length) { false.B }))
 
-      sinks.zip(regs).foreach {
-        case (sink, reg) => {
-          sink.valid := source.valid && !reg
-        }
+    val ready = VecInit(sinks.zip(regs).map {
+      case (sink, reg) => {
+        sink.ready || reg
       }
+    }).reduceTree(_ && _)
+    source.ready := ready
 
-      source.ready := VecInit(sinks.zip(regs).map {
-        case (sink, reg) => {
-          sink.ready || reg
-        }
-      }).reduceTree(_ && _)
-
-      sinks.zip(regs).foreach {
-        case (sink, reg) => {
-          // the next value for the register
-          reg := (sink.ready || reg) && source.valid && !source.ready
-        }
+    sinks.zip(regs).foreach {
+      case (sink, reg) => {
+        sink.valid := source.valid && !reg
       }
     }
+
+    sinks.zip(regs).foreach {
+      case (sink, reg) => {
+        // the next value for the register
+        reg := (sink.ready || reg) && source.valid && !source.ready
+      }
+    }
+  }
+
+  def lazyFork[T <: Data](
+      source: Interface[T],
+      sinks: Seq[Interface[Data]]
+  ): Unit = {
+    sinks.foreach { //
+      case (sink) => sink.valid := source.valid && source.ready
+    }
+
+    val ready = VecInit(sinks.map { _.ready }).reduceTree(_ && _)
+    source.ready := ready
   }
 }

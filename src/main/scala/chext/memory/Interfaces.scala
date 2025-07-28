@@ -3,7 +3,7 @@ package chext.memory
 import chisel3._
 import chisel3.util._
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 // TODO: also support EN
 class RawInterface(

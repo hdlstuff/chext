@@ -3,7 +3,7 @@ package chext.amba.axi4s
 import chisel3._
 import chisel3.experimental.dataview.PartialDataView
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 class FullChannel(cfg: Config) extends Bundle {
   val data = Bits(cfg.wData.W)

@@ -10,11 +10,11 @@ import chext.memory
 import axi4.Ops._
 import elastic.ConnectOp._
 
-case class IdSerializeTestTop1(
+case class IdSerialize_Tbtop(
     val wId: Int,
     override val desiredName: String
 ) extends Module
-    with chext.HasHdlinfoModule {
+    with chext.TestBenchTop {
   val log2bytesTotal = 14
   val wData = 64
 
@@ -53,66 +53,12 @@ case class IdSerializeTestTop1(
   S_AXI_TEST :=> idSerialize.s_axi
   idSerialize.m_axi :=> axiBridge2.s_axi
 
-  def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
-
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
-
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI_NORMAL",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfg))
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI_TEST",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfg))
-      )
-    )
-
-    Module(
-      desiredName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map(
-        "wId" -> TypedObject(wId)
-      )
-    )
-  }
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(S_AXI_NORMAL)
+  declareAxi4Interface(S_AXI_TEST)
 }
 
-object IdSerialize_TB extends chext.TestBench {
-  emit(new IdSerializeTestTop1(4, "IdSerializeTestTop1_1"))
+object IdSerialize_Tb extends chext.TestBench {
+  emit(new IdSerialize_Tbtop(4, "IdSerialize_Tbtop_1"))
 }

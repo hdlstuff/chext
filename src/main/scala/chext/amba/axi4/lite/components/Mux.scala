@@ -2,7 +2,7 @@ package chext.amba.axi4.lite.components
 
 import chext.amba.axi4
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 import elastic.ConnectOp._
 
 import chisel3._
@@ -68,7 +68,7 @@ class Mux(val cfg: MuxConfig) extends Module {
     }
 
     def rLogic: Unit = {
-      chext.elastic.Demux(m_axil_.r, s_axil_.map { _.r }, portQueue.sink)
+      elastic.Demux(m_axil_.r, s_axil_.map { _.r }, portQueue.sink)
     }
 
     arLogic
@@ -107,11 +107,11 @@ class Mux(val cfg: MuxConfig) extends Module {
     }
 
     def wLogic: Unit = {
-      chext.elastic.Mux(s_axil_.map { _.w }, m_axil_.w, portQueueW.sink)
+      elastic.Mux(s_axil_.map { _.w }, m_axil_.w, portQueueW.sink)
     }
 
     def bLogic: Unit = {
-      chext.elastic.Demux(m_axil_.b, s_axil_.map { _.b }, portQueueB.sink)
+      elastic.Demux(m_axil_.b, s_axil_.map { _.b }, portQueueB.sink)
     }
 
     awLogic

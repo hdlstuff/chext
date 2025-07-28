@@ -1,11 +1,10 @@
 package chext.elastic
 
-import chext.elastic
 
 import chisel3._
 import chisel3.util._
 
-import elastic.ConnectOp._
+import ConnectOp._
 
 class Mux[T <: Data](
     val gen: T,
@@ -18,9 +17,9 @@ class Mux[T <: Data](
   val genSelect = UInt(chisel3.util.log2Up(n).W)
 
   val io = IO(new Bundle {
-    val sources = Vec(n, Source(Decoupled(gen)))
-    val sink = Sink(Decoupled(gen))
-    val select = Source(Irrevocable(genSelect))
+    val sources = Vec(n, Source(gen))
+    val sink = Sink(gen)
+    val select = Source(genSelect)
   })
 
   private val valid = io.select.valid && io.sources(io.select.bits).valid
@@ -42,9 +41,9 @@ class Mux[T <: Data](
 
 object Mux {
   def apply[T <: Data](
-      sources: Seq[ReadyValidIO[T]],
-      sink: ReadyValidIO[T],
-      select: ReadyValidIO[UInt],
+      sources: Seq[Interface[T]],
+      sink: Interface[T],
+      select: Interface[UInt],
       isLastFn: T => Bool = (_: T) => true.B
   ): Unit = {
     val mux = Module(

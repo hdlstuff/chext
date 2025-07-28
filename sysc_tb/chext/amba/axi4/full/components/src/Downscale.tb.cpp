@@ -1,5 +1,5 @@
-#include <DownscaleTestTop1_1.hpp>
-#include <DownscaleTestTop1_2.hpp>
+#include <Downscale_Tbtop_1.hpp>
+#include <Downscale_Tbtop_2.hpp>
 
 #include <verilated_vcd_sc.h>
 
@@ -31,8 +31,8 @@ struct DownscaleTestbench : virtual TestBenchBase, axi4::full::ReadWriteTester {
         dut2.reset(reset);
     }
 
-    DownscaleTestTop1_1 dut1;
-    DownscaleTestTop1_2 dut2;
+    Downscale_Tbtop_1 dut1;
+    Downscale_Tbtop_2 dut2;
 
 private:
     sc_clock clock;
@@ -86,7 +86,7 @@ int sc_main(int argc, char** argv) {
     std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
     testBench.dut1.traceVerilated(trace_file.get(), 99);
     testBench.dut2.traceVerilated(trace_file.get(), 99);
-    trace_file->open("DownscaleTestbench.vcd");
+    trace_file->open("Downscale.vcd");
 
     testBench.start();
 

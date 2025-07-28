@@ -4,51 +4,60 @@ import chisel3._
 import chisel3.util._
 
 import chext.amba.axi4
-/*
-abstract class InterconnectTestTop extends chext.Module {}
+import axi4.Ops._
 
-object Interconnect_TB extends chext.TestBench {
-  def emitDemux(numMasters: Int, name: String) = {
+import chext.util.VecCustomNamed
 
-    // modulo is only good for simulation
-    def decodeFn(x: UInt) = (x >> 12) % numMasters.U
+class Interconnect_Tbtop(
+    override val desiredName: String
+) extends Module
+    with chext.TestBenchTop {
+  val axiCfg = axi4.Config(wId = 2, wAddr = 32, wData = 32)
 
-    val demuxCfg = DemuxConfig(
-      axi4.Config(
-        wId = 4,
-        wAddr = 32,
-        wData = 32,
-        read = true,
-        write = true,
-        lite = false
-      ),
-      numMasters,
-      decodeFn,
-      desiredName = Some(name)
-    )
+  val S_AXI = IO(VecCustomNamed.zeroExtended(16, axi4.Slave(axiCfg)))
+  val M_AXI = IO(VecCustomNamed.zeroExtended(16, axi4.Master(axiCfg.copy(wId = 6))))
 
-    emit(new Demux(demuxCfg))
+  {
+    val demux_N = Seq.tabulate(16) {
+      case (n) => {
+        val demuxCfg = DemuxConfig(axiCfg, 16, _ >> 12)
+        Module(new Demux(demuxCfg))
+      }
+    }
+
+    val mux_N = Seq.tabulate(16) {
+      case (n) => {
+        val muxCfg = MuxConfig(axiCfg, 16)
+        Module(new Mux(muxCfg))
+      }
+    }
+
+    S_AXI
+      .map { _.asFull }
+      .zip(demux_N.map { _.s_axi })
+      .foreach { //
+        case (master, slave) => master :=> slave
+      }
+
+    mux_N
+      .map { _.m_axi }
+      .zip(M_AXI.map { _.asFull })
+      .foreach { //
+        case (master, slave) => master :=> slave
+      }
+
+    for (i <- (0 until 16))
+      for (j <- (0 until 16)) {
+        demux_N(i).m_axi(j) :=> mux_N(j).s_axi(i)
+      }
   }
 
-  def emitMux(numSlaves: Int, name: String) = {
-    val muxCfg =
-      MuxConfig(
-        axi4.Config(
-          wId = 4,
-          wAddr = 32,
-          wData = 32,
-          read = true,
-          write = true,
-          lite = false
-        ),
-        numSlaves,
-        desiredName = Some(name)
-      )
-
-    emit(new Mux(muxCfg))
-  }
-
-  emitDemux(4, "DemuxDut_1")
-  emitMux(4, "MuxDut_1")
+  declareClock(clock)
+  declareReset(reset)
+  S_AXI.foreach { declareAxi4Interface(_) }
+  M_AXI.foreach { declareAxi4Interface(_) }
 }
-*/
+
+object Interconnect_Tb extends chext.TestBench {
+  emit(new Interconnect_Tbtop("Interconnect_Tbtop_1"))
+}

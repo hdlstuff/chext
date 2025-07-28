@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import chext.amba.axi4
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 import elastic.ConnectOp._
 

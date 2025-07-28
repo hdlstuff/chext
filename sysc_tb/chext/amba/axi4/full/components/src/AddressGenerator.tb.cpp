@@ -1,13 +1,9 @@
-#define SC_ALLOW_DEPRECATED_IEEE_API
-
-#include <AddressGeneratorTestTop1_1.hpp>
+#include <AddressGenerator_Tbtop_1.hpp>
 #include <chext_test/chext_test.hpp>
 
 using namespace sc_core;
 using namespace sc_dt;
 using namespace chext_test;
-
-using namespace protocols;
 
 // TODO make these ones an enum later (and include in protocol?)
 // The same goes for other flags, too.
@@ -30,7 +26,10 @@ public:
     }
 
 private:
-    AddressGeneratorTestTop1_1 dut;
+    AddressGenerator_Tbtop_1 dut;
+
+    using AddrLenSizeBurst = AddressGenerator_Tbtop_1::Task_value;
+    using AddrSizeLast = AddressGenerator_Tbtop_1::Result_value;
 
     sc_clock clock;
     sc_signal<bool> reset;
@@ -78,29 +77,29 @@ private:
         std::vector<AddrLenSizeBurst> sourcePackets;
         std::vector<AddrSizeLast> sinkPackets;
 
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0x3000), .len = 0, .size = 4, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0x5024), .len = 1, .size = 4, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0x6008), .len = 3, .size = 4, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0x7000), .len = 7, .size = 4, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0x8000), .len = 15, .size = 4, .burst = 1 });
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0xa000), .len = 255, .size = 4, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0x3000, .len = 0, .size = 4, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0x5024, .len = 1, .size = 4, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0x6008, .len = 3, .size = 4, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0x7000, .len = 7, .size = 4, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0x8000, .len = 15, .size = 4, .burst = 1 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0xa000, .len = 255, .size = 4, .burst = 1 });
 
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0x3000), .size = 4, .last = true });
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0x5024), .size = 4, .last = false });
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0x5030), .size = 4, .last = true });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0x3000, .size = 4, .last = true });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0x5024, .size = 4, .last = false });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0x5030, .size = 4, .last = true });
 
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0x6008), .size = 4, .last = false });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0x6008, .size = 4, .last = false });
         for (int i = 0; i < 3; ++i)
-            sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0x6010 + i * 0x10), .size = 4, .last = i == 2 });
+            sinkPackets.push_back(AddrSizeLast { .addr = (0x6010u + i * 0x10), .size = 4, .last = i == 2 });
 
         for (int i = 0; i < 8; ++i)
-            sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0x7000 + i * 0x10), .size = 4, .last = i == 7 });
+            sinkPackets.push_back(AddrSizeLast { .addr = (0x7000u + i * 0x10), .size = 4, .last = i == 7 });
 
         for (int i = 0; i < 16; ++i)
-            sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0x8000 + i * 0x10), .size = 4, .last = i == 15 });
+            sinkPackets.push_back(AddrSizeLast { .addr = (0x8000u + i * 0x10), .size = 4, .last = i == 15 });
 
         for (int i = 0; i < 256; ++i)
-            sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0xa000 + i * 0x10), .size = 4, .last = i == 255 });
+            sinkPackets.push_back(AddrSizeLast { .addr = (0xa000u + i * 0x10), .size = 4, .last = i == 255 });
 
         runTest(sourcePackets, sinkPackets);
     }
@@ -111,12 +110,12 @@ private:
         std::vector<AddrLenSizeBurst> sourcePackets;
         std::vector<AddrSizeLast> sinkPackets;
 
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0xa010), .len = 3, .size = 4, .burst = 2 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0xa010, .len = 3, .size = 4, .burst = 2 });
 
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0xa010), .size = 4, .last = false });
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0xa020), .size = 4, .last = false });
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0xa030), .size = 4, .last = false });
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0xa000), .size = 4, .last = true });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0xa010, .size = 4, .last = false });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0xa020, .size = 4, .last = false });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0xa030, .size = 4, .last = false });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0xa000, .size = 4, .last = true });
 
         runTest(sourcePackets, sinkPackets);
     }
@@ -127,12 +126,12 @@ private:
         std::vector<AddrLenSizeBurst> sourcePackets;
         std::vector<AddrSizeLast> sinkPackets;
 
-        sourcePackets.push_back(AddrLenSizeBurst { .addr = sc_bv<32>(0xa010), .len = 3, .size = 4, .burst = 0 });
+        sourcePackets.push_back(AddrLenSizeBurst { .addr = 0xa010, .len = 3, .size = 4, .burst = 0 });
 
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0xa010), .size = 4, .last = false });
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0xa010), .size = 4, .last = false });
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0xa010), .size = 4, .last = false });
-        sinkPackets.push_back(AddrSizeLast { .addr = sc_bv<32>(0xa010), .size = 4, .last = true });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0xa010, .size = 4, .last = false });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0xa010, .size = 4, .last = false });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0xa010, .size = 4, .last = false });
+        sinkPackets.push_back(AddrSizeLast { .addr = 0xa010, .size = 4, .last = true });
 
         runTest(sourcePackets, sinkPackets);
     }

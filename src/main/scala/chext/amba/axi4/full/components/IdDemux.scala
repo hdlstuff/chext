@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental.prefix
 
 import chext.amba.axi4
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 import elastic.ConnectOp._
 import chext.util.BitOps._

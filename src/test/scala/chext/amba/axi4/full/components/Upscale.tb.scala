@@ -11,16 +11,12 @@ import chext.memory
 import axi4.Ops._
 import elastic.ConnectOp._
 
-import chiseltest._
-import axi4.full.test.PacketUtils._
-import axi4.full.test._
-
-case class UpscaleTestTop1(
+case class Upscale_Tbtop(
     val wDataNarrow: Int,
     val wDataWide: Int,
     override val desiredName: String
 ) extends Module
-    with chext.HasHdlinfoModule {
+    with chext.TestBenchTop {
   val log2bytesTotal = 14
 
   val rawMemCfg = memory.RawMemConfig(log2bytesTotal - log2Ceil(wDataWide / 8), wDataWide, 4, 4)
@@ -59,68 +55,13 @@ case class UpscaleTestTop1(
   S_AXI_TEST :=> upscale.s_axi
   upscale.m_axi :=> axiBridge2.s_axi
 
-  def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
-
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
-
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI_NORMAL",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfgWide))
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI_TEST",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfgNarrow))
-      )
-    )
-
-    Module(
-      desiredName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map(
-        "wDataWide" -> TypedObject(wDataWide),
-        "wDataNarrow" -> TypedObject(wDataNarrow)
-      )
-    )
-  }
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(S_AXI_NORMAL)
+  declareAxi4Interface(S_AXI_TEST)
 }
 
-object Upscale_TB extends chext.TestBench {
-  emit(new UpscaleTestTop1(32, 128, "UpscaleTestTop1_1"))
-  emit(new UpscaleTestTop1(64, 128, "UpscaleTestTop1_2"))
+object Upscale_Tb extends chext.TestBench {
+  emit(new Upscale_Tbtop(32, 128, "Upscale_Tbtop_1"))
+  emit(new Upscale_Tbtop(64, 128, "Upscale_Tbtop_2"))
 }

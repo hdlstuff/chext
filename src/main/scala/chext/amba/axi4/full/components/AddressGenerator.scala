@@ -1,7 +1,7 @@
 package chext.amba.axi4.full.components
 
 import chext.amba.axi4
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 import chisel3._
 import chisel3.util._
@@ -16,20 +16,34 @@ import axi4.BurstType
 import axi4.full.{AddressChannel, ReadAddressChannel, WriteAddressChannel}
 import elastic.{Source, Sink, SourceBuffer, SinkBuffer}
 
-class AddrLenSizeBurstBundle(val wAddr: Int) extends Bundle {
+class AddrLenSizeBurstBundle[T <: Data](
+    val wAddr: Int,
+    genUser: T = UInt(0.W)
+) extends Bundle {
   val addr = UInt(wAddr.W)
   val len = UInt(8.W)
   val size = UInt(3.W)
   val burst = UInt(2.W)
+
+  val user = genUser.cloneType
 }
 
-class AddrSizeLastBundle(val wAddr: Int) extends Bundle {
+class AddrSizeLastBundle[T <: Data](
+    val wAddr: Int,
+    genUser: T = UInt(0.W)
+) extends Bundle {
   val addr = UInt(wAddr.W)
   val size = UInt(3.W)
   val last = Bool()
+
+  val user = genUser.cloneType
 }
 
-class AddrSizeStrobeLastBundle(val wAddr: Int, val wData: Int) extends Bundle {
+class AddrSizeStrobeLastBundle[T <: Data](
+    val wAddr: Int,
+    val wData: Int,
+    genUser: T = UInt(0.W)
+) extends Bundle {
   assert(isPow2(wData) && wData >= 32)
 
   val wStrobe = wData / 8
@@ -41,100 +55,97 @@ class AddrSizeStrobeLastBundle(val wAddr: Int, val wData: Int) extends Bundle {
   val upperByteIndex = UInt(log2Ceil(wStrobe).W)
 
   val last = Bool()
+
+  val user = genUser.cloneType
 }
 
 /** @brief
   *   Decodes an address packet by calculating the addresses corresponding to each beat of the
   *   transaction.
   */
-class AddressGenerator(val wAddr: Int) extends Module {
-  val genSource = new AddrLenSizeBurstBundle(wAddr)
-  val genSink = new AddrSizeLastBundle(wAddr)
+class AddressGenerator[T <: Data](
+    val wAddr: Int,
+    val genUser: T = UInt(0.W)
+) extends Module {
+  val genSource = new AddrLenSizeBurstBundle(wAddr, genUser)
+  val genSink = new AddrSizeLastBundle(wAddr, genUser)
 
   val source = IO(Source(genSource))
   val sink = IO(Sink(genSink))
 
-  private val source_ = SourceBuffer(source)
-  private val sink_ = SinkBuffer(sink)
+  val transducer = new elastic.Transducer(source, sink) {
 
-  private val current = source_.bits
+    /** Current address to emit (INCR bursts). */
+    val addr = Reg(UInt(wAddr.W))
 
-  /** Current address to emit (INCR bursts). */
-  private val addr = Reg(UInt(wAddr.W))
+    /** Beat counter. */
+    val ctr = Reg(UInt(8.W))
 
-  /** Beat counter. */
-  private val ctr = Reg(UInt(8.W))
+    /** Flag for generating right now. */
+    val generating = RegInit(false.B)
 
-  /** Flag for generating right now. */
-  private val generating = RegInit(false.B)
+    packet {
+      val last = Wire(Bool())
 
-  source_.nodeq()
-  sink_.noenq()
+      out.size := in.size
+      out.last := last
+      out.user := in.user
 
-  when(source_.valid && sink_.ready) {
-    when(generating) {
-      val last = ctr === 0.U
+      when(generating) {
+        last := ctr === 0.U
 
-      when(last) {
-        generating := false.B
-        source_.deq()
-      }.otherwise {
-        ctr := ctr - 1.U
+        when(last) {
+          accept {
+            generating := false.B
+          }
+        }.otherwise {
+          produce {
+            ctr := ctr - 1.U
 
-        when(current.burst === BurstType.INCR) {
-          addr := addr + 1.U
-        }.elsewhen(current.burst === BurstType.WRAP) {
-          val mask1 = current.len + 0.U(wAddr.W)
-          val mask2 = ~mask1
-          addr := (addr & mask2) | (((addr + 1.U) & mask1))
+            when(in.burst === BurstType.INCR) {
+              addr := addr + 1.U
+            }.elsewhen(in.burst === BurstType.WRAP) {
+              val mask1 = in.len + 0.U(wAddr.W)
+              val mask2 = ~mask1
+              addr := (addr & mask2) | (((addr + 1.U) & mask1))
+            }
+          }
+
         }
-      }
 
-      when(current.burst === BurstType.FIXED) {
-        sink_.enq {
-          val result = Wire(genSink)
-          result.addr := current.addr
-          result.size := current.size
-          result.last := last
-
-          result
+        when(in.burst === BurstType.FIXED) {
+          out.addr := in.addr
+        }.otherwise {
+          out.addr := addr << in.size
         }
-      }.otherwise {
-        sink_.enq {
-          val result = Wire(genSink)
-          result.addr := addr << current.size
-          result.size := current.size
-          result.last := last
 
-          result
+      }.otherwise {
+        last := in.len === 0.U
+
+        out.addr := in.addr
+
+        when(last) {
+          accept {}
+        }.otherwise {
+          produce {
+            generating := true.B
+            addr := ((in.addr >> in.size) + 1.U)
+            ctr := in.len - 1.U
+          }
         }
-      }
-    }.otherwise {
-      val last = current.len === 0.U
 
-      when(last) {
-        source_.deq()
-      }.otherwise {
-        generating := true.B
-        addr := ((current.addr >> current.size) + 1.U)
-        ctr := current.len - 1.U
-      }
-
-      sink_.enq {
-        val result = Wire(genSink)
-        result.addr := current.addr
-        result.size := current.size
-        result.last := last
-
-        result
       }
     }
   }
 }
 
-class StrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
-  val genInput = new AddrSizeLastBundle(wAddr)
-  val genOutput = new AddrSizeStrobeLastBundle(wAddr, wData)
+class StrobeGenerator[T <: Data](
+    val wAddr: Int,
+    val wData: Int,
+    val genUser: T = UInt(0.W)
+) extends Module {
+  val genInput = new AddrSizeLastBundle(wAddr, genUser)
+  val genOutput = new AddrSizeStrobeLastBundle(wAddr, wData, genUser)
 
   val source = IO(Source(genInput))
   val sink = IO(Sink(genOutput))
@@ -155,6 +166,7 @@ class StrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
     out.addr := in.addr
     out.size := in.size
     out.last := in.last
+    out.user := in.user
 
     out.lowerByteIndex := lowerByteIndex
     out.upperByteIndex := upperByteIndex
@@ -168,9 +180,13 @@ class StrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
   }
 }
 
-class AddressStrobeGenerator(val wAddr: Int, val wData: Int) extends Module {
-  private val addressGenerator = Module(new AddressGenerator(wAddr))
-  private val strobeGenerator = Module(new StrobeGenerator(wAddr, wData))
+class AddressStrobeGenerator[T <: Data](
+    val wAddr: Int,
+    val wData: Int,
+    val genUser: T = UInt(0.W)
+) extends Module {
+  private val addressGenerator = Module(new AddressGenerator(wAddr, genUser))
+  private val strobeGenerator = Module(new StrobeGenerator(wAddr, wData, genUser))
 
   val genInput = addressGenerator.genSource
   val genOutput = strobeGenerator.genOutput

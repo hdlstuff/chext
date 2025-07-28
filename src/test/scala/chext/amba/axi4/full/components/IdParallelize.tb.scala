@@ -10,9 +10,10 @@ import chext.memory
 import axi4.Ops._
 import elastic.ConnectOp._
 
-class IdParallelizeTestTop1(override val desiredName: String)
-    extends Module
-    with chext.HasHdlinfoModule {
+class IdParallelize_Tbtop(
+    override val desiredName: String
+) extends Module
+    with chext.TestBenchTop {
   val log2bytesTotal = 14
   val wData = 128
 
@@ -51,72 +52,20 @@ class IdParallelizeTestTop1(override val desiredName: String)
   S_AXI_TEST :=> idParallelize.s_axi
   idParallelize.m_axi :=> axiBridge2.s_axi
 
-  override def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
-
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
-
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI_NORMAL",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfg))
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI_TEST",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfg))
-      )
-    )
-
-    Module(
-      desiredName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map()
-    )
-  }
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(S_AXI_NORMAL)
+  declareAxi4Interface(S_AXI_TEST)
 }
 
-class IdParallelizeTestTop2(
+class IdParallelize_Tbtop1(
     val wId: Int,
     val wBufferIdx: Int,
     val readUseSyncMem: Boolean,
     val writeUseSyncMem: Boolean,
     override val desiredName: String
 ) extends Module
-    with chext.HasHdlinfoModule {
+    with chext.TestBenchTop {
 
   private val cfg = IdParallelizeConfig(
     axi4.Config(wId = 0, wAddr = 32, wData = 64, wUserB = 32 /* for testing purposes */ ),
@@ -133,71 +82,20 @@ class IdParallelizeTestTop2(
   S_AXI.asFull :=> dut.s_axi
   dut.m_axi :=> M_AXI.asFull
 
-  override def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
-
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
-
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(cfg.axiSlaveCfg))
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "M_AXI",
-        InterfaceRole.master,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(cfg.axiMasterCfg))
-      )
-    )
-
-    Module(
-      desiredName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map()
-    )
-  }
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(S_AXI)
+  declareAxi4Interface(M_AXI)
 }
 
-object IdParallelize_TB extends chext.TestBench {
-  // emit(new IdParallelizeTestTop1("IdParallelizeTestTop1_1"))
-  emit(new IdParallelizeTestTop2(2, 5, false, false, "IdParallelizeTestTop2_1"))
-  emit(new IdParallelizeTestTop2(3, 5, false, false, "IdParallelizeTestTop2_2"))
-  emit(new IdParallelizeTestTop2(6, 8, false, false, "IdParallelizeTestTop2_3"))
+object IdParallelize_Tb extends chext.TestBench {
+  emit(new IdParallelize_Tbtop("IdParallelize_Tbtop_1"))
 
-  emit(new IdParallelizeTestTop2(2, 5, true, true, "IdParallelizeTestTop2_4"))
-  emit(new IdParallelizeTestTop2(3, 5, true, true, "IdParallelizeTestTop2_5"))
-  emit(new IdParallelizeTestTop2(6, 8, true, true, "IdParallelizeTestTop2_6"))
+  emit(new IdParallelize_Tbtop1(2, 5, false, false, "IdParallelize_Tbtop1_1"))
+  emit(new IdParallelize_Tbtop1(3, 5, false, false, "IdParallelize_Tbtop1_2"))
+  emit(new IdParallelize_Tbtop1(6, 8, false, false, "IdParallelize_Tbtop1_3"))
+
+  emit(new IdParallelize_Tbtop1(2, 5, true, true, "IdParallelize_Tbtop1_4"))
+  emit(new IdParallelize_Tbtop1(3, 5, true, true, "IdParallelize_Tbtop1_5"))
+  emit(new IdParallelize_Tbtop1(6, 8, true, true, "IdParallelize_Tbtop1_6"))
 }

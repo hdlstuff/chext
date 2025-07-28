@@ -10,7 +10,10 @@ import chext.memory
 import axi4.Ops._
 import elastic.ConnectOp._
 
-class UnburstTestTop1(override val desiredName: String) extends Module with chext.HasHdlinfoModule {
+class Unburst_Tbtop(
+    override val desiredName: String
+) extends Module
+    with chext.TestBenchTop {
   val log2bytesTotal = 14
   val wData = 128
 
@@ -49,64 +52,12 @@ class UnburstTestTop1(override val desiredName: String) extends Module with chex
   S_AXI_TEST :=> unburst.s_axi
   unburst.m_axi :=> axiBridge2.s_axi
 
-  override def hdlinfoModule: hdlinfo.Module = {
-    import hdlinfo._
-    import io.circe.generic.auto._
-    import scala.collection.mutable.ArrayBuffer
-
-    val ports = ArrayBuffer.empty[Port]
-    val interfaces = ArrayBuffer.empty[Interface]
-
-    ports.append(
-      Port(
-        "clock",
-        PortDirection.input,
-        PortKind.clock,
-        PortSensitivity.clockRising,
-        associatedReset = "reset"
-      )
-    )
-    ports.append(
-      Port(
-        "reset",
-        PortDirection.input,
-        PortKind.reset,
-        PortSensitivity.resetActiveHigh,
-        associatedClock = "clock"
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI_NORMAL",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfg))
-      )
-    )
-
-    interfaces.append(
-      Interface(
-        "S_AXI_TEST",
-        InterfaceRole.slave,
-        InterfaceKind("axi4"),
-        associatedClock = "clock",
-        associatedReset = "reset",
-        args = Map("config" -> TypedObject(axiCfg))
-      )
-    )
-
-    Module(
-      desiredName,
-      ports.toSeq,
-      interfaces.toSeq,
-      Map()
-    )
-  }
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(S_AXI_NORMAL)
+  declareAxi4Interface(S_AXI_TEST)
 }
 
-object Unburst_TB extends chext.TestBench {
-  emit(new UnburstTestTop1("UnburstTestTop1_1"))
+object Unburst_Tb extends chext.TestBench {
+  emit(new Unburst_Tbtop("Unburst_Tbtop_1"))
 }

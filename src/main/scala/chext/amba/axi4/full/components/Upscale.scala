@@ -5,7 +5,7 @@ import chisel3.util._
 import chisel3.experimental.prefix
 
 import chext.amba.axi4
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 import elastic.ConnectOp._
 import axi4.Ops._
@@ -51,6 +51,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
           out.len := in.len
           out.size := in.size
           out.burst := in.burst
+          out.user := 0.U
         }
 
         fork() :=> m_axi.ar
@@ -95,6 +96,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
           out.len := in.len
           out.size := in.size
           out.burst := in.burst
+          out.user := 0.U
         }
 
         fork() :=> m_axi.aw

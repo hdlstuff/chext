@@ -1,6 +1,7 @@
 package chext.amba.axi4.lite
 
-import chext.elastic.ConnectOp._
+import chext.elastic
+import elastic.ConnectOp._
 
 private object connect {
   def apply(master: Interface, slave: Interface): Unit = {

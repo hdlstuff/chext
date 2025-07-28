@@ -3,7 +3,7 @@ package chext.amba.axi4s
 import chisel3._
 import chisel3.experimental.dataview._
 
-import chext.{elastic2 => elastic}
+import chext.elastic
 
 case class Config(
     val wData: Int,
