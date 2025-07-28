@@ -1,9 +1,9 @@
-package chext.ip.memory.xilinx
+package chext.memory.altera
 
-import chext.ip.memory
+import chext.memory
 
 case object Target extends memory.Target {
-  val name = "Xilinx"
+  val name: String = "Altera"
 
   def createSinglePortRawROM(cfg: memory.RawMemConfig): memory.RawMem =
     ???
@@ -15,11 +15,11 @@ case object Target extends memory.Target {
     ???
 
   def createSinglePortRawRAM(cfg: memory.RawMemConfig): memory.RawMem =
-    new SinglePortRawMem(cfg)
+    ???
 
   def createSimpleDualPortRawRAM(cfg: memory.RawMemConfig): memory.RawMem =
-    new SimpleDualPortRawMem(cfg)
+    ???
 
   def createTrueDualPortRawRAM(cfg: memory.RawMemConfig): memory.RawMem =
-    new TrueDualPortRawMem(cfg)
+    ???
 }

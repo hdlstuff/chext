@@ -1,4 +1,4 @@
-package chext.ip.memory
+package chext.memory
 
 abstract class Target {
   def name: String

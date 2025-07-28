@@ -5,7 +5,7 @@ import chisel3.util._
 
 import chext.elastic
 import chext.amba.axi4
-import chext.ip.memory
+import chext.memory
 
 import elastic.ConnectOp._
 import axi4.Ops._

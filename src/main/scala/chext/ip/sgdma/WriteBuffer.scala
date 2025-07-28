@@ -5,7 +5,7 @@ import chisel3.util._
 
 import chext.amba.axi4
 import chext.elastic
-import chext.ip.memory
+import chext.memory
 
 case class WriteBufferConfig(
     val bufLengthW: Int = 64,

@@ -13,7 +13,7 @@ import chext.{elastic2 => elastic}
 import elastic.{Source, Sink, SinkBuffer}
 import elastic.ConnectOp._
 
-import chext.ip.memory
+import chext.memory
 
 case class IdParallelizeConfig(
     val axiSlaveCfg: axi4.Config = axi4.Config(wId = 0, wAddr = 12, wData = 64),

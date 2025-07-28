@@ -1,4 +1,4 @@
-package chext.ip.memory
+package chext.memory
 
 import chisel3._
 import chisel3.util._
@@ -55,7 +55,7 @@ class Axi4FullToReadWriteBridgeSpec2 extends chext.test.FreeSpec with chext.test
   // useVerilator()
   enableVcd()
 
-  "chext.ip.memory.Axi4FullToReadWriteBridge2.Basic1" in test(new Axi4FullTestModule2) { dut =>
+  "chext.memory.Axi4FullToReadWriteBridge2.Basic1" in test(new Axi4FullTestModule2) { dut =>
     {
       import axi4.full.test._
 

@@ -1,6 +1,6 @@
-package chext.ip.memory.xilinx
+package chext.memory.xilinx
 
-import chext.ip.memory
+import chext.memory
 
 import chisel3._
 import chisel3.util._

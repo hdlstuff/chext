@@ -41,7 +41,7 @@ class WriteStreamTop1(
   }
 
   private val (s_axi1, s_axi2) = {
-    import chext.ip.memory._
+    import chext.memory._
 
     val rawMemCfg = RawMemConfig(axiCfg.wAddr - (log2Ceil(axiCfg.wData) - 3), axiCfg.wData, 1, 1)
     val portCfg = PortConfig(4, 4, () => new BasicReadWriteArbiter(8))

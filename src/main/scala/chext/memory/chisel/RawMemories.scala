@@ -1,9 +1,9 @@
-package chext.ip.memory.chisel
+package chext.memory.chisel
 
 import chisel3._
 import chisel3.util._
 
-import chext.ip.memory
+import chext.memory
 
 private object unpack {
   def apply(in: UInt, elemWidth: Int): Vec[UInt] = {
