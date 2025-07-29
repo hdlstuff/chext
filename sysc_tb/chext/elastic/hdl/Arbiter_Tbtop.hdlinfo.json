@@ -1,0 +1,440 @@
+{
+  "name" : "Arbiter_Tbtop",
+  "ports" : [
+    {
+      "name" : "clock",
+      "direction" : "input",
+      "kind" : "clock",
+      "sensitivity" : "clockRising",
+      "isBus" : false,
+      "busRange" : [
+        0,
+        0
+      ],
+      "frequencyMHz" : 100.0,
+      "associatedClock" : "",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "reset",
+      "direction" : "input",
+      "kind" : "reset",
+      "sensitivity" : "resetActiveHigh",
+      "isBus" : false,
+      "busRange" : [
+        0,
+        0
+      ],
+      "frequencyMHz" : 100.0,
+      "associatedClock" : "clock",
+      "associatedReset" : "",
+      "args" : {
+        
+      }
+    }
+  ],
+  "interfaces" : [
+    {
+      "name" : "rr_sources_00",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_01",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_02",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_03",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_04",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_05",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_06",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_07",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_08",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_09",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_10",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_11",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_12",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_13",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_14",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sources_15",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_sink",
+      "role" : "sink",
+      "kind" : "readyValid[Out]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "rr_select",
+      "role" : "sink",
+      "kind" : "readyValid[Index]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_00",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_01",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_02",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_03",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_04",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_05",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_06",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_07",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_08",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_09",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_10",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_11",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_12",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_13",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_14",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sources_15",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_sink",
+      "role" : "sink",
+      "kind" : "readyValid[Out]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "priority_select",
+      "role" : "sink",
+      "kind" : "readyValid[Index]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    }
+  ],
+  "args" : {
+    "encodedDataList" : {
+      "typeName" : "chext.util.EncodedDataList",
+      "obj" : {
+        "seq" : [
+          {
+            "name" : "In",
+            "entries" : [
+              {
+                "path" : "",
+                "width" : 32,
+                "tpe" : "UInt<32>"
+              }
+            ]
+          },
+          {
+            "name" : "Out",
+            "entries" : [
+              {
+                "path" : "",
+                "width" : 32,
+                "tpe" : "UInt<32>"
+              }
+            ]
+          },
+          {
+            "name" : "Index",
+            "entries" : [
+              {
+                "path" : "",
+                "width" : 4,
+                "tpe" : "UInt<4>"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

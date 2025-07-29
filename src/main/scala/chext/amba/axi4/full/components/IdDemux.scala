@@ -23,7 +23,7 @@ case class IdDemuxConfig(
     val axiSlaveCfg: chext.amba.axi4.Config,
     val wIdSel: Int,
     val capacityPortQueueW: Int = 8,
-    val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr
+    val arbiterPolicy: elastic.Chooser = elastic.Chooser.rr
 ) {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
@@ -82,7 +82,7 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
       }
 
       // R channel supports burst interleaving, so no isLastFn
-      elastic.BasicArbiter(
+      elastic.Arbiter(
         r,
         s_axi_.r,
         arbiterPolicy
@@ -143,7 +143,7 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
         }
       }
 
-      elastic.BasicArbiter(
+      elastic.Arbiter(
         b,
         s_axi_.b,
         arbiterPolicy

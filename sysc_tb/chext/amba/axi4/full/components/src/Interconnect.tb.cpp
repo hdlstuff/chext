@@ -13,6 +13,15 @@ using namespace sc_dt;
 using namespace chext_test;
 using namespace chext_test::amba;
 
+// Some statistics:
+// With RR arbiter, took 15559433 ns
+// With Priority arbiter, took  9170045 ns
+
+static constexpr struct {
+    bool log = false;
+    bool trace = false;
+} settings;
+
 struct InterconnectTestbench : TestBenchBase {
     SC_HAS_PROCESS(InterconnectTestbench);
 
@@ -25,40 +34,11 @@ struct InterconnectTestbench : TestBenchBase {
         dut.clock(clock);
         dut.reset(reset);
 
-        // TODO automate later
-        slaves[0] = &dut.S_AXI_00;
-        slaves[1] = &dut.S_AXI_01;
-        slaves[2] = &dut.S_AXI_02;
-        slaves[3] = &dut.S_AXI_03;
-        slaves[4] = &dut.S_AXI_04;
-        slaves[5] = &dut.S_AXI_05;
-        slaves[6] = &dut.S_AXI_06;
-        slaves[7] = &dut.S_AXI_07;
-        slaves[8] = &dut.S_AXI_08;
-        slaves[9] = &dut.S_AXI_09;
-        slaves[10] = &dut.S_AXI_10;
-        slaves[11] = &dut.S_AXI_11;
-        slaves[12] = &dut.S_AXI_12;
-        slaves[13] = &dut.S_AXI_13;
-        slaves[14] = &dut.S_AXI_14;
-        slaves[15] = &dut.S_AXI_15;
+        for (uint32_t i = 0; i < M; ++i)
+            slaves[i] = (&dut.S_AXI_00) + i;
 
-        masters[0] = &dut.M_AXI_00;
-        masters[1] = &dut.M_AXI_01;
-        masters[2] = &dut.M_AXI_02;
-        masters[3] = &dut.M_AXI_03;
-        masters[4] = &dut.M_AXI_04;
-        masters[5] = &dut.M_AXI_05;
-        masters[6] = &dut.M_AXI_06;
-        masters[7] = &dut.M_AXI_07;
-        masters[8] = &dut.M_AXI_08;
-        masters[9] = &dut.M_AXI_09;
-        masters[10] = &dut.M_AXI_10;
-        masters[11] = &dut.M_AXI_11;
-        masters[12] = &dut.M_AXI_12;
-        masters[13] = &dut.M_AXI_13;
-        masters[14] = &dut.M_AXI_14;
-        masters[15] = &dut.M_AXI_15;
+        for (uint32_t i = 0; i < N; ++i)
+            masters[i] = (&dut.M_AXI_00) + i;
     }
 
     Interconnect_Tbtop_1 dut;
@@ -105,6 +85,16 @@ private:
         resetDUTs();
         createTasks();
 
+        if (!settings.log) {
+            SC_SPAWN {
+                while (true) {
+                    fmt::print("\r{:=^100}", fmt::format("  t = {}  ", sc_time_stamp().to_string()));
+                    std::cout.flush();
+                    wait(100, SC_US);
+                }
+            };
+        }
+
         sc_join j;
 
         for (int i = 0; i < M; ++i) {
@@ -131,32 +121,117 @@ private:
     }
 
     void createTasks() {
-        readTask(0, 1, 0x1000, 4, 0);
-        // writeTask(1, 2, 0x2000, 2, 1);
+        fmt::print("Creating tasks...");
+        for (uint32_t slaveIdx = 0; slaveIdx < M; ++slaveIdx) {
+            for (uint32_t masterIdx = 0; masterIdx < N; ++masterIdx) {
+                for (uint8_t id = 0; id < 4; ++id) {
+                    for (uint8_t idx = 0; idx < 25; ++idx) {
+                        readTask(
+                            slaveIdx,
+                            masterIdx,
+                            (masterIdx << 12) + (rand() & 0xFFF),
+                            rand() & 0xFF,
+                            id
+                        );
+
+                        writeTask(
+                            slaveIdx,
+                            masterIdx,
+                            (masterIdx << 12) + (rand() & 0xFFF),
+                            rand() & 0xFF,
+                            id
+                        );
+                    }
+                }
+            }
+        }
+
+        for (uint32_t slaveIdx = 0; slaveIdx < M; ++slaveIdx) {
+            for (uint8_t id = 0; id < 4; ++id) {
+                for (uint8_t idx = 0; idx < 25; ++idx) {
+                    for (uint32_t masterIdx = 0; masterIdx < N; ++masterIdx) {
+                        readTask(
+                            slaveIdx,
+                            masterIdx,
+                            (masterIdx << 12) + (rand() & 0xFFF),
+                            rand() & 0xFF,
+                            id
+                        );
+
+                        writeTask(
+                            slaveIdx,
+                            masterIdx,
+                            (masterIdx << 12) + (rand() & 0xFFF),
+                            rand() & 0xFF,
+                            id
+                        );
+                    }
+                }
+            }
+        }
+
+        for (uint8_t id = 0; id < 4; ++id) {
+            for (uint8_t idx = 0; idx < 25; ++idx) {
+                for (uint32_t masterIdx = 0; masterIdx < N; ++masterIdx) {
+                    for (uint32_t slaveIdx = 0; slaveIdx < M; ++slaveIdx) {
+                        readTask(
+                            slaveIdx,
+                            masterIdx,
+                            (masterIdx << 12) + (rand() & 0xFFF),
+                            rand() & 0xFF,
+                            id
+                        );
+
+                        writeTask(
+                            slaveIdx,
+                            masterIdx,
+                            (masterIdx << 12) + (rand() & 0xFFF),
+                            rand() & 0xFF,
+                            id
+                        );
+                    }
+                }
+            }
+        }
+
+        fmt::print("done.\n");
     }
 
     void waitRandom(int maxCycles) {
-        int delay = rand() % (maxCycles + 1); // [0, maxCycles]
+        int delay = rand() % (maxCycles + 1);
+
         for (int i = 0; i < delay; ++i) {
-            wait(SC_ZERO_TIME); // Use 1 cycle delay if needed, adjust granularity
+            wait(clock.negedge_event());
         }
     }
 
     template<typename T>
     void logMaster(uint16_t idx, const std::string& msg, const T& packet) {
+        if (!settings.log)
+            return;
+
         std::cout << fmt::format("[{:^6}] [Master {:02}] {}: {}\n", sc_time_stamp().to_string(), idx, msg, packet);
     }
 
     inline void logMaster(uint16_t idx, const std::string& msg) {
+        if (!settings.log)
+            return;
+
         std::cout << fmt::format("[{:^6}] [Master {:02}] {}\n", sc_time_stamp().to_string(), idx, msg);
     }
 
     template<typename T>
     void logSlave(uint16_t idx, const std::string& msg, const T& packet) {
+        if (!settings.log)
+            return;
+
         std::cout << fmt::format("[{:^6}] [Slave  {:02}] {}: {}\n", sc_time_stamp().to_string(), idx, msg, packet);
     }
 
     inline void logSlave(uint16_t idx, const std::string& msg) {
+        if (!settings.log)
+            return;
+
         std::cout << fmt::format("[{:^6}] [Slave  {:02}] {}\n", sc_time_stamp().to_string(), idx, msg);
     }
 
@@ -186,7 +261,7 @@ private:
 
         std::vector<Packets::WriteData> burst;
         for (int i = 0; i <= len; ++i)
-            burst.push_back({ sc_bv<32>(rand() & 0xffffffff), sc_bv<2>(0xf), i == len });
+            burst.push_back({ sc_bv<32>(rand() & 0xffffffff), sc_bv<4>(0xf), i == len });
 
         threadInfo.wTasks.push_back(burst);
         threadInfo.bTasks.push_back({ sc_bv<6>(threadIdx), 0 });
@@ -196,13 +271,13 @@ private:
         masterInfo.w += 1;
     }
 
-    void handleMaster(uint16_t masterIdx) {
+    void handleMaster(uint32_t masterIdx) {
         auto& master = *masters[masterIdx];
         auto& masterInfo = masterInfos[masterIdx];
 
         sc_join j;
 
-        sc_spawn([&] {
+        auto readProcess = sc_spawn([&] {
             while (masterInfo.ar > 0) {
                 logMaster(masterIdx, fmt::format("Remaining AR packets = {}", masterInfo.ar));
                 logMaster(masterIdx, "waiting for AR");
@@ -236,8 +311,9 @@ private:
                 masterInfo.ar -= 1;
             }
         });
+        j.add_process(readProcess);
 
-        sc_spawn([&] {
+        auto writeProcess = sc_spawn([&] {
             while (masterInfo.aw > 0 || masterInfo.w > 0) {
                 logMaster(masterIdx, fmt::format("Remaining AW = {}, W = {}", masterInfo.aw, masterInfo.w));
 
@@ -306,18 +382,19 @@ private:
                 master.sendB(b);
             }
         });
+        j.add_process(writeProcess);
 
         j.wait();
         logMaster(masterIdx, "Complete.");
     }
 
-    void handleSlave(uint16_t slaveIdx) {
+    void handleSlave(uint32_t slaveIdx) {
         auto& slave = *slaves[slaveIdx];
         auto& slaveInfo = slaveInfos[slaveIdx];
 
         sc_join j;
 
-        sc_spawn([&] {
+        auto arThread = sc_spawn([&] {
             bool done = false;
             while (!done) {
                 bool sentAny = false;
@@ -343,8 +420,9 @@ private:
                 waitRandom(4);
             }
         });
+        j.add_process(arThread);
 
-        sc_spawn([&] {
+        auto rThread = sc_spawn([&] {
             while (slaveInfo.r > 0) {
                 logSlave(slaveIdx, fmt::format("Remaining R = {}", slaveInfo.r));
                 logSlave(slaveIdx, "waiting for R");
@@ -362,8 +440,9 @@ private:
                 slaveInfo.r -= 1;
             }
         });
+        j.add_process(rThread);
 
-        sc_spawn([&] {
+        auto awThread = sc_spawn([&] {
             bool done = false;
             while (!done) {
                 bool sentAny = false;
@@ -376,8 +455,10 @@ private:
                         if (!threadInfo.awTasks.empty()) {
                             auto aw = threadInfo.awTasks.front();
                             threadInfo.awTasks.pop_front();
-                            new (&aw.id) sc_bv<6>(threadIdx);
-                            threadInfo.awExpected.push_back(aw);
+
+                            auto awExpected = aw;
+                            new (&awExpected.id) sc_bv<6>(threadIdx);
+                            threadInfo.awExpected.push_back(awExpected);
 
                             EXPECT_(!threadInfo.wTasks.empty());
                             auto w = threadInfo.wTasks.front();
@@ -406,8 +487,9 @@ private:
                 waitRandom(4);
             }
         });
+        j.add_process(awThread);
 
-        sc_spawn([&] {
+        auto bThread = sc_spawn([&] {
             while (slaveInfo.b > 0) {
                 logSlave(slaveIdx, fmt::format("Remaining B = {}", slaveInfo.b));
                 logSlave(slaveIdx, "waiting for B");
@@ -425,6 +507,7 @@ private:
                 slaveInfo.b -= 1;
             }
         });
+        j.add_process(bThread);
 
         j.wait();
         logSlave(slaveIdx, "Complete.");
@@ -433,19 +516,25 @@ private:
 
 int sc_main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
-    Verilated::traceEverOn(true);
+
+    if (settings.trace)
+        Verilated::traceEverOn(true);
 
     InterconnectTestbench testBench;
 
     sc_start(SC_ZERO_TIME);
 
-    std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
-    testBench.dut.traceVerilated(trace_file.get(), 99);
-    trace_file->open("Interconnect.vcd");
+    if (settings.trace) {
+        std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
+        testBench.dut.traceVerilated(trace_file.get(), 99);
+        trace_file->open("Interconnect.vcd");
 
-    testBench.start();
+        testBench.start();
 
-    trace_file->close();
+        trace_file->close();
+    } else {
+        testBench.start();
+    }
 
     return 0;
 }

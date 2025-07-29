@@ -1,58 +1,65 @@
 package chext.elastic
 
-
 import chisel3._
 import chisel3.util._
 import chisel3.experimental.AffectsChiselPrefix
 
-abstract class Chooser(val v: Vec[Bool]) extends AffectsChiselPrefix {
-  protected val wChoice = chisel3.util.log2Up(v.length)
-  protected val genChoice = UInt(wChoice.W)
-  protected val zeroChoice = 0.U(wChoice.W)
-
-  /** The chooser makes a choice based on `v`s and its current internal state.
-    *
-    * @return
-    */
-  def choice: UInt
-
-  /** Logic active when a selection is to be made.
-    */
-  def updateState: Unit
-}
-
-class RRChooser(v: Vec[Bool]) extends Chooser(v) {
-  private val lastChoice = RegInit(zeroChoice)
-  private val choiceMax = (-1).S(wChoice.W).asUInt
-
-  override def choice: UInt = {
-    Mux(v(rrChoice), rrChoice, priorityChoice)
-  }
-  override def updateState: Unit = (lastChoice := choice)
-
-  private val rrChoice =
-    Mux(
-      lastChoice === choiceMax,
-      zeroChoice,
-      PriorityEncoder(v.zipWithIndex.map { case (x, i) =>
-        i.U > lastChoice && x
-      })
-    )
-  private val priorityChoice = PriorityEncoder(v)
-
-}
-
-class PriorityChooser(v: Vec[Bool]) extends Chooser(v) {
-  def choice: UInt = {
-    PriorityEncoder(v)
-  }
-
-  def updateState: Unit = { /* stateless */ }
+abstract trait Chooser {
+  def apply(valid: Vec[Bool], ready: Bool): UInt
 }
 
 object Chooser {
-  type ChooserFn = (Vec[Bool]) => Chooser
+  object rr extends Chooser {
+    def apply(valid: Vec[Bool], ready: Bool): UInt = {
+      val wChoice = log2Ceil(valid.length)
 
-  def rr(v: Vec[Bool]) = new RRChooser(v)
-  def priority(v: Vec[Bool]) = new PriorityChooser(v)
+      val max = (-1).S(wChoice.W).asUInt
+      val last = RegInit(0.U(wChoice.W))
+
+      val priority0 = PriorityEncoder(valid)
+      val rr0 =
+        Mux(
+          last === max,
+          0.U(wChoice.W),
+          PriorityEncoder(valid.zipWithIndex.map { case (x, i) =>
+            i.U > last && x
+          })
+        )
+      val rr = Mux(valid(rr0), rr0, priority0)
+
+      val locked = RegInit(false.B)
+      val lockedChoice = RegInit(0.U(wChoice.W))
+
+      val thisChoice = Mux(locked, lockedChoice, rr)
+
+      val shouldLock = valid(thisChoice) && !ready
+      locked := shouldLock
+      lockedChoice := thisChoice
+
+      when(valid(thisChoice) && ready) {
+        last := thisChoice
+      }
+
+      thisChoice
+    }
+  }
+
+  object priority extends Chooser {
+    def apply(valid: Vec[Bool], ready: Bool): UInt = {
+      val wChoice = log2Ceil(valid.length)
+
+      val priority = PriorityEncoder(valid)
+
+      val locked = RegInit(false.B)
+      val lockedChoice = RegInit(0.U(wChoice.W))
+
+      val thisChoice = WireInit(Mux(locked, lockedChoice, priority))
+
+      val shouldLock = valid(thisChoice) && !ready
+      locked := shouldLock
+      lockedChoice := thisChoice
+
+      thisChoice
+    }
+  }
 }

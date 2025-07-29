@@ -1,20 +1,19 @@
 package chext.elastic
 
-
 import chisel3._
 import chisel3.util._
 
 import ConnectOp._
 
-class BasicArbiter[T <: Data](
+class Arbiter[T <: Data](
     val gen: T,
     val n: Int,
-    val chooserFn: Chooser.ChooserFn
+    val chooser: Chooser
 ) extends Module {
   require(n > 0)
   val genSelect = UInt(chisel3.util.log2Up(n).W)
 
-  override def desiredName: String = "elasticBasicArbiter"
+  override def desiredName: String = "elasticArbiter"
 
   val io = IO(new Bundle {
     val sources = Vec(n, Source(gen))
@@ -24,39 +23,39 @@ class BasicArbiter[T <: Data](
 
   private val sources = io.sources
 
-  // TODO do not use buffers, try to use eagerFork-like structure?
-  private val sink = SinkBuffer(io.sink)
-  private val select = SinkBuffer(io.select)
+  private val sink = io.sink
+  private val select = io.select
 
-  private val chooser = chooserFn(VecInit(sources.map { _.valid }))
-  private val choice = chooser.choice
+  private val regSink = RegInit(false.B)
+  private val regSelect = RegInit(false.B)
 
-  private val fire = sources(choice).valid && sink.ready && select.ready
+  private val ready = (sink.ready || regSink) && (select.ready || regSelect)
 
-  sink.valid := fire
-  select.valid := fire
+  private val choice = chooser(VecInit(sources.map { _.valid }), ready)
+
+  sources.zipWithIndex.foreach { case (x, i) =>
+    x.ready := ready && i.U === (choice)
+  }
+
+  sink.valid := sources(choice).valid && !regSink
+  select.valid := sources(choice).valid && !regSelect
+
+  regSink := (sink.ready || regSink) && sources(choice).valid && !ready
+  regSelect := (select.ready || regSelect) && sources(choice).valid && !ready
 
   sink.bits := sources(choice).bits
   select.bits := choice
-
-  sources.zipWithIndex.foreach { case (x, i) =>
-    x.ready := fire && i.U === (choice)
-  }
-
-  when(fire) {
-    chooser.updateState
-  }
 }
 
-object BasicArbiter {
+object Arbiter {
   def apply[T <: Data](
       sources: Seq[Interface[T]],
       sink: Interface[T],
-      chooserFn: Chooser.ChooserFn,
+      chooserFn: Chooser,
       select: Option[Interface[UInt]] = None
   ): Unit = {
     val arbiter = Module(
-      new BasicArbiter(
+      new Arbiter(
         chiselTypeOf(sources(0).bits),
         sources.length,
         chooserFn

@@ -3,6 +3,8 @@ package chext.amba.axi4.full.components
 import chisel3._
 import chisel3.util._
 
+import chext.elastic
+
 import chext.amba.axi4
 import axi4.Ops._
 
@@ -20,14 +22,14 @@ class Interconnect_Tbtop(
   {
     val demux_N = Seq.tabulate(16) {
       case (n) => {
-        val demuxCfg = DemuxConfig(axiCfg, 16, _ >> 12)
+        val demuxCfg = DemuxConfig(axiCfg, 16, _ >> 12, arbiterPolicy = elastic.Chooser.priority)
         Module(new Demux(demuxCfg))
       }
     }
 
     val mux_N = Seq.tabulate(16) {
       case (n) => {
-        val muxCfg = MuxConfig(axiCfg, 16)
+        val muxCfg = MuxConfig(axiCfg, 16, arbiterPolicy = elastic.Chooser.priority)
         Module(new Mux(muxCfg))
       }
     }

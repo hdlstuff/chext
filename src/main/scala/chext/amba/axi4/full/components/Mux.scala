@@ -17,7 +17,7 @@ case class MuxConfig(
     val numSlaves: Int = 4,
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
-    val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr
+    val arbiterPolicy: elastic.Chooser = elastic.Chooser.rr
 ) {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
@@ -54,7 +54,7 @@ class Mux(val cfg: MuxConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      elastic.BasicArbiter(s_axi_.map { _.ar }, m_axi_.ar, arbiterPolicy)
+      elastic.Arbiter(s_axi_.map { _.ar }, m_axi_.ar, arbiterPolicy)
     }
 
     def rLogic: Unit = {
@@ -78,7 +78,7 @@ class Mux(val cfg: MuxConfig) extends Module {
     val portQueue = elastic.Queue(genPort, 32, flow = true, pipe = true)
 
     def awLogic: Unit = {
-      elastic.BasicArbiter(
+      elastic.Arbiter(
         s_axi_.map { _.aw },
         m_axi_.aw,
         arbiterPolicy,

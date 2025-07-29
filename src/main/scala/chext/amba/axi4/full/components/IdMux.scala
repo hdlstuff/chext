@@ -15,7 +15,7 @@ import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
 case class IdMuxConfig(
     val axiSlaveCfg: axi4.Config,
     val wIdSel: Int,
-    val arbiterPolicy: elastic.Chooser.ChooserFn = elastic.Chooser.rr
+    val arbiterPolicy: elastic.Chooser = elastic.Chooser.rr
 ) {
   require(!axiSlaveCfg.lite)
   require(axiSlaveCfg.read || axiSlaveCfg.write)
@@ -48,7 +48,7 @@ class IdMux(val cfg: IdMuxConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      elastic.BasicArbiter(s_axi_.map { _.ar }, m_axi_.ar, arbiterPolicy)
+      elastic.Arbiter(s_axi_.map { _.ar }, m_axi_.ar, arbiterPolicy)
     }
 
     def rLogic: Unit = {
@@ -72,7 +72,7 @@ class IdMux(val cfg: IdMuxConfig) extends Module {
     val portQueue = elastic.Queue(genSelect, 32, flow = true, pipe = true)
 
     def awLogic: Unit = {
-      elastic.BasicArbiter(
+      elastic.Arbiter(
         s_axi_.map { _.aw },
         m_axi_.aw,
         arbiterPolicy,
