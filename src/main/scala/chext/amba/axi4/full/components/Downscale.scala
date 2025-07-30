@@ -169,6 +169,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
     def implW(): Unit = prefix("w") {
       offsetLastQueue.sink.nodeq()
+      offsetLastQueue.sink.markSource()
 
       val transducerRepeatData = new elastic.Transducer(s_axi.w, m_axi.w) {
         val bits = offsetLastQueue.sink.bits

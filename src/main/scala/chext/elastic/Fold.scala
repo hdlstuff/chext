@@ -48,9 +48,6 @@ abstract class Fold[Tin <: Data, Tout <: Data](
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
   chext.naming.checkPrefix("Fold", "fold")
-  source.markSource()
-  sourceInit.markSource()
-  sink.markSink()
 
   protected final val gen = chiselTypeOf(sink.bits)
 
@@ -176,17 +173,10 @@ abstract class Fold[Tin <: Data, Tout <: Data](
 
     prefix("stage0") {
       if (firstFn_.isEmpty) {
-        prefix("lastLogic") {
-          // TODO maybe replace with Transducer later?
-          val source = this.source
-          val sink = stage0
-
-          val in = source.bits
-          val out = sink.bits
+        val transducerFirstLogic = new Transducer(source, stage0) {
+          val state = RegInit(true.B)
 
           val last = lastFn_.get(in)
-
-          val state = RegInit(true.B)
 
           out.operand := operandFn_.get(in)
           out.first := state
@@ -195,32 +185,15 @@ abstract class Fold[Tin <: Data, Tout <: Data](
           if (zeroFn_.nonEmpty)
             out.zero.get := zeroFn_.get(in)
 
-          source.ready := false.B
-          sink.valid := false.B
-
-          when(source.valid) {
+          packet {
             when(state) {
               when(last) {
-                sink.valid := true.B
-
-                when(sink.ready) {
-                  source.ready := true.B
-                }
+                accept {}
               }.otherwise {
-                sink.valid := true.B
-
-                when(sink.ready) {
-                  source.ready := true.B
-                  state := false.B
-                }
+                accept { state := false.B }
               }
             }.otherwise {
-              sink.valid := true.B
-
-              when(sink.ready) {
-                source.ready := true.B
-                state := last
-              }
+              accept { state := last }
             }
           }
         }
@@ -248,7 +221,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
       // therefore, fork() buffers are used to avoid stalls
 
       val fork0 = new Fork(stage0) {
-        new Transform(
+        val transform0 = new Transform(
           SourceBuffer(fork(), flow = true),
           stage1_opB
         ) {
@@ -302,6 +275,8 @@ abstract class Fold[Tin <: Data, Tout <: Data](
           )
 
           disposed.deq()
+          disposed.markSource()
+
         }
       } else {
         val transform0 = new Transform(stage1_opB, sinkA) {

@@ -39,7 +39,10 @@ abstract class Connect[Tin <: Data, Tout <: Data](
 }
 
 object Connect {
-  def apply[T <: Data](source: Interface[T], sink: Interface[T]) = {
+  def apply[T <: Data](
+      source: Interface[T],
+      sink: Interface[T]
+  )(implicit sourceInfo: SourceInfo) = {
     source.markSource()
     sink.markSink()
 
@@ -51,7 +54,7 @@ object Connect {
 
 object ConnectOp {
   implicit class elastic_connect_op[T <: Data](source: Interface[T]) {
-    def :=>(sink: Interface[T]): Unit = {
+    def :=>(sink: Interface[T])(implicit sourceInfo: SourceInfo): Unit = {
       Connect(source, sink)
     }
   }

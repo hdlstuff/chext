@@ -45,8 +45,8 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
     val offsetQueue = elastic.Queue(UInt(wOffset.W), readOffsetQueueLength)
 
     def implAR(): Unit = prefix("ar") {
-      new elastic.Fork(s_axi.ar) {
-        new elastic.Transform(fork(), addressGenerator.source) {
+      val fork0 = new elastic.Fork(s_axi.ar) {
+        val transform0 = new elastic.Transform(fork(), addressGenerator.source) {
           out.addr := in.addr
           out.len := in.len
           out.size := in.size
@@ -57,7 +57,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
         fork() :=> m_axi.ar
       }
 
-      new elastic.Transform(addressGenerator.sink, offsetQueue.source) {
+      val transform0 = new elastic.Transform(addressGenerator.sink, offsetQueue.source) {
         out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
       }
     }
@@ -65,7 +65,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
     def implR(): Unit = prefix("r") {
       val steerRight = Module(new SteerRight(wDataMaster, wDataSlave))
 
-      new elastic.Join(s_axi.r) {
+      val join0 = new elastic.Join(s_axi.r) {
         val beat = join(m_axi.r)
         val offset = join(offsetQueue.sink)
 
@@ -90,8 +90,8 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
     val offsetQueue = elastic.Queue(UInt(wOffset.W), writeOffsetQueueLength)
 
     def implAW(): Unit = prefix("aw") {
-      new elastic.Fork(s_axi.aw) {
-        new elastic.Transform(fork(), addressGenerator.source) {
+      val fork0 = new elastic.Fork(s_axi.aw) {
+        val transform0 = new elastic.Transform(fork(), addressGenerator.source) {
           out.addr := in.addr
           out.len := in.len
           out.size := in.size
@@ -102,7 +102,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
         fork() :=> m_axi.aw
       }
 
-      new elastic.Transform(addressGenerator.sink, offsetQueue.source) {
+      val transform0 = new elastic.Transform(addressGenerator.sink, offsetQueue.source) {
         out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
       }
     }
@@ -111,7 +111,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
       val steerLeft = Module(new SteerLeft(wDataSlave, wDataMaster))
       val steerLeftStrobe = Module(new SteerLeft(wStrobeSlave, wStrobeMaster))
 
-      new elastic.Join(m_axi.w) {
+      val join0 = new elastic.Join(m_axi.w) {
         val beat = join(s_axi.w)
         val offset = join(offsetQueue.sink)
 

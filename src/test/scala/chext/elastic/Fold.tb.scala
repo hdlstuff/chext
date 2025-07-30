@@ -15,37 +15,40 @@ class Fold_Tbtop extends Module with chext.TestBenchTop {
     val result = SInt(32.W)
   }))
 
-  private val wire0 = Wire(Interface(SInt(64.W)))
+  {
+    val wire0 = Wire(Interface(SInt(64.W)))
 
-  private val fold0 = new Fold(
-    source,
-    elastic.Const(0.S),
-    wire0
-  ) {
-    operand { (in) => in.data }
-    zero { (in) => in.zero }
-    last { (in) => in.last }
+    val fold0 = new Fold(
+      source,
+      elastic.Const(0.S),
+      wire0
+    ) {
+      operand { (in) => in.data }
+      zero { (in) => in.zero }
+      last { (in) => in.last }
 
-    // new elastic.Join(elastic.SinkBuffer(sourceResult)) {
-    //   out := join(sinkOpA) + join(sinkOpB)
-    // }
+      // new elastic.Join(elastic.SinkBuffer(sourceResult)) {
+      //   out := join(sinkA) + join(sinkB)
+      // }
 
-    dontTouch(sinkA)
-    dontTouch(sinkB)
+      dontTouch(sinkA)
+      dontTouch(sinkB)
 
-    new elastic.Join((sourceResult)) {
-      out := join(sinkA) + join(sinkB)
+      val join0 = new elastic.Join((sourceResult)) {
+        out := join(sinkA) + join(sinkB)
+      }
+
+      val count = RegInit(0.U(32.W))
+
+      fire {
+        printf("reduction complete. count = %d\n", count)
+        count := count + 1.U
+      }
     }
 
-    val count = RegInit(0.U(32.W))
-    fire {
-      printf("reduction complete. count = %d\n", count)
-      count := count + 1.U
+    val transform0 = new Transform(wire0, sink) {
+      out.result := in
     }
-  }
-
-  private val transform0 = new Transform(wire0, sink) {
-    out.result := in
   }
 
   declareClock(clock)

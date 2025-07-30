@@ -47,7 +47,7 @@ private[elastic] object forkImpl {
   def eagerFork[T <: Data](
       source: Interface[T],
       sinks: Seq[Interface[Data]]
-  ): Unit = {
+  )(implicit si: SourceInfo): Unit = {
     source.markSource()
     sinks.foreach { _.markSink() }
 
@@ -78,7 +78,10 @@ private[elastic] object forkImpl {
   def lazyFork[T <: Data](
       source: Interface[T],
       sinks: Seq[Interface[Data]]
-  ): Unit = {
+  )(implicit si: SourceInfo): Unit = {
+    source.markSource()
+    sinks.foreach { _.markSink() }
+
     sinks.foreach { //
       case (sink) => sink.valid := source.valid && source.ready
     }

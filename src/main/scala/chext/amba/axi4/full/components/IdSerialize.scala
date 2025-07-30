@@ -40,7 +40,7 @@ class IdSerialize(val cfg: IdSerializeConfig) extends Module {
     val wire0 = elastic.EWire(genId)
 
     val fork0 = new elastic.Fork(s_axi.ar) {
-      new elastic.Repeat(
+      val repeat0 = new elastic.Repeat(
         elastic.SourceBuffer(fork(), numOutstandingRead, pipe = true, flow = true),
         wire0,
         9
@@ -61,14 +61,14 @@ class IdSerialize(val cfg: IdSerializeConfig) extends Module {
   private def implWrite(): Unit = prefix("write") {
     val wire0 = elastic.EWire(genId)
 
-    new elastic.Fork(s_axi.aw) {
+    val fork0 = new elastic.Fork(s_axi.aw) {
       fork { in.id } :=> wire0
       fork() :=> m_axi.aw
     }
 
     s_axi.w :=> m_axi.w
 
-    new elastic.Join(s_axi.b) {
+    val join0 = new elastic.Join(s_axi.b) {
       out := join(m_axi.b)
       out.id := join(wire0)
     }

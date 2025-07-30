@@ -35,7 +35,7 @@ object track {
 
       deferred.add(-1, Some(module.asInstanceOf[RawModule])) {
         val wires = ModuleInternals
-          .getPorts(module)
+          .getWires(module)
           .filter(_.isInstanceOf[Interface[_]])
           .map(_.asInstanceOf[Interface[Data]])
 
@@ -190,6 +190,8 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
       }
 
     }
+
+    // log("debug")
 
     // Check (1)
     if (DataMirror.isWire(this) || isParent) {

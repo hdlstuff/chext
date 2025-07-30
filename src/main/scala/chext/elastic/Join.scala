@@ -45,7 +45,7 @@ private[elastic] object joinImpl {
   def join[T <: Data](
       sources: Seq[Interface[Data]],
       sink: Interface[Data]
-  ): Unit = {
+  )(implicit si: SourceInfo): Unit = {
     sources.foreach { _.markSource() }
     sink.markSink()
 

@@ -108,7 +108,7 @@ package object naming {
   def checkPrefix(name: String, startsWith: String = "")(implicit si: SourceInfo): Unit =
     getModuleInfo().checkPrefix(name, startsWith)
 
-  def prefix[T](p: String)(f: => T): T =
+  def prefix[T](p: String)(f: => T)(implicit si: SourceInfo): T =
     getModuleInfo().prefix(p) { f }
 
   def checks(enabled: Boolean): Unit =

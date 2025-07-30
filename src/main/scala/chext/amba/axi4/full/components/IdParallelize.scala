@@ -72,6 +72,7 @@ private class SyncWriteElasticReadMemory[T <: Data](
 
     val rdQueue = elastic.Queue(gen, numOutstandingRead)
     rdQueue.source.noenq()
+    rdQueue.source.markSink()
 
     io.rdReq.ready := rdCounter.notFull
     rdQueue.sink :=> io.rdResp
@@ -113,6 +114,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
   def implRead(): Unit = prefix("read") {
     val s_ar = s_axi.ar
     val m_ar = SinkBuffer(m_axi.ar)
+    m_ar.markSink()
 
     val s_r = SinkBuffer(s_axi.r)
     val m_r = m_axi.r
@@ -201,6 +203,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
   def implWrite(): Unit = prefix("write") {
     val s_aw = s_axi.aw
     val m_aw = SinkBuffer(m_axi.aw)
+    m_aw.markSink()
 
     val s_b = SinkBuffer(s_axi.b)
     val m_b = m_axi.b

@@ -39,8 +39,6 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
   chext.naming.checkPrefix("Repeat", "repeat")
-  source.markSource()
-  sink.markSink()
 
   type LenFn = (Tin) => UInt
   type OutFn = (Tin, UInt, Bool, Bool) => Tout

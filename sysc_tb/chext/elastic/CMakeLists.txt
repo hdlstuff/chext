@@ -18,15 +18,15 @@
 #     HDL_MODULES ReduceTest1_Tbtop
 # )
 
-# generate_tb(
-#     TARGET_NAME Fold
-#     HDL_MODULES Fold_Tbtop
-# )
+generate_tb(
+    TARGET_NAME Fold
+    HDL_MODULES Fold_Tbtop
+)
 
-# generate_tb(
-#     TARGET_NAME Transducer
-#     HDL_MODULES Transducer_Tbtop
-# )
+generate_tb(
+    TARGET_NAME Transducer
+    HDL_MODULES Transducer_Tbtop
+)
 
 generate_tb(
     TARGET_NAME Arbiter
