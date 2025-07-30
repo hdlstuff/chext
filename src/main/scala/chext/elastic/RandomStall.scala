@@ -22,6 +22,10 @@ final class RandomStall[T <: Data](
     lfsrBits: Int = 4,
     threshold: Int = 8
 ) extends Fire(sink) {
+  chext.naming.checkPrefix("RandomStall", "randomStall")
+  source.markSource()
+  sink.markSink()
+
   require(lfsrBits >= 4, "there should be at least 4 bits for LFSR.")
   require(threshold >= 0 && threshold <= (1L << lfsrBits), "invalid threshold interval.")
 

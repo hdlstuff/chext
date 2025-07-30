@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chext.naming.prefix
 
 import chext.amba.axi4
 import chext.elastic

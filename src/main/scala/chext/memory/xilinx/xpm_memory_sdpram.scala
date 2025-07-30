@@ -4,7 +4,6 @@ import chext.memory
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.noPrefix
 
 case class xpm_memory_sdpram_config(
     val addrWidthA: Int = 6,

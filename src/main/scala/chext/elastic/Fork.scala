@@ -7,14 +7,14 @@ import chisel3.hacks._
 
 import scala.collection.mutable.ListBuffer
 
-import chext.util.Naming
+import chext.naming
 
 abstract class Fork[T <: Data](
     source: Interface[T],
     eager: Boolean = true
 )(implicit si: SourceInfo)
     extends AffectsChiselPrefix {
-  Naming.needsUniquePrefix("Fork")
+  chext.naming.checkPrefix("Fork", "fork")
 
   private val sinkList = ListBuffer.empty[Interface[Data]]
 
@@ -48,6 +48,9 @@ private[elastic] object forkImpl {
       source: Interface[T],
       sinks: Seq[Interface[Data]]
   ): Unit = {
+    source.markSource()
+    sinks.foreach { _.markSink() }
+
     // registers to remember if transmission already took place
     val regs = RegInit(VecInit(Seq.fill(sinks.length) { false.B }))
 

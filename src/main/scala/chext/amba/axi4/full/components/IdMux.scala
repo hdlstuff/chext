@@ -1,16 +1,16 @@
 package chext.amba.axi4.full.components
 
-import chext.amba.axi4
+import chisel3._
+import chisel3.util._
 
 import chext.elastic
 import elastic.ConnectOp._
 
-import chisel3._
-import chisel3.util._
-import chisel3.experimental._
-
+import chext.amba.axi4
 import axi4.Casts._
 import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
+
+import chext.naming.prefix
 
 case class IdMuxConfig(
     val axiSlaveCfg: axi4.Config,

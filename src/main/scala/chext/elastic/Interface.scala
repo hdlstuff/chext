@@ -75,7 +75,7 @@ object track {
   def apply(): Unit = {
     val currentModule = Module.currentModule.getOrElse(
       throw new ChiselException(
-        "chext.util.Naming: track must be called from a module!"
+        "chext.naming: track must be called from a module!"
       )
     )
 
@@ -104,7 +104,7 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
 
     assert(module_.nonEmpty)
     if (DataMirror.isIO(this) && currentModule == module_.get) {
-      if (DataMirror.specifiedDirectionOf(this) == SpecifiedDirection.Unspecified) {
+      if (DataMirror.directionOf(this.valid) == ActualDirection.Output) {
         val pos = si.makeMessage(x => x)
         println(
           f"chext.elastic.Interface.markSource : Interface '$this' is declared as a Sink, but marked as Source. $pos"
@@ -128,7 +128,7 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
 
     assert(module_.nonEmpty)
     if (DataMirror.isIO(this) && currentModule == module_.get) {
-      if (DataMirror.specifiedDirectionOf(this) == SpecifiedDirection.Flip) {
+      if (DataMirror.directionOf(this.valid) == ActualDirection.Input) {
         val pos = si.makeMessage(x => x)
         println(
           f"chext.elastic.Interface.markSink : Interface '$this' is declared as a Source, but marked as Sink. $pos"

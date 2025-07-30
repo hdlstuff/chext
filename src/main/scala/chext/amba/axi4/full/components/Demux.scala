@@ -9,13 +9,14 @@ import chext.bundles
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
 
 import axi4.Casts._
 import axi4.BufferConfig
 import axi4.full.{SlaveBuffer, MasterBuffer, ReadDataChannel, WriteDataChannel}
 
 import bundles._
+
+import chext.naming.prefix
 
 case class DemuxConfig(
     val axiSlaveCfg: chext.amba.axi4.Config,
@@ -80,7 +81,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
       val genArPort = new Bundle2(s_axi_.ar.bits.cloneType, genPort)
       val arPort = Wire(elastic.Interface(genArPort))
 
-      new elastic.Stall(s_axi_.ar, arPort) {
+      val stall0 = new elastic.Stall(s_axi_.ar, arPort) {
         val id = in.id
         val addr = in.addr
         val port = decodeFn(addr)
@@ -95,7 +96,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
       val demuxInput = Wire(elastic.Interface(s_axi_.ar.bits.cloneType))
       val demuxSelect = Wire(elastic.Interface(genPort))
 
-      new elastic.Fork(arPort) {
+      val fork0 = new elastic.Fork(arPort) {
         fork(in._1) :=> demuxInput
         fork(in._2) :=> demuxSelect
       }
@@ -148,7 +149,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
       val genAwPort = new Bundle2(s_axi_.aw.bits.cloneType, genPort)
       val awPort = Wire(elastic.Interface(genAwPort))
 
-      new elastic.Stall(s_axi_.aw, awPort) {
+      val stall0 = new elastic.Stall(s_axi_.aw, awPort) {
         val id = in.id
         val addr = in.addr
         val port = decodeFn(addr)
@@ -163,7 +164,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
       val demuxInput = Wire(elastic.Interface(s_axi_.aw.bits.cloneType))
       val demuxSelect = Wire(elastic.Interface(genPort))
 
-      new elastic.Fork(awPort) {
+      val fork0 = new elastic.Fork(awPort) {
         fork(in._1) :=> demuxInput
         fork(in._2) :=> demuxSelect
         fork(in._2) :=> portQueue.source

@@ -25,6 +25,10 @@ abstract class Drop[Tin <: Data, Tout <: Data](
     sink: Interface[Tout]
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
+  chext.naming.checkPrefix("Drop", "drop")
+  source.markSource()
+  sink.markSink()
+
   protected final val in = source.bits
   protected final val out = sink.bits
 

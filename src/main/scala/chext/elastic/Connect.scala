@@ -25,6 +25,10 @@ abstract class Connect[Tin <: Data, Tout <: Data](
     sink: Interface[Tout]
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
+  chext.naming.checkPrefix("Connect", "connect")
+  source.markSource()
+  sink.markSink()
+
   protected final val in = source.bits
   protected final val out = sink.bits
 
@@ -36,6 +40,9 @@ abstract class Connect[Tin <: Data, Tout <: Data](
 
 object Connect {
   def apply[T <: Data](source: Interface[T], sink: Interface[T]) = {
+    source.markSource()
+    sink.markSink()
+
     source.ready := sink.ready
     sink.valid := source.valid
     sink.bits := source.bits

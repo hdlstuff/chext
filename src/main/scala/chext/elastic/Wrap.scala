@@ -10,6 +10,8 @@ import chext.util.Counter
 
 abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interface[T2])
     extends Fire[T2](sink) {
+  source.markSource()
+  sink.markSink()
 
   protected val in = Wire(chiselTypeOf(source.bits))
   protected val out = Wire(chiselTypeOf(sink.bits))

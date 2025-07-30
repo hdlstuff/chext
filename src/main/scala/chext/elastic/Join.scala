@@ -7,13 +7,11 @@ import chisel3.hacks.deferred
 
 import scala.collection.mutable.ListBuffer
 
-import chext.util.Naming
-
 abstract class Join[T <: Data](
     val sink: Interface[T]
 )(implicit si: SourceInfo)
     extends AffectsChiselPrefix {
-  Naming.needsUniquePrefix("Join")
+  chext.naming.checkPrefix("Join", "join")
 
   private val sourceList = ListBuffer.empty[Interface[Data]]
 
@@ -48,6 +46,9 @@ private[elastic] object joinImpl {
       sources: Seq[Interface[Data]],
       sink: Interface[Data]
   ): Unit = {
+    sources.foreach { _.markSource() }
+    sink.markSink()
+
     val allValid =
       VecInit(sources.map { _.valid }).reduceTree(_ && _)
     val fire = sink.ready && allValid

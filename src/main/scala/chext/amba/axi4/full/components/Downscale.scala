@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chext.naming.prefix
 
 import chext.amba.axi4
 import chext.elastic
@@ -58,7 +58,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
     def implAR(): Unit = prefix("ar") {
       val arTransformed = Wire(chiselTypeOf(m_axi.ar))
 
-      new elastic.Transform(s_axi.ar, arTransformed) {
+      val transform0 = new elastic.Transform(s_axi.ar, arTransformed) {
         out := in
 
         out.burst := axi4.BurstType.INCR
@@ -72,8 +72,8 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         }
       }
 
-      new elastic.Fork(arTransformed) {
-        new elastic.Transform(fork(), addressGenerator.source) {
+      val fork0 = new elastic.Fork(arTransformed) {
+        val transform0 = new elastic.Transform(fork(), addressGenerator.source) {
           out.addr := in.addr
           out.len := in.len
           out.size := in.size
@@ -84,7 +84,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         fork() :=> m_axi.ar
       }
 
-      new elastic.Transform(addressGenerator.sink, offsetLastQueue.source) {
+      val transform1 = new elastic.Transform(addressGenerator.sink, offsetLastQueue.source) {
         out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
         out._2 := in.last
       }
@@ -93,7 +93,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
     def implR(): Unit = prefix("r") {
       val zipped = elastic.Zip(m_axi.r, offsetLastQueue.sink)
 
-      val reduceResp = new elastic.Transducer(zipped, s_axi.r) {
+      val transducerReduceResp = new elastic.Transducer(zipped, s_axi.r) {
         val dataReg = RegInit(0.U(axiSlaveCfg.wData.W))
         val respReg = RegInit(0.U(2.W))
 
@@ -135,7 +135,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
     def implAW(): Unit = prefix("aw") {
       val awTransformed = Wire(chiselTypeOf(m_axi.aw))
 
-      new elastic.Transform(s_axi.aw, awTransformed) {
+      val transform0 = new elastic.Transform(s_axi.aw, awTransformed) {
         out := in
 
         out.burst := axi4.BurstType.INCR
@@ -149,8 +149,8 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         }
       }
 
-      new elastic.Fork(awTransformed) {
-        new elastic.Transform(fork(), addressGenerator.source) {
+      val fork0 = new elastic.Fork(awTransformed) {
+        val transform0 = new elastic.Transform(fork(), addressGenerator.source) {
           out.addr := in.addr
           out.len := in.len
           out.size := in.size
@@ -161,7 +161,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         fork() :=> m_axi.aw
       }
 
-      new elastic.Transform(addressGenerator.sink, offsetLastQueue.source) {
+      val transform1 = new elastic.Transform(addressGenerator.sink, offsetLastQueue.source) {
         out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
         out._2 := in.last
       }
@@ -169,7 +169,8 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
     def implW(): Unit = prefix("w") {
       offsetLastQueue.sink.nodeq()
-      val repeatData = new elastic.Transducer(s_axi.w, m_axi.w) {
+
+      val transducerRepeatData = new elastic.Transducer(s_axi.w, m_axi.w) {
         val bits = offsetLastQueue.sink.bits
         val valid = offsetLastQueue.sink.valid
 

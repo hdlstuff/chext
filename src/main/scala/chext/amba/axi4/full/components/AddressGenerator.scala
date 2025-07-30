@@ -1,20 +1,19 @@
 package chext.amba.axi4.full.components
 
-import chext.amba.axi4
-import chext.elastic
-
 import chisel3._
 import chisel3.util._
-import chisel3.experimental._
 import chisel3.experimental.BundleLiterals._
 
+import chext.elastic
+import elastic.{Source, Sink, SourceBuffer, SinkBuffer}
 import elastic.ConnectOp._
 
-import axi4.Casts._
-
+import chext.amba.axi4
 import axi4.BurstType
 import axi4.full.{AddressChannel, ReadAddressChannel, WriteAddressChannel}
-import elastic.{Source, Sink, SourceBuffer, SinkBuffer}
+import axi4.Casts._
+
+import chext.naming.prefix
 
 class AddrLenSizeBurstBundle[T <: Data](
     val wAddr: Int,
@@ -153,7 +152,7 @@ class StrobeGenerator[T <: Data](
   private val wStrobe = genOutput.wStrobe
   private val log2strobe = log2Ceil(wStrobe)
 
-  new elastic.Transform(source, sink) {
+  val transform0 = new elastic.Transform(source, sink) {
     val addr = in.addr(log2strobe - 1, 0)
 
     // we should preserve the lower bits for unaligned transactions

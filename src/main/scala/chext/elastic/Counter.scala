@@ -11,6 +11,8 @@ class Counter(val maxValueExclusive: Int, val start: Int = 0) extends Module {
   val sink = IO(Sink(UInt(width.W)))
   private val counter = RegInit(start.U(width.W))
 
+  sink.markSink()
+
   sink.enq(counter)
 
   when(sink.fire) {

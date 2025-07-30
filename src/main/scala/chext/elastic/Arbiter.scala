@@ -21,6 +21,10 @@ class Arbiter[T <: Data](
     val select = Sink(genSelect)
   })
 
+  io.sources.foreach { _.markSource() }
+  io.sink.markSink()
+  io.select.markSink()
+
   private val sources = io.sources
 
   private val sink = io.sink

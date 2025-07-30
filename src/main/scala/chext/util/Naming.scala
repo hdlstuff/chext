@@ -1,4 +1,4 @@
-package chext.util
+package chext
 
 import chisel3._
 import chisel3.util._
@@ -9,41 +9,78 @@ import chisel3.hacks._
 
 import scala.collection.mutable.HashMap
 
-object Naming {
+package object naming {
   private class ModuleInfo(val module: BaseModule) {
-    private var usedPrefixes = HashMap.empty[String, (String, SourceInfo)]
+    private var usedPrefixes_ = HashMap.empty[String, (String, SourceInfo)]
+    private var checks_ = true
 
-    def needsUniquePrefix(name: String)(implicit si: SourceInfo): Unit = {
+    def checkPrefix(name: String, startsWith: String)(implicit si: SourceInfo): Unit = {
+      if (!checks_)
+        return
+
       val currentPrefix = PrefixManager.currentStr
 
       if (currentPrefix.isEmpty) {
         val pos0 = si.makeMessage(x => x)
 
         println(
-        // format: off
-        f"chext.util.Naming: Warning: '$name' needs a unique prefix to avoid confusion. Current prefix is empty.\n" +
-        f"                   Module '${module.name}'\n" +
-        f"                   Attempt to create '$name' $pos0"
-        // format: on
+          // format: off
+          f"chext.naming: Warning: '$name' needs a unique prefix to avoid confusion. Current prefix is empty.\n" +
+          f"              Module '${module.name}'\n" +
+          f"              Attempt to create '$name' $pos0"
+          // format: on
         )
-      } else if (usedPrefixes.contains(currentPrefix)) {
-        val old = usedPrefixes(currentPrefix)
+      } else if (usedPrefixes_.contains(currentPrefix)) {
+        val old = usedPrefixes_(currentPrefix)
 
         val pos0 = si.makeMessage(x => x)
         val pos1 = old._2.makeMessage(x => x)
 
         println(
-        // format: off
-        f"chext.util.Naming: Warning: '$name' needs a unique prefix to avoid confusion. Current prefix '$currentPrefix' is used already by '${old._1}'.\n" +
-        f"                   Module '${module.name}', prefix '$currentPrefix'\n" +
-        f"                   Used already by '${old._1}' $pos1\n" +
-        f"                   Attempt to create '$name' $pos0"
-        // format: on
+          // format: off
+          f"chext.naming: Warning: '$name' needs a unique prefix to avoid confusion. Current prefix '$currentPrefix' is used already by '${old._1}'.\n" +
+          f"              Module '${module.name}', prefix '$currentPrefix'\n" +
+          f"              Used already by '${old._1}' $pos1\n" +
+          f"              Attempt to create '$name' $pos0"
+          // format: on
         )
       } else {
-        usedPrefixes.addOne(currentPrefix -> (name, si))
+        if (startsWith.nonEmpty) {
+          val pos0 = si.makeMessage(x => x)
+
+          if (!PrefixManager.current.head.startsWith(startsWith))
+            println(
+              // format: off
+              f"chext.naming: Warning: '$name' needs a unique prefix starting with '$startsWith', but the current prefix is '$currentPrefix'.\n" +
+              f"              Module '${module.name}', prefix '$currentPrefix'\n" +
+              f"              Attempt to create '$name' $pos0"
+              // format: on
+            )
+        }
+
+        usedPrefixes_.addOne(currentPrefix -> (name, si))
       }
     }
+
+    def prefix[T](p: String)(f: => T)(implicit si: SourceInfo): T = {
+      PrefixManager.withRelative(p) {
+        usedPrefixes_.addOne(PrefixManager.currentStr -> ("naming.prefix", si))
+        f
+      }
+    }
+
+    def checks(enabled: Boolean): Unit = {
+      checks_ = enabled
+    }
+
+    def unchecked[T](f: => T): T = {
+      checks(false)
+      val t = f
+      checks(true)
+
+      t
+    }
+
   }
 
   private val moduleInfos = HashMap.empty[BaseModule, ModuleInfo]
@@ -51,7 +88,7 @@ object Naming {
   private def getModuleInfo(): ModuleInfo = {
     val currentModule = Module.currentModule.getOrElse(
       throw new ChiselException(
-        "chext.util.Naming: needsUniquePrefix must be called from a module!"
+        "chext.naming: needsUniquePrefix must be called from a module!"
       )
     )
     moduleInfos.getOrElseUpdate(
@@ -65,10 +102,20 @@ object Naming {
         moduleInfo
       }
     )
+
   }
 
-  def needsUniquePrefix(name: String)(implicit si: SourceInfo): Unit =
-    getModuleInfo().needsUniquePrefix(name)
+  def checkPrefix(name: String, startsWith: String = "")(implicit si: SourceInfo): Unit =
+    getModuleInfo().checkPrefix(name, startsWith)
+
+  def prefix[T](p: String)(f: => T): T =
+    getModuleInfo().prefix(p) { f }
+
+  def checks(enabled: Boolean): Unit =
+    getModuleInfo().checks(enabled)
+
+  def unchecked[T](f: => T): T =
+    getModuleInfo().unchecked { f }
 
 }
 

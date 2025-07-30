@@ -1,11 +1,13 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.{AffectsChiselPrefix, SourceInfo, prefix}
+import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
 import chisel3.hacks.deferred
 
 // To avoid confusion with chisel Mux
 import chext.elastic.{Mux => EMux}
+
+import chext.naming.prefix
 
 import ConnectOp._
 
@@ -45,6 +47,11 @@ abstract class Fold[Tin <: Data, Tout <: Data](
     sink: Interface[Tout]
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
+  chext.naming.checkPrefix("Fold", "fold")
+  source.markSource()
+  sourceInit.markSource()
+  sink.markSink()
+
   protected final val gen = chiselTypeOf(sink.bits)
 
   protected final val sinkA = Wire(Interface(gen)) // newest input

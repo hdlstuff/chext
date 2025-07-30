@@ -22,6 +22,10 @@ class Mux[T <: Data](
     val select = Source(genSelect)
   })
 
+  io.sources.foreach { _.markSource() }
+  io.sink.markSink()
+  io.select.markSource()
+
   private val valid = io.select.valid && io.sources(io.select.bits).valid
   private val fire = valid && io.sink.ready
   private val isLast = isLastFn(io.sink.bits)

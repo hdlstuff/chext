@@ -12,8 +12,6 @@ import chisel3.util.log2Ceil
 
 import ConnectOp._
 
-import chext.util.Naming
-
 private object memory_impl {
   trait Memory {
     val count: Int
@@ -250,14 +248,17 @@ class Queue[T <: Data](
     val useSyncReadMem: Boolean = false
 )(implicit si: SourceInfo)
     extends AffectsChiselPrefix {
-  Naming.needsUniquePrefix("Queue")
+  chext.naming.checkPrefix("Queue")
 
   require(count > -1, "Queue must have non-negative count.")
   require(count != 0, "Use companion object Queue.apply for empty queue.")
   requireIsChiselType(gen)
 
-  val source = Wire(Source(gen))
-  val sink = Wire(Sink(gen))
+  val source = EWire(gen)
+  val sink = EWire(gen)
+
+  source.markSource()
+  sink.markSink()
 
   {
     dontTouch(source)

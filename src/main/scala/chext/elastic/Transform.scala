@@ -8,6 +8,7 @@ abstract class Transform[Tin <: Data, Tout <: Data](
     sink: Interface[Tout]
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
+  chext.naming.checkPrefix("Transform", "transform")
   source.markSource()
   sink.markSink()
 

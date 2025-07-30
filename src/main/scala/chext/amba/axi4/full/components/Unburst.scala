@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chext.naming.prefix
 
 import chext.amba.axi4
 import chext.elastic
@@ -44,7 +44,7 @@ class Unburst(val cfg: UnburstConfig) extends Module {
 
     def implAR(): Unit = prefix("ar") {
       val fork0 = new elastic.Fork(s_axi.ar) {
-        new elastic.Transform(fork(), addressStrobeGenerator.source) {
+        val transform0 = new elastic.Transform(fork(), addressStrobeGenerator.source) {
           out.addr := in.addr
           out.len := in.len
           out.size := in.size
@@ -56,7 +56,7 @@ class Unburst(val cfg: UnburstConfig) extends Module {
         fork(in.len) :=> elastic.SinkBuffer(wire0, numOutstandingRead)
       }
 
-      new elastic.Transform(addressStrobeGenerator.sink, m_axi.ar) {
+      val transform1 = new elastic.Transform(addressStrobeGenerator.sink, m_axi.ar) {
         out := in.user
 
         out.addr := in.addr
@@ -97,7 +97,7 @@ class Unburst(val cfg: UnburstConfig) extends Module {
 
     def implAW(): Unit = {
       val fork0 = new elastic.Fork(s_axi.aw) {
-        new elastic.Transform(fork(), addressStrobeGenerator.source) {
+        val transform0 = new elastic.Transform(fork(), addressStrobeGenerator.source) {
           out.addr := in.addr
           out.len := in.len
           out.size := in.size
@@ -108,7 +108,7 @@ class Unburst(val cfg: UnburstConfig) extends Module {
         fork(in.len) :=> wire0
       }
 
-      new elastic.Transform(addressStrobeGenerator.sink, m_axi.aw) {
+      val transform0 = new elastic.Transform(addressStrobeGenerator.sink, m_axi.aw) {
         out := in.user
 
         out.addr := in.addr
@@ -119,7 +119,7 @@ class Unburst(val cfg: UnburstConfig) extends Module {
     }
 
     def implW(): Unit = {
-      new elastic.Transform(s_axi.w, m_axi.w) {
+      val transform1 = new elastic.Transform(s_axi.w, m_axi.w) {
         out := in
         out.last := true.B
       }
@@ -135,7 +135,7 @@ class Unburst(val cfg: UnburstConfig) extends Module {
 
       val joined = elastic.Zip(m_axi.b, lastRepeated)
 
-      val reduceResp = new elastic.Transducer(joined, s_axi.b) {
+      val transducerReduceResp = new elastic.Transducer(joined, s_axi.b) {
         val respReg = RegInit(0.U(2.W))
 
         out := in._1

@@ -15,8 +15,8 @@ object buffer {
       slave: Interface,
       cfg: BufferConfig
   ): Unit = {
-    SourceBuffer(master.ar, cfg.ar) :=> slave.ar
-    slave.r :=> SinkBuffer(master.r, cfg.r)
+    SourceBuffer(master.ar, cfg.ar, name = "arBuffer") :=> slave.ar
+    slave.r :=> SinkBuffer(master.r, cfg.r, name = "rBuffer")
   }
 
   private[lite] def insertBufferW(
@@ -24,9 +24,9 @@ object buffer {
       slave: Interface,
       cfg: BufferConfig
   ): Unit = {
-    SourceBuffer(master.aw, cfg.aw) :=> slave.aw
-    SourceBuffer(master.w, cfg.w) :=> slave.w
-    slave.b :=> SinkBuffer(master.b, cfg.b)
+    SourceBuffer(master.aw, cfg.aw, name = "awBuffer") :=> slave.aw
+    SourceBuffer(master.w, cfg.w, name = "wBuffer") :=> slave.w
+    slave.b :=> SinkBuffer(master.b, cfg.b, name = "bBuffer")
   }
 
   /** Inserts a buffer between a master and a slave interface.

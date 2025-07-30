@@ -1,6 +1,5 @@
 package chext.elastic
 
-
 import chisel3._
 import chisel3.util._
 
@@ -21,6 +20,10 @@ class Demux[T <: Data](
     val sinks = Vec(n, Sink(gen))
     val select = Source(genSelect)
   })
+
+  io.source.markSource()
+  io.sinks.foreach { _.markSink() }
+  io.select.markSource()
 
   private val valid = io.select.valid && io.source.valid
   private val fire = valid && io.sinks(io.select.bits).ready
