@@ -1,8 +1,9 @@
 package chext.elastic
 
-
 import chisel3._
+
 import chisel3.experimental.prefix
+import chisel3.experimental.SourceInfo
 
 package detail {
   trait LeftBuffer_ {
@@ -10,11 +11,14 @@ package detail {
         source: Interface[T],
         count: Int = 2,
         flow: Boolean = false,
-        pipe: Boolean = false
-    ): Interface[T] = {
-      val interface = Wire(chiselTypeOf(source))
-      Queue.between(source, interface, count, flow, pipe, false)
-      interface
+        pipe: Boolean = false,
+        name: String = "leftBuffer"
+    )(implicit si: SourceInfo): Interface[T] = {
+      prefix(name) {
+        val interface = Wire(chiselTypeOf(source))
+        Queue.between(source, interface, count, flow, pipe, false)
+        interface
+      }
     }
   }
 
@@ -23,11 +27,14 @@ package detail {
         sink: Interface[T],
         count: Int = 2,
         flow: Boolean = false,
-        pipe: Boolean = false
-    ): Interface[T] = {
-      val interface = Wire(chiselTypeOf(sink))
-      Queue.between(interface, sink, count, flow, pipe, false)
-      interface
+        pipe: Boolean = false,
+        name: String = "rightBuffer"
+    )(implicit si: SourceInfo): Interface[T] = {
+      prefix(name) {
+        val interface = Wire(chiselTypeOf(sink))
+        Queue.between(interface, sink, count, flow, pipe, false)
+        interface
+      }
     }
   }
 }

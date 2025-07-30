@@ -15,7 +15,7 @@ using namespace chext_test::amba;
 
 // Some statistics:
 // With RR arbiter, took 15559433 ns
-// With Priority arbiter, took  9170045 ns
+// With Priority arbiter, took 9170045 ns
 
 static constexpr struct {
     bool log = false;

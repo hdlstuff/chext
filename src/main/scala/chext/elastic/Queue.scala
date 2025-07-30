@@ -1,13 +1,204 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental._
 
-trait Queue[T <: Data] {
-  def module: BaseModule
+import chisel3.experimental.AffectsChiselPrefix
+import chisel3.experimental.SourceInfo
+import chisel3.experimental.requireIsChiselType
+import chisel3.experimental.requireIsHardware
+import chisel3.experimental.skipPrefix
 
-  def source: Interface[T]
-  def sink: Interface[T]
+import chisel3.util.log2Ceil
+
+import ConnectOp._
+
+import chext.util.Naming
+
+private object memory_impl {
+  trait Memory {
+    val count: Int
+    val addrWidth: Int
+    val dataWidth: Int
+
+    def noRead(): Unit
+    def read(addr: UInt): UInt
+
+    def noWrite(): Unit
+    def write(addr: UInt, data: UInt): Unit
+
+  }
+
+  class chisel_mem_1w1r(
+      val count: Int,
+      val addrWidth: Int,
+      val dataWidth: Int
+  ) extends AffectsChiselPrefix
+      with Memory {
+    private val mem = Mem(count, UInt(dataWidth.W))
+
+    val addrA = Wire(UInt(addrWidth.W))
+    val writeEnA = Wire(Bool())
+    val dataInA = Wire(UInt(dataWidth.W))
+
+    val addrB = Wire(UInt(addrWidth.W))
+    val dataOutB = mem(addrB)
+
+    when(writeEnA) {
+      mem(addrA) := dataInA
+    }
+
+    def noRead(): Unit = {
+      addrB := DontCare
+    }
+
+    def read(addr: UInt): UInt = {
+      addrB := addr
+      dataOutB
+    }
+
+    def noWrite(): Unit = {
+      addrA := DontCare
+      writeEnA := false.B
+      dataInA := DontCare
+    }
+
+    def write(addr: UInt, data: UInt): Unit = {
+      addrA := addr
+      writeEnA := true.B
+      dataInA := data
+    }
+  }
+
+  class chisel_syncmem_1w1r(
+      val count: Int,
+      val addrWidth: Int,
+      val dataWidth: Int
+  ) extends AffectsChiselPrefix
+      with Memory {
+    private val mem = SyncReadMem(count, UInt(dataWidth.W), SyncReadMem.WriteFirst)
+
+    val addrA = Wire(UInt(addrWidth.W))
+    val writeEnA = Wire(Bool())
+    val dataInA = Wire(UInt(dataWidth.W))
+
+    val addrB = Wire(UInt(addrWidth.W))
+    val dataOutB = mem(addrB)
+
+    when(writeEnA) {
+      mem(addrA) := dataInA
+    }
+
+    def noRead(): Unit = {
+      addrB := DontCare
+    }
+
+    def read(addr: UInt): UInt = {
+      addrB := addr
+      dataOutB
+    }
+
+    def noWrite(): Unit = {
+      addrA := DontCare
+      writeEnA := false.B
+      dataInA := DontCare
+    }
+
+    def write(addr: UInt, data: UInt): Unit = {
+      addrA := addr
+      writeEnA := true.B
+      dataInA := data
+    }
+  }
+
+  class chext_mem_1w1r(
+      val count: Int,
+      val addrWidth: Int,
+      val dataWidth: Int
+  ) extends BlackBox(
+        Map(
+          "COUNT" -> count,
+          "ADDR_WIDTH" -> addrWidth,
+          "DATA_WIDTH" -> dataWidth
+        )
+      )
+      with Memory {
+    val io = IO(new Bundle {
+      val clock = Input(Clock())
+
+      val addrA = Input(UInt(addrWidth.W))
+      val writeEnA = Input(Bool())
+      val dataInA = Input(UInt(dataWidth.W))
+
+      val addrB = Input(UInt(addrWidth.W))
+      val dataOutB = Output(UInt(dataWidth.W))
+    })
+
+    def noRead(): Unit = {
+      io.addrB := DontCare
+    }
+
+    def read(addr: UInt): UInt = {
+      io.addrB := addr
+      io.dataOutB
+    }
+
+    def noWrite(): Unit = {
+      io.addrA := DontCare
+      io.writeEnA := false.B
+      io.dataInA := DontCare
+    }
+
+    def write(addr: UInt, data: UInt): Unit = {
+      io.addrA := addr
+      io.writeEnA := true.B
+      io.dataInA := data
+    }
+  }
+
+  class chext_syncmem_1w1r(
+      val count: Int,
+      val addrWidth: Int,
+      val dataWidth: Int
+  ) extends BlackBox(
+        Map(
+          "COUNT" -> count,
+          "ADDR_WIDTH" -> addrWidth,
+          "DATA_WIDTH" -> dataWidth
+        )
+      )
+      with Memory {
+    val io = IO(new Bundle {
+      val clock = Input(Clock())
+
+      val addrA = Input(UInt(addrWidth.W))
+      val writeEnA = Input(Bool())
+      val dataInA = Input(UInt(dataWidth.W))
+
+      val addrB = Input(UInt(addrWidth.W))
+      val dataOutB = Output(UInt(dataWidth.W))
+    })
+
+    def noRead(): Unit = {
+      io.addrB := DontCare
+    }
+
+    def read(addr: UInt): UInt = {
+      io.addrB := addr
+      io.dataOutB
+    }
+
+    def noWrite(): Unit = {
+      io.addrA := DontCare
+      io.writeEnA := false.B
+      io.dataInA := DontCare
+    }
+
+    def write(addr: UInt, data: UInt): Unit = {
+      io.addrA := addr
+      io.writeEnA := true.B
+      io.dataInA := data
+    }
+  }
 }
 
 object Queue {
@@ -17,20 +208,20 @@ object Queue {
       count: Int,
       pipe: Boolean = false,
       flow: Boolean = false,
-      useSyncReadMem: Boolean = false,
-      useVerilog: Boolean = false
-  ) = {
+      useSyncReadMem: Boolean = false
+  )(implicit si: SourceInfo): Unit = {
     requireIsHardware(source, "Queue source must be hardware.")
     requireIsHardware(sink, "Queue sink must be hardware.")
     require(count >= 0, "Length must be non-negative.")
 
     if (count == 0) {
-      import ConnectOp._
       source :=> sink
-    } else if (useVerilog)
-      VerilogQueue.between(source, sink, count, pipe, flow, useSyncReadMem)
-    else
-      ChiselQueue.between(source, sink, count, pipe, flow, useSyncReadMem)
+    } else {
+      val gen = chiselTypeOf(source.bits)
+      val queue = skipPrefix { new Queue(gen, count, pipe, flow, useSyncReadMem) }
+      source :=> queue.source
+      queue.sink :=> sink
+    }
   }
 
   def apply[T <: Data](
@@ -38,257 +229,123 @@ object Queue {
       count: Int,
       pipe: Boolean = false,
       flow: Boolean = false,
-      syncReadMem: Boolean = false,
-      useVerilog: Boolean = false
-  ): Queue[T] = {
+      useSyncReadMem: Boolean = false
+  )(implicit si: SourceInfo): Queue[T] = {
     require(count > 0, "Length must be positive.")
+    new Queue(gen, count, pipe, flow, useSyncReadMem)
+  }
 
-    if (useVerilog)
-      VerilogQueue(gen, count, pipe, flow, syncReadMem)
-    else
-      ChiselQueue(gen, count, pipe, flow, syncReadMem)
+  private[Queue] var useVerilogMem_ = true
+
+  def useVerilogMem(enabled: Boolean = true): Unit = {
+    useVerilogMem_ = enabled
   }
 }
 
-class ChiselQueue[T <: Data](
+class Queue[T <: Data](
     val gen: T,
     val count: Int,
     val pipe: Boolean = false,
     val flow: Boolean = false,
     val useSyncReadMem: Boolean = false
-) extends Module
-    with Queue[T] {
+)(implicit si: SourceInfo)
+    extends AffectsChiselPrefix {
+  Naming.needsUniquePrefix("Queue")
+
   require(count > -1, "Queue must have non-negative count.")
   require(count != 0, "Use companion object Queue.apply for empty queue.")
   requireIsChiselType(gen)
 
-  def module: BaseModule = this
+  val source = Wire(Source(gen))
+  val sink = Wire(Sink(gen))
 
-  val source = IO(Source(gen))
-  val sink = IO(Sink(gen))
-  val ram =
-    if (useSyncReadMem) SyncReadMem(count, gen, SyncReadMem.WriteFirst) else Mem(count, gen)
-  val enq_ptr = chisel3.util.Counter(count)
-  val deq_ptr = chisel3.util.Counter(count)
-  val maybe_full = RegInit(false.B)
-  val ptr_match = enq_ptr.value === deq_ptr.value
-  val empty = ptr_match && !maybe_full
-  val full = ptr_match && maybe_full
-  val do_enq = WireDefault(source.fire)
-  val do_deq = WireDefault(sink.fire)
+  {
+    dontTouch(source)
+    dontTouch(sink)
 
-  // when flush is high, empty the queue
-  // Semantically, any enqueues happen before the flush.
-  when(do_enq) {
-    ram(enq_ptr.value) := source.bits
-    enq_ptr.inc()
-  }
-  when(do_deq) {
-    deq_ptr.inc()
-  }
-  when(do_enq =/= do_deq) {
-    maybe_full := do_enq
-  }
+    val wAddr = log2Ceil(count)
+    val wData = gen.getWidth
 
-  sink.valid := !empty
-  source.ready := !full
+    val ram =
+      (Queue.useVerilogMem_, useSyncReadMem) match {
+        case (false, false) => new memory_impl.chisel_mem_1w1r(count, wAddr, wData)
+        case (false, true)  => new memory_impl.chisel_syncmem_1w1r(count, wAddr, wData)
 
-  if (useSyncReadMem) {
-    val deq_ptr_next = Mux(deq_ptr.value === (count.U - 1.U), 0.U, deq_ptr.value + 1.U)
-    val r_addr = WireDefault(Mux(do_deq, deq_ptr_next, deq_ptr.value))
-    sink.bits := ram.read(r_addr)
-  } else {
-    sink.bits := ram(deq_ptr.value)
-  }
+        case (true, false) => {
+          val ram = Module(new memory_impl.chext_mem_1w1r(count, wAddr, wData))
+          ram.io.clock := Module.clock
+          ram
+        }
 
-  if (flow) {
-    when(source.valid) { sink.valid := true.B }
-    when(empty) {
-      sink.bits := source.bits
-      do_deq := false.B
-      when(sink.ready) { do_enq := false.B }
-    }
-  }
+        case (true, true) => {
+          val ram = Module(new memory_impl.chext_syncmem_1w1r(count, wAddr, wData))
+          ram.io.clock := Module.clock
+          ram
+        }
+      }
 
-  if (pipe) {
-    when(sink.ready) { source.ready := true.B }
-  }
+    ram.noRead()
+    ram.noWrite()
 
-  override def desiredName = s"chext_queue_${count}_${gen.typeName}"
-}
+    val enq_ptr = chisel3.util.Counter(count)
+    val deq_ptr = chisel3.util.Counter(count)
+    val maybe_full = RegInit(false.B)
+    val ptr_match = enq_ptr.value === deq_ptr.value
+    val empty = ptr_match && !maybe_full
+    val full = ptr_match && maybe_full
+    val do_enq = WireDefault(source.fire)
+    val do_deq = WireDefault(sink.fire)
 
-object ChiselQueue {
-  def apply[T <: Data](
-      gen: T,
-      count: Int,
-      pipe: Boolean = false,
-      flow: Boolean = false,
-      useSyncReadMem: Boolean = false,
-      hasFlush: Boolean = false
-  ): Queue[T] = Module(new ChiselQueue(gen, count, pipe, flow, useSyncReadMem))
-
-  def between[T <: Data](
-      source: Interface[T],
-      sink: Interface[T],
-      count: Int,
-      pipe: Boolean = false,
-      flow: Boolean = false,
-      useSyncReadMem: Boolean = false
-  ): Unit = {
-    val x_queue =
-      Module(
-        new ChiselQueue(source.bits.cloneType, count, pipe, flow, useSyncReadMem)
-      )
-
-    import ConnectOp._
-
-    source :=> x_queue.source
-    x_queue.sink :=> sink
-  }
-}
-
-trait VerilogQueue extends BlackBox {
-  def clock: Clock
-  def reset: Reset
-
-  def source: Interface[UInt]
-  def sink: Interface[UInt]
-}
-
-object VerilogQueue {
-  def apply[T <: Data](
-      gen: T,
-      count: Int,
-      pipe: Boolean = false,
-      flow: Boolean = false,
-      useSyncReadMem: Boolean = false
-  ): Queue[T] = {
-    val addrWidth = chisel3.util.log2Ceil(count)
-    val dataWidth = gen.getWidth
-
-    val x_queue =
-      if (dataWidth == 0)
-        Module(
-          new verilog.chext_queue_no_data(count, addrWidth, pipe, flow)
-        )
-      else
-        Module(
-          new verilog.chext_queue(count, addrWidth, dataWidth, pipe, flow, useSyncReadMem)
-        )
-
-    x_queue.clock := Module.clock
-    x_queue.reset := Module.reset
-
-    val x_source = Wire(Interface(gen))
-    val x_sink = Wire(Interface(gen))
-
-    new Transform(x_source, x_queue.source) {
-      out := in.asTypeOf(out)
+    when(do_enq) {
+      ram.write(enq_ptr.value, source.bits.asUInt)
+      enq_ptr.inc()
     }
 
-    new Transform(x_queue.sink, x_sink) {
-      out := in.asTypeOf(out)
+    when(do_deq) {
+      deq_ptr.inc()
     }
 
-    new Queue[T] {
-      val module: BaseModule = x_queue
-
-      val source: Interface[T] = x_source
-      val sink: Interface[T] = x_sink
-    }
-  }
-
-  def between[T <: Data](
-      source: Interface[T],
-      sink: Interface[T],
-      count: Int,
-      pipe: Boolean = false,
-      flow: Boolean = false,
-      useSyncReadMem: Boolean = false
-  ): Unit = {
-    val addrWidth = chisel3.util.log2Ceil(count)
-    val dataWidth = source.bits.getWidth
-
-    val x_queue =
-      if (dataWidth == 0)
-        Module(
-          new verilog.chext_queue_no_data(count, addrWidth, pipe, flow)
-        )
-      else
-        Module(
-          new verilog.chext_queue(count, addrWidth, dataWidth, pipe, flow, useSyncReadMem)
-        )
-
-    x_queue.clock := Module.clock
-    x_queue.reset := Module.reset
-
-    new Transform(source, x_queue.source) {
-      out := in.asTypeOf(out)
+    when(do_enq =/= do_deq) {
+      maybe_full := do_enq
     }
 
-    new Transform(x_queue.sink, sink) {
-      out := in.asTypeOf(out)
+    sink.valid := !empty
+    source.ready := !full
+
+    if (useSyncReadMem) {
+      val deq_ptr_next = Mux(deq_ptr.value === (count.U - 1.U), 0.U, deq_ptr.value + 1.U)
+      val r_addr = WireDefault(Mux(do_deq, deq_ptr_next, deq_ptr.value))
+      sink.bits := ram.read(r_addr).asTypeOf(sink.bits)
+    } else {
+      sink.bits := ram.read(deq_ptr.value).asTypeOf(sink.bits)
+    }
+
+    if (flow) {
+      when(source.valid) { sink.valid := true.B }
+      when(empty) {
+        sink.bits := source.bits
+        do_deq := false.B
+        when(sink.ready) { do_enq := false.B }
+      }
+    }
+
+    if (pipe) {
+      when(sink.ready) { source.ready := true.B }
     }
   }
 }
 
-package verilog {
+object TestQueue extends App {
+  Queue.useVerilogMem(true)
 
-  class chext_queue(
-      val count: Int,
-      val addrWidth: Int,
-      val dataWidth: Int,
-      val pipe: Boolean,
-      val flow: Boolean,
-      val useSyncmem: Boolean
-  ) extends BlackBox(
-        Map(
-          "COUNT" -> count,
-          "ADDR_WIDTH" -> addrWidth,
-          "DATA_WIDTH" -> dataWidth,
-          "PIPE" -> (if (pipe) 1 else 0),
-          "FLOW" -> (if (flow) 1 else 0),
-          "USE_SYNCMEM" -> (if (useSyncmem) 1 else 0)
-        )
-      )
-      with VerilogQueue {
-    val io = IO(new Bundle {
-      val clock = Input(Clock())
-      val reset = Input(Bool())
-      val source = Source(UInt(dataWidth.W))
-      val sink = Sink(UInt(dataWidth.W))
-    })
+  emitVerilog(new Module {
+    private val gen = new Bundle {
+      val a = UInt(37.W)
+      val b = UInt(30.W)
+    }
+    val source = IO(Source(gen))
+    val sink = IO(Sink(gen))
 
-    def clock: Clock = io.clock
-    def reset: Reset = io.reset
-    def source: Interface[UInt] = io.source
-    def sink: Interface[UInt] = io.sink
-  }
-
-  class chext_queue_no_data(
-      val count: Int,
-      val addrWidth: Int,
-      val pipe: Boolean,
-      val flow: Boolean
-  ) extends BlackBox(
-        Map(
-          "COUNT" -> count,
-          "ADDR_WIDTH" -> addrWidth,
-          "PIPE" -> (if (pipe) 1 else 0),
-          "FLOW" -> (if (flow) 1 else 0)
-        )
-      )
-      with VerilogQueue {
-    val io = IO(new Bundle {
-      val clock = Input(Clock())
-      val reset = Input(Bool())
-      val source = Source(UInt(0.W))
-      val sink = Sink(UInt(0.W))
-    })
-
-    def clock: Clock = io.clock
-    def reset: Reset = io.reset
-    def source: Interface[UInt] = io.source
-    def sink: Interface[UInt] = io.sink
-  }
+    Queue.between(source, sink, 9)
+  })
 }

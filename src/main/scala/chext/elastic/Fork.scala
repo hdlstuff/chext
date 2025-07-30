@@ -2,14 +2,20 @@ package chext.elastic
 
 import chisel3._
 import chisel3.experimental.AffectsChiselPrefix
+import chisel3.experimental.SourceInfo
 import chisel3.hacks._
 
 import scala.collection.mutable.ListBuffer
 
+import chext.util.Naming
+
 abstract class Fork[T <: Data](
     source: Interface[T],
     eager: Boolean = true
-) extends AffectsChiselPrefix {
+)(implicit si: SourceInfo)
+    extends AffectsChiselPrefix {
+  Naming.needsUniquePrefix("Fork")
+
   private val sinkList = ListBuffer.empty[Interface[Data]]
 
   protected val in = source.bits
@@ -21,7 +27,7 @@ abstract class Fork[T <: Data](
     * @param tt
     * @return
     */
-  protected def fork[TT <: Data](tt: TT = in): Interface[TT] = {
+  protected final def fork[TT <: Data](tt: TT = in): Interface[TT] = {
     val result = Wire(new Interface(chiselTypeOf(tt)))
     result.bits := tt
     sinkList.addOne(result)
@@ -34,6 +40,7 @@ abstract class Fork[T <: Data](
     else
       forkImpl.lazyFork(source, sinkList.toSeq)
   }
+
 }
 
 private[elastic] object forkImpl {

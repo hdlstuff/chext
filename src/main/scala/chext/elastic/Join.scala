@@ -2,11 +2,19 @@ package chext.elastic
 
 import chisel3._
 import chisel3.experimental.AffectsChiselPrefix
+import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
 import scala.collection.mutable.ListBuffer
 
-abstract class Join[T <: Data](val sink: Interface[T]) extends AffectsChiselPrefix {
+import chext.util.Naming
+
+abstract class Join[T <: Data](
+    val sink: Interface[T]
+)(implicit si: SourceInfo)
+    extends AffectsChiselPrefix {
+  Naming.needsUniquePrefix("Join")
+
   private val sourceList = ListBuffer.empty[Interface[Data]]
 
   protected val out: T = sink.bits
@@ -26,6 +34,7 @@ abstract class Join[T <: Data](val sink: Interface[T]) extends AffectsChiselPref
   deferred {
     joinImpl.join(sourceList.toSeq, sink)
   }
+
 }
 
 private[elastic] object joinImpl {

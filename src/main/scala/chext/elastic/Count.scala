@@ -4,12 +4,16 @@ import chisel3._
 import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
 import chisel3.hacks.deferred
 
+import chext.util.Naming
+
 abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
     source: Interface[Tin],
     sink: Interface[Tout],
     genState: Tstate
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
+  Naming.needsUniquePrefix("Count")
+
   type InitFn = (Tin) => Tstate
   type InitExplicitFn = (Tin, Tstate) => Unit
   type CondFn = (Tin, Tstate) => Bool
