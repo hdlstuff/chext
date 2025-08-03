@@ -197,6 +197,30 @@ private object memory_impl {
       io.dataInA := data
     }
   }
+
+  class no_data_mem(
+      val count: Int,
+      val addrWidth: Int,
+      val dataWidth: Int
+  ) extends Memory {
+    require(dataWidth == 0, "no_data_mem needs dataWidth == 0")
+
+    def noRead(): Unit = {
+      // nop
+    }
+
+    def read(addr: UInt): UInt = {
+      0.U
+    }
+
+    def noWrite(): Unit = {
+      // nop
+    }
+
+    def write(addr: UInt, data: UInt): Unit = {
+      // nop
+    }
+  }
 }
 
 object Queue {
@@ -268,17 +292,18 @@ class Queue[T <: Data](
     val wData = gen.getWidth
 
     val ram =
-      (Queue.useVerilogMem_, useSyncReadMem) match {
-        case (false, false) => new memory_impl.chisel_mem_1w1r(count, wAddr, wData)
-        case (false, true)  => new memory_impl.chisel_syncmem_1w1r(count, wAddr, wData)
+      (wData, Queue.useVerilogMem_, useSyncReadMem) match {
+        case (0, _, _)         => new memory_impl.no_data_mem(count, wAddr, wData)
+        case (_, false, false) => new memory_impl.chisel_mem_1w1r(count, wAddr, wData)
+        case (_, false, true)  => new memory_impl.chisel_syncmem_1w1r(count, wAddr, wData)
 
-        case (true, false) => {
+        case (_, true, false) => {
           val ram = Module(new memory_impl.chext_mem_1w1r(count, wAddr, wData))
           ram.io.clock := Module.clock
           ram
         }
 
-        case (true, true) => {
+        case (_, true, true) => {
           val ram = Module(new memory_impl.chext_syncmem_1w1r(count, wAddr, wData))
           ram.io.clock := Module.clock
           ram

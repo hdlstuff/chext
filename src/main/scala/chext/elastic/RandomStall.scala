@@ -31,9 +31,11 @@ final class RandomStall[T <: Data](
 
   private val rand = random.LFSR(lfsrBits)
 
-  private val stall0 = new Stall(source, SinkBuffer(sink)) {
-    out := in
+  chext.naming.unchecked {
+    val stall0 = new Stall(source, SinkBuffer(sink)) {
+      out := in
 
-    cond { rand > threshold.U }
+      cond { rand > threshold.U }
+    }
   }
 }

@@ -74,9 +74,11 @@ package object naming {
     }
 
     def unchecked[T](f: => T): T = {
-      checks(false)
+      val oldChecks_ = checks_
+
+      checks_ = false
       val t = f
-      checks(true)
+      checks_ = oldChecks_
 
       t
     }

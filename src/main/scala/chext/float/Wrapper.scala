@@ -34,7 +34,12 @@ class Wrapper[
     source.ready := sink.ready
     sink.valid := source.valid
 
+    source.markSource()
+    sink.markSink()
+
   } else {
+    source.markSource()
+
     val ctr = Module(new chext.util.Counter(queueLength + 1))
     ctr.noInc()
     ctr.noDec()
@@ -43,6 +48,8 @@ class Wrapper[
 
     qOutput.source.noenq()
     source.nodeq()
+
+    qOutput.source.markSink()
 
     moduleIn := source.bits
     qOutput.source.bits := moduleOut

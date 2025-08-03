@@ -1,7 +1,7 @@
 // See README.md for license details.
 
 ThisBuild / scalaVersion := "2.13.12"
-ThisBuild / version := "0.2.0"
+ThisBuild / version := "0.2.1"
 ThisBuild / organization := "hdlstuff"
 
 val chiselVersion = "6.0.0"

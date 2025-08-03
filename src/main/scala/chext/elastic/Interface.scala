@@ -102,6 +102,8 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     )
     markSource_.addOne((currentModule, si))
 
+    // chisel can catch this mistake too, but the error message is not great
+    // check 5 below.
     assert(module_.nonEmpty)
     if (DataMirror.isIO(this) && currentModule == module_.get) {
       if (DataMirror.directionOf(this.valid) == ActualDirection.Output) {
@@ -224,13 +226,14 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     }
 
     // Check (5)
-    if (DataMirror.isIO(this)) {
-      if (markSource_.length == 1 && markSink_.length == 1) {
-        if (markSource_.head._1 == markSink_.head._1) {
-          log("IO[Interface] used both as a source and a sink from the same module.")
-        }
-      }
-    }
+    // actually, chisel catches this earlier, so we should catch it even earlier.
+    // if (DataMirror.isIO(this)) {
+    //   if (markSource_.length == 1 && markSink_.length == 1) {
+    //     if (markSource_.head._1 == markSink_.head._1) {
+    //       log("IO[Interface] used both as a source and a sink from the same module.")
+    //     }
+    //   }
+    // }
   }
 }
 
