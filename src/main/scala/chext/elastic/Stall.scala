@@ -38,7 +38,7 @@ abstract class Stall[Tin <: Data, Tout <: Data](
   private var condFn_ = Option.empty[() => Bool]
 
   private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage((x) => f"Stall: $msg @[$x]"))
+    require(cond, sourceInfo.makeMessage((x) => f"Stall: $msg $x"))
   }
 
   /** Sets the condition under which an input token should be stalled.

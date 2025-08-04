@@ -2,8 +2,8 @@ package chext.elastic
 
 import chisel3._
 
-import chisel3.experimental.AffectsChiselPrefix
 import chisel3.experimental.SourceInfo
+import chisel3.experimental.AffectsChiselPrefix
 import chisel3.experimental.requireIsChiselType
 import chisel3.experimental.requireIsHardware
 import chisel3.experimental.skipPrefix
@@ -221,6 +221,33 @@ private object memory_impl {
       // nop
     }
   }
+
+  class single_elem_mem(
+      val count: Int,
+      val addrWidth: Int,
+      val dataWidth: Int
+  ) extends Memory
+      with AffectsChiselPrefix {
+    require(count == 1, "single_elem_mem needs count == 1")
+
+    val mem = RegInit(0.U(dataWidth.W))
+
+    def noRead(): Unit = {
+      // nop
+    }
+
+    def read(addr: UInt): UInt = {
+      mem
+    }
+
+    def noWrite(): Unit = {
+      // nop
+    }
+
+    def write(addr: UInt, data: UInt): Unit = {
+      mem := data
+    }
+  }
 }
 
 object Queue {
@@ -292,18 +319,19 @@ class Queue[T <: Data](
     val wData = gen.getWidth
 
     val ram =
-      (wData, Queue.useVerilogMem_, useSyncReadMem) match {
-        case (0, _, _)         => new memory_impl.no_data_mem(count, wAddr, wData)
-        case (_, false, false) => new memory_impl.chisel_mem_1w1r(count, wAddr, wData)
-        case (_, false, true)  => new memory_impl.chisel_syncmem_1w1r(count, wAddr, wData)
+      (wData, wAddr, Queue.useVerilogMem_, useSyncReadMem) match {
+        case (0, _, _, _)         => new memory_impl.no_data_mem(count, wAddr, wData)
+        case (_, 0, _, _)         => new memory_impl.single_elem_mem(count, wAddr, wData)
+        case (_, _, false, false) => new memory_impl.chisel_mem_1w1r(count, wAddr, wData)
+        case (_, _, false, true)  => new memory_impl.chisel_syncmem_1w1r(count, wAddr, wData)
 
-        case (_, true, false) => {
+        case (_, _, true, false) => {
           val ram = Module(new memory_impl.chext_mem_1w1r(count, wAddr, wData))
           ram.io.clock := Module.clock
           ram
         }
 
-        case (_, true, true) => {
+        case (_, _, true, true) => {
           val ram = Module(new memory_impl.chext_syncmem_1w1r(count, wAddr, wData))
           ram.io.clock := Module.clock
           ram

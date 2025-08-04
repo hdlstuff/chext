@@ -69,6 +69,12 @@ package object naming {
       }
     }
 
+    def weakPrefix[T](p: String)(f: => T)(implicit si: SourceInfo): T = {
+      PrefixManager.withRelative(p) {
+        f
+      }
+    }
+
     def checks(enabled: Boolean): Unit = {
       checks_ = enabled
     }
@@ -112,6 +118,12 @@ package object naming {
 
   def prefix[T](p: String)(f: => T)(implicit si: SourceInfo): T =
     getModuleInfo().prefix(p) { f }
+
+  /**
+    * Introduces a prefix without owning it (unlike `prefix`).
+    */
+  def weakPrefix[T](p: String)(f: => T)(implicit si: SourceInfo): T =
+    getModuleInfo().weakPrefix(p) { f }
 
   def checks(enabled: Boolean): Unit =
     getModuleInfo().checks(enabled)

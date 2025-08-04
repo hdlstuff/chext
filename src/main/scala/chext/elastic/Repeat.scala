@@ -48,12 +48,12 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
   private var outFn_ = Option.empty[OutFn]
 
   private def throw_(msg: String) =
-    throw new IllegalArgumentException(sourceInfo.makeMessage((x) => f"Count: $msg @[$x]"))
+    throw new IllegalArgumentException(sourceInfo.makeMessage((x) => f"Count: $msg $x"))
 
   protected final def in: Tin = throw_("in field shall not be used!")
 
   private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage(x => s"Repeat: $msg @[$x]"))
+    require(cond, sourceInfo.makeMessage(x => s"Repeat: $msg $x"))
   }
 
   /** Sets the pure functional length function. Takes the input token and returns how many times it

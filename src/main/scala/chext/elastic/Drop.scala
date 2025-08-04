@@ -35,7 +35,7 @@ abstract class Drop[Tin <: Data, Tout <: Data](
   private var condFn_ = Option.empty[() => Bool]
 
   private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage((x) => f"Drop: $msg @[$x]"))
+    require(cond, sourceInfo.makeMessage((x) => f"Drop: $msg $x"))
   }
 
   /** Sets the condition under which an input token should be dropped.
