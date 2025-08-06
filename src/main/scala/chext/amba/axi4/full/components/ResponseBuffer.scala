@@ -88,6 +88,8 @@ class ResponseBuffer(val cfg: ResponseBufferConfig) extends Module {
     ctrB.noInc()
 
     val stall0 = new elastic.Stall(s_axi.aw, m_axi.aw) {
+      out := in
+
       cond { ctrB.full }
       fire { ctrB.inc() }
     }
