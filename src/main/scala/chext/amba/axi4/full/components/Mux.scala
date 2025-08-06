@@ -55,20 +55,28 @@ class Mux(val cfg: MuxConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      elastic.Arbiter(s_axi_.map { _.ar }, m_axi_.ar, arbiterPolicy)
+      val arbiterAR = elastic.Arbiter(
+        s_axi_.map { _.ar },
+        m_axi_.ar,
+        arbiterPolicy
+      )
     }
 
     def rLogic: Unit = {
       val demuxInput = Wire(elastic.Interface(m_axi_.r.bits.cloneType))
       val demuxSelect = Wire(elastic.Interface(UInt(wPort.W)))
 
-      new elastic.Fork(m_axi_.r) {
+      val fork0 = new elastic.Fork(m_axi_.r) {
         fork { in } :=> demuxInput
         fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
       }
 
       // R channel supports burst interleaving, so no isLastFn
-      elastic.Demux(demuxInput, s_axi_.map { _.r }, demuxSelect)
+      val demuxR = elastic.Demux(
+        demuxInput,
+        s_axi_.map { _.r },
+        demuxSelect
+      )
     }
 
     arLogic
@@ -79,7 +87,7 @@ class Mux(val cfg: MuxConfig) extends Module {
     val portQueue = elastic.Queue(genPort, 32, flow = true, pipe = true)
 
     def awLogic: Unit = {
-      elastic.Arbiter(
+      val arbiterAW = elastic.Arbiter(
         s_axi_.map { _.aw },
         m_axi_.aw,
         arbiterPolicy,
@@ -90,7 +98,7 @@ class Mux(val cfg: MuxConfig) extends Module {
     def wLogic: Unit = {
       // W channel does not support burst interleaving due to the selection logic
       // so isLastFn
-      elastic.Mux(
+      val muxW = elastic.Mux(
         s_axi_.map { _.w },
         m_axi_.w,
         portQueue.sink,
@@ -102,12 +110,16 @@ class Mux(val cfg: MuxConfig) extends Module {
       val demuxInput = Wire(elastic.Interface(m_axi_.b.bits.cloneType))
       val demuxSelect = Wire(elastic.Interface(UInt(wPort.W)))
 
-      new elastic.Fork(m_axi_.b) {
+      val fork1 = new elastic.Fork(m_axi_.b) {
         fork { in } :=> demuxInput
         fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
       }
 
-      elastic.Demux(demuxInput, s_axi_.map { _.b }, demuxSelect)
+      val demuxB = elastic.Demux(
+        demuxInput,
+        s_axi_.map { _.b },
+        demuxSelect
+      )
     }
 
     awLogic

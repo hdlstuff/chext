@@ -219,6 +219,11 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
       out := DontCare
     }
 
+    require_(
+      actionConds_.nonEmpty,
+      "elastic.Transducer: There must be at least one action taken in the transducer. Maybe call accept{} in it?"
+    )
+
     val cond = VecInit(actionConds_).asUInt
 
     val errorAtLeastTwoActions = WireInit(source.valid && ((cond & (cond -% 1.U)) =/= 0.U))

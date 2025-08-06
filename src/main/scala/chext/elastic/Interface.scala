@@ -51,6 +51,7 @@ object track {
           val sourceInfos = ModuleInternals.getChildrenSourceInfo(module.asInstanceOf[RawModule])
           moduleInfo.childIO
             .map { case (module, io) =>
+              // this one maps the source infos of the module instantiations
               (module, io, sourceInfos.get(module))
             }
             .foreach {
@@ -61,8 +62,13 @@ object track {
         }
 
         parentModuleInfo match {
-          case None        =>
-          case Some(value) => value.childIO.addOne(module -> ports.map { _._1 })
+          case None =>
+            // this is the root module, we cannot defer checking IO ports later
+            ports.foreach { _._1.sanityCheck(true) }
+
+          case Some(value) =>
+            // this is a child module, we can perform the checks later
+            value.childIO.addOne(module -> ports.map { _._1 })
         }
 
         moduleInfos_.remove(module)
@@ -333,12 +339,14 @@ class Module0 extends Module {
   val source = Source.io(UInt(32.W))
   val sink = Sink.io(UInt(32.W))
 
+  val x_source = Source.io(UInt(32.W))
+  val x_sink = Sink.io(UInt(32.W))
+
   val module = Module(new Module1)
 
   new Transform(source, sink) {
     out := in + 1.U
   }
-
 }
 
 object InterfaceApp extends App {
