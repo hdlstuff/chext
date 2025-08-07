@@ -11,43 +11,21 @@ case class Require(val identifier: String) {
   }
 
   private def printNext(message: String): Unit = {
-    println(f"${indent} : $message")
+    println(f"${indent}   $message")
   }
 
   def apply(cond: Boolean, message: String)(implicit si: SourceInfo): Unit = {
-    if (!cond)
+    if (!cond) {
       printFirst(message, si)
+      throw new IllegalArgumentException("requirement failed")
+    }
   }
 
   def apply(cond: Boolean, message: String, lines: Seq[String])(implicit si: SourceInfo): Unit = {
     if (!cond) {
       printFirst(message, si)
       lines.foreach { printNext(_) }
+      throw new IllegalArgumentException("requirement failed")
     }
   }
-}
-
-import chisel3._
-
-import chext.elastic
-import elastic.ConnectOp._
-
-import chext.amba.axi4
-import axi4.Ops._
-
-class MyModule extends Module {
-  val s_axi = IO(axi4.full.Slave(axi4.Config(wAddr = 8, wData = 256, wId = 8)))
-  val m_axi = IO(axi4.full.Master(axi4.Config(wAddr = 8, wData = 256, wId = 8)))
-  val source = IO(elastic.Source(UInt(32.W)))
-  val sink = IO(elastic.Sink(UInt(32.W)))
-
-  val master = s_axi
-  val slave = m_axi
-
-  axi4.full.LeftBuffer(master) :=> slave
-  // master :=> slave
-}
-
-object MyModule_Emit extends App {
-  emitVerilog(new MyModule)
 }
