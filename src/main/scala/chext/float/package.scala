@@ -159,10 +159,4 @@ package object float {
       result
     }
   }
-
-  implicit class DoubleHelpers(d: Double) {
-    def to_floating_point_hw(fp: FloatingPoint) = {
-      TestFloatingPoint.from_double(d)(fp).to_floating_point_hw
-    }
-  }
 }

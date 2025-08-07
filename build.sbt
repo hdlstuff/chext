@@ -5,14 +5,12 @@ ThisBuild / version := "0.2.1"
 ThisBuild / organization := "hdlstuff"
 
 val chiselVersion = "6.0.0"
-val chiseltestVersion = "6.0-SNAPSHOT"
 
 lazy val root = (project in file("."))
   .settings(
     name := "chext",
     libraryDependencies ++= Seq(
       "org.chipsalliance" %% "chisel" % chiselVersion,
-      "edu.berkeley.cs" %% "chiseltest" % chiseltestVersion,
       "hdlstuff" %% "hdlinfo" % "0.1.0"
     ),
     scalacOptions ++= Seq(
