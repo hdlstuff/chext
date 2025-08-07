@@ -2,6 +2,7 @@ package chext.amba.axi4
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.SourceInfo
 
 import chext.amba.axi4
 
@@ -10,15 +11,42 @@ object connect {
   import axi4.full.ConnectOp._
   import axi4.lite.ConnectOp._
 
-  def apply(master: axi4.RawInterface, slave: axi4.full.Interface): Unit = {
+  private val require_ = new chext.util.Require("axi4.connect")
+
+  def apply(
+      master: axi4.RawInterface,
+      slave: axi4.full.Interface
+  )(implicit si: SourceInfo): Unit = {
+    require_(
+      !master.cfg.lite,
+      "master must be a full axi4 interface",
+      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
+    )
     master.asFull :=> slave
   }
 
-  def apply(master: axi4.RawInterface, slave: axi4.lite.Interface): Unit = {
+  def apply(
+      master: axi4.RawInterface,
+      slave: axi4.lite.Interface
+  )(implicit si: SourceInfo): Unit = {
+    require_(
+      master.cfg.lite,
+      "master must be a lite axi4 interface",
+      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
+    )
     master.asLite :=> slave
   }
 
-  def apply(master: axi4.RawInterface, slave: axi4.RawInterface): Unit = {
+  def apply(
+      master: axi4.RawInterface,
+      slave: axi4.RawInterface
+  )(implicit si: SourceInfo): Unit = {
+    require_(
+      master.cfg.lite == slave.cfg.lite,
+      "master and slave must both be either full or lite axi4 interfaces",
+      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
+    )
+
     if (master.cfg.lite)
       master.asLite :=> slave.asLite
     else
@@ -29,15 +57,15 @@ object connect {
 trait ConnectOp {
   /* implicit class names should be different, otherwise shadowed */
   implicit class axi4_connect_op(master: axi4.RawInterface) {
-    def :=>(slave: axi4.RawInterface) = {
+    def :=>(slave: axi4.RawInterface)(implicit si: SourceInfo) = {
       connect(master, slave)
     }
 
-    def :=>(slave: axi4.full.Interface) = {
+    def :=>(slave: axi4.full.Interface)(implicit si: SourceInfo) = {
       connect(master, slave)
     }
 
-    def :=>(slave: axi4.lite.Interface) = {
+    def :=>(slave: axi4.lite.Interface)(implicit si: SourceInfo) = {
       connect(master, slave)
     }
   }

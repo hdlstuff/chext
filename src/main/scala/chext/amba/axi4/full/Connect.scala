@@ -1,21 +1,35 @@
 package chext.amba.axi4.full
 
-import chext.elastic.ConnectOp._
+import chext.elastic
+import elastic.ConnectOp._
+import chisel3.experimental.SourceInfo
 
 private object connect {
-  def apply(master: Interface, slave: Interface): Unit = {
-    assert(
+  private val require_ = new chext.util.Require("axi4.full.connect")
+
+  def apply(
+      master: Interface,
+      slave: Interface
+  )(implicit si: SourceInfo): Unit = {
+    require_(
       master.cfg.wId <= slave.cfg.wId,
-      "The master interface should have a narrow ID field than the slave interface."
+      "master interface should have a narrow ID field than the slave interface",
+      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
+    )
+
+    require_(
+      !master.cfg.axi3Compat && !slave.cfg.axi3Compat || master.cfg.axi3Compat,
+      "master interface that is not AXI3-compatible cannot drive an AXI3-compatible interface",
+      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
     )
 
     val masterCfg = master.cfg.copy(wId = 0, wAddr = 0, axi3Compat = false)
     val slaveCfg = slave.cfg.copy(wId = 0, wAddr = 0, axi3Compat = false)
-    assert(masterCfg == slaveCfg, "Configurations do not match.")
 
-    assert(
-      !masterCfg.axi3Compat && !slaveCfg.axi3Compat || masterCfg.axi3Compat,
-      "A master interface that is not AXI3-compatible cannot drive an AXI3-compatible interface."
+    require_(
+      masterCfg == slaveCfg,
+      "configurations do not match after normalization",
+      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
     )
 
     if (master.cfg.read) {
@@ -33,7 +47,7 @@ private object connect {
 
 trait ConnectOp {
   /* implicit class names should be different, otherwise shadowed */
-  implicit class axi4_full_connect_op(master: Interface) {
+  implicit class axi4_full_connect_op(master: Interface)(implicit si: SourceInfo) {
     def :=>(slave: Interface) = {
       connect(master, slave)
     }

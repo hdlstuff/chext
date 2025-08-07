@@ -2,6 +2,7 @@ package chext.amba.axi4.lite
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.SourceInfo
 
 import chext.amba.axi4.BufferConfig
 
@@ -9,12 +10,16 @@ import chext.elastic
 import elastic.{SinkBuffer, SourceBuffer}
 import elastic.ConnectOp._
 
+import chext.naming.weakPrefix
+
 object buffer {
+  val require_ = new chext.util.Require("axi4.lite.buffer")
+
   private[lite] def insertBufferR(
       master: Interface,
       slave: Interface,
       cfg: BufferConfig
-  ): Unit = {
+  )(implicit si: SourceInfo): Unit = {
     SourceBuffer(master.ar, cfg.ar, name = "arBuffer") :=> slave.ar
     slave.r :=> SinkBuffer(master.r, cfg.r, name = "rBuffer")
   }
@@ -23,7 +28,7 @@ object buffer {
       master: Interface,
       slave: Interface,
       cfg: BufferConfig
-  ): Unit = {
+  )(implicit si: SourceInfo): Unit = {
     SourceBuffer(master.aw, cfg.aw, name = "awBuffer") :=> slave.aw
     SourceBuffer(master.w, cfg.w, name = "wBuffer") :=> slave.w
     slave.b :=> SinkBuffer(master.b, cfg.b, name = "bBuffer")
@@ -39,8 +44,12 @@ object buffer {
       master: Interface,
       slave: Interface,
       cfg: BufferConfig
-  ): Unit = {
-    assert(master.cfg == slave.cfg)
+  )(implicit si: SourceInfo): Unit = {
+    require_(
+      master.cfg == slave.cfg,
+      "master and slave configurations do not match!",
+      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
+    )
 
     if (master.cfg.read)
       insertBufferR(master, slave, cfg)
@@ -53,8 +62,21 @@ object buffer {
 object SlaveBuffer {
   def apply(
       interface: Interface,
-      cfg: BufferConfig
-  ): Interface = {
+      cfg: BufferConfig = BufferConfig.all(2),
+      name: String = "slaveBuffer"
+  )(implicit si: SourceInfo): Interface = weakPrefix(name) {
+    val result = Wire(Slave(interface.cfg))
+    buffer(interface, result, cfg)
+    result
+  }
+}
+
+object LeftBuffer {
+  def apply(
+      interface: Interface,
+      cfg: BufferConfig = BufferConfig.all(2),
+      name: String = "leftBuffer"
+  )(implicit si: SourceInfo): Interface = weakPrefix(name) {
     val result = Wire(Slave(interface.cfg))
     buffer(interface, result, cfg)
     result
@@ -64,8 +86,21 @@ object SlaveBuffer {
 object MasterBuffer {
   def apply(
       interface: Interface,
-      cfg: BufferConfig
-  ): Interface = {
+      cfg: BufferConfig = BufferConfig.all(2),
+      name: String = "masterBuffer"
+  )(implicit si: SourceInfo): Interface = weakPrefix(name) {
+    val result = Wire(Master(interface.cfg))
+    buffer(result, interface, cfg)
+    result
+  }
+}
+
+object RightBuffer {
+  def apply(
+      interface: Interface,
+      cfg: BufferConfig = BufferConfig.all(2),
+      name: String = "rightBuffer"
+  )(implicit si: SourceInfo): Interface = weakPrefix(name) {
     val result = Wire(Master(interface.cfg))
     buffer(result, interface, cfg)
     result

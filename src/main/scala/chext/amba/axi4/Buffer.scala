@@ -1,9 +1,12 @@
 package chext.amba.axi4
 
 import chisel3._
+import chisel3.experimental.SourceInfo
 
 import chext.amba.axi4
 import axi4.Casts._
+
+import chext.naming.weakPrefix
 
 case class BufferConfig(
     aw: Int = 0,
@@ -24,12 +27,18 @@ object BufferConfig {
 }
 
 object buffer {
+  private val require_ = new chext.util.Require("axi4.buffer")
+
   def apply(
       master: RawInterface,
       slave: RawInterface,
-      cfg: BufferConfig
-  ): Unit = {
-    assert(master.cfg == slave.cfg)
+      cfg: BufferConfig = BufferConfig.all(2)
+  )(implicit si: SourceInfo): Unit = {
+    require_(
+      master.cfg.lite == slave.cfg.lite,
+      "master and slave must both be either full or lite axi4 interfaces",
+      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
+    )
 
     if (master.cfg.lite)
       lite.buffer(master.asLite, slave.asLite, cfg)
@@ -41,8 +50,21 @@ object buffer {
 object SlaveBuffer {
   def apply(
       interface: RawInterface,
-      cfg: BufferConfig
-  ): RawInterface = {
+      cfg: BufferConfig = BufferConfig.all(2),
+      name: String = "slaveBuffer"
+  )(implicit si: SourceInfo): RawInterface = weakPrefix(name) {
+    val result = Wire(Slave(interface.cfg))
+    buffer(interface, result, cfg)
+    result
+  }
+}
+
+object LeftBuffer {
+  def apply(
+      interface: RawInterface,
+      cfg: BufferConfig = BufferConfig.all(2),
+      name: String = "leftBuffer"
+  )(implicit si: SourceInfo): RawInterface = weakPrefix(name) {
     val result = Wire(Slave(interface.cfg))
     buffer(interface, result, cfg)
     result
@@ -52,8 +74,21 @@ object SlaveBuffer {
 object MasterBuffer {
   def apply(
       interface: RawInterface,
-      cfg: BufferConfig
-  ): RawInterface = {
+      cfg: BufferConfig = BufferConfig.all(2),
+      name: String = "masterBuffer"
+  )(implicit si: SourceInfo): RawInterface = weakPrefix(name) {
+    val result = Wire(Master(interface.cfg))
+    buffer(result, interface, cfg)
+    result
+  }
+}
+
+object RightBuffer {
+  def apply(
+      interface: RawInterface,
+      cfg: BufferConfig = BufferConfig.all(2),
+      name: String = "rightBuffer"
+  )(implicit si: SourceInfo): RawInterface = weakPrefix(name) {
     val result = Wire(Master(interface.cfg))
     buffer(result, interface, cfg)
     result
