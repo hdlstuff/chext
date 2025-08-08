@@ -36,8 +36,8 @@ object track {
       deferred.add(-1, Some(module.asInstanceOf[RawModule])) {
         val wires = ModuleInternals
           .getWires(module)
-          .filter(_.isInstanceOf[Interface[_]])
-          .map(_.asInstanceOf[Interface[Data]])
+          .map { data => DataInternals.getChildrenOfType[Interface[Data]](data) }
+          .flatten
 
         val ports = ModuleInternals
           .getPorts(module)
@@ -295,40 +295,40 @@ object EWire {
   }
 }
 
-class Module2 extends Module {
-  val source = Source.io(UInt(32.W))
-  val sink = Sink.io(UInt(32.W))
+private object InterfaceApp extends App {
+  class Module2 extends Module {
+    val source = Source.io(UInt(32.W))
+    val sink = Sink.io(UInt(32.W))
 
-  new Transform(source, sink) {
-    out := in + 1.U
-  }
-}
-
-class Module1 extends Module {
-  val source = Source.io(UInt(32.W))
-  val sink = Sink.io(UInt(32.W))
-
-  new Transform(source, sink) {
-    out := in + 1.U
+    val transform0 = new Transform(source, sink) {
+      out := in + 1.U
+    }
   }
 
-  val module = Module(new Module2)
-}
+  class Module1 extends Module {
+    val source = Source.io(UInt(32.W))
+    val sink = Sink.io(UInt(32.W))
 
-class Module0 extends Module {
-  val source = Source.io(UInt(32.W))
-  val sink = Sink.io(UInt(32.W))
+    val transform0 = new Transform(source, sink) {
+      out := in + 1.U
+    }
 
-  val x_source = Source.io(UInt(32.W))
-  val x_sink = Sink.io(UInt(32.W))
-
-  val module = Module(new Module1)
-
-  new Transform(source, sink) {
-    out := in + 1.U
+    val module = Module(new Module2)
   }
-}
 
-object InterfaceApp extends App {
-  emitVerilog(new Module0)
+  class Module0 extends Module {
+    val source = Source.io(UInt(32.W))
+    val sink = Sink.io(UInt(32.W))
+
+    val x_source = Source.io(UInt(32.W))
+    val x_sink = Sink.io(UInt(32.W))
+
+    val module = Module(new Module1)
+
+    val transform0 = new Transform(source, sink) {
+      out := in + 1.U
+    }
+  }
+
+  emitVerilog(new Module0, Array("--target-dir", "output/"))
 }
