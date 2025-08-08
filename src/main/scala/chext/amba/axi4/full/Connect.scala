@@ -13,7 +13,7 @@ private object connect {
   )(implicit si: SourceInfo): Unit = {
     require_(
       master.cfg.wId <= slave.cfg.wId,
-      "master interface should have a narrow ID field than the slave interface",
+      "master interface should have a narrower ID field than the slave interface",
       Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
     )
 
