@@ -2,6 +2,7 @@ package chext.elastic
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.SourceInfo
 
 import ConnectOp._
 
@@ -57,7 +58,7 @@ object Arbiter {
       sink: Interface[T],
       chooserFn: Chooser,
       select: Option[Interface[UInt]] = None
-  ): Unit = {
+  )(implicit si: SourceInfo): Unit = {
     val arbiter = Module(
       new Arbiter(
         chiselTypeOf(sources(0).bits),
@@ -70,7 +71,10 @@ object Arbiter {
     arbiter.io.sink :=> sink
 
     select match {
-      case None         => arbiter.io.select.deq() // disposed
+      case None => {
+        arbiter.io.select.deq() // disposed
+        arbiter.io.select.markSource()
+      }
       case Some(select) => arbiter.io.select :=> select
     }
   }

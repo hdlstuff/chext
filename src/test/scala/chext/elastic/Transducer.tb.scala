@@ -14,10 +14,10 @@ class Transducer_Tbtop extends Module with chext.TestBenchTop {
   private val source_ = EWire.like(source)
   private val sink_ = EWire.like(sink)
 
-  val stall0 = new RandomStall(source, source_)
-  val stall1 = new RandomStall(sink_, sink)
+  val randomStall0 = new RandomStall(source, source_)
+  val randomStall1 = new RandomStall(sink_, sink)
 
-  new Transducer(source_, sink_) {
+  val transducer0 = new Transducer(source_, sink_) {
     val state = RegInit(0.U(8.W))
 
     packet {

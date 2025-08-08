@@ -1,0 +1,46 @@
+package chext.memory
+
+import chisel3.experimental.SourceInfo
+
+import chext.elastic
+import elastic.ConnectOp._
+
+object connect {
+  private val require_ = new chext.util.Require("chext.memory.connect")
+
+  def apply(
+      master: ReadInterface,
+      slave: ReadInterface
+  )(implicit si: SourceInfo): Unit = {
+    require_(master.wData == slave.wData, "wData of interfaces must match!")
+    require_(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
+
+    master.req :=> slave.req
+    slave.resp :=> master.resp
+  }
+
+  def apply(
+      master: WriteInterface,
+      slave: WriteInterface
+  )(implicit si: SourceInfo): Unit = {
+    require_(master.wData == slave.wData, "wData of interfaces must match!")
+    require_(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
+
+    master.req :=> slave.req
+    slave.resp :=> master.resp
+  }
+}
+
+object ConnectOp {
+  implicit class readInterface_connectOp(val master: ReadInterface) {
+    def :=>(slave: ReadInterface)(implicit si: SourceInfo): Unit = {
+      connect(master, slave)
+    }
+  }
+
+  implicit class writeInterface_connectOp(val master: WriteInterface) {
+    def :=>(slave: WriteInterface)(implicit si: SourceInfo): Unit = {
+      connect(master, slave)
+    }
+  }
+}

@@ -185,6 +185,10 @@ private class Read0[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
       m_axi.aw.noenq()
       m_axi.w.noenq()
       m_axi.b.nodeq()
+
+      m_axi.aw.markSink()
+      m_axi.w.markSink()
+      m_axi.b.markSource()
     }
   }
 }

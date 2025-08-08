@@ -245,46 +245,46 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
     fold0_stage1_fork0_leftBuffer_sink_1_ready
     | ~(fold0_stage1_fork0_leftBuffer_ptr_match_1
         & fold0_stage1_fork0_leftBuffer_maybe_full_1);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
-  wire        fold0_join0_allValid = fold0_sinkA_valid & fold0_sinkB_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Join.scala:53:53, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+  wire        fold0_join0_allValid = fold0_sinkA_valid & fold0_sinkB_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :37:31
   wire        fold0_join0_fire =
-    _fold0_stage2_fork0_mux_io_sources_0_ready & fold0_join0_allValid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Join.scala:53:53, :54:27, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Mux.scala:53:21
+    _fold0_stage2_fork0_mux_io_sources_0_ready & fold0_join0_allValid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Mux.scala:53:21, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:37:31
   wire        fold0_sinkA_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
-  assign fold0_sinkA_ready = fold0_join0_fire;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Join.scala:54:27, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+  assign fold0_sinkA_ready = fold0_join0_fire;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :37:31
   wire        fold0_sinkB_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
-  assign fold0_sinkB_ready = fold0_join0_fire;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Join.scala:54:27, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
-  reg         fold0_stage2_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23
-  reg         fold0_stage2_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23
-  reg         fold0_stage2_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23
-  reg         fold0_stage2_fork0_regs_3;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23
+  assign fold0_sinkB_ready = fold0_join0_fire;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :37:31
+  reg         fold0_stage2_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+  reg         fold0_stage2_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+  reg         fold0_stage2_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+  reg         fold0_stage2_fork0_regs_3;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        fold0_stage2_fork0_ready_qual1_0 =
-    _fold0_stage2_fork0_demux_io_source_ready | fold0_stage2_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20
+    _fold0_stage2_fork0_demux_io_source_ready | fold0_stage2_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        fold0_stage2_fork0_ready_qual1_1 =
-    _fold0_stage2_fork0_demux_io_select_ready | fold0_stage2_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20
+    _fold0_stage2_fork0_demux_io_select_ready | fold0_stage2_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        fold0_stage2_fork0_ready_qual1_2 =
-    _fold0_stage2_fork0_demux_1_io_select_ready | fold0_stage2_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20
+    _fold0_stage2_fork0_demux_1_io_select_ready | fold0_stage2_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        fold0_stage2_fork0_ready_qual1_3 =
-    _fold0_stage2_fork0_mux_io_select_ready | fold0_stage2_fork0_regs_3;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Mux.scala:53:21
+    _fold0_stage2_fork0_mux_io_select_ready | fold0_stage2_fork0_regs_3;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Mux.scala:53:21, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   assign fold0_stage1_fork0_transform0_leftBuffer_sink_ready =
     fold0_stage2_fork0_ready_qual1_0 & fold0_stage2_fork0_ready_qual1_1
-    & fold0_stage2_fork0_ready_qual1_2 & fold0_stage2_fork0_ready_qual1_3;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:59:20, :61:21, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
-  reg         fold0_stage1_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23
-  reg         fold0_stage1_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23
-  reg         fold0_stage1_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23
+    & fold0_stage2_fork0_ready_qual1_2 & fold0_stage2_fork0_ready_qual1_3;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+  reg         fold0_stage1_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+  reg         fold0_stage1_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+  reg         fold0_stage1_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        fold0_stage1_fork0_ready_qual1_0 =
-    fold0_stage1_fork0_transform0_leftBuffer_source_ready | fold0_stage1_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+    fold0_stage1_fork0_transform0_leftBuffer_source_ready | fold0_stage1_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        fold0_stage1_fork0_ready_qual1_1 =
-    fold0_stage1_fork0_leftBuffer_source_ready | fold0_stage1_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+    fold0_stage1_fork0_leftBuffer_source_ready | fold0_stage1_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        fold0_stage1_fork0_ready_qual1_2 =
-    fold0_stage1_fork0_leftBuffer_source_1_ready | fold0_stage1_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+    fold0_stage1_fork0_leftBuffer_source_1_ready | fold0_stage1_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        fold0_stage0_ready =
     fold0_stage1_fork0_ready_qual1_0 & fold0_stage1_fork0_ready_qual1_1
-    & fold0_stage1_fork0_ready_qual1_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:59:20, :61:21
+    & fold0_stage1_fork0_ready_qual1_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   assign fold0_stage1_fork0_transform0_leftBuffer_source_valid =
-    source_valid & ~fold0_stage1_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :66:{36,39}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+    source_valid & ~fold0_stage1_fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   assign fold0_stage1_fork0_leftBuffer_source_valid =
-    source_valid & ~fold0_stage1_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :66:{36,39}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+    source_valid & ~fold0_stage1_fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   assign fold0_stage1_fork0_leftBuffer_source_1_valid =
-    source_valid & ~fold0_stage1_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :66:{36,39}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+    source_valid & ~fold0_stage1_fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        _GEN = source_valid & fold0_stage0_transducerFirstLogic_state;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        _fold0_stage0_transducerFirstLogic_WIRE = _GEN & source_bits_last;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   wire        _fold0_stage0_transducerFirstLogic_WIRE_1 = _GEN & ~source_bits_last;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, src/main/scala/chisel3/util/Decoupled.scala:58:20, :59:19
@@ -311,17 +311,17 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
         $fwrite(32'h80000002,
                 "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :44:15
       if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
-          & _fold0_stage0_transducerFirstLogic_WIRE & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :44:15
+          & _fold0_stage0_transducerFirstLogic_WIRE & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :44:15
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala 21:21]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:44:15
+                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala 21:21]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:44:15
       if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
-          & _fold0_stage0_transducerFirstLogic_WIRE_1 & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :44:15
+          & _fold0_stage0_transducerFirstLogic_WIRE_1 & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :44:15
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala 21:21]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:44:15
+                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala 21:21]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:44:15
       if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
-          & _fold0_stage0_transducerFirstLogic_WIRE_2 & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :44:15
+          & _fold0_stage0_transducerFirstLogic_WIRE_2 & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :44:15
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala 21:21]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:44:15
+                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala 21:21]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:44:15
       if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorNoAction & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :44:15
         $fwrite(32'h80000002,
                 "elastic.Transducer: no action was taken! @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala 21:21]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :44:15
@@ -344,13 +344,13 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
       fold0_stage1_fork0_leftBuffer_wrap_2 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, src/main/scala/chisel3/util/Counter.scala:61:40
       fold0_stage1_fork0_leftBuffer_wrap_3 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, src/main/scala/chisel3/util/Counter.scala:61:40
       fold0_stage1_fork0_leftBuffer_maybe_full_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
-      fold0_stage2_fork0_regs_0 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
-      fold0_stage2_fork0_regs_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
-      fold0_stage2_fork0_regs_2 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
-      fold0_stage2_fork0_regs_3 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
-      fold0_stage1_fork0_regs_0 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
-      fold0_stage1_fork0_regs_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
-      fold0_stage1_fork0_regs_2 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
+      fold0_stage2_fork0_regs_0 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+      fold0_stage2_fork0_regs_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+      fold0_stage2_fork0_regs_2 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+      fold0_stage2_fork0_regs_3 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+      fold0_stage1_fork0_regs_0 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+      fold0_stage1_fork0_regs_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+      fold0_stage1_fork0_regs_2 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
     end
     else begin	// <stdin>:348:11
       automatic logic fold0_stage1_fork0_transform0_leftBuffer_do_deq =
@@ -371,8 +371,8 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
         if (fold0_stage0_transducerFirstLogic_state)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
           fold0_stage0_transducerFirstLogic_state <=
             (source_bits_last | ~fold0_stage0_ready)
-            & fold0_stage0_transducerFirstLogic_state;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:61:21, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
-        else if (fold0_stage0_ready)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:61:21
+            & fold0_stage0_transducerFirstLogic_state;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+        else if (fold0_stage0_ready)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
           fold0_stage0_transducerFirstLogic_state <= source_bits_last;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
       end
       if (fold0_stage1_fork0_transform0_leftBuffer_do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
@@ -411,25 +411,25 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
       fold0_stage2_fork0_regs_0 <=
         fold0_stage2_fork0_ready_qual1_0
         & fold0_stage1_fork0_transform0_leftBuffer_sink_valid
-        & ~fold0_stage1_fork0_transform0_leftBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, :73:{52,55}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+        & ~fold0_stage1_fork0_transform0_leftBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
       fold0_stage2_fork0_regs_1 <=
         fold0_stage2_fork0_ready_qual1_1
         & fold0_stage1_fork0_transform0_leftBuffer_sink_valid
-        & ~fold0_stage1_fork0_transform0_leftBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, :73:{52,55}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+        & ~fold0_stage1_fork0_transform0_leftBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
       fold0_stage2_fork0_regs_2 <=
         fold0_stage2_fork0_ready_qual1_2
         & fold0_stage1_fork0_transform0_leftBuffer_sink_valid
-        & ~fold0_stage1_fork0_transform0_leftBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, :73:{52,55}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+        & ~fold0_stage1_fork0_transform0_leftBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
       fold0_stage2_fork0_regs_3 <=
         fold0_stage2_fork0_ready_qual1_3
         & fold0_stage1_fork0_transform0_leftBuffer_sink_valid
-        & ~fold0_stage1_fork0_transform0_leftBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, :73:{52,55}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+        & ~fold0_stage1_fork0_transform0_leftBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
       fold0_stage1_fork0_regs_0 <=
-        fold0_stage1_fork0_ready_qual1_0 & source_valid & ~fold0_stage0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, :61:21, :73:{52,55}
+        fold0_stage1_fork0_ready_qual1_0 & source_valid & ~fold0_stage0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
       fold0_stage1_fork0_regs_1 <=
-        fold0_stage1_fork0_ready_qual1_1 & source_valid & ~fold0_stage0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, :61:21, :73:{52,55}
+        fold0_stage1_fork0_ready_qual1_1 & source_valid & ~fold0_stage0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
       fold0_stage1_fork0_regs_2 <=
-        fold0_stage1_fork0_ready_qual1_2 & source_valid & ~fold0_stage0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :59:20, :61:21, :73:{52,55}
+        fold0_stage1_fork0_ready_qual1_2 & source_valid & ~fold0_stage0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
     end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
@@ -459,13 +459,13 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
         fold0_stage1_fork0_leftBuffer_wrap_2 = _RANDOM[1'h1][10];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21, src/main/scala/chisel3/util/Counter.scala:61:40
         fold0_stage1_fork0_leftBuffer_wrap_3 = _RANDOM[1'h1][11];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21, src/main/scala/chisel3/util/Counter.scala:61:40
         fold0_stage1_fork0_leftBuffer_maybe_full_1 = _RANDOM[1'h1][12];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
-        fold0_stage2_fork0_regs_0 = _RANDOM[1'h1][13];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
-        fold0_stage2_fork0_regs_1 = _RANDOM[1'h1][14];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
-        fold0_stage2_fork0_regs_2 = _RANDOM[1'h1][15];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
-        fold0_stage2_fork0_regs_3 = _RANDOM[1'h1][16];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
-        fold0_stage1_fork0_regs_0 = _RANDOM[1'h1][17];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
-        fold0_stage1_fork0_regs_1 = _RANDOM[1'h1][18];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
-        fold0_stage1_fork0_regs_2 = _RANDOM[1'h1][19];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+        fold0_stage2_fork0_regs_0 = _RANDOM[1'h1][13];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+        fold0_stage2_fork0_regs_1 = _RANDOM[1'h1][14];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+        fold0_stage2_fork0_regs_2 = _RANDOM[1'h1][15];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+        fold0_stage2_fork0_regs_3 = _RANDOM[1'h1][16];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+        fold0_stage1_fork0_regs_0 = _RANDOM[1'h1][17];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+        fold0_stage1_fork0_regs_1 = _RANDOM[1'h1][18];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+        fold0_stage1_fork0_regs_2 = _RANDOM[1'h1][19];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
@@ -507,7 +507,7 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
     .io_sources_0_bits  (fold0_stage1_fork0_rightBuffer_sink_bits),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
     .io_sources_1_ready (/* unused */),
     .io_sources_1_valid (1'h1),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
-    .io_sources_1_bits  (64'h0),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Connect.scala:48:15
+    .io_sources_1_bits  (64'h0),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
     .io_sink_ready      (_fold0_stage2_fork0_demux_1_io_source_ready),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23
     .io_sink_valid      (_fold0_stage1_fork0_mux_io_sink_valid),
     .io_sink_bits       (_fold0_stage1_fork0_mux_io_sink_bits),
@@ -557,7 +557,7 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
   elasticDemux fold0_stage2_fork0_demux (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23
     .io_source_ready  (_fold0_stage2_fork0_demux_io_source_ready),
     .io_source_valid
-      (fold0_stage1_fork0_transform0_leftBuffer_sink_valid & ~fold0_stage2_fork0_regs_0),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :66:{36,39}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+      (fold0_stage1_fork0_transform0_leftBuffer_sink_valid & ~fold0_stage2_fork0_regs_0),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
     .io_source_bits   (fold0_stage1_fork0_transform0_leftBuffer_sink_bits_operand),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
     .io_sinks_0_ready (fold0_sinkA_ready),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
     .io_sinks_0_valid (fold0_sinkA_valid),
@@ -567,7 +567,7 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
     .io_sinks_1_bits  (/* unused */),
     .io_select_ready  (_fold0_stage2_fork0_demux_io_select_ready),
     .io_select_valid
-      (fold0_stage1_fork0_transform0_leftBuffer_sink_valid & ~fold0_stage2_fork0_regs_1),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :66:{36,39}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+      (fold0_stage1_fork0_transform0_leftBuffer_sink_valid & ~fold0_stage2_fork0_regs_1),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
     .io_select_bits   (fold0_stage1_fork0_transform0_leftBuffer_sink_bits_zero)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   );
   elasticDemux fold0_stage2_fork0_demux_1 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23
@@ -582,12 +582,12 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
     .io_sinks_1_bits  (_fold0_stage2_fork0_demux_1_io_sinks_1_bits),
     .io_select_ready  (_fold0_stage2_fork0_demux_1_io_select_ready),
     .io_select_valid
-      (fold0_stage1_fork0_transform0_leftBuffer_sink_valid & ~fold0_stage2_fork0_regs_2),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :66:{36,39}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+      (fold0_stage1_fork0_transform0_leftBuffer_sink_valid & ~fold0_stage2_fork0_regs_2),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
     .io_select_bits   (fold0_stage1_fork0_transform0_leftBuffer_sink_bits_zero)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   );
   elasticMux fold0_stage2_fork0_mux (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Mux.scala:53:21
     .io_sources_0_ready (_fold0_stage2_fork0_mux_io_sources_0_ready),
-    .io_sources_0_valid (fold0_join0_allValid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Join.scala:53:53
+    .io_sources_0_valid (fold0_join0_allValid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:37:31
     .io_sources_0_bits  (fold0_sinkA_bits + fold0_sinkB_bits),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21, :38:28
     .io_sources_1_ready (_fold0_stage2_fork0_mux_io_sources_1_ready),
     .io_sources_1_valid (_fold0_stage2_fork0_demux_1_io_sinks_1_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23
@@ -597,10 +597,10 @@ module Fold_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala
     .io_sink_bits       (_fold0_stage2_fork0_mux_io_sink_bits),
     .io_select_ready    (_fold0_stage2_fork0_mux_io_select_ready),
     .io_select_valid
-      (fold0_stage1_fork0_transform0_leftBuffer_sink_valid & ~fold0_stage2_fork0_regs_3),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:55:23, :66:{36,39}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
+      (fold0_stage1_fork0_transform0_leftBuffer_sink_valid & ~fold0_stage2_fork0_regs_3),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
     .io_select_bits     (fold0_stage1_fork0_transform0_leftBuffer_sink_bits_zero)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21
   );
-  assign source_ready = source_valid & fold0_stage0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Fork.scala:61:21, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
+  assign source_ready = source_valid & fold0_stage0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :21:21
   assign sink_valid = _fold0_stage1_fork0_demux_io_sinks_1_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7
   assign sink_bits_result = _fold0_stage1_fork0_demux_io_sinks_1_bits[31:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Demux.scala:50:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Fold.tb.scala:7:7, :50:18
 endmodule

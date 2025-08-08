@@ -29,3 +29,31 @@ case class Require(val identifier: String) {
     }
   }
 }
+
+import chisel3._
+
+import chext.elastic
+import elastic.ConnectOp._
+
+import chext.amba.axi4
+import axi4.Ops._
+
+class MyModule extends Module {
+  val io = IO(new Bundle {
+    val s_axi = axi4.full.Slave(axi4.Config(wAddr = 8, wData = 256, wId = 5))
+    val m_axi = axi4.full.Master(axi4.Config(wAddr = 8, wData = 256, wId = 8))
+    val source = elastic.Source(UInt(32.W))
+    val sink = elastic.Sink(UInt(32.W))
+  })
+
+  val master = io.s_axi
+  val slave = io.m_axi
+
+  axi4.full.LeftBuffer(master) :=> slave
+  // master :=> slave
+}
+
+object MyModule_Emit extends App {
+  // System.out.println("Working Directory = " + System.getProperty("user.dir"));
+  emitVerilog(new MyModule)
+}

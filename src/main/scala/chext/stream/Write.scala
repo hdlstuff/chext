@@ -190,6 +190,9 @@ final class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
     if (axiCfg.read) {
       m_axi.ar.noenq()
       m_axi.r.nodeq()
+
+      m_axi.ar.markSink()
+      m_axi.r.markSource()
     }
   }
 }

@@ -2,7 +2,7 @@ package chext.elastic
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.AffectsChiselPrefix
+import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
 
 /** Applies a random stall the elastic interface.
   *
@@ -21,10 +21,9 @@ final class RandomStall[T <: Data](
     sink: Interface[T],
     lfsrBits: Int = 4,
     threshold: Int = 8
-) extends Fire(sink) {
+)(implicit si: SourceInfo)
+    extends Fire(sink) {
   chext.naming.checkPrefix("RandomStall", "randomStall")
-  source.markSource()
-  sink.markSink()
 
   require(lfsrBits >= 4, "there should be at least 4 bits for LFSR.")
   require(threshold >= 0 && threshold <= (1L << lfsrBits), "invalid threshold interval.")

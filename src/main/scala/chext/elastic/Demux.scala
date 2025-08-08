@@ -2,6 +2,7 @@ package chext.elastic
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.SourceInfo
 
 import ConnectOp._
 
@@ -46,7 +47,7 @@ object Demux {
       sinks: Seq[Interface[T]],
       select: Interface[UInt],
       isLastFn: T => Bool = (_: T) => true.B
-  ): Unit = {
+  )(implicit si: SourceInfo): Unit = {
     val demux = Module(
       new Demux(chiselTypeOf(source.bits), sinks.length, isLastFn)
     )

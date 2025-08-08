@@ -41,11 +41,12 @@ object track {
 
         val ports = ModuleInternals
           .getPorts(module)
-          .filter(_._1.isInstanceOf[Interface[_]])
-          .map { case (a, b) => (a.asInstanceOf[Interface[Data]], b) }
+          .map { case (data, si) =>
+            DataInternals.getChildrenOfType[Interface[Data]](data).map { (_, si) }
+          }
+          .flatten
 
-        wires.foreach { _.sanityCheck(false) }
-        ports.foreach { _._1.sanityCheck(false) }
+        wires.foreach { _.sanityCheck() }
 
         if (module.isInstanceOf[RawModule]) {
           val sourceInfos = ModuleInternals.getChildrenSourceInfo(module.asInstanceOf[RawModule])
@@ -56,7 +57,7 @@ object track {
             }
             .foreach {
               case (module, io, sourceLocation) => {
-                io.foreach { _.sanityCheck(true, sourceLocation) }
+                io.foreach { _.sanityCheck(false, sourceLocation) }
               }
             }
         }
@@ -95,8 +96,8 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     extends util.ReadyValidIO[T](gen) {
   val module_ = Module.currentModule
 
-  var markSource_ = ArrayBuffer.empty[(BaseModule, SourceInfo)]
-  var markSink_ = ArrayBuffer.empty[(BaseModule, SourceInfo)]
+  private var markSource_ = ArrayBuffer.empty[(BaseModule, SourceInfo)]
+  private var markSink_ = ArrayBuffer.empty[(BaseModule, SourceInfo)]
 
   def markSource()(implicit si: SourceInfo): Unit = {
     requireIsHardware(this, "chext.elastic.Interface: markSource must be called on a hardware!")
@@ -111,7 +112,8 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     // chisel can catch this mistake too, but the error message is not great
     // check 5 below.
     assert(module_.nonEmpty)
-    if (DataMirror.isIO(this) && currentModule == module_.get) {
+
+    if (DataInternals.isParentIO(this) && currentModule == module_.get) {
       if (DataMirror.directionOf(this.valid) == ActualDirection.Output) {
         val pos = si.makeMessage(x => x)
         println(
@@ -135,7 +137,8 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     markSink_.addOne((currentModule, si))
 
     assert(module_.nonEmpty)
-    if (DataMirror.isIO(this) && currentModule == module_.get) {
+
+    if (DataInternals.isParentIO(this) && currentModule == module_.get) {
       if (DataMirror.directionOf(this.valid) == ActualDirection.Input) {
         val pos = si.makeMessage(x => x)
         println(
@@ -147,19 +150,10 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     track()
   }
 
-  /** @param isParent
-    *   If the sanity check of a child Module's IO nodes is initiated by the parent module.
-    */
   private[elastic] def sanityCheck(
-      isParent: Boolean = false,
+      isRootIO: Boolean = false,
       instanceSourceInfo: Option[SourceInfo] = Option.empty
   ): Unit = {
-    // IOs are checked twice.
-    // Once by the owner module for checks 2-5.
-    // Once by the parent of the owner module check 1.
-    //
-    // Wires are checked only once by the owner module for all the checks
-    //
     val currentModule = Module.currentModule.getOrElse(
       throw new ChiselException(
         "chext.elastic.Interface: sanityCheck must be called from a module!"
@@ -174,7 +168,7 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
 
       println(f"$label $msg")
 
-      if (isParent && instanceSourceInfo.nonEmpty) {
+      if (instanceSourceInfo.nonEmpty) {
         val pos = instanceSourceInfo.get.makeMessage(x => x)
         println(
           f"$indent Module '$moduleName' with instance name '${module_.get.instanceName}' is instantiated $pos"
@@ -202,7 +196,7 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     // log("debug")
 
     // Check (1)
-    if (DataMirror.isWire(this) || isParent) {
+    if (!isRootIO) {
       if (markSource_.length >= 1 && markSink_.length == 0) {
         log("Interface is marked as a source but never as a sink!")
       }
@@ -211,10 +205,6 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
         log("Interface is marked as a sink but never as a source!")
       }
     }
-
-    if (isParent)
-      // the rest of the checks are already done
-      return
 
     // Check (2)
     if (markSource_.isEmpty && markSink_.isEmpty) {
@@ -230,16 +220,6 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     if (markSink_.length > 1) {
       log("Interface marked as sink more than 1 times!")
     }
-
-    // Check (5)
-    // actually, chisel catches this earlier, so we should catch it even earlier.
-    // if (DataMirror.isIO(this)) {
-    //   if (markSource_.length == 1 && markSink_.length == 1) {
-    //     if (markSource_.head._1 == markSink_.head._1) {
-    //       log("IO[Interface] used both as a source and a sink from the same module.")
-    //     }
-    //   }
-    // }
   }
 }
 

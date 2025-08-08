@@ -61,134 +61,134 @@
   `endif // PRINTF_COND
 `endif // not def PRINTF_COND_
 
-module AddressGenerator(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
+module AddressGenerator(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
   input         clock,	// <stdin>:23:11
                 reset,	// <stdin>:24:11
-  output        source_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:18
-  input         source_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:18
-  input  [31:0] source_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:18
-  input  [7:0]  source_bits_len,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:18
-  input  [2:0]  source_bits_size,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:18
-  input  [1:0]  source_bits_burst,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:18
-  input         sink_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:74:16
-  output        sink_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:74:16
-  output [31:0] sink_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:74:16
-  output [2:0]  sink_bits_size,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:74:16
-  output        sink_bits_last	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:74:16
+  output        source_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
+  input         source_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
+  input  [31:0] source_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
+  input  [7:0]  source_bits_len,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
+  input  [2:0]  source_bits_size,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
+  input  [1:0]  source_bits_burst,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
+  input         sink_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:16
+  output        sink_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:16
+  output [31:0] sink_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:16
+  output [2:0]  sink_bits_size,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:16
+  output        sink_bits_last	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:16
 );
 
-  wire        transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:94:24, :95:14, :123:14
-  reg  [31:0] transducer_addr;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:79:19
-  reg  [7:0]  transducer_ctr;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18
-  reg         transducer_generating;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:85:29
-  wire        _GEN = source_valid & transducer_generating;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :85:29, :94:24, :97:20
-  wire        _transducer_WIRE = _GEN & transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :94:24, :95:14, :97:20, :123:14
-  wire        _transducer_WIRE_1 = _GEN & ~transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :85:29, :94:24, :95:14, :97:20, :98:18, :102:19, :123:14
+  wire        transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:93:24, :94:14, :122:14
+  reg  [31:0] transducer_addr;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:78:19
+  reg  [7:0]  transducer_ctr;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18
+  reg         transducer_generating;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:84:29
+  wire        _GEN = source_valid & transducer_generating;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :84:29, :93:24, :96:20
+  wire        _transducer_WIRE = _GEN & transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, :94:14, :96:20, :122:14
+  wire        _transducer_WIRE_1 = _GEN & ~transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :84:29, :93:24, :94:14, :96:20, :97:18, :101:19, :122:14
   wire [38:0] _transducer_sink_bits_addr_T_1 =
-    {7'h0, transducer_addr} << source_bits_size;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:79:19, :119:28
+    {7'h0, transducer_addr} << source_bits_size;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:78:19, :118:28
   assign transducer_last_1 =
-    transducer_generating ? transducer_ctr == 8'h0 : source_bits_len == 8'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18, :85:29, :94:24, :95:{14,21}, :123:{14,24}
+    transducer_generating ? transducer_ctr == 8'h0 : source_bits_len == 8'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :84:29, :93:24, :94:{14,21}, :122:{14,24}
   wire        _transducer_WIRE_2 =
-    source_valid & ~transducer_generating & transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :85:29, :94:24, :95:14, :116:44, :123:14, :125:18
+    source_valid & ~transducer_generating & transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :84:29, :93:24, :94:14, :115:44, :122:14, :124:18
   wire        _transducer_WIRE_3 =
-    source_valid & ~transducer_generating & ~transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :85:29, :94:24, :95:14, :97:20, :98:18, :102:19, :116:44, :123:14, :125:18
+    source_valid & ~transducer_generating & ~transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :84:29, :93:24, :94:14, :96:20, :97:18, :101:19, :115:44, :122:14, :124:18
   wire [3:0]  transducer_cond =
-    {_transducer_WIRE_3, _transducer_WIRE_2, _transducer_WIRE_1, _transducer_WIRE};	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :94:24, :97:20
+    {_transducer_WIRE_3, _transducer_WIRE_2, _transducer_WIRE_1, _transducer_WIRE};	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, :96:20
   wire        transducer_errorAtLeastTwoActions =
     source_valid
     & (|(transducer_cond
          & {_transducer_WIRE_3, _transducer_WIRE_2, _transducer_WIRE_1, _transducer_WIRE}
-         - 4'h1));	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :94:24, :97:20
-  wire        transducer_errorNoAction = source_valid & transducer_cond == 4'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32
-  `ifndef SYNTHESIS	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32
-    always @(posedge clock) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32
-      if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32
+         - 4'h1));	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, :96:20
+  wire        transducer_errorNoAction = source_valid & transducer_cond == 4'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
+  `ifndef SYNTHESIS	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
+    always @(posedge clock) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
+      if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
         $fwrite(32'h80000002,
-                "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32
-      if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :94:24, :97:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+                "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
+      if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, :96:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 98:18]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 97:18]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE_1
-          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :94:24, :97:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, :96:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 102:19]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+                "elastic.Transducer: action 'produce' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 101:19]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE_2
-          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :94:24, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 128:18]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 127:18]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE_3
-          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, :94:24, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 130:19]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
-      if ((`PRINTF_COND_) & transducer_errorNoAction & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32
+                "elastic.Transducer: action 'produce' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 129:19]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
+      if ((`PRINTF_COND_) & transducer_errorNoAction & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 76:32]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:76:32
+                "elastic.Transducer: no action was taken! @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 75:32]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
     end // always @(posedge)
   `endif // not def SYNTHESIS
   always @(posedge clock) begin	// <stdin>:23:11
-    if (source_valid) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:18
-      automatic logic _GEN_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18, :97:20, :102:19
-      _GEN_0 = transducer_last_1 | ~sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18, :94:24, :95:14, :97:20, :102:19, :123:14
-      if (transducer_generating) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:85:29
-        if (_GEN_0) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18, :97:20, :102:19
+    if (source_valid) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
+      automatic logic _GEN_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :96:20, :101:19
+      _GEN_0 = transducer_last_1 | ~sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :93:24, :94:14, :96:20, :101:19, :122:14
+      if (transducer_generating) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:84:29
+        if (_GEN_0) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :96:20, :101:19
         end
-        else begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18, :97:20, :102:19
-          if (source_bits_burst == 2'h1)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7, :105:27
-            transducer_addr <= transducer_addr + 32'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:79:19, :106:28
-          else if (source_bits_burst == 2'h2)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7, :107:33
+        else begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :96:20, :101:19
+          if (source_bits_burst == 2'h1)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :104:27
+            transducer_addr <= transducer_addr + 32'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:78:19, :105:28
+          else if (source_bits_burst == 2'h2)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :106:33
             transducer_addr <=
               transducer_addr & {24'hFFFFFF, ~source_bits_len} | transducer_addr + 32'h1
-              & {24'h0, source_bits_len};	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:79:19, :106:28, :108:34, :109:27, :110:{29,38,48,55}
-          transducer_ctr <= transducer_ctr - 8'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18, :103:24
+              & {24'h0, source_bits_len};	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:78:19, :105:28, :107:34, :108:27, :109:{29,38,48,55}
+          transducer_ctr <= transducer_ctr - 8'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :102:24
         end
       end
-      else if (_GEN_0) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18, :97:20, :102:19, :127:20, :130:19
+      else if (_GEN_0) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :96:20, :101:19, :126:20, :129:19
       end
-      else begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18, :127:20, :130:19
-        transducer_addr <= (source_bits_addr >> source_bits_size) + 32'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:79:19, :106:28, :132:{31,43}
-        transducer_ctr <= source_bits_len - 8'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:18, :133:27
+      else begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :126:20, :129:19
+        transducer_addr <= (source_bits_addr >> source_bits_size) + 32'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:78:19, :105:28, :131:{31,43}
+        transducer_ctr <= source_bits_len - 8'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :132:27
       end
     end
     if (reset)	// <stdin>:23:11
-      transducer_generating <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7, :85:29
-    else if (source_valid) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:18
-      if (transducer_generating)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:85:29
+      transducer_generating <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :84:29
+    else if (source_valid) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
+      if (transducer_generating)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:84:29
         transducer_generating <=
-          ~(transducer_last_1 & sink_ready) & transducer_generating;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:85:29, :94:24, :95:14, :97:20, :98:18, :99:24, :123:14
-      else	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:85:29
-        transducer_generating <= ~transducer_last_1 & sink_ready | transducer_generating;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:85:29, :94:24, :95:14, :123:14, :127:20, :130:19
+          ~(transducer_last_1 & sink_ready) & transducer_generating;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:84:29, :93:24, :94:14, :96:20, :97:18, :98:24, :122:14
+      else	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:84:29
+        transducer_generating <= ~transducer_last_1 & sink_ready | transducer_generating;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:84:29, :93:24, :94:14, :122:14, :126:20, :129:19
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
-      `FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
+  `ifdef ENABLE_INITIAL_REG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
+      `FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
-      automatic logic [31:0] _RANDOM[0:1];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
-      `ifdef INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
-        `INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
+    initial begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
+      automatic logic [31:0] _RANDOM[0:1];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
+      `ifdef INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
+        `INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
+      `ifdef RANDOMIZE_REG_INIT	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
         for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
-          _RANDOM[i[0]] = `RANDOM;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
-        end	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
-        transducer_addr = _RANDOM[1'h0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7, :79:19
-        transducer_ctr = _RANDOM[1'h1][7:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7, :82:18
-        transducer_generating = _RANDOM[1'h1][8];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7, :82:18, :85:29
+          _RANDOM[i[0]] = `RANDOM;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
+        end	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
+        transducer_addr = _RANDOM[1'h0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :78:19
+        transducer_ctr = _RANDOM[1'h1][7:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :81:18
+        transducer_generating = _RANDOM[1'h1][8];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :81:18, :84:29
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
-      `FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
+    `ifdef FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
+      `FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign source_ready = source_valid & transducer_last_1 & sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7, :76:32, :94:24, :95:14, :123:14
-  assign sink_valid = source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
+  assign source_ready = source_valid & transducer_last_1 & sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :75:32, :93:24, :94:14, :122:14
+  assign sink_valid = source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
   assign sink_bits_addr =
     ~transducer_generating | source_bits_burst == 2'h0
       ? source_bits_addr
-      : _transducer_sink_bits_addr_T_1[31:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7, :85:29, :94:24, :116:{23,44}, :119:{20,28}, :125:18
-  assign sink_bits_size = source_bits_size;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7
-  assign sink_bits_last = transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:66:7, :94:24, :95:14, :123:14
+      : _transducer_sink_bits_addr_T_1[31:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :84:29, :93:24, :115:{23,44}, :118:{20,28}, :124:18
+  assign sink_bits_size = source_bits_size;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
+  assign sink_bits_last = transducer_last_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :93:24, :94:14, :122:14
 endmodule
 
 module AddressGenerator_Tbtop_1(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/amba/axi4/full/components/AddressGenerator.tb.scala:9:7

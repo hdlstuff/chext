@@ -60,6 +60,8 @@ private class SyncWriteElasticReadMemory[T <: Data](
   })
 
   if (useSyncMem) {
+    io.rdReq.markSource()
+
     val sram = SRAM(1 << wAddr, gen, 1, 1, 0)
 
     sram.writePorts(0).enable := io.wrEn
@@ -93,6 +95,9 @@ private class SyncWriteElasticReadMemory[T <: Data](
       rdCounter.dec()
     }
   } else {
+    io.rdReq.markSource()
+    io.rdResp.markSink()
+
     val mem = Mem(1 << wAddr, gen)
 
     when(io.wrEn) {
@@ -113,11 +118,15 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
 
   def implRead(): Unit = prefix("read") {
     val s_ar = s_axi.ar
+    s_ar.markSource()
+
     val m_ar = SinkBuffer(m_axi.ar)
     m_ar.markSink()
 
     val s_r = SinkBuffer(s_axi.r)
+
     val m_r = m_axi.r
+    m_r.markSource()
 
     val genIndex = UInt(wBufferIndex.W)
     val bufferCapacity = (1 << wBufferIndex).U((wBufferIndex + 1).W)
@@ -132,6 +141,8 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
         readUseSyncMem
       )
     )
+
+    bufferPayload.io.rdReq.markSink()
 
     // 1 extra bit set when no more IDs are available
     val nextIdFill = RegInit(0.U((wIdMaster + 1).W))
@@ -202,11 +213,14 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
 
   def implWrite(): Unit = prefix("write") {
     val s_aw = s_axi.aw
+    s_aw.markSource()
+
     val m_aw = SinkBuffer(m_axi.aw)
     m_aw.markSink()
 
     val s_b = SinkBuffer(s_axi.b)
     val m_b = m_axi.b
+    m_b.markSource()
 
     val bufferValid = Mem(1 << wIdMaster, Bool())
     val bufferPayload = Module(
@@ -216,6 +230,8 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
         writeUseSyncMem
       )
     )
+
+    bufferPayload.io.rdReq.markSink()
 
     val nextIdFill = Reg(UInt((wIdMaster + 1).W))
     val nextIdDrain = Reg(UInt(wIdMaster.W))

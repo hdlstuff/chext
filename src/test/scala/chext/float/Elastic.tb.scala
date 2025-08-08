@@ -20,46 +20,51 @@ class Elastic_Tbtop extends Module with chext.TestBenchTop {
   val fp64_addOut = IO(elastic.Sink(UInt(64.W)))
   val fp64_multiplyOut = IO(elastic.Sink(UInt(64.W)))
 
-  private val fp32_add = Module(new ElasticAdd(genFp32))
-  private val fp64_add = Module(new ElasticAdd(genFp64))
+  {
+    val fp32_add = Module(new ElasticAdd(genFp32))
+    val fp64_add = Module(new ElasticAdd(genFp64))
 
-  private val fp32_multiply = Module(new ElasticMultiply(genFp32))
-  private val fp64_multiply = Module(new ElasticMultiply(genFp64))
+    val fp32_multiply = Module(new ElasticMultiply(genFp32))
+    val fp64_multiply = Module(new ElasticMultiply(genFp64))
 
-  new elastic.Transform(fp32_add.sinkOut, elastic.SinkBuffer(fp32_addOut, 32)) {
-    out := in.asUInt
-  }
+    val transform0 = new elastic.Transform(fp32_add.sinkOut, elastic.SinkBuffer(fp32_addOut, 32)) {
+      out := in.asUInt
+    }
 
-  new elastic.Transform(fp64_add.sinkOut, elastic.SinkBuffer(fp64_addOut, 32)) {
-    out := in.asUInt
-  }
+    val transform1 = new elastic.Transform(fp64_add.sinkOut, elastic.SinkBuffer(fp64_addOut, 32)) {
+      out := in.asUInt
+    }
 
-  new elastic.Transform(fp32_multiply.sinkOut, elastic.SinkBuffer(fp32_multiplyOut, 32)) {
-    out := in.asUInt
-  }
+    val transform2 =
+      new elastic.Transform(fp32_multiply.sinkOut, elastic.SinkBuffer(fp32_multiplyOut, 32)) {
+        out := in.asUInt
+      }
 
-  new elastic.Transform(fp64_multiply.sinkOut, elastic.SinkBuffer(fp64_multiplyOut, 32)) {
-    out := in.asUInt
-  }
+    val transform3 =
+      new elastic.Transform(fp64_multiply.sinkOut, elastic.SinkBuffer(fp64_multiplyOut, 32)) {
+        out := in.asUInt
+      }
 
-  private val fork0 = new elastic.Fork(elastic.SourceBuffer(fp32_inA, 32)) {
-    fork { in.asTypeOf(genFp32) } :=> fp32_add.sourceInA
-    fork { in.asTypeOf(genFp32) } :=> fp32_multiply.sourceInA
-  }
+    val fork0 = new elastic.Fork(elastic.SourceBuffer(fp32_inA, 32)) {
+      fork { in.asTypeOf(genFp32) } :=> fp32_add.sourceInA
+      fork { in.asTypeOf(genFp32) } :=> fp32_multiply.sourceInA
+    }
 
-  private val fork1 = new elastic.Fork(elastic.SourceBuffer(fp32_inB, 32)) {
-    fork { in.asTypeOf(genFp32) } :=> fp32_add.sourceInB
-    fork { in.asTypeOf(genFp32) } :=> fp32_multiply.sourceInB
-  }
+    val fork1 = new elastic.Fork(elastic.SourceBuffer(fp32_inB, 32)) {
+      fork { in.asTypeOf(genFp32) } :=> fp32_add.sourceInB
+      fork { in.asTypeOf(genFp32) } :=> fp32_multiply.sourceInB
+    }
 
-  private val fork2 = new elastic.Fork(elastic.SourceBuffer(fp64_inA, 32)) {
-    fork { in.asTypeOf(genFp64) } :=> fp64_add.sourceInA
-    fork { in.asTypeOf(genFp64) } :=> fp64_multiply.sourceInA
-  }
+    val fork2 = new elastic.Fork(elastic.SourceBuffer(fp64_inA, 32)) {
+      fork { in.asTypeOf(genFp64) } :=> fp64_add.sourceInA
+      fork { in.asTypeOf(genFp64) } :=> fp64_multiply.sourceInA
+    }
 
-  private val fork3 = new elastic.Fork(elastic.SourceBuffer(fp64_inB, 32)) {
-    fork { in.asTypeOf(genFp64) } :=> fp64_add.sourceInB
-    fork { in.asTypeOf(genFp64) } :=> fp64_multiply.sourceInB
+    val fork3 = new elastic.Fork(elastic.SourceBuffer(fp64_inB, 32)) {
+      fork { in.asTypeOf(genFp64) } :=> fp64_add.sourceInB
+      fork { in.asTypeOf(genFp64) } :=> fp64_multiply.sourceInB
+    }
+
   }
 
   declareClock(clock)

@@ -12,6 +12,7 @@ class ReadToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Por
   val raw = IO(Flipped(new RawInterface(rawMemCfg.wAddr, rawMemCfg.wData, true, false)))
 
   private val rdReq = read.req
+  rdReq.markSource()
 
   // NOTE: response should be buffered to avoid a combinational connection
   // between ready and valid signals (which would cause a combinational)
@@ -73,6 +74,7 @@ class WriteToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Po
   val raw = IO(Flipped(new RawInterface(rawMemCfg.wAddr, rawMemCfg.wData, true, false)))
 
   private val wrReq = write.req
+  wrReq.markSource()
 
   private val wrResp = elastic.SinkBuffer(write.resp)
   wrResp.markSink()
@@ -124,11 +126,13 @@ class ReadWriteToRawBridge(
   val raw = IO(Flipped(new RawInterface(rawMemCfg.wAddr, rawMemCfg.wData, true, true)))
 
   private val rdReq = read.req
+  rdReq.markSource()
 
   private val rdResp = elastic.SinkBuffer(read.resp)
   rdResp.markSink()
 
   private val wrReq = write.req
+  wrReq.markSource()
 
   private val wrResp = elastic.SinkBuffer(write.resp)
   wrResp.markSink()

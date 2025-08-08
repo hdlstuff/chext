@@ -389,28 +389,28 @@ module Read0(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chex
   assign m_axi_r_ready = r_join0_fire;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:82:15, :173:31
 endmodule
 
-module Read(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:192:13
+module Read(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:196:13
   input         clock,	// <stdin>:1869:11
                 reset,	// <stdin>:1870:11
-  output        sourceTask_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:195:22
-  input         sourceTask_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:195:22
-  input  [19:0] sourceTask_bits_address,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:195:22
-  input  [31:0] sourceTask_bits_length,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:195:22
-  input         sinkResult_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:196:22
-  output        sinkResult_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:196:22
-  output [31:0] sinkResult_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:196:22
-                sinkResult_bits_index,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:196:22
-  output        sinkResult_bits_last,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:196:22
-  input         m_axi_ar_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:198:17
-  output        m_axi_ar_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:198:17
-  output [19:0] m_axi_ar_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:198:17
-  output [7:0]  m_axi_ar_bits_len,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:198:17
-  output        m_axi_r_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:198:17
-  input         m_axi_r_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:198:17
-  input  [31:0] m_axi_r_bits_data	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:198:17
+  output        sourceTask_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:199:22
+  input         sourceTask_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:199:22
+  input  [19:0] sourceTask_bits_address,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:199:22
+  input  [31:0] sourceTask_bits_length,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:199:22
+  input         sinkResult_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:200:22
+  output        sinkResult_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:200:22
+  output [31:0] sinkResult_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:200:22
+                sinkResult_bits_index,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:200:22
+  output        sinkResult_bits_last,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:200:22
+  input         m_axi_ar_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:202:17
+  output        m_axi_ar_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:202:17
+  output [19:0] m_axi_ar_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:202:17
+  output [7:0]  m_axi_ar_bits_len,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:202:17
+  output        m_axi_r_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:202:17
+  input         m_axi_r_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:202:17
+  input  [31:0] m_axi_r_bits_data	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:202:17
 );
 
-  Read0 read0 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:200:29
+  Read0 read0 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Read.scala:204:29
     .clock                   (clock),
     .reset                   (reset),
     .sourceTask_ready        (sourceTask_ready),
@@ -840,141 +840,141 @@ module elasticMux(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala
   assign io_select_ready = fire;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Mux.scala:9:7, :30:28
 endmodule
 
-module Write(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
+module Write(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
   input         clock,	// <stdin>:2828:11
                 reset,	// <stdin>:2829:11
-  output        sourceTask_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:22
-  input         sourceTask_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:22
-  input  [19:0] sourceTask_bits_address,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:22
-  input  [31:0] sourceTask_bits_length,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:22
-  input         sinkResult_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:201:22
-  output        sinkResult_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:201:22
-                sourceData_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:203:22
-  input         sourceData_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:203:22
-  input  [31:0] sourceData_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:203:22
-  input         m_axi_aw_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
-  output        m_axi_aw_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
-  output [19:0] m_axi_aw_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
-  output [7:0]  m_axi_aw_bits_len,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
-  input         m_axi_w_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
-  output        m_axi_w_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
-  output [31:0] m_axi_w_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
-  output        m_axi_w_bits_last,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
-                m_axi_b_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
-  input         m_axi_b_valid	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:205:17
+  output        sourceTask_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:203:22
+  input         sourceTask_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:203:22
+  input  [19:0] sourceTask_bits_address,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:203:22
+  input  [31:0] sourceTask_bits_length,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:203:22
+  input         sinkResult_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:204:22
+  output        sinkResult_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:204:22
+                sourceData_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:206:22
+  input         sourceData_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:206:22
+  input  [31:0] sourceData_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:206:22
+  input         m_axi_aw_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
+  output        m_axi_aw_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
+  output [19:0] m_axi_aw_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
+  output [7:0]  m_axi_aw_bits_len,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
+  input         m_axi_w_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
+  output        m_axi_w_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
+  output [31:0] m_axi_w_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
+  output        m_axi_w_bits_last,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
+                m_axi_b_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
+  input         m_axi_b_valid	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:208:17
 );
 
-  wire       transform0_rightBuffer_sink_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
+  wire       transform0_rightBuffer_sink_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
   wire       _mux_io_sources_0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Mux.scala:53:21
-  wire       _write0_sourceTask_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:207:30
-  wire       _write0_sinkResult_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:207:30
+  wire       _write0_sourceTask_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:210:30
+  wire       _write0_sinkResult_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:210:30
   reg  [2:0] transform0_rightBuffer_enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg  [2:0] transform0_rightBuffer_deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg        transform0_rightBuffer_maybe_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
+  reg        transform0_rightBuffer_maybe_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
   wire       transform0_rightBuffer_ptr_match =
-    transform0_rightBuffer_enq_ptr_value == transform0_rightBuffer_deq_ptr_value;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire       transform0_rightBuffer_source_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
-  wire       transform0_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
+    transform0_rightBuffer_enq_ptr_value == transform0_rightBuffer_deq_ptr_value;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire       transform0_rightBuffer_source_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
+  wire       transform0_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
   wire       transform0_rightBuffer_do_enq =
-    transform0_rightBuffer_source_ready & transform0_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58, src/main/scala/chisel3/util/Decoupled.scala:51:35
+    transform0_rightBuffer_source_ready & transform0_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58, src/main/scala/chisel3/util/Decoupled.scala:51:35
   wire       transform0_rightBuffer_sink_valid =
-    ~(transform0_rightBuffer_ptr_match & ~transform0_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
+    ~(transform0_rightBuffer_ptr_match & ~transform0_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
   assign transform0_rightBuffer_source_ready =
-    ~(transform0_rightBuffer_ptr_match & transform0_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
-  wire       transform0_rightBuffer_source_bits = sourceTask_bits_length == 32'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58, :234:21
+    ~(transform0_rightBuffer_ptr_match & transform0_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
+  wire       transform0_rightBuffer_source_bits = sourceTask_bits_length == 32'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58, :237:21
   reg  [2:0] drop0_rightBuffer_enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg  [2:0] drop0_rightBuffer_deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg        drop0_rightBuffer_maybe_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63
+  reg        drop0_rightBuffer_maybe_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63
   wire       drop0_rightBuffer_ptr_match =
-    drop0_rightBuffer_enq_ptr_value == drop0_rightBuffer_deq_ptr_value;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63, src/main/scala/chisel3/util/Counter.scala:61:40
+    drop0_rightBuffer_enq_ptr_value == drop0_rightBuffer_deq_ptr_value;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63, src/main/scala/chisel3/util/Counter.scala:61:40
   wire       drop0_rightBuffer_sink_valid =
-    ~(drop0_rightBuffer_ptr_match & ~drop0_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63
+    ~(drop0_rightBuffer_ptr_match & ~drop0_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63
   wire       drop0_rightBuffer_source_ready =
-    ~(drop0_rightBuffer_ptr_match & drop0_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63
-  reg        fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29
-  reg        fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29
-  reg        fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29
-  wire       fork0_ready_qual1_0 = transform0_rightBuffer_source_ready | fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29, :232:58
+    ~(drop0_rightBuffer_ptr_match & drop0_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63
+  reg        fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29
+  reg        fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29
+  reg        fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29
+  wire       fork0_ready_qual1_0 = transform0_rightBuffer_source_ready | fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29, :235:58
   wire       fork0_ready_qual1_1 =
-    (|sourceTask_bits_length) | drop0_rightBuffer_source_ready | fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29, :240:63, :242:24
-  wire       fork0_ready_qual1_2 = _write0_sourceTask_ready | fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:207:30, :222:29
+    (|sourceTask_bits_length) | drop0_rightBuffer_source_ready | fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29, :243:63, :245:24
+  wire       fork0_ready_qual1_2 = _write0_sourceTask_ready | fork0_regs_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:210:30, :225:29
   wire       fork0_ready =
-    fork0_ready_qual1_0 & fork0_ready_qual1_1 & fork0_ready_qual1_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29
-  assign transform0_rightBuffer_source_valid = sourceTask_valid & ~fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29, :232:58
-  wire       transform0_rightBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
+    fork0_ready_qual1_0 & fork0_ready_qual1_1 & fork0_ready_qual1_2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29
+  assign transform0_rightBuffer_source_valid = sourceTask_valid & ~fork0_regs_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29, :235:58
+  wire       transform0_rightBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
   wire       drop0_rightBuffer_source_valid =
-    ~(|sourceTask_bits_length) & sourceTask_valid & ~fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29, :240:{29,63}, :242:24
-  wire       drop0_rightBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63
+    ~(|sourceTask_bits_length) & sourceTask_valid & ~fork0_regs_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29, :243:{29,63}, :245:24
+  wire       drop0_rightBuffer_sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63
   always @(posedge clock) begin	// <stdin>:2828:11
     if (reset) begin	// <stdin>:2828:11
       transform0_rightBuffer_enq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       transform0_rightBuffer_deq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      transform0_rightBuffer_maybe_full <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :232:58
+      transform0_rightBuffer_maybe_full <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :235:58
       drop0_rightBuffer_enq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       drop0_rightBuffer_deq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      drop0_rightBuffer_maybe_full <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :240:63
-      fork0_regs_0 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :222:29
-      fork0_regs_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :222:29
-      fork0_regs_2 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :222:29
+      drop0_rightBuffer_maybe_full <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :243:63
+      fork0_regs_0 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :225:29
+      fork0_regs_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :225:29
+      fork0_regs_2 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :225:29
     end
     else begin	// <stdin>:2828:11
       automatic logic transform0_rightBuffer_do_deq =
-        transform0_rightBuffer_sink_ready & transform0_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        transform0_rightBuffer_sink_ready & transform0_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58, src/main/scala/chisel3/util/Decoupled.scala:51:35
       automatic logic drop0_rightBuffer_do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35
       automatic logic drop0_rightBuffer_do_deq =
-        drop0_rightBuffer_sink_ready & drop0_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        drop0_rightBuffer_sink_ready & drop0_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63, src/main/scala/chisel3/util/Decoupled.scala:51:35
       drop0_rightBuffer_do_enq =
-        drop0_rightBuffer_source_ready & drop0_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        drop0_rightBuffer_source_ready & drop0_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63, src/main/scala/chisel3/util/Decoupled.scala:51:35
       if (transform0_rightBuffer_do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         transform0_rightBuffer_enq_ptr_value <=
           transform0_rightBuffer_enq_ptr_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (transform0_rightBuffer_do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         transform0_rightBuffer_deq_ptr_value <=
           transform0_rightBuffer_deq_ptr_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(transform0_rightBuffer_do_enq == transform0_rightBuffer_do_deq))	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58, src/main/scala/chisel3/util/Decoupled.scala:51:35
-        transform0_rightBuffer_maybe_full <= transform0_rightBuffer_do_enq;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58, src/main/scala/chisel3/util/Decoupled.scala:51:35
+      if (~(transform0_rightBuffer_do_enq == transform0_rightBuffer_do_deq))	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        transform0_rightBuffer_maybe_full <= transform0_rightBuffer_do_enq;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58, src/main/scala/chisel3/util/Decoupled.scala:51:35
       if (drop0_rightBuffer_do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         drop0_rightBuffer_enq_ptr_value <= drop0_rightBuffer_enq_ptr_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (drop0_rightBuffer_do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         drop0_rightBuffer_deq_ptr_value <= drop0_rightBuffer_deq_ptr_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(drop0_rightBuffer_do_enq == drop0_rightBuffer_do_deq))	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63, src/main/scala/chisel3/util/Decoupled.scala:51:35
-        drop0_rightBuffer_maybe_full <= drop0_rightBuffer_do_enq;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63, src/main/scala/chisel3/util/Decoupled.scala:51:35
-      fork0_regs_0 <= fork0_ready_qual1_0 & sourceTask_valid & ~fork0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29
-      fork0_regs_1 <= fork0_ready_qual1_1 & sourceTask_valid & ~fork0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29
-      fork0_regs_2 <= fork0_ready_qual1_2 & sourceTask_valid & ~fork0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29
+      if (~(drop0_rightBuffer_do_enq == drop0_rightBuffer_do_deq))	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        drop0_rightBuffer_maybe_full <= drop0_rightBuffer_do_enq;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63, src/main/scala/chisel3/util/Decoupled.scala:51:35
+      fork0_regs_0 <= fork0_ready_qual1_0 & sourceTask_valid & ~fork0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29
+      fork0_regs_1 <= fork0_ready_qual1_1 & sourceTask_valid & ~fork0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29
+      fork0_regs_2 <= fork0_ready_qual1_2 & sourceTask_valid & ~fork0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
-    `ifdef FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
-      `FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
+  `ifdef ENABLE_INITIAL_REG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
+    `ifdef FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
+      `FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
-      automatic logic [31:0] _RANDOM[0:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
-      `ifdef INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
-        `INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
+    initial begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
+      automatic logic [31:0] _RANDOM[0:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
+      `ifdef INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
+        `INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
-        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
-        transform0_rightBuffer_enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][2:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, src/main/scala/chisel3/util/Counter.scala:61:40
-        transform0_rightBuffer_deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][5:3];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, src/main/scala/chisel3/util/Counter.scala:61:40
-        transform0_rightBuffer_maybe_full = _RANDOM[/*Zero width*/ 1'b0][6];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :232:58, src/main/scala/chisel3/util/Counter.scala:61:40
-        drop0_rightBuffer_enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][9:7];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, src/main/scala/chisel3/util/Counter.scala:61:40
-        drop0_rightBuffer_deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][12:10];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, src/main/scala/chisel3/util/Counter.scala:61:40
-        drop0_rightBuffer_maybe_full = _RANDOM[/*Zero width*/ 1'b0][13];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :240:63, src/main/scala/chisel3/util/Counter.scala:61:40
-        fork0_regs_0 = _RANDOM[/*Zero width*/ 1'b0][14];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :222:29, src/main/scala/chisel3/util/Counter.scala:61:40
-        fork0_regs_1 = _RANDOM[/*Zero width*/ 1'b0][15];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :222:29, src/main/scala/chisel3/util/Counter.scala:61:40
-        fork0_regs_2 = _RANDOM[/*Zero width*/ 1'b0][16];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :222:29, src/main/scala/chisel3/util/Counter.scala:61:40
+      `ifdef RANDOMIZE_REG_INIT	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
+        transform0_rightBuffer_enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][2:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, src/main/scala/chisel3/util/Counter.scala:61:40
+        transform0_rightBuffer_deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][5:3];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, src/main/scala/chisel3/util/Counter.scala:61:40
+        transform0_rightBuffer_maybe_full = _RANDOM[/*Zero width*/ 1'b0][6];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :235:58, src/main/scala/chisel3/util/Counter.scala:61:40
+        drop0_rightBuffer_enq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][9:7];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, src/main/scala/chisel3/util/Counter.scala:61:40
+        drop0_rightBuffer_deq_ptr_value = _RANDOM[/*Zero width*/ 1'b0][12:10];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, src/main/scala/chisel3/util/Counter.scala:61:40
+        drop0_rightBuffer_maybe_full = _RANDOM[/*Zero width*/ 1'b0][13];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :243:63, src/main/scala/chisel3/util/Counter.scala:61:40
+        fork0_regs_0 = _RANDOM[/*Zero width*/ 1'b0][14];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :225:29, src/main/scala/chisel3/util/Counter.scala:61:40
+        fork0_regs_1 = _RANDOM[/*Zero width*/ 1'b0][15];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :225:29, src/main/scala/chisel3/util/Counter.scala:61:40
+        fork0_regs_2 = _RANDOM[/*Zero width*/ 1'b0][16];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :225:29, src/main/scala/chisel3/util/Counter.scala:61:40
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
-      `FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13
+    `ifdef FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
+      `FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  Write0 write0 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:207:30
+  Write0 write0 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:210:30
     .clock                   (clock),
     .reset                   (reset),
     .sourceTask_ready        (_write0_sourceTask_ready),
-    .sourceTask_valid        (sourceTask_valid & ~fork0_regs_2),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:222:29
+    .sourceTask_valid        (sourceTask_valid & ~fork0_regs_2),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:225:29
     .sourceTask_bits_address (sourceTask_bits_address),
     .sourceTask_bits_length  (sourceTask_bits_length),
     .sinkResult_ready        (_mux_io_sources_0_ready),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Mux.scala:53:21
@@ -997,26 +997,26 @@ module Write(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chex
     .ADDR_WIDTH(3),
     .COUNT(8),
     .DATA_WIDTH(1)
-  ) transform0_rightBuffer_ram (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
+  ) transform0_rightBuffer_ram (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
     .clock    (clock),
     .addrA    (transform0_rightBuffer_enq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .writeEnA (transform0_rightBuffer_do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .dataInA  (transform0_rightBuffer_source_bits),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
+    .dataInA  (transform0_rightBuffer_source_bits),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
     .addrB    (transform0_rightBuffer_deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (transform0_rightBuffer_sink_bits)
   );
   elasticMux mux (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Mux.scala:53:21
     .io_sources_0_ready (_mux_io_sources_0_ready),
-    .io_sources_0_valid (_write0_sinkResult_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:207:30
+    .io_sources_0_valid (_write0_sinkResult_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:210:30
     .io_sources_1_ready (drop0_rightBuffer_sink_ready),
-    .io_sources_1_valid (drop0_rightBuffer_sink_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:240:63
+    .io_sources_1_valid (drop0_rightBuffer_sink_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:243:63
     .io_sink_ready      (sinkResult_ready),
     .io_sink_valid      (sinkResult_valid),
     .io_select_ready    (transform0_rightBuffer_sink_ready),
-    .io_select_valid    (transform0_rightBuffer_sink_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
-    .io_select_bits     (transform0_rightBuffer_sink_bits)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:232:58
+    .io_select_valid    (transform0_rightBuffer_sink_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
+    .io_select_bits     (transform0_rightBuffer_sink_bits)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:235:58
   );
-  assign sourceTask_ready = fork0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:197:13, :222:29
+  assign sourceTask_ready = fork0_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/stream/Write.scala:200:13, :225:29
 endmodule
 
 // VCS coverage exclude_file
@@ -1336,240 +1336,240 @@ module Queue4_UInt32(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   assign io_deq_bits = empty ? io_enq_bits : _ram_ext_R0_data;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :256:91, :261:25, :293:17, :298:17, :299:19
 endmodule
 
-module ReadWriteToRawBridge(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
+module ReadWriteToRawBridge(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
   input         clock,	// <stdin>:3317:11, :3686:11
                 reset,	// <stdin>:3318:11, :3687:11
-  output        read_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:122:16
-  input         read_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:122:16
-  input  [17:0] read_req_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:122:16
-  input         read_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:122:16
-  output        read_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:122:16
-  output [31:0] read_resp_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:122:16
-  output        write_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:123:17
-  input         write_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:123:17
-  input  [17:0] write_req_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:123:17
-  input  [31:0] write_req_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:123:17
-  input  [3:0]  write_req_bits_strb,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:123:17
-  input         write_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:123:17
-  output        write_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:123:17
-  output [17:0] raw_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:15
-  output [31:0] raw_dIn,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:15
-  input  [31:0] raw_dOut,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:15
-  output [3:0]  raw_wstrb	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:15
+  output        read_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:16
+  input         read_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:16
+  input  [17:0] read_req_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:16
+  input         read_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:16
+  output        read_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:16
+  output [31:0] read_resp_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:16
+  output        write_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:125:17
+  input         write_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:125:17
+  input  [17:0] write_req_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:125:17
+  input  [31:0] write_req_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:125:17
+  input  [3:0]  write_req_bits_strb,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:125:17
+  input         write_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:125:17
+  output        write_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:125:17
+  output [17:0] raw_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:126:15
+  output [31:0] raw_dIn,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:126:15
+  input  [31:0] raw_dOut,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:126:15
+  output [3:0]  raw_wstrb	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:126:15
 );
 
-  wire [31:0] rdResp_rightBuffer_sink_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
-  wire        _read_dataQueue_io_deq_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:179:27
-  wire        _arbiter_arbiter_chooseRd;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:159:25
-  wire        _ctrWriteResp_io_empty;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:146:36
-  wire        _ctrWrite_io_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:142:32
-  wire        _ctrRead_io_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:136:31
-  wire        rdResp_rightBuffer_sink_ready = read_resp_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
-  wire        wrResp_rightBuffer_sink_ready = write_resp_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42
+  wire [31:0] rdResp_rightBuffer_sink_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
+  wire        _read_dataQueue_io_deq_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:183:27
+  wire        _arbiter_arbiter_chooseRd;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:163:25
+  wire        _ctrWriteResp_io_empty;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:150:36
+  wire        _ctrWrite_io_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:146:32
+  wire        _ctrRead_io_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:140:31
+  wire        rdResp_rightBuffer_sink_ready = read_resp_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
+  wire        wrResp_rightBuffer_sink_ready = write_resp_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42
   reg         rdResp_rightBuffer_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         rdResp_rightBuffer_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         rdResp_rightBuffer_maybe_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
+  reg         rdResp_rightBuffer_maybe_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
   wire        rdResp_rightBuffer_ptr_match =
-    rdResp_rightBuffer_wrap == rdResp_rightBuffer_wrap_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        rdResp_rightBuffer_source_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
-  wire        rdResp_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
+    rdResp_rightBuffer_wrap == rdResp_rightBuffer_wrap_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        rdResp_rightBuffer_source_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
+  wire        rdResp_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
   wire        rdResp_rightBuffer_do_enq =
-    rdResp_rightBuffer_source_ready & rdResp_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
+    rdResp_rightBuffer_source_ready & rdResp_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
   wire        rdResp_rightBuffer_sink_valid =
-    ~(rdResp_rightBuffer_ptr_match & ~rdResp_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
+    ~(rdResp_rightBuffer_ptr_match & ~rdResp_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
   assign rdResp_rightBuffer_source_ready =
-    ~(rdResp_rightBuffer_ptr_match & rdResp_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
+    ~(rdResp_rightBuffer_ptr_match & rdResp_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
   reg         wrResp_rightBuffer_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         wrResp_rightBuffer_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         wrResp_rightBuffer_maybe_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42
+  reg         wrResp_rightBuffer_maybe_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42
   wire        wrResp_rightBuffer_ptr_match =
-    wrResp_rightBuffer_wrap == wrResp_rightBuffer_wrap_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42, src/main/scala/chisel3/util/Counter.scala:61:40
+    wrResp_rightBuffer_wrap == wrResp_rightBuffer_wrap_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42, src/main/scala/chisel3/util/Counter.scala:61:40
   wire        wrResp_rightBuffer_sink_valid =
-    ~(wrResp_rightBuffer_ptr_match & ~wrResp_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42
+    ~(wrResp_rightBuffer_ptr_match & ~wrResp_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42
   wire        wrResp_rightBuffer_source_ready =
-    ~(wrResp_rightBuffer_ptr_match & wrResp_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42
-  wire        read_req_ready_0 = _arbiter_arbiter_chooseRd & ~_ctrRead_io_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:136:31, :159:25, :164:37, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/util/Counter.scala:33:17
-  wire        write_req_ready_0 = ~_arbiter_arbiter_chooseRd & ~_ctrWrite_io_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:142:32, :159:25, :165:{20,38}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/util/Counter.scala:33:17
-  wire        _read_T_1 = read_req_ready_0 & read_req_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:164:37, src/main/scala/chisel3/util/Decoupled.scala:51:35
-  wire        _write_T_1 = write_req_ready_0 & write_req_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:165:38, src/main/scala/chisel3/util/Decoupled.scala:51:35
-  reg         read_r;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:198:23
+    ~(wrResp_rightBuffer_ptr_match & wrResp_rightBuffer_maybe_full);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42
+  wire        read_req_ready_0 = _arbiter_arbiter_chooseRd & ~_ctrRead_io_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:140:31, :163:25, :168:37, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/util/Counter.scala:33:17
+  wire        write_req_ready_0 = ~_arbiter_arbiter_chooseRd & ~_ctrWrite_io_full;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:146:32, :163:25, :169:{20,38}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/util/Counter.scala:33:17
+  wire        _read_T_1 = read_req_ready_0 & read_req_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:168:37, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  wire        _write_T_1 = write_req_ready_0 & write_req_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:169:38, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  reg         read_r;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:202:23
   assign rdResp_rightBuffer_source_valid =
-    rdResp_rightBuffer_source_ready & _read_dataQueue_io_deq_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42, :179:27, :202:23
-  reg         write_r;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:213:23
+    rdResp_rightBuffer_source_ready & _read_dataQueue_io_deq_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42, :183:27, :206:23
+  reg         write_r;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:217:23
   wire        wrResp_rightBuffer_source_valid =
-    wrResp_rightBuffer_source_ready & ~_ctrWriteResp_io_empty;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42, :146:36, :216:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/util/Counter.scala:30:17
+    wrResp_rightBuffer_source_ready & ~_ctrWriteResp_io_empty;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42, :150:36, :220:23, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/util/Counter.scala:30:17
   always @(posedge clock) begin	// <stdin>:3317:11, :3686:11
     if (reset) begin	// <stdin>:3317:11, :3686:11
-      rdResp_rightBuffer_wrap <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      rdResp_rightBuffer_wrap_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      rdResp_rightBuffer_maybe_full <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :128:42
-      wrResp_rightBuffer_wrap <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      wrResp_rightBuffer_wrap_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      wrResp_rightBuffer_maybe_full <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :133:42
+      rdResp_rightBuffer_wrap <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      rdResp_rightBuffer_wrap_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      rdResp_rightBuffer_maybe_full <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :131:42
+      wrResp_rightBuffer_wrap <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      wrResp_rightBuffer_wrap_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      wrResp_rightBuffer_maybe_full <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :137:42
     end
     else begin	// <stdin>:3317:11, :3686:11
       automatic logic rdResp_rightBuffer_do_deq =
-        rdResp_rightBuffer_sink_ready & rdResp_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        rdResp_rightBuffer_sink_ready & rdResp_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
       automatic logic wrResp_rightBuffer_do_enq;	// src/main/scala/chisel3/util/Decoupled.scala:51:35
       automatic logic wrResp_rightBuffer_do_deq =
-        wrResp_rightBuffer_sink_ready & wrResp_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        wrResp_rightBuffer_sink_ready & wrResp_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
       wrResp_rightBuffer_do_enq =
-        wrResp_rightBuffer_source_ready & wrResp_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        wrResp_rightBuffer_source_ready & wrResp_rightBuffer_source_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
       if (rdResp_rightBuffer_do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         rdResp_rightBuffer_wrap <= rdResp_rightBuffer_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (rdResp_rightBuffer_do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         rdResp_rightBuffer_wrap_1 <= rdResp_rightBuffer_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(rdResp_rightBuffer_do_enq == rdResp_rightBuffer_do_deq))	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
-        rdResp_rightBuffer_maybe_full <= rdResp_rightBuffer_do_enq;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
+      if (~(rdResp_rightBuffer_do_enq == rdResp_rightBuffer_do_deq))	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        rdResp_rightBuffer_maybe_full <= rdResp_rightBuffer_do_enq;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
       if (wrResp_rightBuffer_do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrResp_rightBuffer_wrap <= wrResp_rightBuffer_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (wrResp_rightBuffer_do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:51:35
         wrResp_rightBuffer_wrap_1 <= wrResp_rightBuffer_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(wrResp_rightBuffer_do_enq == wrResp_rightBuffer_do_deq))	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
-        wrResp_rightBuffer_maybe_full <= wrResp_rightBuffer_do_enq;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
+      if (~(wrResp_rightBuffer_do_enq == wrResp_rightBuffer_do_deq))	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
+        wrResp_rightBuffer_maybe_full <= wrResp_rightBuffer_do_enq;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42, src/main/scala/chisel3/util/Decoupled.scala:51:35
     end
-    read_r <= _read_T_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:198:23, src/main/scala/chisel3/util/Decoupled.scala:51:35
-    write_r <= _write_T_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:213:23, src/main/scala/chisel3/util/Decoupled.scala:51:35
+    read_r <= _read_T_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:202:23, src/main/scala/chisel3/util/Decoupled.scala:51:35
+    write_r <= _write_T_1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:217:23, src/main/scala/chisel3/util/Decoupled.scala:51:35
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
-      `FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
+  `ifdef ENABLE_INITIAL_REG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
+      `FIRRTL_BEFORE_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
-      automatic logic [31:0] _RANDOM[0:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
-      `ifdef INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
-        `INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
+    initial begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
+      automatic logic [31:0] _RANDOM[0:0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
+      `ifdef INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
+        `INIT_RANDOM_PROLOG_	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
-        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
-        rdResp_rightBuffer_wrap = _RANDOM[/*Zero width*/ 1'b0][0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        rdResp_rightBuffer_wrap_1 = _RANDOM[/*Zero width*/ 1'b0][1];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        rdResp_rightBuffer_maybe_full = _RANDOM[/*Zero width*/ 1'b0][2];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :128:42, src/main/scala/chisel3/util/Counter.scala:61:40
-        wrResp_rightBuffer_wrap = _RANDOM[/*Zero width*/ 1'b0][3];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        wrResp_rightBuffer_wrap_1 = _RANDOM[/*Zero width*/ 1'b0][4];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        wrResp_rightBuffer_maybe_full = _RANDOM[/*Zero width*/ 1'b0][5];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :133:42, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_r = _RANDOM[/*Zero width*/ 1'b0][6];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :198:23, src/main/scala/chisel3/util/Counter.scala:61:40
-        write_r = _RANDOM[/*Zero width*/ 1'b0][7];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :213:23, src/main/scala/chisel3/util/Counter.scala:61:40
+      `ifdef RANDOMIZE_REG_INIT	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
+        rdResp_rightBuffer_wrap = _RANDOM[/*Zero width*/ 1'b0][0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        rdResp_rightBuffer_wrap_1 = _RANDOM[/*Zero width*/ 1'b0][1];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        rdResp_rightBuffer_maybe_full = _RANDOM[/*Zero width*/ 1'b0][2];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :131:42, src/main/scala/chisel3/util/Counter.scala:61:40
+        wrResp_rightBuffer_wrap = _RANDOM[/*Zero width*/ 1'b0][3];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        wrResp_rightBuffer_wrap_1 = _RANDOM[/*Zero width*/ 1'b0][4];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        wrResp_rightBuffer_maybe_full = _RANDOM[/*Zero width*/ 1'b0][5];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :137:42, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_r = _RANDOM[/*Zero width*/ 1'b0][6];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :202:23, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_r = _RANDOM[/*Zero width*/ 1'b0][7];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :217:23, src/main/scala/chisel3/util/Counter.scala:61:40
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
-      `FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
+    `ifdef FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
+      `FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  wire [31:0] rdResp_rightBuffer_source_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
+  wire [31:0] rdResp_rightBuffer_source_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(32)
-  ) rdResp_rightBuffer_ram (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
+  ) rdResp_rightBuffer_ram (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
     .clock    (clock),
     .addrA    (rdResp_rightBuffer_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .writeEnA (rdResp_rightBuffer_do_enq),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .dataInA  (rdResp_rightBuffer_source_bits),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
+    .dataInA  (rdResp_rightBuffer_source_bits),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
     .addrB    (rdResp_rightBuffer_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (rdResp_rightBuffer_sink_bits)
   );
-  Counter ctrRead (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:136:31
+  Counter ctrRead (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:140:31
     .clock    (clock),
     .reset    (reset),
     .io_incEn (_read_T_1),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .io_decEn (rdResp_rightBuffer_source_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
+    .io_decEn (rdResp_rightBuffer_source_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
     .io_empty (/* unused */),
     .io_full  (_ctrRead_io_full)
   );
-  Counter ctrWrite (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:142:32
+  Counter ctrWrite (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:146:32
     .clock    (clock),
     .reset    (reset),
     .io_incEn (_write_T_1),	// src/main/scala/chisel3/util/Decoupled.scala:51:35
-    .io_decEn (wrResp_rightBuffer_source_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42
+    .io_decEn (wrResp_rightBuffer_source_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42
     .io_empty (/* unused */),
     .io_full  (_ctrWrite_io_full)
   );
-  Counter ctrWriteResp (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:146:36
+  Counter ctrWriteResp (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:150:36
     .clock    (clock),
     .reset    (reset),
-    .io_incEn (write_r),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:213:23
-    .io_decEn (wrResp_rightBuffer_source_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:133:42
+    .io_incEn (write_r),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:217:23
+    .io_decEn (wrResp_rightBuffer_source_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42
     .io_empty (_ctrWriteResp_io_empty),
     .io_full  (/* unused */)
   );
-  BasicReadWriteArbiter arbiter_arbiter (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:159:25
+  BasicReadWriteArbiter arbiter_arbiter (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:163:25
     .clock    (clock),
     .reset    (reset),
     .rdReq    (read_req_valid),
     .wrReq    (write_req_valid),
     .chooseRd (_arbiter_arbiter_chooseRd)
   );
-  Queue4_UInt32 read_dataQueue (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:179:27
+  Queue4_UInt32 read_dataQueue (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:183:27
     .clock        (clock),
     .reset        (reset),
-    .io_enq_valid (read_r),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:198:23
+    .io_enq_valid (read_r),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:202:23
     .io_enq_bits  (raw_dOut),
-    .io_deq_ready (rdResp_rightBuffer_source_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:128:42
+    .io_deq_ready (rdResp_rightBuffer_source_valid),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
     .io_deq_valid (_read_dataQueue_io_deq_valid),
     .io_deq_bits  (rdResp_rightBuffer_source_bits)
   );
-  assign read_req_ready = read_req_ready_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :164:37
-  assign read_resp_valid = rdResp_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :128:42
-  assign read_resp_bits = rdResp_rightBuffer_sink_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :128:42
-  assign write_req_ready = write_req_ready_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :165:38
-  assign write_resp_valid = wrResp_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :133:42
-  assign raw_addr = _write_T_1 ? write_req_bits_addr : read_req_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :167:22, :171:22, :172:16, src/main/scala/chisel3/util/Decoupled.scala:51:35
-  assign raw_dIn = write_req_bits_data;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7
-  assign raw_wstrb = _write_T_1 ? write_req_bits_strb : 4'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:118:7, :154:13, :171:22, :174:17, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  assign read_req_ready = read_req_ready_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :168:37
+  assign read_resp_valid = rdResp_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :131:42
+  assign read_resp_bits = rdResp_rightBuffer_sink_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :131:42
+  assign write_req_ready = write_req_ready_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :169:38
+  assign write_resp_valid = wrResp_rightBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :137:42
+  assign raw_addr = _write_T_1 ? write_req_bits_addr : read_req_bits;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :171:22, :175:22, :176:16, src/main/scala/chisel3/util/Decoupled.scala:51:35
+  assign raw_dIn = write_req_bits_data;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
+  assign raw_wstrb = _write_T_1 ? write_req_bits_strb : 4'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :158:13, :175:22, :178:17, src/main/scala/chisel3/util/Decoupled.scala:51:35
 endmodule
 
-module ChiselTrueDualPortRAM(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:70:7
+module ChiselTrueDualPortRAM(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:74:7
   input         clock,	// <stdin>:3869:11
                 reset,	// <stdin>:3870:11
-  output        read1_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:79:17
-  input         read1_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:79:17
-  input  [17:0] read1_req_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:79:17
-  input         read1_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:79:17
-  output        read1_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:79:17
-  output [31:0] read1_resp_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:79:17
-  output        read2_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:80:17
-  input         read2_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:80:17
-  input  [17:0] read2_req_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:80:17
-  input         read2_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:80:17
-  output        read2_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:80:17
-  output [31:0] read2_resp_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:80:17
-  output        write1_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:81:18
-  input         write1_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:81:18
-  input  [17:0] write1_req_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:81:18
-  input  [31:0] write1_req_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:81:18
-  input  [3:0]  write1_req_bits_strb,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:81:18
-  input         write1_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:81:18
-  output        write1_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:81:18
-                write2_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:82:18
-  input         write2_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:82:18
-  input  [17:0] write2_req_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:82:18
-  input  [31:0] write2_req_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:82:18
-  input  [3:0]  write2_req_bits_strb,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:82:18
-  input         write2_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:82:18
-  output        write2_resp_valid	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:82:18
+  output        read1_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:83:17
+  input         read1_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:83:17
+  input  [17:0] read1_req_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:83:17
+  input         read1_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:83:17
+  output        read1_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:83:17
+  output [31:0] read1_resp_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:83:17
+  output        read2_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:17
+  input         read2_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:17
+  input  [17:0] read2_req_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:17
+  input         read2_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:17
+  output        read2_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:17
+  output [31:0] read2_resp_bits,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:17
+  output        write1_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:85:18
+  input         write1_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:85:18
+  input  [17:0] write1_req_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:85:18
+  input  [31:0] write1_req_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:85:18
+  input  [3:0]  write1_req_bits_strb,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:85:18
+  input         write1_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:85:18
+  output        write1_resp_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:85:18
+                write2_req_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:86:18
+  input         write2_req_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:86:18
+  input  [17:0] write2_req_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:86:18
+  input  [31:0] write2_req_bits_data,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:86:18
+  input  [3:0]  write2_req_bits_strb,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:86:18
+  input         write2_resp_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:86:18
+  output        write2_resp_valid	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:86:18
 );
 
-  wire [17:0] _bridge2_raw_addr;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:90:31
-  wire [31:0] _bridge2_raw_dIn;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:90:31
-  wire [3:0]  _bridge2_raw_wstrb;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:90:31
-  wire [17:0] _bridge1_raw_addr;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:89:31
-  wire [31:0] _bridge1_raw_dIn;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:89:31
-  wire [3:0]  _bridge1_raw_wstrb;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:89:31
-  wire [31:0] _rawMem_raw1_dOut;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:30
-  wire [31:0] _rawMem_raw2_dOut;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:30
-  ChiselSimpleDualPortMem rawMem (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:30
+  wire [17:0] _bridge2_raw_addr;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:94:31
+  wire [31:0] _bridge2_raw_dIn;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:94:31
+  wire [3:0]  _bridge2_raw_wstrb;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:94:31
+  wire [17:0] _bridge1_raw_addr;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:93:31
+  wire [31:0] _bridge1_raw_dIn;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:93:31
+  wire [3:0]  _bridge1_raw_wstrb;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:93:31
+  wire [31:0] _rawMem_raw1_dOut;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:88:30
+  wire [31:0] _rawMem_raw2_dOut;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:88:30
+  ChiselSimpleDualPortMem rawMem (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:88:30
     .clock      (clock),
-    .raw1_addr  (_bridge1_raw_addr),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:89:31
-    .raw1_dIn   (_bridge1_raw_dIn),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:89:31
+    .raw1_addr  (_bridge1_raw_addr),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:93:31
+    .raw1_dIn   (_bridge1_raw_dIn),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:93:31
     .raw1_dOut  (_rawMem_raw1_dOut),
-    .raw1_wstrb (_bridge1_raw_wstrb),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:89:31
-    .raw2_addr  (_bridge2_raw_addr),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:90:31
-    .raw2_dIn   (_bridge2_raw_dIn),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:90:31
+    .raw1_wstrb (_bridge1_raw_wstrb),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:93:31
+    .raw2_addr  (_bridge2_raw_addr),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:94:31
+    .raw2_dIn   (_bridge2_raw_dIn),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:94:31
     .raw2_dOut  (_rawMem_raw2_dOut),
-    .raw2_wstrb (_bridge2_raw_wstrb)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:90:31
+    .raw2_wstrb (_bridge2_raw_wstrb)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:94:31
   );
-  ReadWriteToRawBridge bridge1 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:89:31
+  ReadWriteToRawBridge bridge1 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:93:31
     .clock               (clock),
     .reset               (reset),
     .read_req_ready      (read1_req_ready),
@@ -1587,10 +1587,10 @@ module ChiselTrueDualPortRAM(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src
     .write_resp_valid    (write1_resp_valid),
     .raw_addr            (_bridge1_raw_addr),
     .raw_dIn             (_bridge1_raw_dIn),
-    .raw_dOut            (_rawMem_raw1_dOut),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:30
+    .raw_dOut            (_rawMem_raw1_dOut),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:88:30
     .raw_wstrb           (_bridge1_raw_wstrb)
   );
-  ReadWriteToRawBridge bridge2 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:90:31
+  ReadWriteToRawBridge bridge2 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:94:31
     .clock               (clock),
     .reset               (reset),
     .read_req_ready      (read2_req_ready),
@@ -1608,14 +1608,14 @@ module ChiselTrueDualPortRAM(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src
     .write_resp_valid    (write2_resp_valid),
     .raw_addr            (_bridge2_raw_addr),
     .raw_dIn             (_bridge2_raw_dIn),
-    .raw_dOut            (_rawMem_raw2_dOut),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:84:30
+    .raw_dOut            (_rawMem_raw2_dOut),	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/RAM.scala:88:30
     .raw_wstrb           (_bridge2_raw_wstrb)
   );
 endmodule
 
 module AddressGenerator(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7
-  input         clock,	// <stdin>:3905:11, :4089:11, :4805:11, :4989:11
-                reset,	// <stdin>:3906:11, :4090:11, :4806:11, :4990:11
+  input         clock,	// <stdin>:3917:11, :4101:11, :4817:11, :5001:11
+                reset,	// <stdin>:3918:11, :4102:11, :4818:11, :5002:11
   output        source_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
   input         source_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
   input  [19:0] source_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
@@ -1656,27 +1656,27 @@ module AddressGenerator(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
         $fwrite(32'h80000002,
                 "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
-      if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, :96:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+      if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, :96:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 97:18]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 97:18]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE_1
-          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, :96:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, :96:20, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 101:19]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+                "elastic.Transducer: action 'produce' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 101:19]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE_2
-          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 127:18]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+                "elastic.Transducer: action 'accept' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 127:18]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_WIRE_3
-          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+          & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, :93:24, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 129:19]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:235:19
+                "elastic.Transducer: action 'produce' @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 129:19]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Transducer.scala:240:19
       if ((`PRINTF_COND_) & transducer_errorNoAction & ~reset)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
         $fwrite(32'h80000002,
                 "elastic.Transducer: no action was taken! @[janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 75:32]\n");	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:75:32
     end // always @(posedge)
   `endif // not def SYNTHESIS
-  always @(posedge clock) begin	// <stdin>:3905:11, :4089:11, :4805:11, :4989:11
+  always @(posedge clock) begin	// <stdin>:3917:11, :4101:11, :4817:11, :5001:11
     if (source_valid) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
       automatic logic _GEN_0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :96:20, :101:19
       _GEN_0 = transducer_last_1 | ~sink_ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :93:24, :94:14, :96:20, :101:19, :122:14
@@ -1700,7 +1700,7 @@ module AddressGenerator(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main
         transducer_ctr <= source_bits_len - 8'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:81:18, :132:27
       end
     end
-    if (reset)	// <stdin>:3905:11, :4089:11, :4805:11, :4989:11
+    if (reset)	// <stdin>:3917:11, :4101:11, :4817:11, :5001:11
       transducer_generating <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:65:7, :84:29
     else if (source_valid) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:72:18
       if (transducer_generating)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:84:29
@@ -1767,8 +1767,8 @@ module StrobeGenerator(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/
 endmodule
 
 module AddressStrobeGenerator(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:182:7
-  input         clock,	// <stdin>:4308:11, :5208:11
-                reset,	// <stdin>:4309:11, :5209:11
+  input         clock,	// <stdin>:4320:11, :5220:11
+                reset,	// <stdin>:4321:11, :5221:11
   output        source_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:193:18
   input         source_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:193:18
   input  [19:0] source_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:193:18
@@ -1812,8 +1812,8 @@ module AddressStrobeGenerator(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/sr
 endmodule
 
 module Axi4FullToReadWriteBridge(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7
-  input         clock,	// <stdin>:4349:11, :5249:11
-                reset,	// <stdin>:4350:11, :5250:11
+  input         clock,	// <stdin>:4361:11, :5261:11
+                reset,	// <stdin>:4362:11, :5262:11
   output        s_axi_ar_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:28:17
   input         s_axi_ar_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:28:17
   input  [19:0] s_axi_ar_bits_addr,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:28:17
@@ -2016,12 +2016,12 @@ module Axi4FullToReadWriteBridge(	// janberq/repos/hdlstuff/hdlstuff/repos/chext
          ? _read_fork0_repeat0_T_3 & read_resp_ready_0
          : ~(|_read_fork0_repeat0_T_7) | _read_fork0_repeat0_T_9 & read_resp_ready_0);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:38:21, :39:31, :43:32, :66:29, src/main/scala/chisel3/util/Decoupled.scala:76:20, :83:20
   assign _GEN = read_fork0_repeat0_valid | (|_read_fork0_repeat0_T_7);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:38:21, :43:32
-  always @(posedge clock) begin	// <stdin>:4349:11, :5249:11
+  always @(posedge clock) begin	// <stdin>:4361:11, :5261:11
     automatic logic _GEN_3;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:84:21
     automatic logic _GEN_4;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:38:21
     _GEN_3 = ~(|_write_fork1_repeat0_T_7) | _write_fork1_repeat0_T_9;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:84:21, :89:32
     _GEN_4 = ~(|_read_fork0_repeat0_T_7) | _read_fork0_repeat0_T_9;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:38:21, :43:32
-    if (reset) begin	// <stdin>:4349:11, :5249:11
+    if (reset) begin	// <stdin>:4361:11, :5261:11
       read_fork0_repeat0_leftBuffer_enq_ptr_value <= 2'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, src/main/scala/chisel3/util/Counter.scala:61:40
       read_fork0_repeat0_leftBuffer_deq_ptr_value <= 2'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, src/main/scala/chisel3/util/Counter.scala:61:40
       read_fork0_repeat0_leftBuffer_maybe_full <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, :39:31
@@ -2035,7 +2035,7 @@ module Axi4FullToReadWriteBridge(	// janberq/repos/hdlstuff/hdlstuff/repos/chext
       write_fork1_regs_1 <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, :82:29
       read_fork0_repeat0_valid <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, :38:21
     end
-    else begin	// <stdin>:4349:11, :5249:11
+    else begin	// <stdin>:4361:11, :5261:11
       automatic logic read_fork0_repeat0_leftBuffer_do_deq =
         read_fork0_repeat0_leftBuffer_sink_ready
         & read_fork0_repeat0_leftBuffer_sink_valid;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/memory/AxiBridges.scala:39:31, src/main/scala/chisel3/util/Decoupled.scala:51:35
@@ -2229,8 +2229,8 @@ module Axi4FullToReadWriteBridge(	// janberq/repos/hdlstuff/hdlstuff/repos/chext
 endmodule
 
 module Write_Tbtop_KeepAll(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/stream/Write.tb.scala:12:7
-  input         clock,	// <stdin>:5705:11
-                reset,	// <stdin>:5706:11
+  input         clock,	// <stdin>:5717:11
+                reset,	// <stdin>:5718:11
   output        rd_sourceTask_ready,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/stream/Write.tb.scala:23:25
   input         rd_sourceTask_valid,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/stream/Write.tb.scala:23:25
   input  [19:0] rd_sourceTask_bits_address,	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/stream/Write.tb.scala:23:25

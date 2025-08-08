@@ -3,6 +3,8 @@ package chext.memory
 import chisel3._
 import chisel3.util._
 
+import ConnectOp._
+
 case class PortConfig(
     val numOutstandingRead: Int = 4,
     val numOutstandingWrite: Int = 4,
@@ -32,9 +34,10 @@ class SinglePortRAM(
 
   private val bridge = Module(new ReadWriteToRawBridge(rawMemCfg, portCfg))
 
+  read :=> bridge.read
+  write :=> bridge.write
+
   // TODO: change <> with a better operator
-  read <> bridge.read
-  write <> bridge.write
   raw <> bridge.raw
 }
 
@@ -60,9 +63,10 @@ class SimpleDualPortRAM(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = P
   private val readBridge = Module(new ReadToRawBridge(rawMemCfg, portCfg))
   private val writeBridge = Module(new WriteToRawBridge(rawMemCfg, portCfg))
 
+  read :=> readBridge.read
+  write :=> writeBridge.write
+
   // TODO: change <> with a better operator
-  read <> readBridge.read
-  write <> writeBridge.write
   rawRead <> readBridge.raw
   rawWrite <> writeBridge.raw
 }
@@ -89,16 +93,18 @@ class TrueDualPortRAM(
   private val bridge1 = Module(new ReadWriteToRawBridge(rawMemCfg, portCfg1))
   private val bridge2 = Module(new ReadWriteToRawBridge(rawMemCfg, portCfg2))
 
-  // TODO: change <> with a better operator
-
   // first port
-  read1 <> bridge1.read
-  write1 <> bridge1.write
+  read1 :=> bridge1.read
+  write1 :=> bridge1.write
+
+  // TODO: change <> with a better operator
   raw1 <> bridge1.raw
 
   // second port
-  read2 <> bridge2.read
-  write2 <> bridge2.write
+  read2 :=> bridge2.read
+  write2 :=> bridge2.write
+
+  // TODO: change <> with a better operator
   raw2 <> bridge2.raw
 }
 

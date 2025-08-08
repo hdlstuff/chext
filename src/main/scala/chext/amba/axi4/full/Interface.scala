@@ -2,6 +2,7 @@ package chext.amba.axi4.full
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.SourceInfo
 import chisel3.experimental.dataview.{PartialDataView, DataView}
 import chisel3.reflect.DataMirror
 
@@ -161,7 +162,7 @@ abstract class Interface extends Bundle {
 }
 
 object Interface {
-  def apply(cfg: axi4.Config): Interface = {
+  def apply(cfg: axi4.Config)(implicit si: SourceInfo): Interface = {
     assert(!cfg.lite)
     implicit val _cfg: axi4.Config = cfg
 
@@ -263,29 +264,39 @@ object Interface {
 }
 
 object Slave {
-  def apply(cfg: axi4.Config) = Flipped(Interface(cfg))
+  def apply(cfg: axi4.Config)(implicit si: SourceInfo) = Flipped(Interface(cfg))
 }
 
 object Master {
-  def apply(cfg: axi4.Config) = Interface(cfg)
+  def apply(cfg: axi4.Config)(implicit si: SourceInfo) = Interface(cfg)
 }
 
-private class ReadInterface(implicit val cfg: axi4.Config) extends Interface {
-  override val ar = elastic.Interface(new ReadAddressChannel)
-  override val r = Flipped(elastic.Interface(new ReadDataChannel))
+private class ReadInterface(implicit
+    val cfg: axi4.Config,
+    val si: SourceInfo
+) extends Interface {
+  override val ar = elastic.Sink(new ReadAddressChannel)
+  override val r = elastic.Source(new ReadDataChannel)
 }
 
-private class WriteInterface(implicit val cfg: axi4.Config) extends Interface {
-  override val aw = elastic.Interface(new WriteAddressChannel)
-  override val w = elastic.Interface(new WriteDataChannel)
-  override val b = Flipped(elastic.Interface(new WriteResponseChannel))
+private class WriteInterface(implicit
+    val cfg: axi4.Config,
+    val si: SourceInfo
+) extends Interface {
+  override val aw = elastic.Sink(new WriteAddressChannel)
+  override val w = elastic.Sink(new WriteDataChannel)
+  override val b = elastic.Source(new WriteResponseChannel)
 }
-private class ReadWriteInterface(implicit val cfg: axi4.Config) extends Interface {
-  override val ar = elastic.Interface(new ReadAddressChannel)
-  override val r = Flipped(elastic.Interface(new ReadDataChannel))
-  override val aw = elastic.Interface(new WriteAddressChannel)
-  override val w = elastic.Interface(new WriteDataChannel)
-  override val b = Flipped(elastic.Interface(new WriteResponseChannel))
+
+private class ReadWriteInterface(implicit
+    val cfg: axi4.Config,
+    val si: SourceInfo
+) extends Interface {
+  override val ar = elastic.Sink(new ReadAddressChannel)
+  override val r = elastic.Source(new ReadDataChannel)
+  override val aw = elastic.Sink(new WriteAddressChannel)
+  override val w = elastic.Sink(new WriteDataChannel)
+  override val b = elastic.Source(new WriteResponseChannel)
 }
 
 private object main extends App {

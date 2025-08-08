@@ -2,6 +2,7 @@ package chext.memory
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.SourceInfo
 
 import chext.elastic
 
@@ -30,11 +31,15 @@ class RawInterface(
   val wstrb = Input(UInt(wStrobe.W))
 }
 
-class ReadInterface(wAddr: Int, wData: Int) extends Bundle {
-  require(isPow2(wData))
+class ReadInterface(
+    val wAddr: Int,
+    val wData: Int
+)(implicit si: SourceInfo)
+    extends Bundle {
+  require(wData >= 8 && (wData % 8) == 0)
 
-  val req = Flipped(new elastic.Interface(UInt(wAddr.W)))
-  val resp = new elastic.Interface(UInt(wData.W))
+  val req = elastic.Source(UInt(wAddr.W))
+  val resp = elastic.Sink(UInt(wData.W))
 }
 
 class WriteRequest(wAddr: Int, wData: Int) extends Bundle {
@@ -47,7 +52,11 @@ class WriteRequest(wAddr: Int, wData: Int) extends Bundle {
   val strb = UInt(wStrobe.W)
 }
 
-class WriteInterface(wAddr: Int, wData: Int) extends Bundle {
-  val req = Flipped(new elastic.Interface(new WriteRequest(wAddr, wData)))
-  val resp = new elastic.Interface(UInt(0.W))
+class WriteInterface(
+    val wAddr: Int,
+    val wData: Int
+)(implicit si: SourceInfo)
+    extends Bundle {
+  val req = elastic.Source(new WriteRequest(wAddr, wData))
+  val resp = elastic.Sink(UInt(0.W))
 }

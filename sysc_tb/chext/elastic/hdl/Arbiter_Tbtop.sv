@@ -109,11 +109,11 @@ module elasticArbiter(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/s
   output [3:0]  io_select_bits	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:18:14
 );
 
-  reg               regSink;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:29:32
-  reg               regSelect;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:30:34
-  wire              _regSink_T = io_sink_ready | regSink;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:29:32, :32:35
-  wire              _regSelect_T = io_select_ready | regSelect;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:30:34, :32:64
-  wire              ready = _regSink_T & _regSelect_T;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:32:{35,47,64}
+  reg               regSink;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:33:32
+  reg               regSelect;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:34:34
+  wire              _regSink_T = io_sink_ready | regSink;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:33:32, :36:35
+  wire              _regSelect_T = io_select_ready | regSelect;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:34:34, :36:64
+  wire              ready = _regSink_T & _regSelect_T;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:36:{35,47,64}
   reg  [3:0]        choice_last;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:17:25
   wire [3:0]        choice_priority0 =
     io_sources_0_valid
@@ -227,19 +227,19 @@ module elasticArbiter(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/s
      {io_sources_3_bits},
      {io_sources_2_bits},
      {io_sources_1_bits},
-     {io_sources_0_bits}};	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:40:39
+     {io_sources_0_bits}};	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:44:39
   always @(posedge clock) begin	// <stdin>:20:11, :191:11
     if (reset) begin	// <stdin>:20:11, :191:11
-      regSink <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :29:32
-      regSelect <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :30:34
+      regSink <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :33:32
+      regSelect <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :34:34
       choice_last <= 4'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:17:25
       choice_locked <= 1'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:30:27
       choice_lockedChoice <= 4'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:17:25, :31:33
     end
     else begin	// <stdin>:20:11, :191:11
-      regSink <= _regSink_T & _GEN[choice] & ~ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:29:32, :32:{35,47}, :43:63, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:{42,45}
-      regSelect <= _regSelect_T & _GEN[choice] & ~ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:30:34, :32:{47,64}, :44:69, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:{42,45}
-      if (_GEN[choice] & ready) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:32:47, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:42, :39:30
+      regSink <= _regSink_T & _GEN[choice] & ~ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:33:32, :36:{35,47}, :47:63, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:{42,45}
+      regSelect <= _regSelect_T & _GEN[choice] & ~ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:34:34, :36:{47,64}, :48:69, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:{42,45}
+      if (_GEN[choice] & ready) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:36:47, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:42, :39:30
         if (choice_locked)	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:30:27
           choice_last <= choice_lockedChoice;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:17:25, :31:33
         else if (_GEN[choice_rr0]) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:21:12, :28:19
@@ -277,7 +277,7 @@ module elasticArbiter(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/s
         else	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19
           choice_last <= choice_priority0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:17:25, src/main/scala/chisel3/util/Mux.scala:50:70
       end
-      choice_locked <= _GEN[choice] & ~ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:32:47, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :30:27, :33:27, :35:{42,45}
+      choice_locked <= _GEN[choice] & ~ready;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:36:47, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :30:27, :33:27, :35:{42,45}
       if (choice_locked) begin	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:30:27
       end
       else	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:30:27
@@ -295,36 +295,36 @@ module elasticArbiter(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/s
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7
         _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7
-        regSink = _RANDOM[/*Zero width*/ 1'b0][0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :29:32
-        regSelect = _RANDOM[/*Zero width*/ 1'b0][1];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :29:32, :30:34
-        choice_last = _RANDOM[/*Zero width*/ 1'b0][5:2];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :29:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:17:25
-        choice_locked = _RANDOM[/*Zero width*/ 1'b0][6];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :29:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:30:27
-        choice_lockedChoice = _RANDOM[/*Zero width*/ 1'b0][10:7];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :29:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:31:33
+        regSink = _RANDOM[/*Zero width*/ 1'b0][0];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :33:32
+        regSelect = _RANDOM[/*Zero width*/ 1'b0][1];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :33:32, :34:34
+        choice_last = _RANDOM[/*Zero width*/ 1'b0][5:2];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :33:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:17:25
+        choice_locked = _RANDOM[/*Zero width*/ 1'b0][6];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :33:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:30:27
+        choice_lockedChoice = _RANDOM[/*Zero width*/ 1'b0][10:7];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :33:32, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:31:33
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7
       `FIRRTL_AFTER_INITIAL	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_sources_0_ready = ready & choice == 4'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:17:25, :33:27
-  assign io_sources_1_ready = ready & choice == 4'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_2_ready = ready & choice == 4'h2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_3_ready = ready & choice == 4'h3;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_4_ready = ready & choice == 4'h4;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_5_ready = ready & choice == 4'h5;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_6_ready = ready & choice == 4'h6;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_7_ready = ready & choice == 4'h7;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_8_ready = ready & choice == 4'h8;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_9_ready = ready & choice == 4'h9;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_10_ready = ready & choice == 4'hA;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_11_ready = ready & choice == 4'hB;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_12_ready = ready & choice == 4'hC;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_13_ready = ready & choice == 4'hD;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_14_ready = ready & choice == 4'hE;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
-  assign io_sources_15_ready = ready & (&choice);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :32:47, :37:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27
-  assign io_sink_valid = _GEN[choice] & ~regSink;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :29:32, :40:{39,42}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:42
-  assign io_sink_bits = _GEN_0[choice];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :40:39, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27
-  assign io_select_valid = _GEN[choice] & ~regSelect;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :30:34, :41:{41,44}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:42
+  assign io_sources_0_ready = ready & choice == 4'h0;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:17:25, :33:27
+  assign io_sources_1_ready = ready & choice == 4'h1;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_2_ready = ready & choice == 4'h2;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_3_ready = ready & choice == 4'h3;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_4_ready = ready & choice == 4'h4;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_5_ready = ready & choice == 4'h5;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_6_ready = ready & choice == 4'h6;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_7_ready = ready & choice == 4'h7;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_8_ready = ready & choice == 4'h8;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_9_ready = ready & choice == 4'h9;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_10_ready = ready & choice == 4'hA;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_11_ready = ready & choice == 4'hB;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_12_ready = ready & choice == 4'hC;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_13_ready = ready & choice == 4'hD;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_14_ready = ready & choice == 4'hE;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27, src/main/scala/chisel3/util/Mux.scala:50:70
+  assign io_sources_15_ready = ready & (&choice);	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :36:47, :41:{22,29}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27
+  assign io_sink_valid = _GEN[choice] & ~regSink;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :33:32, :44:{39,42}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:42
+  assign io_sink_bits = _GEN_0[choice];	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :44:39, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27
+  assign io_select_valid = _GEN[choice] & ~regSelect;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, :34:34, :45:{41,44}, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:28:19, :33:27, :35:42
   assign io_select_bits = choice;	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:8:7, janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Chooser.scala:33:27
 endmodule
 
@@ -441,7 +441,7 @@ module Arbiter_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/sc
   output [3:0]  priority_select_bits	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/scala/chext/elastic/Arbiter.tb.scala:17:27
 );
 
-  elasticArbiter arbiter (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:57:25
+  elasticArbiter arbiter (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:61:25
     .clock               (clock),
     .reset               (reset),
     .io_sources_0_ready  (rr_sources_00_ready),
@@ -499,7 +499,7 @@ module Arbiter_Tbtop(	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/test/sc
     .io_select_valid     (rr_select_valid),
     .io_select_bits      (rr_select_bits)
   );
-  elasticArbiter arbiter_1 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:57:25
+  elasticArbiter arbiter_1 (	// janberq/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/elastic/Arbiter.scala:61:25
     .clock               (clock),
     .reset               (reset),
     .io_sources_0_ready  (priority_sources_00_ready),

@@ -38,6 +38,10 @@ private class AxiTestSlave(axiCfg: axi4.Config) extends Module {
     s_axi.aw.nodeq()
     s_axi.w.nodeq()
     s_axi.b.noenq()
+
+    s_axi.aw.markSource()
+    s_axi.w.markSource()
+    s_axi.b.markSink()
   }
 }
 
