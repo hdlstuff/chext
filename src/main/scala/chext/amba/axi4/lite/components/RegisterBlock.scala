@@ -187,6 +187,12 @@ class RegisterBlock(
   wrReqData_.nodeq()
   wrResp_.noenq()
 
+  rdReq_.markSource()
+  rdResp_.markSink()
+  wrReq_.markSource()
+  wrReqData_.markSource()
+  wrResp_.markSink()
+
   /** Enqueues a read response.
     *
     * @param data
