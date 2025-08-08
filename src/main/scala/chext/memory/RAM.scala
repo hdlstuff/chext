@@ -108,7 +108,7 @@ class TrueDualPortRAM(
   raw2 <> bridge2.raw
 }
 
-object Emitter extends App {
+private object RAM_Emit extends App {
   Target.setCurrent(xilinx.Target)
 
   emitVerilog(

@@ -131,7 +131,7 @@ class Mux(val cfg: MuxConfig) extends Module {
   if (axiSlaveCfg.write) implWrite()
 }
 
-object MuxEmitter extends App {
+private object MuxEmitter extends App {
   def muxModule = new Mux(
     MuxConfig(
       axi4.Config(

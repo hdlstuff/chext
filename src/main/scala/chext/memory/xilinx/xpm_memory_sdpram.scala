@@ -81,8 +81,7 @@ case class xpm_memory_sdpram_config(
   }
 }
 
-class xpm_memory_sdpram(cfg: xpm_memory_sdpram_config)
-    extends BlackBox(cfg.toParams) {
+class xpm_memory_sdpram(cfg: xpm_memory_sdpram_config) extends BlackBox(cfg.toParams) {
   val io = IO(new Bundle {
     val addra = Input(UInt(cfg.addrWidthA.W))
     val addrb = Input(UInt(cfg.addrWidthB.W))
@@ -146,7 +145,7 @@ class SimpleDualPortRawMem(
   def getPorts: Seq[memory.RawInterface] = Seq(interfaceW, interfaceR)
 }
 
-object EmitSdpram extends App {
+private object xpm_memory_sdpram_Emit extends App {
   emitVerilog(
     new SimpleDualPortRawMem(memory.RawMemConfig(20, 32, 4, 1)),
     Array("--target-dir", "output/")

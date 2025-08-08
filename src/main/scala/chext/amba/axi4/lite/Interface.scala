@@ -235,6 +235,10 @@ private object main extends App {
     slave2.asLite :=> master2.asLite
     slave3.asLite :=> master3.asLite
 
+    // the following is not connected, so should fail with an error message
+    // sanity checks should also yell
+    // val wire0 = Wire(axi4.lite.Interface(cfg1))
+
     // must fail
     // master3.asLite :=> slave3.asLite
   }

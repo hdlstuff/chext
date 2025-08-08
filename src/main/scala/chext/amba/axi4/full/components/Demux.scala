@@ -205,7 +205,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
   if (axiSlaveCfg.write) implWrite()
 }
 
-object DemuxEmitter extends App {
+private object DemuxEmitter extends App {
   def demuxModule = new Demux(
     DemuxConfig(
       chext.amba.axi4.Config(

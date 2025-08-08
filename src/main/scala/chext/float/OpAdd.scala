@@ -43,6 +43,6 @@ class OpAdd(val gen_fp: FloatingPoint, val combinational: Boolean = false) //
   }
 }
 
-object EmitOpAdd extends App {
-  emitVerilog(new OpAdd(FloatingPoint.ieee_fp32))
+private object EmitOpAdd extends App {
+  emitVerilog(new OpAdd(FloatingPoint.ieee_fp32), Array("--target-dir", "output/"))
 }

@@ -138,7 +138,7 @@ object BitOps {
   }
 }
 
-object EmitTest extends App {
+private object BitOps_Emit extends App {
   class MyModule extends Module {
     val in = IO(Input(UInt(8.W)))
     val out1 = IO(Output(UInt(8.W)))
@@ -158,5 +158,5 @@ object EmitTest extends App {
     out6 := in.extractBig(Seq(7, 5, 2))
   }
 
-  emitVerilog(new MyModule)
+  emitVerilog(new MyModule, Array("--target-dir", "output/"))
 }

@@ -53,7 +53,7 @@ class ElasticMultiply(genFp: FloatingPoint, val combinational: Boolean = false) 
   wrapper.moduleOut := multiply.out
 }
 
-object EmitElastic extends App {
-  emitVerilog(new ElasticAdd(FloatingPoint.ieee_fp32))
-  emitVerilog(new ElasticMultiply(FloatingPoint.ieee_fp32))
+private object EmitElastic extends App {
+  emitVerilog(new ElasticAdd(FloatingPoint.ieee_fp32), Array("--target-dir", "output/"))
+  emitVerilog(new ElasticMultiply(FloatingPoint.ieee_fp32), Array("--target-dir", "output/"))
 }

@@ -389,7 +389,7 @@ class Queue[T <: Data](
   }
 }
 
-object TestQueue extends App {
+private object TestQueue extends App {
   Queue.useVerilogMem(true)
 
   emitVerilog(new Module {
@@ -401,5 +401,5 @@ object TestQueue extends App {
     val sink = IO(Sink(gen))
 
     Queue.between(source, sink, 9)
-  })
+  }, Array("--target-dir", "output/"))
 }

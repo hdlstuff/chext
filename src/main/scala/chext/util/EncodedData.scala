@@ -85,28 +85,28 @@ class EncodedDataBuilder {
 }
 
 // TODO: Make the following a proper test
-import chisel3._
+private object TestApp extends App {
+  import chisel3._
 
-class MyTestBundle1 extends Bundle {
-  val f0 = UInt(8.W)
-  val f1 = UInt(18.W)
+  class MyTestBundle1 extends Bundle {
+    val f0 = UInt(8.W)
+    val f1 = UInt(18.W)
 
-  val f2 = Vec(4, UInt(6.W))
-  val f3 = new Bundle {
-    val f0 = UInt(15.W)
-    val f1 = Bool()
+    val f2 = Vec(4, UInt(6.W))
+    val f3 = new Bundle {
+      val f0 = UInt(15.W)
+      val f1 = Bool()
+    }
   }
-}
 
-class MyTestBundle2 extends Bundle {
-  val f0 = Vec(4, UInt(6.W))
-  val f1 = new Bundle {
-    val f0 = UInt(15.W)
-    val f1 = Bool()
+  class MyTestBundle2 extends Bundle {
+    val f0 = Vec(4, UInt(6.W))
+    val f1 = new Bundle {
+      val f0 = UInt(15.W)
+      val f1 = Bool()
+    }
   }
-}
 
-object TestApp extends App {
   val encodedData = EncodedData.encode("MyTestBundle", new MyTestBundle1)
   import io.circe.generic.auto._
   import io.circe.syntax._

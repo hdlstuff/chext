@@ -24,6 +24,6 @@ class AddressGenerator_Tbtop(val wAddr: Int, override val desiredName: String)
   declareElasticInterface(sink, "Result")
 }
 
-object AddressGenerator_Tb extends App with chext.TestBench {
+object AddressGenerator_Tb extends chext.TestBench {
   emit(new AddressGenerator_Tbtop(32, "AddressGenerator_Tbtop_1"))
 }

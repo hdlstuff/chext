@@ -44,6 +44,6 @@ class OpMultiply(val gen_fp: FloatingPoint, val combinational: Boolean = false)
   }
 }
 
-object EmitOpMultiply extends App {
-  emitVerilog(new OpMultiply(FloatingPoint.ieee_fp32))
+private object EmitOpMultiply extends App {
+  emitVerilog(new OpMultiply(FloatingPoint.ieee_fp32), Array("--target-dir", "output/"))
 }

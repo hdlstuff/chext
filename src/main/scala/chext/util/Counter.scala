@@ -39,7 +39,7 @@ class Counter(maxExclusive: Int) extends Module {
   def dec() = io.decEn := true.B
 }
 
-object Counter extends App {
+private object Counter extends App {
   import chisel3.stage._
 
   emitVerilog(new Counter(64), Array("--target-dir", "output/"))

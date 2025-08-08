@@ -97,7 +97,7 @@ private class StupidModule extends Module with PipelineHelper {
 }
 
 private object EmitStupidModule extends App {
-  emitVerilog(new StupidModule)
+  emitVerilog(new StupidModule, Array("--target-dir", "output/"))
 }
 
 import hardfloat.{

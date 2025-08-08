@@ -119,8 +119,7 @@ package object naming {
   def prefix[T](p: String)(f: => T)(implicit si: SourceInfo): T =
     getModuleInfo().prefix(p) { f }
 
-  /**
-    * Introduces a prefix without owning it (unlike `prefix`).
+  /** Introduces a prefix without owning it (unlike `prefix`).
     */
   def weakPrefix[T](p: String)(f: => T)(implicit si: SourceInfo): T =
     getModuleInfo().weakPrefix(p) { f }
@@ -133,7 +132,7 @@ package object naming {
 
 }
 
-object NamingApp extends App {
+private object NamingApp extends App {
   import chext.elastic
   import elastic.ConnectOp._
 
@@ -156,6 +155,9 @@ object NamingApp extends App {
 
     wire0.noenq()
     wire1.nodeq()
+
+    wire0.markSink()
+    wire1.markSource()
   }
 
   class MyModule extends Module {
@@ -187,5 +189,5 @@ object NamingApp extends App {
     m.sink1 :=> sinkD
   }
 
-  emitVerilog(new MyModule)
+  emitVerilog(new MyModule, Array("--target-dir", "output/"))
 }
