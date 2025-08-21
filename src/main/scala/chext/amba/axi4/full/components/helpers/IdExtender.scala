@@ -20,7 +20,7 @@ object IdExtend {
         slave.ar :=> master.ar
         master.r :=> slave.r
 
-        master.ar.bits.id := port.U ## slave.ar.bits.id
+        master.ar.$bits.id := port.U ## slave.ar.$bits.id
 
         require(slave.cfg.read && master.cfg.read)
         require(master.cfg.wId >= slave.cfg.wId + log2Ceil(slaveInterfaces.length))
@@ -40,7 +40,7 @@ object IdExtend {
         slave.w :=> master.w
         master.b :=> slave.b
 
-        master.aw.bits.id := port.U ## slave.aw.bits.id
+        master.aw.$bits.id := port.U ## slave.aw.$bits.id
 
         require(slave.cfg.write && master.cfg.write)
         require(master.cfg.wId >= slave.cfg.wId + log2Ceil(slaveInterfaces.length))

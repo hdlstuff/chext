@@ -55,8 +55,8 @@ abstract class Switch[Tin <: Data, Tout <: Data](
     extends Fire[Tout](sink) {
   checkPrefix("Switch", "switch")
 
-  private val genIn = chiselTypeOf(source.bits)
-  private val genOut = chiselTypeOf(sink.bits)
+  private val genIn = chiselTypeOf(source.$bits)
+  private val genOut = chiselTypeOf(sink.$bits)
 
   type LastFn = (Tout) => Bool
   type CondFn = (Tin) => Bool

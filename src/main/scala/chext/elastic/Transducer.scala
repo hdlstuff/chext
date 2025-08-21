@@ -36,9 +36,9 @@ import scala.collection.mutable.ArrayBuffer
   * @param sink
   *   The sink elastic interface.
   * @tparam Tin
-  *   The type of the source's data payload (`source.bits`).
+  *   The type of the source's data payload (`source.$bits`).
   * @tparam Tout
-  *   The type of the sink's data payload (`sink.bits`).
+  *   The type of the sink's data payload (`sink.$bits`).
   */
 abstract class Transducer[Tin <: Data, Tout <: Data](
     source: Interface[Tin],
@@ -49,8 +49,8 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
   source.markSource()
   sink.markSink()
 
-  protected final val in = source.bits
-  protected final val out = sink.bits
+  protected final val in = source.$bits
+  protected final val out = sink.$bits
 
   type PacketFn = () => Unit
   type ActionFn = () => Unit
@@ -113,8 +113,8 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
     actionConds_(actionIndex_) := true.B
     actionIndex_ += 1
 
-    source.ready := false.B
-    sink.valid := false.B
+    source.$ready := false.B
+    sink.$valid := false.B
 
     action
   }
@@ -136,10 +136,10 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
     actionConds_(actionIndex_) := true.B
     actionIndex_ += 1
 
-    source.ready := sink.ready
-    sink.valid := source.valid
+    source.$ready := sink.$ready
+    sink.$valid := source.$valid
 
-    when(sink.ready) {
+    when(sink.$ready) {
       action
     }
   }
@@ -161,8 +161,8 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
     actionConds_(actionIndex_) := true.B
     actionIndex_ += 1
 
-    source.ready := true.B
-    sink.valid := false.B
+    source.$ready := true.B
+    sink.$valid := false.B
 
     action
   }
@@ -184,10 +184,10 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
     actionConds_(actionIndex_) := true.B
     actionIndex_ += 1
 
-    source.ready := false.B
-    sink.valid := source.valid
+    source.$ready := false.B
+    sink.$valid := source.$valid
 
-    when(sink.ready) {
+    when(sink.$ready) {
       action
     }
   }
@@ -200,8 +200,8 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
     deferredContext_ = true
 
     dryRun_ = true
-    when(source.valid) {
-      // Note: even for a dry run, we should have source.valid
+    when(source.$valid) {
+      // Note: even for a dry run, we should have source.$valid
       // in case there are some wire-assignments inside packetFn
       packetFn_.get()
     }
@@ -210,10 +210,10 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
 
     actionConds_ = Seq.fill(actions_.length) { WireInit(false.B) }
 
-    source.ready := false.B
-    sink.valid := false.B
+    source.$ready := false.B
+    sink.$valid := false.B
 
-    when(source.valid) {
+    when(source.$valid) {
       packetFn_.get()
     }.otherwise {
       out := DontCare
@@ -226,8 +226,8 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
 
     val cond = VecInit(actionConds_).asUInt
 
-    val errorAtLeastTwoActions = WireInit(source.valid && ((cond & (cond -% 1.U)) =/= 0.U))
-    val errorNoAction = WireInit(source.valid && (cond === 0.U))
+    val errorAtLeastTwoActions = WireInit(source.$valid && ((cond & (cond -% 1.U)) =/= 0.U))
+    val errorNoAction = WireInit(source.$valid && (cond === 0.U))
 
     dontTouch(errorAtLeastTwoActions)
     dontTouch(errorNoAction)

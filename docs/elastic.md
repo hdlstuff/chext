@@ -218,13 +218,13 @@ class ElasticPE extends Module {
   sink_.noenq()
 
   when (!working_) {
-    when (source_.valid) {
+    when (source_.$valid) {
       working_ := true.B
       counter_ := 8.U // takes 8 cycles
     }
   }.otherwise {
     when (counter_ === 0.U) {
-      when (sink_.ready) {
+      when (sink_.$ready) {
         working_ := false.B
         sink_.enq(source_.deq() + 10.U /* our complex result */)
       }

@@ -49,7 +49,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
     extends Fire[Tout](sink) {
   chext.naming.checkPrefix("Fold", "fold")
 
-  protected final val gen = chiselTypeOf(sink.bits)
+  protected final val gen = chiselTypeOf(sink.$bits)
 
   protected final val sinkA = Wire(Interface(gen)) // newest input
   protected final val sinkB = Wire(Interface(gen)) // accumulator

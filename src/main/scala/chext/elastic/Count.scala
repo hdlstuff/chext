@@ -151,7 +151,7 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
   protected final def outExplicit(fn: => OutExplicitFn): Unit = {
     out {
       (in, state, first, last) => {
-        val outResult = Wire(chiselTypeOf(sink.bits))
+        val outResult = Wire(chiselTypeOf(sink.$bits))
         fn(in, state, first, last, outResult)
         outResult
       }
@@ -176,20 +176,20 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
     val state = Reg(genState)
     val valid = RegInit(false.B)
 
-    val in = source.bits
-    val out = sink.bits
+    val in = source.$bits
+    val out = sink.$bits
 
     source.nodeq()
     sink.noenq()
 
-    when(source.valid) {
+    when(source.$valid) {
       when(valid) {
         val nextState = nextFn(in, state)
 
         when(!condFn(in, nextState)) {
           sink.enq(outFn(in, state, false.B, true.B))
 
-          when(sink.ready) {
+          when(sink.$ready) {
             // update the state only if the sink packet could be generated
             valid := false.B
             state := 0.U.asTypeOf(state)
@@ -200,7 +200,7 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
         }.otherwise {
           sink.enq(outFn(in, state, false.B, false.B))
 
-          when(sink.ready) {
+          when(sink.$ready) {
             // update the state only if the sink packet could be generated
             state := nextState
           }
@@ -215,17 +215,17 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
 
         }.elsewhen(!condFn(in, nextState)) {
           // generate something
-          // sink.enq must not depend on sink.ready to satisfy the elastic protocol
+          // sink.enq must not depend on sink.$ready to satisfy the elastic protocol
           sink.enq(outFn(in, initState, true.B, true.B))
 
-          when(sink.ready) {
+          when(sink.$ready) {
             // deq source only if the sink packet could be generated
             source.deq()
           }
         }.otherwise {
           sink.enq(outFn(in, initState, true.B, false.B))
 
-          when(sink.ready) {
+          when(sink.$ready) {
             // update the state only if the sink packet could be generated
             state := nextState
             valid := true.B

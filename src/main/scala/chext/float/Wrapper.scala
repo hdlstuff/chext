@@ -28,11 +28,11 @@ class Wrapper[
 
   if (moduleDelay == 0) {
     // this is a combinational module
-    moduleIn := source.bits
-    sink.bits := moduleOut
+    moduleIn := source.$bits
+    sink.$bits := moduleOut
 
-    source.ready := sink.ready
-    sink.valid := source.valid
+    source.$ready := sink.$ready
+    sink.$valid := source.$valid
 
     source.markSource()
     sink.markSink()
@@ -51,16 +51,16 @@ class Wrapper[
 
     qOutput.source.markSink()
 
-    moduleIn := source.bits
-    qOutput.source.bits := moduleOut
+    moduleIn := source.$bits
+    qOutput.source.$bits := moduleOut
 
-    source.ready := ctr.notFull && source.valid
+    source.$ready := ctr.notFull && source.$valid
 
     when(source.fire) {
       ctr.inc()
     }
 
-    qOutput.source.valid := ShiftRegister(source.fire, moduleDelay)
+    qOutput.source.$valid := ShiftRegister(source.fire, moduleDelay)
     qOutput.sink :=> sink
 
     when(qOutput.sink.fire) {

@@ -15,10 +15,10 @@ object Monitor {
       printf(
         s"[axi4.full.Monitor: ${name}] ctr = %d, AR = { id = %d, addr = 0x%x, burst = 0x%x, len = %d }",
         ctr,
-        interface.ar.bits.id,
-        interface.ar.bits.addr,
-        interface.ar.bits.burst,
-        interface.ar.bits.len
+        interface.ar.$bits.id,
+        interface.ar.$bits.addr,
+        interface.ar.$bits.burst,
+        interface.ar.$bits.len
       )
     }
 
@@ -26,10 +26,10 @@ object Monitor {
       printf(
         s"[axi4.full.Monitor: ${name}] ctr = %d, R = { id = %d, resp = 0x%x, last = %d, data = 0x%x }",
         ctr,
-        interface.r.bits.id,
-        interface.r.bits.resp,
-        interface.r.bits.last,
-        interface.r.bits.data
+        interface.r.$bits.id,
+        interface.r.$bits.resp,
+        interface.r.$bits.last,
+        interface.r.$bits.data
       )
     }
 
@@ -37,10 +37,10 @@ object Monitor {
       printf(
         s"[axi4.full.Monitor: ${name}] ctr = %d, AW = { id = %d, addr = 0x%x, burst = 0x%x, len = %d }",
         ctr,
-        interface.aw.bits.id,
-        interface.aw.bits.addr,
-        interface.aw.bits.burst,
-        interface.aw.bits.len
+        interface.aw.$bits.id,
+        interface.aw.$bits.addr,
+        interface.aw.$bits.burst,
+        interface.aw.$bits.len
       )
     }
 
@@ -48,9 +48,9 @@ object Monitor {
       printf(
         s"[axi4.full.Monitor: ${name}] ctr = %d, R = { last = %d, strb = 0x%x, data = 0x%x }",
         ctr,
-        interface.w.bits.last,
-        interface.w.bits.strb,
-        interface.w.bits.data
+        interface.w.$bits.last,
+        interface.w.$bits.strb,
+        interface.w.$bits.data
       )
     }
 
@@ -58,8 +58,8 @@ object Monitor {
       printf(
         s"[axi4.full.Monitor: ${name}] ctr = %d, R = { id = %d, resp = 0x%x }",
         ctr,
-        interface.b.bits.id,
-        interface.b.bits.resp
+        interface.b.$bits.id,
+        interface.b.$bits.resp
       )
     }
   }

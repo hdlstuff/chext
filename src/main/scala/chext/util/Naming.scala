@@ -132,7 +132,7 @@ package object naming {
 
 }
 
-private object NamingApp extends App {
+private object Naming_Emit extends App {
   import chext.elastic
   import elastic.ConnectOp._
 

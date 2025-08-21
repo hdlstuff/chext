@@ -3,14 +3,19 @@ package chext.elastic
 import chisel3._
 
 import chisel3.experimental.BaseModule
+
 import chisel3.experimental.SourceInfo
 import chisel3.experimental.requireIsChiselType
 import chisel3.experimental.requireIsHardware
+
+import chisel3.internal.sourceinfo.SourceInfoTransform
+import scala.language.experimental.macros
 
 import chisel3.reflect.DataMirror
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
+import scala.collection.immutable.SeqMap
 
 object track {
   private class ModuleInfo(val module: BaseModule) {
@@ -92,8 +97,121 @@ object track {
 
 }
 
-class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
-    extends util.ReadyValidIO[T](gen) {
+class Interface[+T <: Data](gen: T)(implicit si: SourceInfo) extends Record {
+  private val ready_ = Input(Bool())
+  private val valid_ = Output(Bool())
+  private val bits_ = Output(gen.cloneType)
+
+  private var directAccessOk_ = false
+  private def directAccess_[T](t: T, name: String)(implicit si: SourceInfo): T = {
+    val pos = si.makeMessage(x => x)
+    println(
+      f"chext.elastic.Interface : direct access to '$name' of interface '$this' is discouraged $pos"
+    )
+
+    t
+  }
+
+  def elements: SeqMap[String, Data] = SeqMap(
+    "ready" -> ready_,
+    "valid" -> valid_,
+    "bits" -> bits_
+  )
+
+  /** Indicates that the consumer is ready to accept the data this cycle
+    *
+    * @note
+    *   Interface signals shall not be accessed directly. Calls to this function result in a
+    *   warning.
+    */
+  def ready: Bool = macro SourceInfoTransform.noArg
+
+  /** Indicates that the consumer is ready to accept the data this cycle
+    *
+    * @note
+    *   Interface signals shall not be accessed directly. However, calls to this function do not
+    *   result in a warning.
+    */
+  def $ready: Bool = ready_
+
+  def do_ready(implicit si: SourceInfo): Bool = directAccess_(ready_, "ready")
+
+  /** Indicates that the producer has put valid data in 'bits'
+    *
+    * @note
+    *   Interface signals shall not be accessed directly. Calls to this function result in a
+    *   warning.
+    */
+  def valid: Bool = macro SourceInfoTransform.noArg
+
+  /** Indicates that the producer has put valid data in 'bits'
+    *
+    * @note
+    *   Interface signals shall not be accessed directly. However, calls to this function do not
+    *   result in a warning.
+    */
+  def $valid: Bool = valid_
+
+  def do_valid(implicit si: SourceInfo): Bool = directAccess_(valid_, "valid")
+
+  /** The data to be transferred when ready and valid are asserted at the same cycle
+    *
+    * @note
+    *   Interface signals shall not be accessed directly. Calls to this function result in a
+    *   warning.
+    */
+  def bits: T = macro SourceInfoTransform.noArg
+
+  /** The data to be transferred when ready and valid are asserted at the same cycle
+    *
+    * @note
+    *   Interface signals shall not be accessed directly. However, calls to this function do not
+    *   result in a warning.
+    */
+  def $bits: T = bits_
+
+  def do_bits(implicit si: SourceInfo): T = directAccess_(bits_, "bits")
+
+  /** Indicates if IO is both ready and valid
+    */
+  def fire: Bool = $ready && $valid
+
+  /** Push dat onto the output bits of this interface to let the consumer know it has happened.
+    * @param dat
+    *   the values to assign to bits.
+    * @return
+    *   dat.
+    */
+  def enq[T <: Data](dat: T): T = {
+    $valid := true.B
+    $bits := dat
+    dat
+  }
+
+  /** Indicate no enqueue occurs. Valid is set to false, and bits are connected to an uninitialized
+    * wire.
+    */
+  def noenq(): Unit = {
+    $valid := false.B
+    $bits := DontCare
+  }
+
+  /** Assert ready on this port and return the associated data bits. This is typically used when
+    * valid has been asserted by the producer side.
+    * @return
+    *   The data bits.
+    */
+  def deq(): T = {
+    $ready := true.B
+    $bits
+  }
+
+  /** Indicate no dequeue occurs. Ready is set to false.
+    */
+  def nodeq(): Unit = {
+    $ready := false.B
+  }
+
   val module_ = Module.currentModule
 
   private var markSource_ = ArrayBuffer.empty[(BaseModule, SourceInfo)]
@@ -114,7 +232,7 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     assert(module_.nonEmpty)
 
     if (DataInternals.isParentIO(this) && currentModule == module_.get) {
-      if (DataMirror.directionOf(this.valid) == ActualDirection.Output) {
+      if (DataMirror.directionOf(this.$valid) == ActualDirection.Output) {
         val pos = si.makeMessage(x => x)
         println(
           f"chext.elastic.Interface.markSource : Interface '$this' is declared as a Sink, but marked as Source. $pos"
@@ -139,7 +257,7 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     assert(module_.nonEmpty)
 
     if (DataInternals.isParentIO(this) && currentModule == module_.get) {
-      if (DataMirror.directionOf(this.valid) == ActualDirection.Input) {
+      if (DataMirror.directionOf(this.$valid) == ActualDirection.Input) {
         val pos = si.makeMessage(x => x)
         println(
           f"chext.elastic.Interface.markSink : Interface '$this' is declared as a Source, but marked as Sink. $pos"
@@ -163,7 +281,7 @@ class Interface[+T <: Data](gen: T)(implicit sourceInfo: SourceInfo)
     def log(msg: String): Unit = {
       val label = "chext.elastic.Interface.sanityCheck :"
       val indent = label.map(_ => ' ')
-      val pos = sourceInfo.makeMessage(x => x)
+      val pos = si.makeMessage(x => x)
       val moduleName = module_.map(_.toString()).getOrElse("(null)")
 
       println(f"$label $msg")
@@ -249,7 +367,7 @@ object Source {
       hw,
       sourceInfo.makeMessage((x) => "elastic.Source: expected hardware for hw $x")
     )
-    Source(chiselTypeOf(hw.bits))
+    Source(chiselTypeOf(hw.$bits))
   }
 
   def ioLike[T <: Data](hw: Interface[T])(implicit sourceInfo: SourceInfo) = IO(like(hw))
@@ -271,7 +389,7 @@ object Sink {
       hw,
       sourceInfo.makeMessage((x) => "elastic.Sink: expected hardware for hw $x")
     )
-    Sink(chiselTypeOf(hw.bits))
+    Sink(chiselTypeOf(hw.$bits))
   }
 
   def ioLike[T <: Data](hw: Interface[T])(implicit sourceInfo: SourceInfo) = IO(like(hw))
@@ -291,7 +409,7 @@ object EWire {
       hw,
       sourceInfo.makeMessage((x) => "elastic.EWire: expected hardware for hw $x")
     )
-    Wire(Interface(chiselTypeOf(hw.bits)))
+    Wire(Interface(chiselTypeOf(hw.$bits)))
   }
 }
 

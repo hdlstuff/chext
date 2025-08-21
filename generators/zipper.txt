@@ -411,26 +411,26 @@ result._8 <> t8
 result }
 }
 def apply[T1 <: Data](rv1: ReadyValidIO[T1]) = {
-val rv = Wrap.decoupled(WireBundleN(rv1.bits))
+val rv = Wrap.decoupled(WireBundleN(rv1.$bits))
 JoinUtils.join(Seq(rv1), rv)
 rv
 }
 def irrevocable[T1 <: Data](rv1: ReadyValidIO[T1]) = {
-val rv = Wrap.irrevocable(WireBundleN(rv1.bits))
+val rv = Wrap.irrevocable(WireBundleN(rv1.$bits))
 JoinUtils.join(Seq(rv1), rv)
 rv
 }
 def apply[T1 <: Data,
 T2 <: Data](rv1: ReadyValidIO[T1],
 rv2: ReadyValidIO[T2]) = {
-val rv = Wrap.decoupled(WireBundleN(rv1.bits,rv2.bits))
+val rv = Wrap.decoupled(WireBundleN(rv1.$bits,rv2.$bits))
 JoinUtils.join(Seq(rv1,rv2), rv)
 rv
 }
 def irrevocable[T1 <: Data,
 T2 <: Data](rv1: ReadyValidIO[T1],
 rv2: ReadyValidIO[T2]) = {
-val rv = Wrap.irrevocable(WireBundleN(rv1.bits,rv2.bits))
+val rv = Wrap.irrevocable(WireBundleN(rv1.$bits,rv2.$bits))
 JoinUtils.join(Seq(rv1,rv2), rv)
 rv
 }
@@ -439,7 +439,7 @@ T2 <: Data,
 T3 <: Data](rv1: ReadyValidIO[T1],
 rv2: ReadyValidIO[T2],
 rv3: ReadyValidIO[T3]) = {
-val rv = Wrap.decoupled(WireBundleN(rv1.bits,rv2.bits,rv3.bits))
+val rv = Wrap.decoupled(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3), rv)
 rv
 }
@@ -448,7 +448,7 @@ T2 <: Data,
 T3 <: Data](rv1: ReadyValidIO[T1],
 rv2: ReadyValidIO[T2],
 rv3: ReadyValidIO[T3]) = {
-val rv = Wrap.irrevocable(WireBundleN(rv1.bits,rv2.bits,rv3.bits))
+val rv = Wrap.irrevocable(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3), rv)
 rv
 }
@@ -459,7 +459,7 @@ T4 <: Data](rv1: ReadyValidIO[T1],
 rv2: ReadyValidIO[T2],
 rv3: ReadyValidIO[T3],
 rv4: ReadyValidIO[T4]) = {
-val rv = Wrap.decoupled(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits))
+val rv = Wrap.decoupled(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4), rv)
 rv
 }
@@ -470,7 +470,7 @@ T4 <: Data](rv1: ReadyValidIO[T1],
 rv2: ReadyValidIO[T2],
 rv3: ReadyValidIO[T3],
 rv4: ReadyValidIO[T4]) = {
-val rv = Wrap.irrevocable(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits))
+val rv = Wrap.irrevocable(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4), rv)
 rv
 }
@@ -483,7 +483,7 @@ rv2: ReadyValidIO[T2],
 rv3: ReadyValidIO[T3],
 rv4: ReadyValidIO[T4],
 rv5: ReadyValidIO[T5]) = {
-val rv = Wrap.decoupled(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits,rv5.bits))
+val rv = Wrap.decoupled(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits,rv5.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4,rv5), rv)
 rv
 }
@@ -496,7 +496,7 @@ rv2: ReadyValidIO[T2],
 rv3: ReadyValidIO[T3],
 rv4: ReadyValidIO[T4],
 rv5: ReadyValidIO[T5]) = {
-val rv = Wrap.irrevocable(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits,rv5.bits))
+val rv = Wrap.irrevocable(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits,rv5.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4,rv5), rv)
 rv
 }
@@ -511,7 +511,7 @@ rv3: ReadyValidIO[T3],
 rv4: ReadyValidIO[T4],
 rv5: ReadyValidIO[T5],
 rv6: ReadyValidIO[T6]) = {
-val rv = Wrap.decoupled(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits,rv5.bits,rv6.bits))
+val rv = Wrap.decoupled(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits,rv5.$bits,rv6.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4,rv5,rv6), rv)
 rv
 }
@@ -526,7 +526,7 @@ rv3: ReadyValidIO[T3],
 rv4: ReadyValidIO[T4],
 rv5: ReadyValidIO[T5],
 rv6: ReadyValidIO[T6]) = {
-val rv = Wrap.irrevocable(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits,rv5.bits,rv6.bits))
+val rv = Wrap.irrevocable(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits,rv5.$bits,rv6.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4,rv5,rv6), rv)
 rv
 }
@@ -543,7 +543,7 @@ rv4: ReadyValidIO[T4],
 rv5: ReadyValidIO[T5],
 rv6: ReadyValidIO[T6],
 rv7: ReadyValidIO[T7]) = {
-val rv = Wrap.decoupled(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits,rv5.bits,rv6.bits,rv7.bits))
+val rv = Wrap.decoupled(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits,rv5.$bits,rv6.$bits,rv7.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4,rv5,rv6,rv7), rv)
 rv
 }
@@ -560,7 +560,7 @@ rv4: ReadyValidIO[T4],
 rv5: ReadyValidIO[T5],
 rv6: ReadyValidIO[T6],
 rv7: ReadyValidIO[T7]) = {
-val rv = Wrap.irrevocable(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits,rv5.bits,rv6.bits,rv7.bits))
+val rv = Wrap.irrevocable(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits,rv5.$bits,rv6.$bits,rv7.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4,rv5,rv6,rv7), rv)
 rv
 }
@@ -579,7 +579,7 @@ rv5: ReadyValidIO[T5],
 rv6: ReadyValidIO[T6],
 rv7: ReadyValidIO[T7],
 rv8: ReadyValidIO[T8]) = {
-val rv = Wrap.decoupled(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits,rv5.bits,rv6.bits,rv7.bits,rv8.bits))
+val rv = Wrap.decoupled(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits,rv5.$bits,rv6.$bits,rv7.$bits,rv8.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4,rv5,rv6,rv7,rv8), rv)
 rv
 }
@@ -598,7 +598,7 @@ rv5: ReadyValidIO[T5],
 rv6: ReadyValidIO[T6],
 rv7: ReadyValidIO[T7],
 rv8: ReadyValidIO[T8]) = {
-val rv = Wrap.irrevocable(WireBundleN(rv1.bits,rv2.bits,rv3.bits,rv4.bits,rv5.bits,rv6.bits,rv7.bits,rv8.bits))
+val rv = Wrap.irrevocable(WireBundleN(rv1.$bits,rv2.$bits,rv3.$bits,rv4.$bits,rv5.$bits,rv6.$bits,rv7.$bits,rv8.$bits))
 JoinUtils.join(Seq(rv1,rv2,rv3,rv4,rv5,rv6,rv7,rv8), rv)
 rv
 }

@@ -26,7 +26,7 @@ class ReadToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Por
 
   private val dataQueue = Module(
     new Queue(
-      rdResp.bits.cloneType,
+      rdResp.$bits.cloneType,
       portCfg.numOutstandingRead,
       flow = true,
       pipe = true
@@ -44,13 +44,13 @@ class ReadToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Por
   raw.wstrb := 0.U
 
   // TODO: you should improve the rdReq ready logic
-  //  rdReq.ready := ctr.notFull
+  //  rdReq.$ready := ctr.notFull
 
   rdReq.nodeq()
   rdResp.noenq()
 
-  when(ctr.notFull && rdReq.valid) {
-    raw.addr := rdReq.bits
+  when(ctr.notFull && rdReq.$valid) {
+    raw.addr := rdReq.$bits
     rdReq.deq()
   }
 
@@ -62,7 +62,7 @@ class ReadToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Por
     dataQueueEnq.enq(raw.dOut)
   }
 
-  when(rdResp.ready && dataQueueDeq.valid) {
+  when(rdResp.$ready && dataQueueDeq.valid) {
     rdResp.enq(dataQueueDeq.deq())
     ctr.dec()
   }
@@ -94,10 +94,10 @@ class WriteToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Po
   wrReq.nodeq()
   wrResp.noenq()
 
-  when(ctr.notFull && wrReq.valid) {
-    raw.addr := wrReq.bits.addr
-    raw.dIn := wrReq.bits.data
-    raw.wstrb := wrReq.bits.strb
+  when(ctr.notFull && wrReq.$valid) {
+    raw.addr := wrReq.$bits.addr
+    raw.dIn := wrReq.$bits.data
+    raw.wstrb := wrReq.$bits.strb
 
     wrReq.deq()
   }
@@ -110,7 +110,7 @@ class WriteToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Po
     ctrResp.inc()
   }
 
-  when(wrResp.ready && ctrResp.notZero) {
+  when(wrResp.$ready && ctrResp.notZero) {
     wrResp.enq(0.U)
     ctr.dec()
     ctrResp.dec()
@@ -162,27 +162,27 @@ class ReadWriteToRawBridge(
   prefix("arbiter") {
     val arbiter = Module(portCfg.arbiterFunc())
 
-    arbiter.wrReq := wrReq.valid
-    arbiter.rdReq := rdReq.valid
+    arbiter.wrReq := wrReq.$valid
+    arbiter.rdReq := rdReq.$valid
 
-    rdReq.ready := arbiter.chooseRd && ctrRead.notFull
-    wrReq.ready := !arbiter.chooseRd && ctrWrite.notFull
+    rdReq.$ready := arbiter.chooseRd && ctrRead.notFull
+    wrReq.$ready := !arbiter.chooseRd && ctrWrite.notFull
 
     when(rdReq.fire) {
-      raw.addr := rdReq.bits
+      raw.addr := rdReq.$bits
     }
 
     when(wrReq.fire) {
-      raw.addr := wrReq.bits.addr
-      raw.dIn := wrReq.bits.data
-      raw.wstrb := wrReq.bits.strb
+      raw.addr := wrReq.$bits.addr
+      raw.dIn := wrReq.$bits.data
+      raw.wstrb := wrReq.$bits.strb
     }
   }
 
   prefix("read") {
     val dataQueue = Module(
       new Queue(
-        rdResp.bits.cloneType,
+        rdResp.$bits.cloneType,
         portCfg.numOutstandingRead,
         flow = true,
         pipe = true
@@ -203,7 +203,7 @@ class ReadWriteToRawBridge(
       dataQueueEnq.enq(raw.dOut)
     }
 
-    when(rdResp.ready && dataQueueDeq.valid) {
+    when(rdResp.$ready && dataQueueDeq.valid) {
       rdResp.enq(dataQueueDeq.deq())
       ctrRead.dec()
     }
@@ -217,7 +217,7 @@ class ReadWriteToRawBridge(
     when(ShiftRegister(wrReq.fire, rawMemCfg.latencyWrite)) {
       ctrWriteResp.inc()
     }
-    when(wrResp.ready && ctrWriteResp.notZero) {
+    when(wrResp.$ready && ctrWriteResp.notZero) {
       wrResp.enq(0.U)
       ctrWrite.dec()
       ctrWriteResp.dec()

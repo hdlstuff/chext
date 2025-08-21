@@ -37,7 +37,7 @@ class Unburst(val cfg: UnburstConfig) extends Module {
   private def implRead(): Unit = prefix("read") {
     val addressStrobeGenerator =
       Module(
-        new AddressStrobeGenerator(wAddr, wData, chiselTypeOf(s_axi.ar.bits))
+        new AddressStrobeGenerator(wAddr, wData, chiselTypeOf(s_axi.ar.$bits))
       )
 
     val wire0 = elastic.EWire(UInt(axiCfg.wLen.W))
@@ -90,7 +90,7 @@ class Unburst(val cfg: UnburstConfig) extends Module {
   private def implWrite(): Unit = prefix("write") {
     val addressStrobeGenerator =
       Module(
-        new AddressStrobeGenerator(wAddr, wData, chiselTypeOf(s_axi.aw.bits))
+        new AddressStrobeGenerator(wAddr, wData, chiselTypeOf(s_axi.aw.$bits))
       )
 
     val wire0 = elastic.EWire(UInt(axiCfg.wLen.W))

@@ -55,6 +55,12 @@ private object MyModule_Emit extends App {
 
     // should fail without the following line
     io.source :=> io.sink
+
+    // this is not OK, throws a warning
+    io.sink.bits := 0.U
+
+    // this is not OK, supresses the warning
+    io.sink.$bits := 0.U
   }
 
   // System.out.println("Working Directory = " + System.getProperty("user.dir"));

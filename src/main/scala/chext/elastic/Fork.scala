@@ -18,7 +18,7 @@ abstract class Fork[T <: Data](
 
   private val sinkList = ListBuffer.empty[Interface[Data]]
 
-  protected val in = source.bits
+  protected val in = source.$bits
 
   protected final def onFork: Unit = throw new NotImplementedError("Shall not be used!")
 
@@ -29,12 +29,14 @@ abstract class Fork[T <: Data](
     */
   protected final def fork[TT <: Data](tt: TT = in): Interface[TT] = {
     val result = Wire(new Interface(chiselTypeOf(tt)))
-    result.bits := tt
+    result.$bits := tt
     sinkList.addOne(result)
     result
   }
 
   deferred {
+    // TODO warn if no sinks, but do not fail
+
     if (eager)
       forkImpl.eagerFork(source, sinkList.toSeq)
     else
@@ -56,21 +58,21 @@ private[elastic] object forkImpl {
 
     val ready = VecInit(sinks.zip(regs).map {
       case (sink, reg) => {
-        sink.ready || reg
+        sink.$ready || reg
       }
     }).reduceTree(_ && _)
-    source.ready := ready
+    source.$ready := ready
 
     sinks.zip(regs).foreach {
       case (sink, reg) => {
-        sink.valid := source.valid && !reg
+        sink.$valid := source.$valid && !reg
       }
     }
 
     sinks.zip(regs).foreach {
       case (sink, reg) => {
         // the next value for the register
-        reg := (sink.ready || reg) && source.valid && !source.ready
+        reg := (sink.$ready || reg) && source.$valid && !source.$ready
       }
     }
   }
@@ -83,10 +85,10 @@ private[elastic] object forkImpl {
     sinks.foreach { _.markSink() }
 
     sinks.foreach { //
-      case (sink) => sink.valid := source.valid && source.ready
+      case (sink) => sink.$valid := source.$valid && source.$ready
     }
 
-    val ready = VecInit(sinks.map { _.ready }).reduceTree(_ && _)
-    source.ready := ready
+    val ready = VecInit(sinks.map { _.$ready }).reduceTree(_ && _)
+    source.$ready := ready
   }
 }

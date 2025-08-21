@@ -26,8 +26,8 @@ object Const {
       val interface = Wire(Interface(gen.cloneType))
       interface.markSink()
 
-      fn(interface.bits)
-      interface.valid := true.B
+      fn(interface.$bits)
+      interface.$valid := true.B
       interface
     }
   }

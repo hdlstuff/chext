@@ -32,8 +32,8 @@ abstract class Stall[Tin <: Data, Tout <: Data](
   source.markSource()
   sink.markSink()
 
-  protected final val in = source.bits
-  protected final val out = sink.bits
+  protected final val in = source.$bits
+  protected final val out = sink.$bits
 
   private var condFn_ = Option.empty[() => Bool]
 
@@ -60,7 +60,7 @@ abstract class Stall[Tin <: Data, Tout <: Data](
 
     val cond = condFn_.get()
 
-    source.ready := !cond && sink.ready
-    sink.valid := !cond && source.valid
+    source.$ready := !cond && sink.$ready
+    sink.$valid := !cond && source.$valid
   }
 }

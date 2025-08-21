@@ -51,8 +51,8 @@ object Interface {
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
   implicit val view = DataView[Interface, elastic.Interface[UInt]](
     interface => elastic.Interface(UInt(interface.cfg.wData.W)),
-    _.TREADY -> _.ready,
-    _.TVALID -> _.valid,
-    _.TDATA -> _.bits
+    _.TREADY -> _.$ready,
+    _.TVALID -> _.$valid,
+    _.TDATA -> _.$bits
   )
 }

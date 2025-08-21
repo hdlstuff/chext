@@ -26,19 +26,19 @@ class Demux[T <: Data](
   io.sinks.foreach { _.markSink() }
   io.select.markSource()
 
-  private val valid = io.select.valid && io.source.valid
-  private val fire = valid && io.sinks(io.select.bits).ready
-  private val isLast = isLastFn(io.source.bits)
+  private val valid = io.select.$valid && io.source.$valid
+  private val fire = valid && io.sinks(io.select.$bits).$ready
+  private val isLast = isLastFn(io.source.$bits)
 
-  io.source.ready := fire
+  io.source.$ready := fire
   io.sinks.zipWithIndex.foreach { case (x, i) =>
     // sink ready might wait for sink valid
     // so, make sure that they do not depend on each other
-    x.valid := valid && (i.U === (io.select.bits))
+    x.$valid := valid && (i.U === (io.select.$bits))
   }
-  io.select.ready := fire && isLast
+  io.select.$ready := fire && isLast
 
-  io.sinks.foreach { _.bits := io.source.bits }
+  io.sinks.foreach { _.$bits := io.source.$bits }
 }
 
 object Demux {
@@ -49,7 +49,7 @@ object Demux {
       isLastFn: T => Bool = (_: T) => true.B
   )(implicit si: SourceInfo): Unit = {
     val demux = Module(
-      new Demux(chiselTypeOf(source.bits), sinks.length, isLastFn)
+      new Demux(chiselTypeOf(source.$bits), sinks.length, isLastFn)
     )
 
     source :=> demux.io.source

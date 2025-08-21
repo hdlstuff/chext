@@ -181,28 +181,28 @@ object Interface {
   ): Iterable[(Data, Data)] =
     Seq(
       // AR
-      x.ARREADY -> y.ar.ready,
-      x.ARVALID -> y.ar.valid,
-      x.ARID -> y.ar.bits.id,
-      x.ARADDR -> y.ar.bits.addr,
-      x.ARLEN -> y.ar.bits.len,
-      x.ARSIZE -> y.ar.bits.size,
-      x.ARBURST -> y.ar.bits.burst,
-      x.ARLOCK -> y.ar.bits.lock,
-      x.ARCACHE -> y.ar.bits.cache,
-      x.ARPROT -> y.ar.bits.prot,
-      x.ARQOS -> y.ar.bits.qos,
-      x.ARREGION -> y.ar.bits.region,
-      x.ARUSER -> y.ar.bits.user,
+      x.ARREADY -> y.ar.$ready,
+      x.ARVALID -> y.ar.$valid,
+      x.ARID -> y.ar.$bits.id,
+      x.ARADDR -> y.ar.$bits.addr,
+      x.ARLEN -> y.ar.$bits.len,
+      x.ARSIZE -> y.ar.$bits.size,
+      x.ARBURST -> y.ar.$bits.burst,
+      x.ARLOCK -> y.ar.$bits.lock,
+      x.ARCACHE -> y.ar.$bits.cache,
+      x.ARPROT -> y.ar.$bits.prot,
+      x.ARQOS -> y.ar.$bits.qos,
+      x.ARREGION -> y.ar.$bits.region,
+      x.ARUSER -> y.ar.$bits.user,
 
       // R
-      x.RREADY -> y.r.ready,
-      x.RVALID -> y.r.valid,
-      x.RID -> y.r.bits.id,
-      x.RDATA -> y.r.bits.data,
-      x.RRESP -> y.r.bits.resp,
-      x.RLAST -> y.r.bits.last,
-      x.RUSER -> y.r.bits.user
+      x.RREADY -> y.r.$ready,
+      x.RVALID -> y.r.$valid,
+      x.RID -> y.r.$bits.id,
+      x.RDATA -> y.r.$bits.data,
+      x.RRESP -> y.r.$bits.resp,
+      x.RLAST -> y.r.$bits.last,
+      x.RUSER -> y.r.$bits.user
     ).map { case (a, b) => a.get -> b }
 
   /** pairs for DataView */
@@ -212,34 +212,34 @@ object Interface {
   ): Iterable[(Data, Data)] =
     Seq(
       // AW
-      x.AWREADY -> y.aw.ready,
-      x.AWVALID -> y.aw.valid,
-      x.AWID -> y.aw.bits.id,
-      x.AWADDR -> y.aw.bits.addr,
-      x.AWLEN -> y.aw.bits.len,
-      x.AWSIZE -> y.aw.bits.size,
-      x.AWBURST -> y.aw.bits.burst,
-      x.AWLOCK -> y.aw.bits.lock,
-      x.AWCACHE -> y.aw.bits.cache,
-      x.AWPROT -> y.aw.bits.prot,
-      x.AWQOS -> y.aw.bits.qos,
-      x.AWREGION -> y.aw.bits.region,
-      x.AWUSER -> y.aw.bits.user,
+      x.AWREADY -> y.aw.$ready,
+      x.AWVALID -> y.aw.$valid,
+      x.AWID -> y.aw.$bits.id,
+      x.AWADDR -> y.aw.$bits.addr,
+      x.AWLEN -> y.aw.$bits.len,
+      x.AWSIZE -> y.aw.$bits.size,
+      x.AWBURST -> y.aw.$bits.burst,
+      x.AWLOCK -> y.aw.$bits.lock,
+      x.AWCACHE -> y.aw.$bits.cache,
+      x.AWPROT -> y.aw.$bits.prot,
+      x.AWQOS -> y.aw.$bits.qos,
+      x.AWREGION -> y.aw.$bits.region,
+      x.AWUSER -> y.aw.$bits.user,
 
       // W
-      x.WREADY -> y.w.ready,
-      x.WVALID -> y.w.valid,
-      x.WDATA -> y.w.bits.data,
-      x.WSTRB -> y.w.bits.strb,
-      x.WLAST -> y.w.bits.last,
-      x.WUSER -> y.w.bits.user,
+      x.WREADY -> y.w.$ready,
+      x.WVALID -> y.w.$valid,
+      x.WDATA -> y.w.$bits.data,
+      x.WSTRB -> y.w.$bits.strb,
+      x.WLAST -> y.w.$bits.last,
+      x.WUSER -> y.w.$bits.user,
 
       // B
-      x.BREADY -> y.b.ready,
-      x.BVALID -> y.b.valid,
-      x.BID -> y.b.bits.id,
-      x.BRESP -> y.b.bits.resp,
-      x.BUSER -> y.b.bits.user
+      x.BREADY -> y.b.$ready,
+      x.BVALID -> y.b.$valid,
+      x.BID -> y.b.$bits.id,
+      x.BRESP -> y.b.$bits.resp,
+      x.BUSER -> y.b.$bits.user
     ).map { case (a, b) => a.get -> b }
 
   implicit val view: DataView[axi4.RawInterface, Interface] =

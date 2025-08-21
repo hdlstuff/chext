@@ -20,15 +20,15 @@ object FullChannel {
   implicit val view1 = PartialDataView.mapping[Interface, elastic.Interface[FullChannel]](
     interface => elastic.Interface(new FullChannel(interface.cfg)),
     (interface, elasticInterface) => Seq[Tuple2[Option[Data], Option[Data]]](
-      Some(interface.TREADY) -> Some(elasticInterface.ready),
-      Some(interface.TVALID) -> Some(elasticInterface.valid),
-      Some(interface.TDATA) -> Some(elasticInterface.bits.data),
-      interface.TSTRB -> Some(elasticInterface.bits.strobe),
-      interface.TKEEP -> Some(elasticInterface.bits.keep),
-      interface.TLAST -> Some(elasticInterface.bits.last),
-      interface.TID -> elasticInterface.bits.id,
-      interface.TDEST -> elasticInterface.bits.dest,
-      interface.TUSER -> elasticInterface.bits.user
+      Some(interface.TREADY) -> Some(elasticInterface.$ready),
+      Some(interface.TVALID) -> Some(elasticInterface.$valid),
+      Some(interface.TDATA) -> Some(elasticInterface.$bits.data),
+      interface.TSTRB -> Some(elasticInterface.$bits.strobe),
+      interface.TKEEP -> Some(elasticInterface.$bits.keep),
+      interface.TLAST -> Some(elasticInterface.$bits.last),
+      interface.TID -> elasticInterface.$bits.id,
+      interface.TDEST -> elasticInterface.$bits.dest,
+      interface.TUSER -> elasticInterface.$bits.user
     )
       .filter { case (a, b) => a.nonEmpty && b.nonEmpty }
       .map { case (a, b) => a.get -> b.get }
@@ -40,9 +40,9 @@ object BasicChannel {
   implicit val view2 = PartialDataView.mapping[Interface, elastic.Interface[Bits]](
     interface => elastic.Interface(Bits(interface.cfg.wData.W)),
     (interface, elasticInterface) => Seq[Tuple2[Data, Data]](
-      interface.TREADY -> elasticInterface.ready,
-      interface.TVALID -> elasticInterface.valid,
-      interface.TDATA -> elasticInterface.bits
+      interface.TREADY -> elasticInterface.$ready,
+      interface.TVALID -> elasticInterface.$valid,
+      interface.TDATA -> elasticInterface.$bits
     )
   )
 }

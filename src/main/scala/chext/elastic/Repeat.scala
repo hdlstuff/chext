@@ -28,9 +28,9 @@ import chisel3.hacks.deferred
   *   Bit width of the internal repeat counter.
   *
   * @tparam Tin
-  *   The type of the source data (`source.bits`).
+  *   The type of the source data (`source.$bits`).
   * @tparam Tout
-  *   The type of the sink data (`sink.bits`).
+  *   The type of the sink data (`sink.$bits`).
   */
 abstract class Repeat[Tin <: Data, Tout <: Data](
     source: Interface[Tin],
@@ -95,7 +95,7 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
   protected final def outExplicit(fn: => OutExplicitFn): Unit = {
     out { (in, index, first, last) =>
       {
-        val outResult = Wire(chiselTypeOf(sink.bits))
+        val outResult = Wire(chiselTypeOf(sink.$bits))
         fn(in, index, first, last, outResult)
         outResult
       }

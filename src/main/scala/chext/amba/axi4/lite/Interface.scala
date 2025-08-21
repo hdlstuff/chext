@@ -121,16 +121,16 @@ object Interface {
   ): Iterable[(Data, Data)] =
     Seq(
       // AR
-      x.ARREADY -> y.ar.ready,
-      x.ARVALID -> y.ar.valid,
-      x.ARADDR -> y.ar.bits.addr,
-      x.ARPROT -> y.ar.bits.prot,
+      x.ARREADY -> y.ar.$ready,
+      x.ARVALID -> y.ar.$valid,
+      x.ARADDR -> y.ar.$bits.addr,
+      x.ARPROT -> y.ar.$bits.prot,
 
       // R
-      x.RREADY -> y.r.ready,
-      x.RVALID -> y.r.valid,
-      x.RDATA -> y.r.bits.data,
-      x.RRESP -> y.r.bits.resp
+      x.RREADY -> y.r.$ready,
+      x.RVALID -> y.r.$valid,
+      x.RDATA -> y.r.$bits.data,
+      x.RRESP -> y.r.$bits.resp
     ).map { case (a, b) => a.get -> b }
 
   /** pairs for DataView */
@@ -140,21 +140,21 @@ object Interface {
   ): Iterable[(Data, Data)] =
     Seq(
       // AW
-      x.AWREADY -> y.aw.ready,
-      x.AWVALID -> y.aw.valid,
-      x.AWADDR -> y.aw.bits.addr,
-      x.AWPROT -> y.aw.bits.prot,
+      x.AWREADY -> y.aw.$ready,
+      x.AWVALID -> y.aw.$valid,
+      x.AWADDR -> y.aw.$bits.addr,
+      x.AWPROT -> y.aw.$bits.prot,
 
       // W
-      x.WREADY -> y.w.ready,
-      x.WVALID -> y.w.valid,
-      x.WDATA -> y.w.bits.data,
-      x.WSTRB -> y.w.bits.strb,
+      x.WREADY -> y.w.$ready,
+      x.WVALID -> y.w.$valid,
+      x.WDATA -> y.w.$bits.data,
+      x.WSTRB -> y.w.$bits.strb,
 
       // B
-      x.BREADY -> y.b.ready,
-      x.BVALID -> y.b.valid,
-      x.BRESP -> y.b.bits.resp
+      x.BREADY -> y.b.$ready,
+      x.BVALID -> y.b.$valid,
+      x.BRESP -> y.b.$bits.resp
     ).map { case (a, b) => a.get -> b }
 
   implicit val view: DataView[axi4.RawInterface, Interface] =

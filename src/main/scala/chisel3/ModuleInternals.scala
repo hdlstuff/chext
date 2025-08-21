@@ -49,7 +49,7 @@ object ModuleInternals {
   }
 
   import internal.firrtl.ir._
-  private def getCommands(module: RawModule): Seq[Command] = {
+  def getCommands(module: RawModule): Seq[Command] = {
     val field = classOf[RawModule].getDeclaredField("_commands")
     field.setAccessible(true)
     val vb = field.get(module).asInstanceOf[scala.collection.immutable.VectorBuilder[Command]]

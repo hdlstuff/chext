@@ -65,18 +65,18 @@ class MemController(
 
   val mem = Mem(1 << log2numElements, genData)
 
-  private val addrW = aw.bits.addr(addrBitHigh, addrBitLow)
-  private val dataW = w.bits.data
-  private val addrR = ar.bits.addr(addrBitHigh, addrBitLow)
+  private val addrW = aw.$bits.addr(addrBitHigh, addrBitLow)
+  private val dataW = w.$bits.data
+  private val addrR = ar.$bits.addr(addrBitHigh, addrBitLow)
 
   // Write logic
   w.nodeq()
   aw.nodeq()
   b.noenq()
 
-  b.valid := w.valid && aw.valid
+  b.$valid := w.$valid && aw.$valid
 
-  when(w.valid && aw.valid && b.ready) {
+  when(w.$valid && aw.$valid && b.$ready) {
     w.deq()
     aw.deq()
     b.enq(
@@ -89,24 +89,24 @@ class MemController(
     if (debugEnabled)
       printf(
         "Write: address = 0x%x, data = 0x%x, counter = %d\n",
-        aw.bits.addr,
+        aw.$bits.addr,
         dataW,
         counter
       )
   }
 
   // Read logic
-  r.bits.resp := ResponseFlag.OKAY
-  r.bits.data := mem.read(addrR)
-  r.valid := ar.valid
-  ar.ready := r.ready
+  r.$bits.resp := ResponseFlag.OKAY
+  r.$bits.data := mem.read(addrR)
+  r.$valid := ar.$valid
+  ar.$ready := r.$ready
 
-  when(r.ready && r.valid) {
+  when(r.$ready && r.$valid) {
     if (debugEnabled)
       printf(
         "Read: address = 0x%x, data = 0x%x, counter = %d\n",
-        ar.bits.addr,
-        r.bits.data,
+        ar.$bits.addr,
+        r.$bits.data,
         counter
       )
   }

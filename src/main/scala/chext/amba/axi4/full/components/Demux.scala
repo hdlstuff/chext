@@ -78,7 +78,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
     transactionTracker.noInitiate()
 
     def arLogic: Unit = {
-      val genArPort = new Bundle2(s_axi_.ar.bits.cloneType, genPort)
+      val genArPort = new Bundle2(s_axi_.ar.$bits.cloneType, genPort)
       val arPort = Wire(elastic.Interface(genArPort))
 
       val stall0 = new elastic.Stall(s_axi_.ar, arPort) {
@@ -93,7 +93,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
         fire { transactionTracker.initiate(id, port) }
       }
 
-      val demuxInput = Wire(elastic.Interface(s_axi_.ar.bits.cloneType))
+      val demuxInput = Wire(elastic.Interface(s_axi_.ar.$bits.cloneType))
       val demuxSelect = Wire(elastic.Interface(genPort))
 
       val fork0 = new elastic.Fork(arPort) {
@@ -116,8 +116,8 @@ class Demux(val cfg: DemuxConfig) extends Module {
         arbiterPolicy
       )
 
-      when(s_axi_.r.fire && s_axi_.r.bits.last) {
-        transactionTracker.complete(s_axi_.r.bits.id)
+      when(s_axi_.r.fire && s_axi_.r.$bits.last) {
+        transactionTracker.complete(s_axi_.r.$bits.id)
       }
     }
 
@@ -146,7 +146,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
     )
 
     def awLogic: Unit = {
-      val genAwPort = new Bundle2(s_axi_.aw.bits.cloneType, genPort)
+      val genAwPort = new Bundle2(s_axi_.aw.$bits.cloneType, genPort)
       val awPort = Wire(elastic.Interface(genAwPort))
 
       val stall0 = new elastic.Stall(s_axi_.aw, awPort) {
@@ -161,7 +161,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
         fire { transactionTracker.initiate(id, port) }
       }
 
-      val demuxInput = Wire(elastic.Interface(s_axi_.aw.bits.cloneType))
+      val demuxInput = Wire(elastic.Interface(s_axi_.aw.$bits.cloneType))
       val demuxSelect = Wire(elastic.Interface(genPort))
 
       val fork0 = new elastic.Fork(awPort) {
@@ -192,7 +192,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
       )
 
       when(s_axi_.b.fire) {
-        transactionTracker.complete(s_axi_.b.bits.id)
+        transactionTracker.complete(s_axi_.b.$bits.id)
       }
     }
 

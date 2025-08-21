@@ -12,9 +12,9 @@ abstract class Transform[Tin <: Data, Tout <: Data](
   source.markSource()
   sink.markSink()
 
-  protected final val in = source.bits
-  protected final val out = sink.bits
+  protected final val in = source.$bits
+  protected final val out = sink.$bits
 
-  sink.valid := source.valid
-  source.ready := sink.ready
+  sink.$valid := source.$valid
+  source.$ready := sink.$ready
 }

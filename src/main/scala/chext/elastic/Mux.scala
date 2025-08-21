@@ -26,21 +26,21 @@ class Mux[T <: Data](
   io.sink.markSink()
   io.select.markSource()
 
-  private val valid = io.select.valid && io.sources(io.select.bits).valid
-  private val fire = valid && io.sink.ready
-  private val isLast = isLastFn(io.sink.bits)
+  private val valid = io.select.$valid && io.sources(io.select.$bits).$valid
+  private val fire = valid && io.sink.$ready
+  private val isLast = isLastFn(io.sink.$bits)
 
   io.sources.zipWithIndex.foreach { case (x, i) =>
-    x.ready := fire && i.U === (io.select.bits)
+    x.$ready := fire && i.U === (io.select.$bits)
   }
 
   // sink ready might wait for sink valid
   // so, make sure that they do not depend on each other
-  io.sink.valid := valid
+  io.sink.$valid := valid
 
-  io.select.ready := fire && isLast
+  io.select.$ready := fire && isLast
 
-  io.sink.bits := io.sources(io.select.bits.asUInt).bits
+  io.sink.$bits := io.sources(io.select.$bits.asUInt).$bits
 }
 
 object Mux {
@@ -51,7 +51,7 @@ object Mux {
       isLastFn: T => Bool = (_: T) => true.B
   )(implicit si: SourceInfo): Unit = {
     val mux = Module(
-      new Mux(chiselTypeOf(sources(0).bits), sources.length, isLastFn)
+      new Mux(chiselTypeOf(sources(0).$bits), sources.length, isLastFn)
     )
 
     sources.zip(mux.io.sources).foreach { case (x, y) => x :=> y }

@@ -13,19 +13,19 @@ abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interfa
   source.markSource()
   sink.markSink()
 
-  protected val in = Wire(chiselTypeOf(source.bits))
-  protected val out = Wire(chiselTypeOf(sink.bits))
+  protected val in = Wire(chiselTypeOf(source.$bits))
+  protected val out = Wire(chiselTypeOf(sink.$bits))
 
   protected def delay: Int
   protected def queueLength: Int = delay + 1
 
-  in := source.bits
+  in := source.$bits
 
   deferred {
     if (delay == 0) {
-      sink.valid := source.valid
-      sink.bits := out
-      source.ready := sink.ready
+      sink.$valid := source.$valid
+      sink.$bits := out
+      source.$ready := sink.$ready
     } else {
       import ConnectOp._
 
@@ -34,21 +34,21 @@ abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interfa
       ctr.noInc()
       ctr.noDec()
 
-      val qOutput = Queue(chiselTypeOf(sink.bits), queueLength)
+      val qOutput = Queue(chiselTypeOf(sink.$bits), queueLength)
 
       qOutput.source.noenq()
       source.nodeq()
 
-      in := source.bits
-      qOutput.source.bits := out
+      in := source.$bits
+      qOutput.source.$bits := out
 
-      source.ready := ctr.notFull && source.valid
+      source.$ready := ctr.notFull && source.$valid
 
       when(source.fire) {
         ctr.inc()
       }
 
-      qOutput.source.valid := ShiftRegister(source.fire, delay)
+      qOutput.source.$valid := ShiftRegister(source.fire, delay)
       qOutput.sink :=> sink
 
       when(qOutput.sink.fire) {

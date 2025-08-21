@@ -15,7 +15,7 @@ abstract class Join[T <: Data](
 
   private val sourceList = ListBuffer.empty[Interface[Data]]
 
-  protected val out: T = sink.bits
+  protected val out: T = sink.$bits
 
   protected final def onJoin: Unit = throw new NotImplementedError("Shall not be used!")
 
@@ -26,10 +26,12 @@ abstract class Join[T <: Data](
     */
   def join[TT <: Data](source: Interface[TT]): TT = {
     sourceList.addOne(source)
-    source.bits
+    source.$bits
   }
 
   deferred {
+    // TODO warn if no sources, but do not fail
+
     joinImpl.join(sourceList.toSeq, sink)
   }
 
@@ -50,9 +52,9 @@ private[elastic] object joinImpl {
     sink.markSink()
 
     val allValid =
-      VecInit(sources.map { _.valid }).reduceTree(_ && _)
-    val fire = sink.ready && allValid
-    sources.foreach { _.ready := fire }
-    sink.valid := allValid
+      VecInit(sources.map { _.$valid }).reduceTree(_ && _)
+    val fire = sink.$ready && allValid
+    sources.foreach { _.$ready := fire }
+    sink.$valid := allValid
   }
 }

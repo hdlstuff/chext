@@ -62,7 +62,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
     )
 
     def arLogic: Unit = {
-      val genArPort = new Bundle2(s_axil_.ar.bits.cloneType, genPort)
+      val genArPort = new Bundle2(s_axil_.ar.$bits.cloneType, genPort)
       val arPort = Wire(elastic.Interface(genArPort))
 
       new elastic.Transform(s_axil_.ar, arPort) {
@@ -70,7 +70,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
         out._2 := decodeFn(in.addr)
       }
 
-      val demuxInput = Wire(elastic.Interface(s_axil_.ar.bits.cloneType))
+      val demuxInput = Wire(elastic.Interface(s_axil_.ar.$bits.cloneType))
       val demuxSelect = Wire(elastic.Interface(genPort))
 
       new elastic.Fork(arPort) {
@@ -106,7 +106,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
     )
 
     def awLogic: Unit = {
-      val genAwPort = new Bundle2(s_axil_.aw.bits.cloneType, genPort)
+      val genAwPort = new Bundle2(s_axil_.aw.$bits.cloneType, genPort)
       val awPort = Wire(elastic.Interface(genAwPort))
 
       new elastic.Transform(s_axil_.aw, awPort) {
@@ -114,7 +114,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
         out._2 := decodeFn(in.addr)
       }
 
-      val demuxAwInput = Wire(elastic.Interface(s_axil_.aw.bits.cloneType))
+      val demuxAwInput = Wire(elastic.Interface(s_axil_.aw.$bits.cloneType))
       val demuxAwSelect = Wire(elastic.Interface(genPort))
 
       new elastic.Fork(awPort) {

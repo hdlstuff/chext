@@ -172,8 +172,8 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
       offsetLastQueue.sink.markSource()
 
       val transducerRepeatData = new elastic.Transducer(s_axi.w, m_axi.w) {
-        val bits = offsetLastQueue.sink.bits
-        val valid = offsetLastQueue.sink.valid
+        val bits = offsetLastQueue.sink.$bits
+        val valid = offsetLastQueue.sink.$valid
 
         val steerRight = Module(new SteerRight(wDataSlave, wDataMaster))
         val steerRightStrobe = Module(new SteerRight(wStrobeSlave, wStrobeMaster))

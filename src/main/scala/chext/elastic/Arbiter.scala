@@ -34,22 +34,22 @@ class Arbiter[T <: Data](
   private val regSink = RegInit(false.B)
   private val regSelect = RegInit(false.B)
 
-  private val ready = (sink.ready || regSink) && (select.ready || regSelect)
+  private val ready = (sink.$ready || regSink) && (select.$ready || regSelect)
 
-  private val choice = chooser(VecInit(sources.map { _.valid }), ready)
+  private val choice = chooser(VecInit(sources.map { _.$valid }), ready)
 
   sources.zipWithIndex.foreach { case (x, i) =>
-    x.ready := ready && i.U === (choice)
+    x.$ready := ready && i.U === (choice)
   }
 
-  sink.valid := sources(choice).valid && !regSink
-  select.valid := sources(choice).valid && !regSelect
+  sink.$valid := sources(choice).$valid && !regSink
+  select.$valid := sources(choice).$valid && !regSelect
 
-  regSink := (sink.ready || regSink) && sources(choice).valid && !ready
-  regSelect := (select.ready || regSelect) && sources(choice).valid && !ready
+  regSink := (sink.$ready || regSink) && sources(choice).$valid && !ready
+  regSelect := (select.$ready || regSelect) && sources(choice).$valid && !ready
 
-  sink.bits := sources(choice).bits
-  select.bits := choice
+  sink.$bits := sources(choice).$bits
+  select.$bits := choice
 }
 
 object Arbiter {
@@ -61,7 +61,7 @@ object Arbiter {
   )(implicit si: SourceInfo): Unit = {
     val arbiter = Module(
       new Arbiter(
-        chiselTypeOf(sources(0).bits),
+        chiselTypeOf(sources(0).$bits),
         sources.length,
         chooserFn
       )

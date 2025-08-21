@@ -66,7 +66,7 @@ def zipper(n: int):
         str1 = ",\n".join(map(lambda i: f"T{i + 1} <: Data", range(i)))
         str2 = ",\n".join(
             map(lambda i: f"rv{i + 1}: ReadyValidIO[T{i + 1}]", range(i)))
-        str3 = ",".join(map(lambda i: f"rv{i + 1}.bits", range(i)))
+        str3 = ",".join(map(lambda i: f"rv{i + 1}.$bits", range(i)))
         str4 = ",".join(map(lambda i: f"rv{i + 1}", range(i)))
 
         x1 = "apply" if not irrevocable else "irrevocable"

@@ -169,7 +169,7 @@ class RegisterBlock(
 
   // We need to place a queue of length 1 to be fully AXI-compliant
   // Otherwise, valid signal waits for the ready signal
-  private val rdRespQueue_ = elastic.Queue(chiselTypeOf(s_axil_.r.bits), 1)
+  private val rdRespQueue_ = elastic.Queue(chiselTypeOf(s_axil_.r.$bits), 1)
   private val rdResp_ = rdRespQueue_.source
   rdRespQueue_.sink :=> s_axil_.r
 
@@ -177,7 +177,7 @@ class RegisterBlock(
   private val wrReqData_ = elastic.SourceBuffer(s_axil_.w, 1)
 
   // Same as before
-  private val wrRespQueue_ = elastic.Queue(chiselTypeOf(s_axil_.b.bits), 1)
+  private val wrRespQueue_ = elastic.Queue(chiselTypeOf(s_axil_.b.$bits), 1)
   private val wrResp_ = wrRespQueue_.source
   wrRespQueue_.sink :=> s_axil_.b
 
@@ -205,7 +205,7 @@ class RegisterBlock(
 
     rdReq_.deq()
 
-    val resp = Wire(chiselTypeOf(rdResp_.bits))
+    val resp = Wire(chiselTypeOf(rdResp_.$bits))
     resp.data := data
     resp.resp := resp_flag
     rdResp_.enq(resp)
@@ -222,16 +222,16 @@ class RegisterBlock(
     wrReq_.deq()
     wrReqData_.deq()
 
-    val resp = Wire(chiselTypeOf(wrResp_.bits))
+    val resp = Wire(chiselTypeOf(wrResp_.$bits))
     resp.resp := resp_flag
     wrResp_.enq(resp)
   }
 
   /** `True` if there is an incoming read request */
-  val rdReq: Bool = (rdReq_.valid && rdResp_.ready)
+  val rdReq: Bool = (rdReq_.$valid && rdResp_.$ready)
 
   /** address of the incoming read request */
-  val rdAddr: UInt = rdReq_.bits.addr & mask
+  val rdAddr: UInt = rdReq_.$bits.addr & mask
 
   /** accepts the incoming read request, returning the default values to the requester.
     */
@@ -267,16 +267,16 @@ class RegisterBlock(
   }
 
   /** `True` if there is an incoming write request */
-  val wrReq: Bool = wrReq_.valid && wrReqData_.valid && wrResp_.ready
+  val wrReq: Bool = wrReq_.$valid && wrReqData_.$valid && wrResp_.$ready
 
   /** address of the incoming write request */
-  val wrAddr: UInt = wrReq_.bits.addr & mask
+  val wrAddr: UInt = wrReq_.$bits.addr & mask
 
   /** data corresponding to the incoming write request */
-  val wrData: UInt = wrReqData_.bits.data
+  val wrData: UInt = wrReqData_.$bits.data
 
   /** write strobe of the incoming write request */
-  val wrStrb: UInt = wrReqData_.bits.strb
+  val wrStrb: UInt = wrReqData_.$bits.strb
 
   /** accepts the write request, performing the default action.
     */

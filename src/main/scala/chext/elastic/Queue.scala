@@ -266,7 +266,7 @@ object Queue {
     if (count == 0) {
       source :=> sink
     } else {
-      val gen = chiselTypeOf(source.bits)
+      val gen = chiselTypeOf(source.$bits)
       val queue = skipPrefix { new Queue(gen, count, pipe, flow, useSyncReadMem) }
       source :=> queue.source
       queue.sink :=> sink
@@ -351,7 +351,7 @@ class Queue[T <: Data](
     val do_deq = WireDefault(sink.fire)
 
     when(do_enq) {
-      ram.write(enq_ptr.value, source.bits.asUInt)
+      ram.write(enq_ptr.value, source.$bits.asUInt)
       enq_ptr.inc()
     }
 
@@ -363,28 +363,28 @@ class Queue[T <: Data](
       maybe_full := do_enq
     }
 
-    sink.valid := !empty
-    source.ready := !full
+    sink.$valid := !empty
+    source.$ready := !full
 
     if (useSyncReadMem) {
       val deq_ptr_next = Mux(deq_ptr.value === (count.U - 1.U), 0.U, deq_ptr.value + 1.U)
       val r_addr = WireDefault(Mux(do_deq, deq_ptr_next, deq_ptr.value))
-      sink.bits := ram.read(r_addr).asTypeOf(sink.bits)
+      sink.$bits := ram.read(r_addr).asTypeOf(sink.$bits)
     } else {
-      sink.bits := ram.read(deq_ptr.value).asTypeOf(sink.bits)
+      sink.$bits := ram.read(deq_ptr.value).asTypeOf(sink.$bits)
     }
 
     if (flow) {
-      when(source.valid) { sink.valid := true.B }
+      when(source.$valid) { sink.$valid := true.B }
       when(empty) {
-        sink.bits := source.bits
+        sink.$bits := source.$bits
         do_deq := false.B
-        when(sink.ready) { do_enq := false.B }
+        when(sink.$ready) { do_enq := false.B }
       }
     }
 
     if (pipe) {
-      when(sink.ready) { source.ready := true.B }
+      when(sink.$ready) { source.$ready := true.B }
     }
   }
 }

@@ -283,7 +283,7 @@ trait TestBenchTop extends HasHdlinfoModule {
     val role = {
       import chisel3.reflect.DataMirror
 
-      DataMirror.directionOf(interface.bits) match {
+      DataMirror.directionOf(interface.$bits) match {
         case ActualDirection.Input  => hdlinfo.InterfaceRole("source")
         case ActualDirection.Output => hdlinfo.InterfaceRole("sink")
         case _ =>
@@ -292,7 +292,7 @@ trait TestBenchTop extends HasHdlinfoModule {
     }
 
     if (!encodedDataNames(dataTypeName)) {
-      encodedDataBuilder.add(dataTypeName, chiselTypeOf(interface.bits))
+      encodedDataBuilder.add(dataTypeName, chiselTypeOf(interface.$bits))
       encodedDataNames.addOne(dataTypeName)
     }
 

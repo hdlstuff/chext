@@ -76,14 +76,14 @@ private class SyncWriteElasticReadMemory[T <: Data](
     rdQueue.source.noenq()
     rdQueue.source.markSink()
 
-    io.rdReq.ready := rdCounter.notFull
+    io.rdReq.$ready := rdCounter.notFull
     rdQueue.sink :=> io.rdResp
 
     sram.readPorts(0).address := DontCare
     sram.readPorts(0).enable := true.B // TODO check this
 
     when(io.rdReq.fire) {
-      sram.readPorts(0).address := io.rdReq.bits
+      sram.readPorts(0).address := io.rdReq.$bits
       rdCounter.inc()
     }
 
@@ -104,9 +104,9 @@ private class SyncWriteElasticReadMemory[T <: Data](
       mem.write(io.wrAddr, io.wrData)
     }
 
-    io.rdReq.ready := io.rdResp.ready
-    io.rdResp.valid := io.rdReq.valid
-    io.rdResp.bits := mem.read(io.rdReq.bits)
+    io.rdReq.$ready := io.rdResp.$ready
+    io.rdResp.$valid := io.rdReq.$valid
+    io.rdResp.$bits := mem.read(io.rdReq.$bits)
   }
 }
 
@@ -137,7 +137,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     val bufferPayload = Module(
       new SyncWriteElasticReadMemory(
         wBufferIndex,
-        chiselTypeOf(s_axi.r.bits),
+        chiselTypeOf(s_axi.r.$bits),
         readUseSyncMem
       )
     )
@@ -156,40 +156,40 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     xCount.noInc()
     xCount.noDec()
 
-    s_ar.ready :=
-      m_ar.ready &&
+    s_ar.$ready :=
+      m_ar.$ready &&
         !nextIdFill.dropLsbN(wIdMaster) &&
-        (bufferAvailable >= (s_ar.bits.len + 1.U))
+        (bufferAvailable >= (s_ar.$bits.len + 1.U))
 
-    m_ar.bits := s_ar.bits
-    m_ar.bits.id := nextIdFill
-    m_ar.valid := s_ar.fire // m_ar.valid := m_ar.ready (comb loop) && s_ar.valid && ...
+    m_ar.$bits := s_ar.$bits
+    m_ar.$bits.id := nextIdFill
+    m_ar.$valid := s_ar.fire // m_ar.$valid := m_ar.$ready (comb loop) && s_ar.$valid && ...
 
-    m_r.ready := true.B // we always have space in the buffer if the transaction goes through
+    m_r.$ready := true.B // we always have space in the buffer if the transaction goes through
 
     bufferPayload.io.rdResp :=> s_r
 
     when(s_ar.fire /* eqv to m_ar.fire */ ) {
       xIndexFill.write(nextIdFill, nextIndexFill)
 
-      nextIndexFill := nextIndexFill + s_ar.bits.len + 1.U
+      nextIndexFill := nextIndexFill + s_ar.$bits.len + 1.U
       nextIdFill := nextIdFill + 1.U
-      bufferAvailable := bufferAvailable - (s_ar.bits.len + 1.U)
+      bufferAvailable := bufferAvailable - (s_ar.$bits.len + 1.U)
 
       xCount.inc()
     }
 
     bufferPayload.io.wrEn := m_r.fire
-    bufferPayload.io.wrAddr := xIndexFill(m_r.bits.id)
-    bufferPayload.io.wrData := m_r.bits
+    bufferPayload.io.wrAddr := xIndexFill(m_r.$bits.id)
+    bufferPayload.io.wrData := m_r.$bits
 
     when(m_r.fire) {
-      xIndexFill.write(m_r.bits.id, xIndexFill.read(m_r.bits.id) + 1.U)
-      bufferValid.write(xIndexFill(m_r.bits.id), true.B)
+      xIndexFill.write(m_r.$bits.id, xIndexFill.read(m_r.$bits.id) + 1.U)
+      bufferValid.write(xIndexFill(m_r.$bits.id), true.B)
     }
 
-    bufferPayload.io.rdReq.bits := nextIndexDrain
-    bufferPayload.io.rdReq.valid := bufferValid.read(nextIndexDrain)
+    bufferPayload.io.rdReq.$bits := nextIndexDrain
+    bufferPayload.io.rdReq.$valid := bufferValid.read(nextIndexDrain)
 
     when(bufferPayload.io.rdReq.fire) {
       bufferValid.write(nextIndexDrain, false.B)
@@ -197,7 +197,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     }
 
     when(s_r.fire) {
-      when(s_r.bits.last) {
+      when(s_r.$bits.last) {
         xCount.dec()
       }
     }
@@ -226,7 +226,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     val bufferPayload = Module(
       new SyncWriteElasticReadMemory(
         wIdMaster,
-        chiselTypeOf(s_axi.b.bits),
+        chiselTypeOf(s_axi.b.$bits),
         writeUseSyncMem
       )
     )
@@ -240,15 +240,15 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     xCount.noInc()
     xCount.noDec()
 
-    s_aw.ready :=
-      m_aw.ready &&
+    s_aw.$ready :=
+      m_aw.$ready &&
         !nextIdFill.dropLsbN(wIdMaster)
 
-    m_aw.bits := s_aw.bits
-    m_aw.bits.id := nextIdFill
-    m_aw.valid := s_aw.fire // m_ar.valid := m_ar.ready (comb loop) && s_ar.valid && ...
+    m_aw.$bits := s_aw.$bits
+    m_aw.$bits.id := nextIdFill
+    m_aw.$valid := s_aw.fire // m_ar.$valid := m_ar.$ready (comb loop) && s_ar.$valid && ...
 
-    m_b.ready := true.B // we always have space in the buffer if the transaction goes through
+    m_b.$ready := true.B // we always have space in the buffer if the transaction goes through
 
     bufferPayload.io.rdResp :=> s_b
 
@@ -258,15 +258,15 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     }
 
     bufferPayload.io.wrEn := m_b.fire
-    bufferPayload.io.wrAddr := m_b.bits.id
-    bufferPayload.io.wrData := m_b.bits
+    bufferPayload.io.wrAddr := m_b.$bits.id
+    bufferPayload.io.wrData := m_b.$bits
 
     when(m_b.fire) {
-      bufferValid.write(m_b.bits.id, true.B)
+      bufferValid.write(m_b.$bits.id, true.B)
     }
 
-    bufferPayload.io.rdReq.bits := nextIdDrain
-    bufferPayload.io.rdReq.valid := bufferValid.read(nextIdDrain)
+    bufferPayload.io.rdReq.$bits := nextIdDrain
+    bufferPayload.io.rdReq.$valid := bufferValid.read(nextIdDrain)
 
     when(bufferPayload.io.rdReq.fire) {
       bufferValid.write(nextIdDrain, false.B)
