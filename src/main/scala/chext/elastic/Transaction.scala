@@ -96,7 +96,7 @@ object Test extends App {
     }
 
     atModuleBodyEnd {
-      ModuleInternals.getCommands(this).foreach { println(_) }
+      hacks.ModuleInternals.getCommands(this).foreach { println(_) }
     }
   }
 

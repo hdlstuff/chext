@@ -4,6 +4,9 @@ import chisel3._
 import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
 import chisel3.hacks.deferred
 
+import chext.Prefix.{needsPrefix, noPrefixChecks}
+import tracking.Component
+
 /** `Repeat` replicates each input token multiple times at the output.
   *
   * The number of repetitions is determined dynamically using a user-defined `len` function. Each
@@ -38,7 +41,14 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
     wIndex: Int
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
-  chext.naming.checkPrefix("Repeat", "repeat")
+  needsPrefix("Repeat", "repeat")
+
+  Component(
+    chext.Prefix.currentPrefix,
+    "Count",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 
   type LenFn = (Tin) => UInt
   type OutFn = (Tin, UInt, Bool, Bool) => Tout
@@ -112,18 +122,16 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
     val lenFn = lenFn_.get
     val outFn = outFn_.get
 
-    chext.naming.checks(false)
+    noPrefixChecks {
+      new Count(source, sink, UInt(wIndex.W)) { count =>
+        count.init { (_) => 0.U }
 
-    new Count(source, sink, UInt(wIndex.W)) { count =>
-      count.init { (_) => 0.U }
+        count.cond { (in, state) => state =/= lenFn(in) }
 
-      count.cond { (in, state) => state =/= lenFn(in) }
+        count.next { (_, state) => state + 1.U }
 
-      count.next { (_, state) => state + 1.U }
-
-      count.out { (in, state, first, last) => outFn(in, state, first, last) }
+        count.out { (in, state, first, last) => outFn(in, state, first, last) }
+      }
     }
-
-    chext.naming.checks(true)
   }
 }

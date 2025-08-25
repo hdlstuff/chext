@@ -8,8 +8,9 @@ import chisel3.experimental.SourceInfo
 import chisel3.hacks._
 
 import scala.collection.mutable.HashMap
+import chisel3.experimental.AffectsChiselPrefix
 
-package object naming {
+object Prefix {
   private class ModuleInfo(val module: BaseModule) {
     private var usedPrefixes_ = HashMap.empty[String, (String, SourceInfo)]
     private var checks_ = true
@@ -75,11 +76,7 @@ package object naming {
       }
     }
 
-    def checks(enabled: Boolean): Unit = {
-      checks_ = enabled
-    }
-
-    def unchecked[T](f: => T): T = {
+    def noPrefixChecks[T](f: => T): T = {
       val oldChecks_ = checks_
 
       checks_ = false
@@ -87,6 +84,10 @@ package object naming {
       checks_ = oldChecks_
 
       t
+    }
+
+    def currentPrefix: String = {
+      PrefixManager.currentStr
     }
 
   }
@@ -113,7 +114,7 @@ package object naming {
 
   }
 
-  def checkPrefix(name: String, startsWith: String = "")(implicit si: SourceInfo): Unit =
+  def needsPrefix(name: String, startsWith: String = "")(implicit si: SourceInfo): Unit =
     getModuleInfo().checkPrefix(name, startsWith)
 
   def prefix[T](p: String)(f: => T)(implicit si: SourceInfo): T =
@@ -124,31 +125,30 @@ package object naming {
   def weakPrefix[T](p: String)(f: => T)(implicit si: SourceInfo): T =
     getModuleInfo().weakPrefix(p) { f }
 
-  def checks(enabled: Boolean): Unit =
-    getModuleInfo().checks(enabled)
+  def noPrefixChecks[T](f: => T): T =
+    getModuleInfo().noPrefixChecks { f }
 
-  def unchecked[T](f: => T): T =
-    getModuleInfo().unchecked { f }
+  def currentPrefix: String = getModuleInfo().currentPrefix
 
 }
 
-private object Naming_Emit extends App {
-  import chext.elastic
-  import elastic.ConnectOp._
+private object Prefix_Emit extends App {
+  import _root_.chext.{elastic => e}
+  import e.ConnectOp._
 
   class MyModule0 extends Module {
-    val source = IO(elastic.Source(UInt(32.W)))
-    val sink0 = IO(elastic.Sink(UInt(32.W)))
-    val sink1 = IO(elastic.Sink(UInt(32.W)))
+    val source = IO(e.Source(UInt(32.W)))
+    val sink0 = IO(e.Sink(UInt(32.W)))
+    val sink1 = IO(e.Sink(UInt(32.W)))
 
-    val wire0 = elastic.EWire(UInt(0.W))
-    val wire1 = elastic.EWire(UInt(0.W))
+    val wire0 = e.EWire(UInt(0.W))
+    val wire1 = e.EWire(UInt(0.W))
 
-    val fork0 = new elastic.Fork(source) {
+    val fork0 = new e.Fork(source) {
       fork() :=> sink0
       fork() :=> sink1
 
-      new elastic.Fork(wire0) {
+      new e.Fork(wire0) {
         fork() :=> wire1
       }
     }
@@ -161,21 +161,21 @@ private object Naming_Emit extends App {
   }
 
   class MyModule extends Module {
-    val sourceA = IO(elastic.Source(UInt(32.W)))
-    val sourceB = IO(elastic.Source(UInt(32.W)))
-    val sourceC = IO(elastic.Source(UInt(32.W)))
-    val sinkA = IO(elastic.Sink(UInt(32.W)))
-    val sinkB = IO(elastic.Sink(UInt(32.W)))
-    val sinkC = IO(elastic.Sink(UInt(32.W)))
-    val sinkD = IO(elastic.Sink(UInt(32.W)))
+    val sourceA = IO(e.Source(UInt(32.W)))
+    val sourceB = IO(e.Source(UInt(32.W)))
+    val sourceC = IO(e.Source(UInt(32.W)))
+    val sinkA = IO(e.Sink(UInt(32.W)))
+    val sinkB = IO(e.Sink(UInt(32.W)))
+    val sinkC = IO(e.Sink(UInt(32.W)))
+    val sinkD = IO(e.Sink(UInt(32.W)))
 
-    val wire0 = elastic.EWire.like(sourceA)
+    val wire0 = e.EWire.like(sourceA)
 
-    val fork0 = new elastic.Fork(sourceA) {
-      fork() :=> elastic.SinkBuffer(sinkA)
+    val fork0 = new e.Fork(sourceA) {
+      fork() :=> e.SinkBuffer(sinkA)
       fork() :=> wire0
 
-      new elastic.Join(elastic.SinkBuffer(sinkB)) {
+      new e.Join(e.SinkBuffer(sinkB)) {
         val result = WireInit(join(wire0) + join(sourceB))
         dontTouch(result)
         out := result

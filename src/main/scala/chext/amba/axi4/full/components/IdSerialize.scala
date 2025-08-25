@@ -9,7 +9,7 @@ import elastic.ConnectOp._
 import chext.amba.axi4
 import axi4.Casts._
 
-import chext.naming.prefix
+import chext.Prefix.prefix
 
 case class IdSerializeConfig(
     val axiSlaveCfg: axi4.Config,

@@ -4,6 +4,9 @@ import chisel3._
 import chisel3.util._
 import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
 
+import chext.Prefix.{needsPrefix, noPrefixChecks}
+import tracking.Component
+
 /** Applies a random stall the elastic interface.
   *
   *   - If `threshold` is zero, always stalls. Higher the `threshold`, less likely to stall.
@@ -23,14 +26,20 @@ final class RandomStall[T <: Data](
     threshold: Int = 8
 )(implicit si: SourceInfo)
     extends Fire(sink) {
-  chext.naming.checkPrefix("RandomStall", "randomStall")
+  needsPrefix("RandomStall", "randomStall")
+  Component(
+    chext.Prefix.currentPrefix,
+    "RandomStall",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 
   require(lfsrBits >= 4, "there should be at least 4 bits for LFSR.")
   require(threshold >= 0 && threshold <= (1L << lfsrBits), "invalid threshold interval.")
 
   private val rand = random.LFSR(lfsrBits)
 
-  chext.naming.unchecked {
+  noPrefixChecks {
     val stall0 = new Stall(source, SinkBuffer(sink)) {
       out := in
 

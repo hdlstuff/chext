@@ -9,7 +9,7 @@ import chext.amba.axi4
 import axi4.full.components._
 
 import elastic.ConnectOp._
-import chext.naming.prefix
+import chext.Prefix.prefix
 
 private class IdLastBundle(wId: Int) extends Bundle {
   val id = UInt(wId.W)

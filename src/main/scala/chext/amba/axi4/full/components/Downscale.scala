@@ -2,7 +2,6 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chext.naming.prefix
 
 import chext.amba.axi4
 import chext.elastic
@@ -12,6 +11,8 @@ import elastic.ConnectOp._
 import axi4.Ops._
 
 import helpers.{SteerLeft, SteerRight}
+
+import chext.Prefix.prefix
 
 case class DownscaleConfig(
     val axiSlaveCfg: axi4.Config,

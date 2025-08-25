@@ -4,15 +4,25 @@ import chisel3._
 import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
 import chisel3.hacks.deferred
 
+import chext.Prefix.needsPrefix
+import tracking.Component
+
 abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
     source: Interface[Tin],
     sink: Interface[Tout],
     genState: Tstate
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
-  chext.naming.checkPrefix("Count", "count")
+  needsPrefix("Count", "count")
   source.markSource()
   sink.markSink()
+
+  Component(
+    chext.Prefix.currentPrefix,
+    "Count",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 
   type InitFn = (Tin) => Tstate
   type InitExplicitFn = (Tin, Tstate) => Unit

@@ -5,6 +5,9 @@ import chisel3.experimental.AffectsChiselPrefix
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
+import chext.Prefix.needsPrefix
+import tracking.Component
+
 /** `Stall` conditionally stalls tokens.
   *
   * It connects a source and sink interface, and forwards tokens from source to sink only when a
@@ -28,9 +31,16 @@ abstract class Stall[Tin <: Data, Tout <: Data](
     sink: Interface[Tout]
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
-  chext.naming.checkPrefix("Stall", "stall")
+  needsPrefix("Stall", "stall")
   source.markSource()
   sink.markSink()
+
+  Component(
+    chext.Prefix.currentPrefix,
+    "Stall",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 
   protected final val in = source.$bits
   protected final val out = sink.$bits

@@ -11,7 +11,7 @@ import chext.amba.axi4
 import axi4.Casts._
 import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
 
-import chext.naming.prefix
+import chext.Prefix.prefix
 
 case class MuxConfig(
     val axiSlaveCfg: axi4.Config,

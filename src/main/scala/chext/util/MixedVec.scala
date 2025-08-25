@@ -25,14 +25,14 @@ object MixedVec {
     *   {{{MixedVec(Vec(2, UInt(8.W))) = MixedVec(Seq.fill(2){UInt(8.W)})}}}
     */
   def apply[T <: Data](vec: Vec[T]): MixedVec[T] = {
-    MixedVec(Seq.fill(vec.length)(VecSampleElement(vec)))
+    MixedVec(Seq.fill(vec.length)(hacks.VecSampleElement(vec)))
   }
 
   /** Create a MixedVec wire from a Seq of values.
     */
   def from[T <: Data](vals: Seq[T]): MixedVec[T] = {
     // Create a wire of this type.
-    val hetVecWire = Wire(MixedVec(vals.map(CloneTypeFull(_))))
+    val hetVecWire = Wire(MixedVec(vals.map(hacks.CloneTypeFull(_))))
     // Assign the given vals to this new wire.
     for ((a, b) <- hetVecWire.zip(vals)) {
       a := b
@@ -70,7 +70,7 @@ final class MixedVec[T <: Data](private val eltsIn: Seq[T])
   override def className: String = "MixedVec"
 
   // Clone the inputs so that we have our own references.
-  private val elts: IndexedSeq[T] = eltsIn.map(CloneTypeFull(_)).toIndexedSeq
+  private val elts: IndexedSeq[T] = eltsIn.map(hacks.CloneTypeFull(_)).toIndexedSeq
 
   /** Statically (elaboration-time) retrieve the element at the given index.
     * @param index

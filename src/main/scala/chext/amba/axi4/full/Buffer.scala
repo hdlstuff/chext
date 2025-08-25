@@ -10,7 +10,7 @@ import chext.elastic
 import elastic.{SinkBuffer, SourceBuffer}
 import elastic.ConnectOp._
 
-import chext.naming.weakPrefix
+import chext.Prefix.weakPrefix
 
 object buffer {
   val require_ = new chext.util.Require("axi4.lite.buffer")

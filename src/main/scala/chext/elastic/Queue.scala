@@ -6,7 +6,10 @@ import chisel3.experimental.SourceInfo
 import chisel3.experimental.AffectsChiselPrefix
 import chisel3.experimental.requireIsChiselType
 import chisel3.experimental.requireIsHardware
+
 import chisel3.experimental.skipPrefix
+import chext.Prefix.needsPrefix
+import tracking.Component
 
 import chisel3.util.log2Ceil
 
@@ -299,7 +302,7 @@ class Queue[T <: Data](
     val useSyncReadMem: Boolean = false
 )(implicit si: SourceInfo)
     extends AffectsChiselPrefix {
-  chext.naming.checkPrefix("Queue")
+  needsPrefix("Queue")
 
   require(count > -1, "Queue must have non-negative count.")
   require(count != 0, "Use companion object Queue.apply for empty queue.")
@@ -307,6 +310,13 @@ class Queue[T <: Data](
 
   val source = EWire(gen)
   val sink = EWire(gen)
+
+  Component(
+    chext.Prefix.currentPrefix,
+    "Queue",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 
   source.markSource()
   sink.markSink()
@@ -392,14 +402,17 @@ class Queue[T <: Data](
 private object TestQueue extends App {
   Queue.useVerilogMem(true)
 
-  emitVerilog(new Module {
-    private val gen = new Bundle {
-      val a = UInt(37.W)
-      val b = UInt(30.W)
-    }
-    val source = IO(Source(gen))
-    val sink = IO(Sink(gen))
+  emitVerilog(
+    new Module {
+      private val gen = new Bundle {
+        val a = UInt(37.W)
+        val b = UInt(30.W)
+      }
+      val source = IO(Source(gen))
+      val sink = IO(Sink(gen))
 
-    Queue.between(source, sink, 9)
-  }, Array("--target-dir", "output/"))
+      Queue.between(source, sink, 9)
+    },
+    Array("--target-dir", "output/")
+  )
 }

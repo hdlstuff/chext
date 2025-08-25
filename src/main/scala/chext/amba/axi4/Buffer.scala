@@ -6,7 +6,7 @@ import chisel3.experimental.SourceInfo
 import chext.amba.axi4
 import axi4.Casts._
 
-import chext.naming.weakPrefix
+import chext.Prefix.weakPrefix
 
 case class BufferConfig(
     aw: Int = 0,

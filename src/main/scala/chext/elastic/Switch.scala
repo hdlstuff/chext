@@ -10,8 +10,8 @@ import elastic.ConnectOp._
 
 import chext.bundles.Bundle2
 
-import chext.naming.checkPrefix
-import chext.naming.weakPrefix
+import chext.Prefix.{needsPrefix, weakPrefix}
+import tracking.Component
 
 /** `Switch` conditionally routes tokens to one of multiple branches.
   *
@@ -53,7 +53,14 @@ abstract class Switch[Tin <: Data, Tout <: Data](
     val numOutstanding: Int = -1
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
-  checkPrefix("Switch", "switch")
+  needsPrefix("Switch", "switch")
+
+  Component(
+    chext.Prefix.currentPrefix,
+    "Switch",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sink.$bits)

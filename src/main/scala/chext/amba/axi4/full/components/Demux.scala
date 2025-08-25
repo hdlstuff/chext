@@ -16,7 +16,7 @@ import axi4.full.{SlaveBuffer, MasterBuffer, ReadDataChannel, WriteDataChannel}
 
 import bundles._
 
-import chext.naming.prefix
+import chext.Prefix.prefix
 
 case class DemuxConfig(
     val axiSlaveCfg: chext.amba.axi4.Config,

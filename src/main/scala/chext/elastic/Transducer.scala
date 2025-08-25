@@ -6,6 +6,9 @@ import chisel3.hacks.deferred
 
 import scala.collection.mutable.ArrayBuffer
 
+import chext.Prefix.needsPrefix
+import tracking.Component
+
 /** `Transducer` creates a finite-state transducer between a source and a sink.
   *
   * It defines four actions: `stall`, `accept`, `consume`, and `produce`, only one action must be
@@ -45,9 +48,16 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
     sink: Interface[Tout]
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
-  chext.naming.checkPrefix("Transducer", "transducer")
+  needsPrefix("Transducer", "transducer")
   source.markSource()
   sink.markSink()
+
+  Component(
+    chext.Prefix.currentPrefix,
+    "Transducer",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 
   protected final val in = source.$bits
   protected final val out = sink.$bits

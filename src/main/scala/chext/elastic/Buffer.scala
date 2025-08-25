@@ -2,7 +2,7 @@ package chext.elastic
 
 import chisel3._
 
-import chext.naming.{prefix, unchecked}
+import chext.Prefix.{prefix, noPrefixChecks}
 import chisel3.experimental.SourceInfo
 
 package detail {
@@ -17,7 +17,7 @@ package detail {
       prefix(name) {
         val interface = Wire(chiselTypeOf(source))
 
-        unchecked {
+        noPrefixChecks {
           Queue.between(source, interface, count, flow, pipe, false)
         }
 
@@ -37,7 +37,7 @@ package detail {
       prefix(name) {
         val interface = Wire(chiselTypeOf(sink))
 
-        unchecked {
+        noPrefixChecks {
           Queue.between(interface, sink, count, flow, pipe, false)
         }
 

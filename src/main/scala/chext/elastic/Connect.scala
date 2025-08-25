@@ -5,6 +5,9 @@ import chisel3.experimental.AffectsChiselPrefix
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
+import chext.Prefix.needsPrefix
+import tracking.Component
+
 /** `Connect` connects two elastic interfaces, with an optional combinational transformation given
   * by:
   * {{{
@@ -25,7 +28,7 @@ abstract class Connect[Tin <: Data, Tout <: Data](
     sink: Interface[Tout]
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
-  chext.naming.checkPrefix("Connect", "connect")
+  needsPrefix("Connect", "connect")
   source.markSource()
   sink.markSink()
 
@@ -36,6 +39,13 @@ abstract class Connect[Tin <: Data, Tout <: Data](
 
   sink.$valid := source.$valid
   source.$ready := sink.$ready
+
+  Component(
+    chext.Prefix.currentPrefix,
+    "Connect",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 }
 
 object Connect {

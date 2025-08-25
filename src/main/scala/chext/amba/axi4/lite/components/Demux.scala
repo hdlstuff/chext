@@ -13,7 +13,7 @@ import chext.amba.axi4
 import axi4.Casts._
 import axi4.lite.{SlaveBuffer, MasterBuffer}
 
-import chext.naming.prefix
+import chext.Prefix.prefix
 
 case class DemuxConfig(
     val axiSlaveCfg: axi4.Config,

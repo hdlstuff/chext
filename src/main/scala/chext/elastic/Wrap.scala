@@ -8,10 +8,21 @@ import chisel3.hacks.deferred
 
 import chext.util.Counter
 
+import chext.Prefix.needsPrefix
+import tracking.Component
+
 abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interface[T2])
     extends Fire[T2](sink) {
+  needsPrefix("Wrap", "wrap")
   source.markSource()
   sink.markSink()
+
+  Component(
+    chext.Prefix.currentPrefix,
+    "Wrap",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 
   protected val in = Wire(chiselTypeOf(source.$bits))
   protected val out = Wire(chiselTypeOf(sink.$bits))

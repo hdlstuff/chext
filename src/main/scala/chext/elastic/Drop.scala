@@ -5,6 +5,9 @@ import chisel3.experimental.AffectsChiselPrefix
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
+import chext.Prefix.needsPrefix
+import tracking.Component
+
 /** `Drop` conditionally drops tokens.
   *
   * It connects a source and sink interface, and forwards tokens from source to sink only when a
@@ -25,9 +28,16 @@ abstract class Drop[Tin <: Data, Tout <: Data](
     sink: Interface[Tout]
 )(implicit sourceInfo: SourceInfo)
     extends Fire[Tout](sink) {
-  chext.naming.checkPrefix("Drop", "drop")
+  needsPrefix("Drop", "drop")
   source.markSource()
   sink.markSink()
+
+  Component(
+    chext.Prefix.currentPrefix,
+    "Count",
+    Seq(("source", source)),
+    Seq(("sink", sink))
+  ).register()
 
   protected final val in = source.$bits
   protected final val out = sink.$bits

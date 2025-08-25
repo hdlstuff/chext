@@ -7,11 +7,18 @@ import chisel3.hacks.deferred
 
 import scala.collection.mutable.ListBuffer
 
+import chext.Prefix.needsPrefix
+import tracking.Component
+
 abstract class Join[T <: Data](
     val sink: Interface[T]
 )(implicit si: SourceInfo)
     extends AffectsChiselPrefix {
-  chext.naming.checkPrefix("Join", "join")
+  needsPrefix("Join", "join")
+
+  private def require_(cond: Boolean, msg: String): Unit = {
+    require(cond, si.makeMessage(x => s"Join: $msg $x"))
+  }
 
   private val sourceList = ListBuffer.empty[Interface[Data]]
 
@@ -30,9 +37,18 @@ abstract class Join[T <: Data](
   }
 
   deferred {
-    // TODO warn if no sources, but do not fail
+    require_(sourceList.nonEmpty, "no sources are specified for the join!")
 
     joinImpl.join(sourceList.toSeq, sink)
+
+    Component(
+      chext.Prefix.currentPrefix,
+      "Join",
+      sourceList.zipWithIndex.map { //
+        case (interface, index) => (f"source_$index", interface)
+      }.toSeq,
+      Seq(("sink", sink))
+    ).register()
   }
 
 }

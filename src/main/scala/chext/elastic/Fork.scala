@@ -7,14 +7,19 @@ import chisel3.hacks._
 
 import scala.collection.mutable.ListBuffer
 
-import chext.naming
+import chext.Prefix.needsPrefix
+import tracking.Component
 
 abstract class Fork[T <: Data](
     source: Interface[T],
     eager: Boolean = true
 )(implicit si: SourceInfo)
     extends AffectsChiselPrefix {
-  chext.naming.checkPrefix("Fork", "fork")
+  needsPrefix("Fork", "fork")
+
+  private def require_(cond: Boolean, msg: String): Unit = {
+    require(cond, si.makeMessage(x => s"Fork: $msg $x"))
+  }
 
   private val sinkList = ListBuffer.empty[Interface[Data]]
 
@@ -35,12 +40,21 @@ abstract class Fork[T <: Data](
   }
 
   deferred {
-    // TODO warn if no sinks, but do not fail
+    require_(sinkList.nonEmpty, "no sinks are specified for the fork!")
 
     if (eager)
       forkImpl.eagerFork(source, sinkList.toSeq)
     else
       forkImpl.lazyFork(source, sinkList.toSeq)
+
+    Component(
+      chext.Prefix.currentPrefix,
+      "Fork",
+      Seq(("source", source)),
+      sinkList.zipWithIndex.map { //
+        case (interface, index) => (f"sink_$index", interface)
+      }.toSeq
+    ).register()
   }
 
 }

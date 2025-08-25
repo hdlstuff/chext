@@ -1,9 +1,16 @@
-package chisel3
+package chisel3.hacks
 
-import internal.{HasId, WireBinding}
-import experimental.{SourceInfo, BaseModule}
+import chisel3.{Data, RawModule}
+import chisel3.experimental.{BaseModule, SourceInfo}
+import chisel3.internal.{HasId, WireBinding}
+import chisel3.internal.firrtl.ir.{Command, DefInstance}
 
 object ModuleInternals {
+  def getIds(module: BaseModule): Seq[HasId] = {
+    val field = classOf[BaseModule].getDeclaredField("_ids")
+    field.setAccessible(true)
+    field.get(module).asInstanceOf[scala.collection.mutable.ArrayBuffer[HasId]].toSeq
+  }
 
   /** Returns the ports even before the module is closed.
     *
@@ -48,7 +55,6 @@ object ModuleInternals {
     method.invoke(module).asInstanceOf[SourceInfo]
   }
 
-  import internal.firrtl.ir._
   def getCommands(module: RawModule): Seq[Command] = {
     val field = classOf[RawModule].getDeclaredField("_commands")
     field.setAccessible(true)
@@ -58,8 +64,8 @@ object ModuleInternals {
 
   def getChildrenSourceInfo(parent: RawModule): Map[BaseModule, SourceInfo] = {
     getCommands(parent)
-      .filter {_.isInstanceOf[DefInstance]}
-      .map{ _.asInstanceOf[DefInstance]}
+      .filter { _.isInstanceOf[DefInstance] }
+      .map { _.asInstanceOf[DefInstance] }
       .map { case DefInstance(sourceInfo, id, ports) => (id, sourceInfo) }
       .toMap
   }
