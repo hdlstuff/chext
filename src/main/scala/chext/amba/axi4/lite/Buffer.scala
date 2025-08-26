@@ -10,7 +10,7 @@ import chext.elastic
 import elastic.{SinkBuffer, SourceBuffer}
 import elastic.ConnectOp._
 
-import chext.Prefix.weakPrefix
+import chext.tracking.namedUniquePath
 
 object buffer {
   val require_ = new chext.util.Require("axi4.lite.buffer")
@@ -64,7 +64,7 @@ object SlaveBuffer {
       interface: Interface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "slaveBuffer"
-  )(implicit si: SourceInfo): Interface = weakPrefix(name) {
+  )(implicit si: SourceInfo): Interface = namedUniquePath(name) {
     val result = Wire(Slave(interface.cfg))
     buffer(interface, result, cfg)
     result
@@ -76,7 +76,7 @@ object LeftBuffer {
       interface: Interface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "leftBuffer"
-  )(implicit si: SourceInfo): Interface = weakPrefix(name) {
+  )(implicit si: SourceInfo): Interface = namedUniquePath(name) {
     val result = Wire(Slave(interface.cfg))
     buffer(interface, result, cfg)
     result
@@ -88,7 +88,7 @@ object MasterBuffer {
       interface: Interface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "masterBuffer"
-  )(implicit si: SourceInfo): Interface = weakPrefix(name) {
+  )(implicit si: SourceInfo): Interface = namedUniquePath(name) {
     val result = Wire(Master(interface.cfg))
     buffer(result, interface, cfg)
     result
@@ -100,7 +100,7 @@ object RightBuffer {
       interface: Interface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "rightBuffer"
-  )(implicit si: SourceInfo): Interface = weakPrefix(name) {
+  )(implicit si: SourceInfo): Interface = namedUniquePath(name) {
     val result = Wire(Master(interface.cfg))
     buffer(result, interface, cfg)
     result

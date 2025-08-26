@@ -1,14 +1,18 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
+
+import chisel3.experimental.SourceInfo
+import chisel3.experimental.prefix
+
 import chisel3.hacks.deferred
 
 // To avoid confusion with chisel Mux
 import chext.elastic.{Mux => EMux}
 
-import chext.Prefix.{prefix, needsPrefix}
-import tracking.Component
+import chext.tracking
+import tracking.Container
+import tracking.withContainer
 
 import ConnectOp._
 
@@ -46,16 +50,14 @@ abstract class Fold[Tin <: Data, Tout <: Data](
     source: Interface[Tin],
     sourceInit: Interface[Tout],
     sink: Interface[Tout]
-)(implicit sourceInfo: SourceInfo)
-    extends Fire[Tout](sink) {
-  needsPrefix("Fold", "fold")
+)(implicit si_ : SourceInfo)
+    extends Container
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
 
-  Component(
-    chext.Prefix.currentPrefix,
-    "Fold",
-    Seq(("source", source)),
-    Seq(("sink", sink))
-  ).register()
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Fold"
+  def namePrefix: String = "fold"
 
   protected final val gen = chiselTypeOf(sink.$bits)
 
@@ -154,145 +156,147 @@ abstract class Fold[Tin <: Data, Tout <: Data](
   }
 
   deferred {
-    require_(operandFn_.nonEmpty, "Missing required 'op' function!")
-    require_(lastFn_.nonEmpty, "Missing required 'last' function!")
+    withContainer(this) {
+      require_(operandFn_.nonEmpty, "Missing required 'op' function!")
+      require_(lastFn_.nonEmpty, "Missing required 'last' function!")
 
-    val genStage0 = new Bundle {
-      val operand = gen.cloneType
+      val genStage0 = new Bundle {
+        val operand = gen.cloneType
 
-      val first = Bool()
-      val last = Bool()
-      val zero = zeroFn_.map(_ => Bool())
-    }
+        val first = Bool()
+        val last = Bool()
+        val zero = zeroFn_.map(_ => Bool())
+      }
 
-    val genStage1 = new Bundle {
-      val operand = gen.cloneType
+      val genStage1 = new Bundle {
+        val operand = gen.cloneType
 
-      val zero = zeroFn_.map(_ => Bool())
-    }
+        val zero = zeroFn_.map(_ => Bool())
+      }
 
-    val stage0 = Wire(Interface(genStage0))
-    val stage0_init = Wire(Interface(gen))
-    val stage0_result = Wire(Interface(gen))
+      val stage0 = Wire(Interface(genStage0))
+      val stage0_init = Wire(Interface(gen))
+      val stage0_result = Wire(Interface(gen))
 
-    val stage1_opA = Wire(Interface(gen))
-    val stage1_opB = Wire(Interface(genStage1))
-    val stage1_result = Wire(Interface(gen))
+      val stage1_opA = Wire(Interface(gen))
+      val stage1_opB = Wire(Interface(genStage1))
+      val stage1_result = Wire(Interface(gen))
 
-    prefix("stage0") {
-      if (firstFn_.isEmpty) {
-        val transducerFirstLogic = new Transducer(source, stage0) {
-          val state = RegInit(true.B)
+      prefix("stage0") {
+        if (firstFn_.isEmpty) {
+          val transducerFirstLogic = new Transducer(source, stage0) {
+            val state = RegInit(true.B)
 
-          val last = lastFn_.get(in)
+            val last = lastFn_.get(in)
 
-          out.operand := operandFn_.get(in)
-          out.first := state
-          out.last := last
+            out.operand := operandFn_.get(in)
+            out.first := state
+            out.last := last
 
-          if (zeroFn_.nonEmpty)
-            out.zero.get := zeroFn_.get(in)
+            if (zeroFn_.nonEmpty)
+              out.zero.get := zeroFn_.get(in)
 
-          packet {
-            when(state) {
-              when(last) {
-                accept {}
+            packet {
+              when(state) {
+                when(last) {
+                  accept {}
+                }.otherwise {
+                  accept { state := false.B }
+                }
               }.otherwise {
-                accept { state := false.B }
+                accept { state := last }
               }
-            }.otherwise {
-              accept { state := last }
             }
           }
-        }
-      } else {
-        val transform0 = new Transform(source, stage0) {
-          out.operand := operandFn_.get(in)
-          out.first := firstFn_.get(in)
-          out.last := lastFn_.get(in)
+        } else {
+          val transform0 = new Transform(source, stage0) {
+            out.operand := operandFn_.get(in)
+            out.first := firstFn_.get(in)
+            out.last := lastFn_.get(in)
 
-          if (zeroFn_.nonEmpty)
-            out.zero.get := zeroFn_.get(in)
+            if (zeroFn_.nonEmpty)
+              out.zero.get := zeroFn_.get(in)
+          }
         }
+
+        sourceInit :=> stage0_init
+        stage0_result :=> sink
       }
 
-      sourceInit :=> stage0_init
-      stage0_result :=> sink
-    }
+      prefix("stage1") {
+        // stage1 implements the reduce logic
 
-    prefix("stage1") {
-      // stage1 implements the reduce logic
+        // sink buffer is used to break the combinational loops
+        // as a result, sink buffer introduces a single cycle delay
+        // this delay might cause stalls.
+        // therefore, fork() buffers are used to avoid stalls
 
-      // sink buffer is used to break the combinational loops
-      // as a result, sink buffer introduces a single cycle delay
-      // this delay might cause stalls.
-      // therefore, fork() buffers are used to avoid stalls
+        val fork0 = new Fork(stage0) {
+          val transform0 = new Transform(
+            SourceBuffer(fork(), flow = true),
+            stage1_opB
+          ) {
+            out.operand := in.operand
 
-      val fork0 = new Fork(stage0) {
-        val transform0 = new Transform(
-          SourceBuffer(fork(), flow = true),
-          stage1_opB
-        ) {
-          out.operand := in.operand
+            if (zeroFn_.nonEmpty)
+              out.zero.get := in.zero.get
+          }
 
-          if (zeroFn_.nonEmpty)
-            out.zero.get := in.zero.get
-        }
-
-        val temp = Wire(Interface(gen))
-
-        val mux0 = EMux(
-          Seq(temp, stage0_init),
-          stage1_opA,
-          SourceBuffer(fork { in.first }, flow = true)
-        )
-
-        val demux0 =
-          Demux(
-            stage1_result,
-            Seq(SinkBuffer(temp), stage0_result),
-            SourceBuffer(fork { in.last }, flow = true)
-          )
-      }
-    }
-
-    prefix("stage2") {
-      // stage2 implements the zero logic
-
-      if (zeroFn_.nonEmpty) {
-        val fork0 = new Fork(stage1_opB) {
-          val disposed = Wire(Interface(gen))
           val temp = Wire(Interface(gen))
 
-          val demux0 = Demux(
-            fork { in.operand },
-            Seq(sinkA, disposed),
-            fork { in.zero.get }
-          )
-
-          val demux1 = Demux(
-            stage1_opA,
-            Seq(sinkB, temp),
-            fork { in.zero.get }
-          )
-
           val mux0 = EMux(
-            Seq(sourceResult, temp),
-            stage1_result,
-            fork { in.zero.get }
+            Seq(temp, stage0_init),
+            stage1_opA,
+            SourceBuffer(fork { in.first }, flow = true)
           )
 
-          disposed.deq()
-          disposed.markSource()
-
+          val demux0 =
+            Demux(
+              stage1_result,
+              Seq(SinkBuffer(temp), stage0_result),
+              SourceBuffer(fork { in.last }, flow = true)
+            )
         }
-      } else {
-        val transform0 = new Transform(stage1_opB, sinkA) {
-          out := in.operand
-        }
+      }
 
-        stage1_opA :=> sinkB
-        sourceResult :=> stage1_result
+      prefix("stage2") {
+        // stage2 implements the zero logic
+
+        if (zeroFn_.nonEmpty) {
+          val fork0 = new Fork(stage1_opB) {
+            val disposed = Wire(Interface(gen))
+            val temp = Wire(Interface(gen))
+
+            val demux0 = Demux(
+              fork { in.operand },
+              Seq(sinkA, disposed),
+              fork { in.zero.get }
+            )
+
+            val demux1 = Demux(
+              stage1_opA,
+              Seq(sinkB, temp),
+              fork { in.zero.get }
+            )
+
+            val mux0 = EMux(
+              Seq(sourceResult, temp),
+              stage1_result,
+              fork { in.zero.get }
+            )
+
+            disposed.deq()
+            disposed.markSource()
+
+          }
+        } else {
+          val transform0 = new Transform(stage1_opB, sinkA) {
+            out := in.operand
+          }
+
+          stage1_opA :=> sinkB
+          sourceResult :=> stage1_result
+        }
       }
     }
   }

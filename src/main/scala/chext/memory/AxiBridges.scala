@@ -2,6 +2,7 @@ package chext.memory
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.prefix
 
 import chext.elastic
 import chext.amba.axi4
@@ -9,7 +10,6 @@ import chext.amba.axi4
 import axi4.full.components._
 
 import elastic.ConnectOp._
-import chext.Prefix.prefix
 
 private class IdLastBundle(wId: Int) extends Bundle {
   val id = UInt(wId.W)

@@ -3,24 +3,23 @@ package chext.elastic
 import chisel3._
 import chisel3.experimental.SourceInfo
 
-import chext.Prefix.needsPrefix
+import chext.tracking
 import tracking.Component
 
 abstract class Transform[Tin <: Data, Tout <: Data](
     source: Interface[Tin],
     sink: Interface[Tout]
-)(implicit sourceInfo: SourceInfo)
-    extends Fire[Tout](sink) {
-  needsPrefix("Transform", "transform")
-  source.markSource()
-  sink.markSink()
+)(implicit si_ : SourceInfo)
+    extends Component
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
 
-  Component(
-    chext.Prefix.currentPrefix,
-    "Transform",
-    Seq(("source", source)),
-    Seq(("sink", sink))
-  ).register()
+  addSourcePort("source", source)
+  addSinkPort("sink", sink)
+
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Transform"
+  def namePrefix: String = "transform"
 
   protected final val in = source.$bits
   protected final val out = sink.$bits

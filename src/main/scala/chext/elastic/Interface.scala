@@ -13,14 +13,20 @@ import scala.language.experimental.macros
 
 import scala.collection.immutable.SeqMap
 
-class Interface[+T <: Data](gen: T)(implicit val sourceInfo: SourceInfo)
+import chext.tracking
+
+class Interface[+T <: Data](gen: T)(implicit si_ : SourceInfo)
     extends Record
     with tracking.Tracked {
   private val ready_ = Input(Bool())
   private val valid_ = Output(Bool())
   private val bits_ = Output(gen.cloneType)
 
-  def declaredRole: tracking.DeclaredRole = {
+  def sourceInfo: SourceInfo = si_
+
+  val tpe: String = f"chext.elastic.Interface[${gen.toString()}]"
+
+  lazy val declaredRole: tracking.DeclaredRole = {
     (hacks.DataInternals.isIO(this), DataMirror.directionOf(this.$valid)) match {
       case (true, ActualDirection.Output) => tracking.DeclaredRole.Sink
       case (true, ActualDirection.Input)  => tracking.DeclaredRole.Source
@@ -59,7 +65,7 @@ class Interface[+T <: Data](gen: T)(implicit val sourceInfo: SourceInfo)
     */
   def $ready: Bool = ready_
 
-  def do_ready(implicit sourceInfo: SourceInfo): Bool = directAccess_(ready_, "ready")
+  def do_ready(implicit si_ : SourceInfo): Bool = directAccess_(ready_, "ready")
 
   /** Indicates that the producer has put valid data in 'bits'
     *
@@ -77,7 +83,7 @@ class Interface[+T <: Data](gen: T)(implicit val sourceInfo: SourceInfo)
     */
   def $valid: Bool = valid_
 
-  def do_valid(implicit sourceInfo: SourceInfo): Bool = directAccess_(valid_, "valid")
+  def do_valid(implicit si_ : SourceInfo): Bool = directAccess_(valid_, "valid")
 
   /** The data to be transferred when ready and valid are asserted at the same cycle
     *
@@ -95,7 +101,7 @@ class Interface[+T <: Data](gen: T)(implicit val sourceInfo: SourceInfo)
     */
   def $bits: T = bits_
 
-  def do_bits(implicit sourceInfo: SourceInfo): T = directAccess_(bits_, "bits")
+  def do_bits(implicit si_ : SourceInfo): T = directAccess_(bits_, "bits")
 
   /** Indicates if IO is both ready and valid
     */
@@ -179,8 +185,6 @@ object Sink {
     new Interface(gen)
   }
 
-  def io[T <: Data](gen: T)(implicit sourceInfo: SourceInfo): Interface[T] = IO(apply(gen))
-
   def like[T <: Data](hw: Interface[T])(implicit sourceInfo: SourceInfo) = {
     requireIsHardware(
       hw,
@@ -189,7 +193,6 @@ object Sink {
     Sink(chiselTypeOf(hw.$bits))
   }
 
-  def ioLike[T <: Data](hw: Interface[T])(implicit sourceInfo: SourceInfo) = IO(like(hw))
 }
 
 object EWire {
@@ -212,9 +215,9 @@ object EWire {
 
 private object InterfaceApp extends App {
   class Module2 extends Module {
-    val source = Source.io(UInt(32.W))
-    val sink1 = Sink.io(UInt(32.W))
-    val sink2 = Sink.io(UInt(32.W))
+    val source = IO(Source(UInt(32.W)))
+    val sink1 = IO(Sink(UInt(32.W)))
+    val sink2 = IO(Sink(UInt(32.W)))
 
     val fork0 = new Fork(source) {
       val transform0 = new Transform(fork(), sink1) {
@@ -228,8 +231,8 @@ private object InterfaceApp extends App {
   }
 
   class Module1 extends Module {
-    val source = Source.io(UInt(32.W))
-    val sink = Sink.io(UInt(32.W))
+    val source = IO(Source(UInt(32.W)))
+    val sink = IO(Sink(UInt(32.W)))
 
     val transform0 = new Transform(source, sink) {
       out := in + 1.U
@@ -239,11 +242,11 @@ private object InterfaceApp extends App {
   }
 
   class Module0 extends Module {
-    val source = Source.io(UInt(32.W))
-    val sink = Sink.io(UInt(32.W))
+    val source = IO(Source(UInt(32.W)))
+    val sink = IO(Sink(UInt(32.W)))
 
-    val x_source = Source.io(UInt(32.W))
-    val x_sink = Sink.io(UInt(32.W))
+    val x_source = IO(Source(UInt(32.W)))
+    val x_sink = IO(Sink(UInt(32.W)))
 
     val module = Module(new Module1)
 
@@ -342,4 +345,21 @@ private object XApp extends App {
 
   emitVerilog(new ModuleX, Array("--target-dir", "output/"))
 
+}
+
+private object YApp extends App {
+  import chext.amba.axi4
+
+  class ModuleX extends Module {
+    val s_axi = IO(axi4.full.Slave(axi4.Config()))
+    val s_axi_1 = IO(axi4.full.Slave(axi4.Config()))
+    val m_axi = IO(axi4.full.Master(axi4.Config()))
+
+    chext.tracking.register()
+
+    import axi4.Ops._
+    s_axi :=> m_axi
+  }
+
+  emitVerilog(new ModuleX, Array("--target-dir", "output/"))
 }

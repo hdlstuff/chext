@@ -5,7 +5,9 @@ import chisel3.internal.HasId
 
 // Based on the experimental prefix
 object PrefixManager {
-  def current: Builder.Prefix = Builder.getPrefix
+  type Prefix = Builder.Prefix
+
+  def current: Prefix = Builder.getPrefix
   def currentStr = current.reverse.mkString("_")
 
   def set(prefix: Builder.Prefix): Unit = Builder.setPrefix(prefix)

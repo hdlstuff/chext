@@ -13,8 +13,6 @@ import axi4.BurstType
 import axi4.full.{AddressChannel, ReadAddressChannel, WriteAddressChannel}
 import axi4.Casts._
 
-import chext.Prefix.prefix
-
 class AddrLenSizeBurstBundle[T <: Data](
     val wAddr: Int,
     genUser: T = UInt(0.W)

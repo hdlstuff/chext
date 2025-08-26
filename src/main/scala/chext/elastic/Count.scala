@@ -1,28 +1,28 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
+import chisel3.experimental.SourceInfo
+
 import chisel3.hacks.deferred
 
-import chext.Prefix.needsPrefix
+import chext.tracking
 import tracking.Component
 
 abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
     source: Interface[Tin],
     sink: Interface[Tout],
     genState: Tstate
-)(implicit sourceInfo: SourceInfo)
-    extends Fire[Tout](sink) {
-  needsPrefix("Count", "count")
-  source.markSource()
-  sink.markSink()
+)(implicit si_ : SourceInfo)
+    extends Component
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
 
-  Component(
-    chext.Prefix.currentPrefix,
-    "Count",
-    Seq(("source", source)),
-    Seq(("sink", sink))
-  ).register()
+  addSourcePort("source", source)
+  addSinkPort("sink", sink)
+
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Count"
+  def namePrefix: String = "count"
 
   type InitFn = (Tin) => Tstate
   type InitExplicitFn = (Tin, Tstate) => Unit

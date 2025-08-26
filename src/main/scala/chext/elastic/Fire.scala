@@ -1,7 +1,7 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.AffectsChiselPrefix
+
 import chisel3.hacks.deferred
 
 import scala.collection.mutable.ArrayBuffer
@@ -11,9 +11,10 @@ import scala.collection.mutable.ArrayBuffer
   *
   * @param sink
   */
-private[elastic] abstract class Fire[Tout <: Data](sink: Interface[Tout])
-    extends AffectsChiselPrefix {
+private[elastic] trait Fire[Tout <: Data] {
   private var fireFns_ = ArrayBuffer.empty[() => Unit]
+
+  protected def fireSink: Interface[Tout]
 
   /** Sets an action that is executed when the sink interface fires. Can be called multiple times.
     */
@@ -22,7 +23,7 @@ private[elastic] abstract class Fire[Tout <: Data](sink: Interface[Tout])
   }
 
   deferred {
-    when(sink.fire) {
+    when(fireSink.fire) {
       fireFns_.foreach { _() }
     }
   }

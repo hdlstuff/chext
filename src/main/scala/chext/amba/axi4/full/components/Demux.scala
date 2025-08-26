@@ -9,14 +9,13 @@ import chext.bundles
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.prefix
 
 import axi4.Casts._
 import axi4.BufferConfig
 import axi4.full.{SlaveBuffer, MasterBuffer, ReadDataChannel, WriteDataChannel}
 
 import bundles._
-
-import chext.Prefix.prefix
 
 case class DemuxConfig(
     val axiSlaveCfg: chext.amba.axi4.Config,

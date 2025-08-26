@@ -6,12 +6,12 @@ import chisel3.experimental.SourceInfo
 import chisel3.experimental.AffectsChiselPrefix
 import chisel3.experimental.requireIsChiselType
 import chisel3.experimental.requireIsHardware
-
 import chisel3.experimental.skipPrefix
-import chext.Prefix.needsPrefix
-import tracking.Component
 
 import chisel3.util.log2Ceil
+
+import chext.tracking
+import tracking.Component
 
 import ConnectOp._
 
@@ -300,26 +300,21 @@ class Queue[T <: Data](
     val pipe: Boolean = false,
     val flow: Boolean = false,
     val useSyncReadMem: Boolean = false
-)(implicit si: SourceInfo)
-    extends AffectsChiselPrefix {
-  needsPrefix("Queue")
+)(implicit si_ : SourceInfo)
+    extends Component {
+  val source = EWire(gen)
+  val sink = EWire(gen)
+
+  addSourcePort("source", source)
+  addSinkPort("sink", sink)
+
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Queue"
+  def namePrefix: String = "queue"
 
   require(count > -1, "Queue must have non-negative count.")
   require(count != 0, "Use companion object Queue.apply for empty queue.")
   requireIsChiselType(gen)
-
-  val source = EWire(gen)
-  val sink = EWire(gen)
-
-  Component(
-    chext.Prefix.currentPrefix,
-    "Queue",
-    Seq(("source", source)),
-    Seq(("sink", sink))
-  ).register()
-
-  source.markSource()
-  sink.markSink()
 
   {
     dontTouch(source)

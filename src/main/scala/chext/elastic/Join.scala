@@ -1,23 +1,28 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.AffectsChiselPrefix
 import chisel3.experimental.SourceInfo
+
 import chisel3.hacks.deferred
 
 import scala.collection.mutable.ListBuffer
 
-import chext.Prefix.needsPrefix
+import chext.tracking
 import tracking.Component
 
 abstract class Join[T <: Data](
     val sink: Interface[T]
-)(implicit si: SourceInfo)
-    extends AffectsChiselPrefix {
-  needsPrefix("Join", "join")
+)(implicit si_ : SourceInfo)
+    extends Component {
+
+  addSinkPort("sink", sink)
+
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Join"
+  def namePrefix: String = "join"
 
   private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, si.makeMessage(x => s"Join: $msg $x"))
+    require(cond, sourceInfo.makeMessage(x => s"Join: $msg $x"))
   }
 
   private val sourceList = ListBuffer.empty[Interface[Data]]
@@ -32,6 +37,7 @@ abstract class Join[T <: Data](
     * @return
     */
   def join[TT <: Data](source: Interface[TT]): TT = {
+    addSourcePort(f"source_${sourceList.length}", source)
     sourceList.addOne(source)
     source.$bits
   }
@@ -39,16 +45,8 @@ abstract class Join[T <: Data](
   deferred {
     require_(sourceList.nonEmpty, "no sources are specified for the join!")
 
-    joinImpl.join(sourceList.toSeq, sink)
+    joinImpl.join(sourceList.toSeq, sink, false)
 
-    Component(
-      chext.Prefix.currentPrefix,
-      "Join",
-      sourceList.zipWithIndex.map { //
-        case (interface, index) => (f"source_$index", interface)
-      }.toSeq,
-      Seq(("sink", sink))
-    ).register()
   }
 
 }
@@ -62,10 +60,13 @@ private[elastic] object joinImpl {
     */
   def join[T <: Data](
       sources: Seq[Interface[Data]],
-      sink: Interface[Data]
+      sink: Interface[Data],
+      mark: Boolean = true
   )(implicit si: SourceInfo): Unit = {
-    sources.foreach { _.markSource() }
-    sink.markSink()
+    if (mark) {
+      sources.foreach { _.markSource() }
+      sink.markSink()
+    }
 
     val allValid =
       VecInit(sources.map { _.$valid }).reduceTree(_ && _)

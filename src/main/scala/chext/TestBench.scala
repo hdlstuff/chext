@@ -40,6 +40,18 @@ private object emitHdlinfo {
   }
 }
 
+private object emitModuleGraph {
+  def apply(moduleGraph: tracking.Graph.Module, targetDir: String): Unit = {
+    import io.circe.syntax._
+    import io.circe.generic.auto._
+    import java.io.PrintWriter
+
+    val pw = new PrintWriter(f"${targetDir}/${moduleGraph.name}.moduleGraph.json")
+    pw.write(moduleGraph.flatten.asJson.toString())
+    pw.close()
+  }
+}
+
 trait HasHdlinfoModule extends RawModule {
   def hdlinfoModule: hdlinfo.Module
 }
@@ -346,15 +358,24 @@ trait TestBench extends App {
   def emit[T <: HasHdlinfoModule](genModule: => T): Unit = {
     val pkgPath = _pkgName.replace('.', '/')
     val hdlPath = f"./sysc_tb/${pkgPath}/hdl/"
-    var hdlinfoModule: hdlinfo.Module = null
+    var module: HasHdlinfoModule = null
+
     emitVerilog(
       {
         val module = genModule
-        hdlinfoModule = module.hdlinfoModule
+
+        tracking.onComplete(module) {
+          val hdlinfoModule = Some(module.hdlinfoModule)
+          val graphModule = tracking.moduleGraphOption(module)
+
+          hdlinfoModule.foreach { x => emitHdlinfo(x, hdlPath) }
+          graphModule.foreach { x => emitModuleGraph(x, hdlPath) }
+
+        }
+
         module
       },
       Array("--target-dir", hdlPath)
     )
-    emitHdlinfo(hdlinfoModule, hdlPath)
   }
 }

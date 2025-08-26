@@ -2,6 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.prefix
 
 import chext.elastic
 import elastic.ConnectOp._
@@ -9,8 +10,6 @@ import elastic.ConnectOp._
 import chext.amba.axi4
 import axi4.Casts._
 import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
-
-import chext.Prefix.prefix
 
 case class IdMuxConfig(
     val axiSlaveCfg: axi4.Config,

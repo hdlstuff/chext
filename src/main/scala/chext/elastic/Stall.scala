@@ -1,11 +1,11 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.AffectsChiselPrefix
 import chisel3.experimental.SourceInfo
+
 import chisel3.hacks.deferred
 
-import chext.Prefix.needsPrefix
+import chext.tracking
 import tracking.Component
 
 /** `Stall` conditionally stalls tokens.
@@ -29,18 +29,17 @@ import tracking.Component
 abstract class Stall[Tin <: Data, Tout <: Data](
     source: Interface[Tin],
     sink: Interface[Tout]
-)(implicit sourceInfo: SourceInfo)
-    extends Fire[Tout](sink) {
-  needsPrefix("Stall", "stall")
-  source.markSource()
-  sink.markSink()
+)(implicit si_ : SourceInfo)
+    extends Component
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
 
-  Component(
-    chext.Prefix.currentPrefix,
-    "Stall",
-    Seq(("source", source)),
-    Seq(("sink", sink))
-  ).register()
+  addSourcePort("source", source)
+  addSinkPort("sink", sink)
+
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Stall"
+  def namePrefix: String = "stall"
 
   protected final val in = source.$bits
   protected final val out = sink.$bits

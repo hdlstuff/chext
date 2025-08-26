@@ -2,7 +2,10 @@ package chext.elastic
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
+
+import chisel3.experimental.prefix
+import chisel3.experimental.SourceInfo
+
 import chisel3.hacks.deferred
 
 import chext.elastic
@@ -10,8 +13,9 @@ import elastic.ConnectOp._
 
 import chext.bundles.Bundle2
 
-import chext.Prefix.{needsPrefix, weakPrefix}
-import tracking.Component
+import chext.tracking
+import tracking.Container
+import tracking.withContainer
 
 /** `Switch` conditionally routes tokens to one of multiple branches.
   *
@@ -51,16 +55,14 @@ abstract class Switch[Tin <: Data, Tout <: Data](
     val source: elastic.Interface[Tin],
     val sink: elastic.Interface[Tout],
     val numOutstanding: Int = -1
-)(implicit sourceInfo: SourceInfo)
-    extends Fire[Tout](sink) {
-  needsPrefix("Switch", "switch")
+)(implicit si_ : SourceInfo)
+    extends Container
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
 
-  Component(
-    chext.Prefix.currentPrefix,
-    "Switch",
-    Seq(("source", source)),
-    Seq(("sink", sink))
-  ).register()
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Switch"
+  def namePrefix: String = "switch"
 
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sink.$bits)
@@ -159,37 +161,39 @@ abstract class Switch[Tin <: Data, Tout <: Data](
   }
 
   deferred {
-    val branches = branchBuffer.toSeq
+    withContainer(this) {
+      val branches = branchBuffer.toSeq
 
-    val wireRvDemuxN = Wire(Vec(branches.length, elastic.Interface(genIn)))
-    val wireRvMuxN = Wire(Vec(branches.length, elastic.Interface(genOut)))
+      val wireRvDemuxN = Wire(Vec(branches.length, elastic.Interface(genIn)))
+      val wireRvMuxN = Wire(Vec(branches.length, elastic.Interface(genOut)))
 
-    val queueIndex = elastic.Queue(
-      UInt(log2Ceil(branches.length).W),
-      if (numOutstanding > 0) numOutstanding
-      else branches.length
-    )
+      val queueIndex = elastic.Queue(
+        UInt(log2Ceil(branches.length).W),
+        if (numOutstanding > 0) numOutstanding
+        else branches.length
+      )
 
-    val fork0 = new elastic.Fork(source) {
-      val select = PriorityEncoder(branches.map(_.condFn(in)))
-      val demux0 = elastic.Demux(fork(), wireRvDemuxN, fork { select })
-      fork { select } :=> queueIndex.source
-    }
+      val fork0 = new elastic.Fork(source) {
+        val select = PriorityEncoder(branches.map(_.condFn(in)))
+        val demux0 = elastic.Demux(fork(), wireRvDemuxN, fork { select })
+        fork { select } :=> queueIndex.source
+      }
 
-    wireRvDemuxN.zip(wireRvMuxN).zip(branches).zipWithIndex.foreach { //
-      case (((branchSource, branchSink), branch), index) => {
-        weakPrefix(branch.name) {
-          branch.branchFn(branchSource, branchSink)
+      wireRvDemuxN.zip(wireRvMuxN).zip(branches).zipWithIndex.foreach { //
+        case (((branchSource, branchSink), branch), index) => {
+          prefix(branch.name) {
+            branch.branchFn(branchSource, branchSink)
+          }
         }
       }
-    }
 
-    val mux0 = elastic.Mux(
-      wireRvMuxN,
-      sink,
-      queueIndex.sink,
-      lastFn_.getOrElse((x: Tout) => true.B)
-    )
+      val mux0 = elastic.Mux(
+        wireRvMuxN,
+        sink,
+        queueIndex.sink,
+        lastFn_.getOrElse((x: Tout) => true.B)
+      )
+    }
   }
 }
 

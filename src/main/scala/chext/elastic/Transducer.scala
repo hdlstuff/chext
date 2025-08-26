@@ -1,12 +1,14 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
+
+import chisel3.experimental.SourceInfo
+
 import chisel3.hacks.deferred
 
 import scala.collection.mutable.ArrayBuffer
 
-import chext.Prefix.needsPrefix
+import chext.tracking
 import tracking.Component
 
 /** `Transducer` creates a finite-state transducer between a source and a sink.
@@ -46,18 +48,17 @@ import tracking.Component
 abstract class Transducer[Tin <: Data, Tout <: Data](
     source: Interface[Tin],
     sink: Interface[Tout]
-)(implicit sourceInfo: SourceInfo)
-    extends Fire[Tout](sink) {
-  needsPrefix("Transducer", "transducer")
-  source.markSource()
-  sink.markSink()
+)(implicit si_ : SourceInfo)
+    extends Component
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
 
-  Component(
-    chext.Prefix.currentPrefix,
-    "Transducer",
-    Seq(("source", source)),
-    Seq(("sink", sink))
-  ).register()
+  addSourcePort("source", source)
+  addSinkPort("sink", sink)
+
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Transducer"
+  def namePrefix: String = "transducer"
 
   protected final val in = source.$bits
   protected final val out = sink.$bits
@@ -112,7 +113,7 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
    * Executed only if the source is valid.
    * Must be used inside a `packet { ... }` block.
    */
-  protected final def stall(action: => Unit)(implicit sourceInfo: SourceInfo): Unit = {
+  protected final def stall(action: => Unit)(implicit si_ : SourceInfo): Unit = {
     requireDeferredContext_("stall")
 
     if (dryRun_) {
@@ -135,7 +136,7 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
    * Executed only if the source is valid and the sink is ready.
    * Must be used inside a `packet { ... }` block.
    */
-  protected final def accept(action: => Unit)(implicit sourceInfo: SourceInfo): Unit = {
+  protected final def accept(action: => Unit)(implicit si_ : SourceInfo): Unit = {
     requireDeferredContext_("accept")
 
     if (dryRun_) {
@@ -160,7 +161,7 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
    * Executed only if the source is valid.
    * Must be used inside a `packet { ... }` block.
    */
-  protected final def consume(action: => Unit)(implicit sourceInfo: SourceInfo): Unit = {
+  protected final def consume(action: => Unit)(implicit si_ : SourceInfo): Unit = {
     requireDeferredContext_("consume")
 
     if (dryRun_) {
@@ -183,7 +184,7 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
    * Executed only if the source is valid and the sink is ready.
    * Must be used inside a `packet { ... }` block.
    */
-  protected final def produce(action: => Unit)(implicit sourceInfo: SourceInfo): Unit = {
+  protected final def produce(action: => Unit)(implicit si_ : SourceInfo): Unit = {
     requireDeferredContext_("produce")
 
     if (dryRun_) {

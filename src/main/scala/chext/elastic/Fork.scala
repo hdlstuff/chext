@@ -1,24 +1,29 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.AffectsChiselPrefix
+
 import chisel3.experimental.SourceInfo
-import chisel3.hacks._
+
+import chisel3.hacks.deferred
 
 import scala.collection.mutable.ListBuffer
 
-import chext.Prefix.needsPrefix
+import chext.tracking
 import tracking.Component
 
 abstract class Fork[T <: Data](
     source: Interface[T],
     eager: Boolean = true
-)(implicit si: SourceInfo)
-    extends AffectsChiselPrefix {
-  needsPrefix("Fork", "fork")
+)(implicit si_ : SourceInfo)
+    extends Component {
+  addSourcePort("source", source)
+
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Fork"
+  def namePrefix: String = "fork"
 
   private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, si.makeMessage(x => s"Fork: $msg $x"))
+    require(cond, sourceInfo.makeMessage(x => s"Fork: $msg $x"))
   }
 
   private val sinkList = ListBuffer.empty[Interface[Data]]
@@ -35,6 +40,7 @@ abstract class Fork[T <: Data](
   protected final def fork[TT <: Data](tt: TT = in): Interface[TT] = {
     val result = Wire(new Interface(chiselTypeOf(tt)))
     result.$bits := tt
+    addSinkPort(f"sink_${sinkList.length}", result)
     sinkList.addOne(result)
     result
   }
@@ -43,18 +49,10 @@ abstract class Fork[T <: Data](
     require_(sinkList.nonEmpty, "no sinks are specified for the fork!")
 
     if (eager)
-      forkImpl.eagerFork(source, sinkList.toSeq)
+      forkImpl.eagerFork(source, sinkList.toSeq, false)
     else
-      forkImpl.lazyFork(source, sinkList.toSeq)
+      forkImpl.lazyFork(source, sinkList.toSeq, false)
 
-    Component(
-      chext.Prefix.currentPrefix,
-      "Fork",
-      Seq(("source", source)),
-      sinkList.zipWithIndex.map { //
-        case (interface, index) => (f"sink_$index", interface)
-      }.toSeq
-    ).register()
   }
 
 }
@@ -62,10 +60,13 @@ abstract class Fork[T <: Data](
 private[elastic] object forkImpl {
   def eagerFork[T <: Data](
       source: Interface[T],
-      sinks: Seq[Interface[Data]]
+      sinks: Seq[Interface[Data]],
+      mark: Boolean = true
   )(implicit si: SourceInfo): Unit = {
-    source.markSource()
-    sinks.foreach { _.markSink() }
+    if (mark) {
+      source.markSource()
+      sinks.foreach { _.markSink() }
+    }
 
     // registers to remember if transmission already took place
     val regs = RegInit(VecInit(Seq.fill(sinks.length) { false.B }))
@@ -93,10 +94,13 @@ private[elastic] object forkImpl {
 
   def lazyFork[T <: Data](
       source: Interface[T],
-      sinks: Seq[Interface[Data]]
+      sinks: Seq[Interface[Data]],
+      mark: Boolean = true
   )(implicit si: SourceInfo): Unit = {
-    source.markSource()
-    sinks.foreach { _.markSink() }
+    if (mark) {
+      source.markSource()
+      sinks.foreach { _.markSink() }
+    }
 
     sinks.foreach { //
       case (sink) => sink.$valid := source.$valid && source.$ready

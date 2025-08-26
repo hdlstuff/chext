@@ -1,11 +1,13 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.{AffectsChiselPrefix, SourceInfo}
+import chisel3.experimental.SourceInfo
+
 import chisel3.hacks.deferred
 
-import chext.Prefix.{needsPrefix, noPrefixChecks}
-import tracking.Component
+import chext.tracking
+import tracking.Container
+import tracking.withContainer
 
 /** `Repeat` replicates each input token multiple times at the output.
   *
@@ -39,16 +41,14 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
     source: Interface[Tin],
     sink: Interface[Tout],
     wIndex: Int
-)(implicit sourceInfo: SourceInfo)
-    extends Fire[Tout](sink) {
-  needsPrefix("Repeat", "repeat")
+)(implicit si_ : SourceInfo)
+    extends Container
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
 
-  Component(
-    chext.Prefix.currentPrefix,
-    "Count",
-    Seq(("source", source)),
-    Seq(("sink", sink))
-  ).register()
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Repeat"
+  def namePrefix: String = "repeat"
 
   type LenFn = (Tin) => UInt
   type OutFn = (Tin, UInt, Bool, Bool) => Tout
@@ -122,8 +122,8 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
     val lenFn = lenFn_.get
     val outFn = outFn_.get
 
-    noPrefixChecks {
-      new Count(source, sink, UInt(wIndex.W)) { count =>
+    withContainer(this) {
+      val count = new Count(source, sink, UInt(wIndex.W)) { count =>
         count.init { (_) => 0.U }
 
         count.cond { (in, state) => state =/= lenFn(in) }
