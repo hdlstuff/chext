@@ -19,26 +19,6 @@ trait HasPath extends chisel3.experimental.AffectsChiselPrefix {
   val sourceInfo: SourceInfo
 }
 
-object uniquePath {
-  private var counter_ = 0
-
-  def apply[T](fn: => T)(implicit sourceInfo: SourceInfo): T = {
-    val result = PrefixManager.withRelative(f"unique_${counter_}") { fn }
-    counter_ += 1
-    result
-  }
-}
-
-object namedUniquePath {
-  private var counter_ = 0
-
-  def apply[T](name: String)(fn: => T)(implicit sourceInfo: SourceInfo): T = {
-    val result = PrefixManager.withRelative(f"${name}_${counter_}") { fn }
-    counter_ += 1
-    result
-  }
-}
-
 private object Prefix_Emit extends App {
   import chisel3._
   import chext.{elastic => e}

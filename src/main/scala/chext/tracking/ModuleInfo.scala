@@ -5,6 +5,7 @@ import chisel3.experimental.BaseModule
 
 import chisel3.hacks.ModuleInternals
 import chisel3.hacks.DataInternals
+import chisel3.hacks.PrefixManager
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
@@ -12,9 +13,10 @@ import scala.collection.mutable.HashSet
 import scala.collection.mutable.Stack
 
 import hdlinfo.TypedObject
+import chext.tracking.util.sourceInfoToString
 
 private[tracking] class ModuleInfo(
-    val target: BaseModule,
+    val module: BaseModule,
     val parent: Option[ModuleInfo]
 ) {
   private var atModuleBodyEndCalled_ = false
@@ -27,7 +29,11 @@ private[tracking] class ModuleInfo(
 
   private val containerStack_ = Stack.empty[Container]
 
+  private val uniquePrefix_ = HashMap.empty[String, Int]
+
   private var moduleGraph_ = Option.empty[Graph.Module]
+
+  private var suggestedInstanceName_ = Option.empty[String]
 
   private val args_ = ArrayBuffer.empty[(String, TypedObject)]
 
@@ -61,10 +67,38 @@ private[tracking] class ModuleInfo(
     */
   def moduleGraph = moduleGraph_.get
 
+  /** Suggests a name for this instance.
+    *
+    * @param name
+    */
+  def suggestInstanceName(name: String): Unit = {
+    val fullName = (name :: PrefixManager.current).reverse.mkString("_")
+    suggestedInstanceName_ = Some(fullName)
+  }
+
   /** @return
     *   Instance name, if used as an instance.
     */
-  def instanceName = target.instanceName
+  lazy val instanceName = suggestedInstanceName_ match {
+    case Some(value) => value
+    case None =>
+      try {
+        module.instanceName
+      } catch {
+        case _: NoSuchElementException => {
+          logger.error(
+            "instanceName",
+            f"Instance name of $this could not be determined.",
+            f"You instantiated a module in a deferred block, check 'suggestInstanceName'."
+          )
+
+          "???"
+        }
+      }
+  }
+
+  private def childInstanceName(childModule: BaseModule) =
+    children_(childModule).instanceName
 
   /** Registers a new component.
     *
@@ -74,25 +108,32 @@ private[tracking] class ModuleInfo(
     baseComponents_.addOne(component)
   }
 
-  final def pushContainer(container: Container): Unit = {
+  def pushContainer(container: Container): Unit = {
     containerStack_.push(container)
   }
 
-  final def popContainer(): Unit = {
+  def popContainer(): Unit = {
     containerStack_.pop()
   }
 
-  final def lastContainerOption: Option[Container] =
+  def lastContainerOption: Option[Container] =
     if (containerStack_.length > 0)
       Some(containerStack_.top)
     else
       None
 
-  final def addArgument(name: String, arg: TypedObject): Unit = {
+  def uniquePrefix(x: String): String = {
+    val fullPrefixStr = (x :: PrefixManager.current).reverse.mkString("_")
+    val n = uniquePrefix_.getOrElseUpdate(fullPrefixStr, 0)
+    uniquePrefix_.update(fullPrefixStr, n + 1)
+    f"$x$n"
+  }
+
+  def addArgument(name: String, arg: TypedObject): Unit = {
     args_.addOne(name -> arg)
   }
 
-  final def args = args_.toSeq
+  def args = args_.toSeq
 
   /** Adds an onComplete handler.
     *
@@ -101,7 +142,7 @@ private[tracking] class ModuleInfo(
     */
   def onComplete(f: => Unit) = onComplete_.addOne(() => f)
 
-  parent.foreach { _.children_.addOne(target -> this) }
+  parent.foreach { _.children_.addOne(module -> this) }
 
   /** Called when the module body completes.
     */
@@ -110,17 +151,19 @@ private[tracking] class ModuleInfo(
     atModuleBodyEndCalled_ = true
 
     val wires = ModuleInternals
-      .getWires(target)
+      .getWires(module)
       .map { data => DataInternals.getChildrenOfType[Tracked](data) }
       .flatten
 
     val ports = ModuleInternals
-      .getPorts(target)
+      .getPorts(module)
       .map { case (data, si) =>
         DataInternals.getChildrenOfType[Tracked](data).map { (_, si) }
       }
       .flatten
 
+    /** Path checks.
+      */
     def pathChecks() = {
       val usedPaths = baseComponents_.groupBy(_.pathStr)
 
@@ -129,12 +172,13 @@ private[tracking] class ModuleInfo(
           def warn(msg: String): Unit =
             logger.warn(
               "pathChecks",
+              // format: off
               Seq(
                 msg,
-                f"Module: ${target.toString()} @[${util
-                    .sourceInfoToString(ModuleInternals.getSourceInfo(target))}]",
+                f"Module: ${module.toString()} @[${util.sourceInfoToString(ModuleInternals.getSourceInfo(module))}]",
                 f"Prefix: $pathStr"
               ) ++ users.map { util.baseComponentToString(_) }: _*
+              // format: on
             )
 
           if (pathStr.isEmpty) {
@@ -160,8 +204,9 @@ private[tracking] class ModuleInfo(
     def sanityChecks(): Unit = {
       wires.foreach { _.sanityCheck(logger) }
 
-      if (target.isInstanceOf[RawModule]) {
-        val sourceInfos = ModuleInternals.getChildrenSourceInfo(target.asInstanceOf[RawModule])
+      if (module.isInstanceOf[RawModule]) {
+        val sourceInfos = ModuleInternals.getChildrenSourceInfo(module.asInstanceOf[RawModule])
+
         childIO
           .map { case (module, io) =>
             // this one maps the source infos of the module instantiations
@@ -181,13 +226,13 @@ private[tracking] class ModuleInfo(
 
         case Some(value) =>
           // this is a child module, we can perform the checks later
-          value.childIO_.addOne(target -> ports.map { _._1 })
+          value.childIO_.addOne(module -> ports.map { _._1 })
       }
     }
 
     sanityChecks()
 
-    /** Constructs the module graph in the background.
+    /** Constructs the module graph.
       */
     def constructmoduleGraph() = {
       val components = baseComponents_
@@ -214,10 +259,10 @@ private[tracking] class ModuleInfo(
           else if (DataInternals.isIO(interface)) {
             val owningModule = DataInternals.getOwningModule(interface)
 
-            if (owningModule == target)
+            if (owningModule == module)
               (interface, Graph.InterfaceRef(path = f"/$earlyName", desc = "IO"))
             else {
-              val instanceName = owningModule.instanceName
+              val instanceName = childInstanceName(owningModule)
 
               (
                 interface,
@@ -225,6 +270,13 @@ private[tracking] class ModuleInfo(
               )
             }
           } else {
+            logger.error(
+              "constructModuleGraph",
+              "Encountered an interface which is neither an IO or Wire.",
+              "Maybe you used a view? Please do not use views.",
+              f"${interface} @[${sourceInfoToString(interface.sourceInfo)}]"
+            )
+
             (
               interface,
               Graph.InterfaceRef(path = f"/???/$earlyName", desc = "Unknown")
@@ -235,7 +287,7 @@ private[tracking] class ModuleInfo(
 
       moduleGraph_ = Some(
         Graph.Module(
-          name = target.desiredName,
+          name = module.desiredName,
           path = "/",
           sources = {
             ports
@@ -319,7 +371,9 @@ private[tracking] class ModuleInfo(
             children
               .map { _._2 }
               .map { moduleInfo =>
-                moduleInfo.moduleGraph.copy(path = f"/${moduleInfo.instanceName}")
+                moduleInfo.moduleGraph.copy(
+                  path = f"/${moduleInfo.instanceName}"
+                )
               }
               .toSeq
               .sortBy(_.name)
@@ -327,11 +381,26 @@ private[tracking] class ModuleInfo(
           args = args.toMap
         )
       )
+
     }
 
     constructmoduleGraph()
 
     onComplete_.foreach { _() }
+
+    /** Unregisters the children, and if there is no parent, this module.
+      */
+    def unregister() = {
+      children.foreach { //
+        case (module, _) => Manager.unregisterModule(module)
+      }
+
+      if (parent.isEmpty) {
+        Manager.unregisterModule(module)
+      }
+    }
+
+    unregister()
 
   }
 }

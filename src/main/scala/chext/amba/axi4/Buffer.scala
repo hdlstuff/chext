@@ -6,7 +6,7 @@ import chisel3.experimental.SourceInfo
 import chext.amba.axi4
 import axi4.Casts._
 
-import chext.tracking.namedUniquePath
+import chext.tracking.uniquePrefix
 
 case class BufferConfig(
     aw: Int = 0,
@@ -52,7 +52,7 @@ object SlaveBuffer {
       interface: RawInterface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "slaveBuffer"
-  )(implicit si: SourceInfo): RawInterface = namedUniquePath(name) {
+  )(implicit si: SourceInfo): RawInterface = uniquePrefix(name) {
     val result = Wire(Slave(interface.cfg))
     buffer(interface, result, cfg)
     result
@@ -64,7 +64,7 @@ object LeftBuffer {
       interface: RawInterface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "leftBuffer"
-  )(implicit si: SourceInfo): RawInterface = namedUniquePath(name) {
+  )(implicit si: SourceInfo): RawInterface = uniquePrefix(name) {
     val result = Wire(Slave(interface.cfg))
     buffer(interface, result, cfg)
     result
@@ -76,7 +76,7 @@ object MasterBuffer {
       interface: RawInterface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "masterBuffer"
-  )(implicit si: SourceInfo): RawInterface = namedUniquePath(name) {
+  )(implicit si: SourceInfo): RawInterface = uniquePrefix(name) {
     val result = Wire(Master(interface.cfg))
     buffer(result, interface, cfg)
     result
@@ -88,7 +88,7 @@ object RightBuffer {
       interface: RawInterface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "rightBuffer"
-  )(implicit si: SourceInfo): RawInterface = namedUniquePath(name) {
+  )(implicit si: SourceInfo): RawInterface = uniquePrefix(name) {
     val result = Wire(Master(interface.cfg))
     buffer(result, interface, cfg)
     result

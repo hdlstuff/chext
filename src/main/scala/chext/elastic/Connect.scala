@@ -9,7 +9,7 @@ import chisel3.hacks.deferred
 import chext.tracking
 import tracking.Component
 import tracking.RigidComponent
-import tracking.uniquePath
+import tracking.uniquePrefix
 
 /** `Connect` connects two elastic interfaces, with an optional combinational transformation given
   * by:
@@ -56,7 +56,7 @@ object ConnectOp {
       source: Interface[T],
       sink: Interface[T]
   )(implicit sourceInfo: SourceInfo) = {
-    uniquePath {
+    uniquePrefix {
       source.$ready := sink.$ready
       sink.$valid := source.$valid
       sink.$bits := source.$bits

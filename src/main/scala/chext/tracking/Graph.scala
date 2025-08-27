@@ -2,13 +2,15 @@ package chext.tracking
 
 import hdlinfo.TypedObject
 
+// NOTE: Keeping sourceInfo is mostly useless! Do not attempt doing it later.
+
 object Graph {
   case class Interface(
       val path: String,
       val tpe: String,
       val args: Map[String, TypedObject] = Map.empty
   ) {
-    require(path.head == '/', "path should start with '/'!")
+    require(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String) = copy(path = f"$x$path")
   }
@@ -17,7 +19,7 @@ object Graph {
       val path: String,
       val desc: String = ""
   ) {
-    require(path.head == '/', "path should start with '/'!")
+    require(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String) = copy(path = f"$x$path")
   }
@@ -30,13 +32,16 @@ object Graph {
       val parent: String,
       val args: Map[String, TypedObject] = Map.empty
   ) {
-    require(path.head == '/', "path should start with '/'!")
+    require(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String) = copy(
       path = f"$x$path",
       sources = sources.map { case (name, interfaceRef) => (name, interfaceRef.pathPrepended(x)) },
       sinks = sinks.map { case (name, interfaceRef) => (name, interfaceRef.pathPrepended(x)) },
-      parent = f"$x$parent"
+      parent = {
+        if (parent.nonEmpty) f"$x$parent"
+        else ""
+      }
     )
   }
 
@@ -47,11 +52,15 @@ object Graph {
       val parent: String,
       val args: Map[String, TypedObject] = Map.empty
   ) {
-    require(path.head == '/', "path should start with '/'!")
+    require(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String) = copy(
       path = f"$x$path",
-      children = children.map { case (path) => f"$x$path" }
+      children = children.map { case (path) => f"$x$path" },
+      parent = {
+        if (parent.nonEmpty) f"$x$parent"
+        else ""
+      }
     )
   }
 
@@ -66,7 +75,7 @@ object Graph {
       val children: Seq[Module],
       val args: Map[String, TypedObject] = Map.empty
   ) {
-    require(path.head == '/', "path should start with '/'!")
+    require(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String): Module = copy(
       path = f"$x$path",

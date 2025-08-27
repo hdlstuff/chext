@@ -3,7 +3,7 @@ package chext.elastic
 import chisel3._
 import chisel3.experimental.SourceInfo
 
-import chext.tracking.namedUniquePath
+import chext.tracking.uniquePrefix
 
 package detail {
   trait LeftBuffer_ {
@@ -14,7 +14,7 @@ package detail {
         pipe: Boolean = false,
         name: String = "leftBuffer"
     )(implicit si: SourceInfo): Interface[T] = {
-      namedUniquePath(name) {
+      uniquePrefix(name) {
         val interface = Wire(chiselTypeOf(source))
         Queue.between(source, interface, count, flow, pipe, false)
 
@@ -31,7 +31,7 @@ package detail {
         pipe: Boolean = false,
         name: String = "rightBuffer"
     )(implicit si: SourceInfo): Interface[T] = {
-      namedUniquePath(name) {
+      uniquePrefix(name) {
         val interface = Wire(chiselTypeOf(sink))
         Queue.between(interface, sink, count, flow, pipe, false)
 

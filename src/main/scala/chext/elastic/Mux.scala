@@ -49,7 +49,7 @@ object Mux {
       sink: Interface[T],
       select: Interface[UInt],
       isLastFn: T => Bool = (_: T) => true.B
-  )(implicit si: SourceInfo): Unit = {
+  )(implicit si: SourceInfo): Mux[T] = {
     val mux = Module(
       new Mux(chiselTypeOf(sources(0).$bits), sources.length, isLastFn)
     )
@@ -57,5 +57,7 @@ object Mux {
     sources.zip(mux.io.sources).foreach { case (x, y) => x :=> y }
     mux.io.sink :=> sink
     select :=> mux.io.select
+
+    mux
   }
 }

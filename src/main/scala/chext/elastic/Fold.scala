@@ -13,6 +13,7 @@ import chext.elastic.{Mux => EMux}
 import chext.tracking
 import tracking.Container
 import tracking.withContainer
+import tracking.suggestInstanceName
 
 import ConnectOp._
 
@@ -249,6 +250,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
             stage1_opA,
             SourceBuffer(fork { in.first }, flow = true)
           )
+          suggestInstanceName(mux0, "mux0")
 
           val demux0 =
             Demux(
@@ -256,6 +258,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
               Seq(SinkBuffer(temp), stage0_result),
               SourceBuffer(fork { in.last }, flow = true)
             )
+          suggestInstanceName(demux0, "demux0")
         }
       }
 
@@ -272,18 +275,21 @@ abstract class Fold[Tin <: Data, Tout <: Data](
               Seq(sinkA, disposed),
               fork { in.zero.get }
             )
+            suggestInstanceName(demux0, "demux0")
 
             val demux1 = Demux(
               stage1_opA,
               Seq(sinkB, temp),
               fork { in.zero.get }
             )
+            suggestInstanceName(demux1, "demux1")
 
             val mux0 = EMux(
               Seq(sourceResult, temp),
               stage1_result,
               fork { in.zero.get }
             )
+            suggestInstanceName(mux0, "mux0")
 
             disposed.deq()
             disposed.markSource()

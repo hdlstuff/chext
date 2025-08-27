@@ -47,7 +47,7 @@ object Demux {
       sinks: Seq[Interface[T]],
       select: Interface[UInt],
       isLastFn: T => Bool = (_: T) => true.B
-  )(implicit si: SourceInfo): Unit = {
+  )(implicit si: SourceInfo): Demux[T] = {
     val demux = Module(
       new Demux(chiselTypeOf(source.$bits), sinks.length, isLastFn)
     )
@@ -55,5 +55,7 @@ object Demux {
     source :=> demux.io.source
     demux.io.sinks.zip(sinks).foreach { case (x, y) => { x :=> y } }
     select :=> demux.io.select
+
+    demux
   }
 }

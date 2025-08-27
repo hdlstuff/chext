@@ -8,14 +8,14 @@ import chisel3.experimental.skipPrefix
 
 import chext.tracking
 import tracking.RigidComponent
-import tracking.namedUniquePath
+import tracking.uniquePrefix
 
 // TODO make it sourceInfo aware and use macros
 object Const {
   def apply[T <: Data](constant: T, name: String = "const") = {
     requireIsHardware(constant, "The constant parameter must be a Chisel hardware.")
 
-    namedUniquePath(name) {
+    uniquePrefix(name) {
       val interface = Wire(Interface(chiselTypeOf(constant)))
 
       val component = skipPrefix { new RigidComponent("Const", "const") }
@@ -29,7 +29,7 @@ object Const {
   def explicit[T <: Data](gen: T, name: String = "const")(fn: => (T) => Unit) = {
     requireIsChiselType(gen, "The gen parameter must be a Chisel type.")
 
-    namedUniquePath(name) {
+    uniquePrefix(name) {
       val interface = Wire(Interface(gen.cloneType))
 
       val component = new RigidComponent("Const", "const")
