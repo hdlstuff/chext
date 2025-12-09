@@ -16,7 +16,7 @@ case class StoreConfig[Tuser <: Data](
     val numOutstandingTasks: Int = 8
 ) {
   require(!axiCfg.lite)
-  require(axiCfg.read)
+  require(axiCfg.write)
 
   val genTask = new Task(genUser, axiCfg.wAddr)
   val genResult = new StoreResult(this)
