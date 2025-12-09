@@ -7,6 +7,7 @@ add_compile_definitions(SC_ALLOW_DEPRECATED_IEEE_API)
 find_package(SystemCLanguage REQUIRED)
 find_package(verilator REQUIRED)
 find_package(fmt REQUIRED)
+find_package(hdlstuff_hal REQUIRED)
 find_package(chext_test REQUIRED)
 find_package(hdlscw REQUIRED)
 
@@ -52,7 +53,7 @@ function(generate_tb)
         PUBLIC
         SystemC::systemc
         fmt::fmt
-        chext_test::chext_test
+        chext::chext_test
     )
 
     target_sources(

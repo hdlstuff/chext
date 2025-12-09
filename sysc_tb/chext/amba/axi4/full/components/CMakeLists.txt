@@ -45,3 +45,8 @@ generate_tb(
     TARGET_NAME Interconnect
     HDL_MODULES Interconnect_Tbtop_1
 )
+
+generate_tb(
+    TARGET_NAME Widen
+    HDL_MODULES Widen_Tbtop
+)
