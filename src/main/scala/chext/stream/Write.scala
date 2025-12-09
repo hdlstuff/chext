@@ -116,7 +116,8 @@ final class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
             wAddress = 0,
             wLength = cfg.wLength,
             wData = axiCfg.wData,
-            maxBurstLength = cfg.maxBurstLength
+            maxBurstLength = cfg.maxBurstLength,
+            genUser = genUser.cloneType
           )
         )
       )
@@ -165,7 +166,7 @@ final class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
         new elastic.Transform(taskW, elastic.SinkBuffer(chunk0.source, numOutstandingTasks)) {
           out.address := 0.U
           out.length := in.length
-          out.user := in.user
+          out.user := 0.U
         }
 
       val wireLast = Wire(elastic.Interface(Bool()))
