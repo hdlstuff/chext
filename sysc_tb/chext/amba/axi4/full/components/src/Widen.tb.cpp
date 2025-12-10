@@ -46,7 +46,7 @@ private:
 
         resetDUTs();
 
-        // readWriteTest(dut.S_AXI_TEST, dut.S_AXI_TEST, 0x00, 1024);
+        readWriteTest(dut.S_AXI_TEST, dut.S_AXI_TEST, 0x00, 1024);
         readWriteTest(dut.S_AXI_NORMAL, dut.S_AXI_TEST, 0x00, 128);
         readWriteTest(dut.S_AXI_TEST, dut.S_AXI_NORMAL, 0x00, 128);
 

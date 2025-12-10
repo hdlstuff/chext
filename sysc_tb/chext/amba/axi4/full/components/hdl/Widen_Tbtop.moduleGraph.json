@@ -1148,6 +1148,34 @@
       }
     },
     {
+      "path" : "/widen/read_ewireDemuxSink",
+      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/read_ewireDemuxSource",
+      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/read_ewireMuxSink",
+      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/read_ewireMuxSink0",
+      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/widen/read_ewireTransferLast",
       "tpe" : "chext.elastic.Interface[Bool]",
       "args" : {
@@ -1155,36 +1183,36 @@
       }
     },
     {
-      "path" : "/widen/read_fork0_control_wire0",
-      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/widen/read_fork0_result",
+      "path" : "/widen/read_fork0_control0_result",
       "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
       "args" : {
         
       }
     },
     {
-      "path" : "/widen/read_fork0_rightBuffer0_interface",
+      "path" : "/widen/read_fork0_control0_rightBuffer0_interface",
       "tpe" : "chext.elastic.Interface[Control]",
       "args" : {
         
       }
     },
     {
-      "path" : "/widen/read_fork0_rightBuffer0_sink",
+      "path" : "/widen/read_fork0_control0_rightBuffer0_sink",
       "tpe" : "chext.elastic.Interface[Control]",
       "args" : {
         
       }
     },
     {
-      "path" : "/widen/read_fork0_rightBuffer0_source",
+      "path" : "/widen/read_fork0_control0_rightBuffer0_source",
       "tpe" : "chext.elastic.Interface[Control]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/read_fork0_control0_wire0",
+      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
       "args" : {
         
       }
@@ -1232,29 +1260,141 @@
       }
     },
     {
-      "path" : "/widen/read_wireDemuxSink",
-      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "path" : "/widen/write_buffer_sink",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
       "args" : {
         
       }
     },
     {
-      "path" : "/widen/read_wireDemuxSource",
-      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "path" : "/widen/write_buffer_source",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
       "args" : {
         
       }
     },
     {
-      "path" : "/widen/read_wireMuxSink",
-      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "path" : "/widen/write_ewireBeatFirst",
+      "tpe" : "chext.elastic.Interface[Bool]",
       "args" : {
         
       }
     },
     {
-      "path" : "/widen/read_wireMuxSink0",
-      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "path" : "/widen/write_ewireBeatLast",
+      "tpe" : "chext.elastic.Interface[Bool]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_ewireControl",
+      "tpe" : "chext.elastic.Interface[Control]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_ewireDemuxSource",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_ewireMuxSink",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_ewireTransferLast",
+      "tpe" : "chext.elastic.Interface[Bool]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_ewireW0",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_control0_result",
+      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_control0_rightBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[Control]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_control0_rightBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[Control]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_control0_rightBuffer0_source",
+      "tpe" : "chext.elastic.Interface[Control]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_control0_wire0",
+      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_transform0_result",
+      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork1_result",
+      "tpe" : "chext.elastic.Interface[Bool]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork1_result_1",
+      "tpe" : "chext.elastic.Interface[Bool]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork1_result_2",
+      "tpe" : "chext.elastic.Interface[Bool]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_demux0/io.select",
+      "tpe" : "chext.elastic.Interface[UInt<1>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_demux0/io.source",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
       "args" : {
         
       }
@@ -1295,6 +1435,41 @@
       }
     },
     {
+      "path" : "/widen/write_mux0/io.select",
+      "tpe" : "chext.elastic.Interface[UInt<1>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_mux0/io.sources[0]",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_mux0/io.sources[1]",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_demux0/io.sinks[0]",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_demux0/io.sinks[1]",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/widen/read_demux0/io.sinks[0]",
       "tpe" : "chext.elastic.Interface[ReadDataChannel]",
       "args" : {
@@ -1311,6 +1486,13 @@
     {
       "path" : "/widen/read_mux0/io.sink",
       "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_mux0/io.sink",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
       "args" : {
         
       }
@@ -5284,7 +5466,7 @@
         [
           "sink_1",
           {
-            "path" : "/widen/read_fork0_result",
+            "path" : "/widen/read_fork0_control0_result",
             "desc" : "Wire"
           }
         ]
@@ -5321,13 +5503,13 @@
       }
     },
     {
-      "path" : "/widen/read_fork0_rightBuffer0",
+      "path" : "/widen/read_fork0_control0_rightBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/widen/read_fork0_rightBuffer0_source",
+            "path" : "/widen/read_fork0_control0_rightBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -5336,7 +5518,7 @@
         [
           "sink",
           {
-            "path" : "/widen/read_fork0_rightBuffer0_sink",
+            "path" : "/widen/read_fork0_control0_rightBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -5347,13 +5529,13 @@
       }
     },
     {
-      "path" : "/widen/read_fork0_rightBuffer0_Unnamed0",
+      "path" : "/widen/read_fork0_control0_rightBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/widen/read_fork0_rightBuffer0_interface",
+            "path" : "/widen/read_fork0_control0_rightBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -5362,7 +5544,7 @@
         [
           "sink",
           {
-            "path" : "/widen/read_fork0_rightBuffer0_source",
+            "path" : "/widen/read_fork0_control0_rightBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -5373,13 +5555,13 @@
       }
     },
     {
-      "path" : "/widen/read_fork0_rightBuffer0_Unnamed1",
+      "path" : "/widen/read_fork0_control0_rightBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/widen/read_fork0_rightBuffer0_sink",
+            "path" : "/widen/read_fork0_control0_rightBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -5399,13 +5581,13 @@
       }
     },
     {
-      "path" : "/widen/read_fork0_control_transducer0",
+      "path" : "/widen/read_fork0_control0_transducer0",
       "tpe" : "Transducer",
       "sources" : [
         [
           "source",
           {
-            "path" : "/widen/read_fork0_result",
+            "path" : "/widen/read_fork0_control0_result",
             "desc" : "Wire"
           }
         ]
@@ -5414,7 +5596,7 @@
         [
           "sink",
           {
-            "path" : "/widen/read_fork0_control_wire0",
+            "path" : "/widen/read_fork0_control0_wire0",
             "desc" : "Wire"
           }
         ]
@@ -5425,13 +5607,13 @@
       }
     },
     {
-      "path" : "/widen/read_fork0_control_transform0",
+      "path" : "/widen/read_fork0_control0_transform0",
       "tpe" : "Transform",
       "sources" : [
         [
           "source",
           {
-            "path" : "/widen/read_fork0_control_wire0",
+            "path" : "/widen/read_fork0_control0_wire0",
             "desc" : "Wire"
           }
         ]
@@ -5440,7 +5622,7 @@
         [
           "sink",
           {
-            "path" : "/widen/read_fork0_rightBuffer0_interface",
+            "path" : "/widen/read_fork0_control0_rightBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -5662,7 +5844,7 @@
         [
           "sink",
           {
-            "path" : "/widen/read_wireMuxSink",
+            "path" : "/widen/read_ewireMuxSink",
             "desc" : "Wire"
           }
         ]
@@ -5705,7 +5887,7 @@
         [
           "source",
           {
-            "path" : "/widen/read_wireDemuxSource",
+            "path" : "/widen/read_ewireDemuxSource",
             "desc" : "Wire"
           }
         ]
@@ -5766,7 +5948,7 @@
         [
           "sink",
           {
-            "path" : "/widen/read_wireDemuxSink",
+            "path" : "/widen/read_ewireDemuxSink",
             "desc" : "Wire"
           }
         ]
@@ -5809,7 +5991,7 @@
         [
           "source",
           {
-            "path" : "/widen/read_wireMuxSink",
+            "path" : "/widen/read_ewireMuxSink",
             "desc" : "Wire"
           }
         ]
@@ -5851,7 +6033,7 @@
         [
           "sink",
           {
-            "path" : "/widen/read_wireDemuxSource",
+            "path" : "/widen/read_ewireDemuxSource",
             "desc" : "Wire"
           }
         ]
@@ -5877,7 +6059,7 @@
         [
           "sink",
           {
-            "path" : "/widen/read_wireMuxSink0",
+            "path" : "/widen/read_ewireMuxSink0",
             "desc" : "Wire"
           }
         ]
@@ -5894,7 +6076,7 @@
         [
           "source_0",
           {
-            "path" : "/widen/read_wireMuxSink0",
+            "path" : "/widen/read_ewireMuxSink0",
             "desc" : "Wire"
           }
         ],
@@ -5921,14 +6103,47 @@
       }
     },
     {
-      "path" : "/widen/write_Unnamed0",
-      "tpe" : "Connect",
+      "path" : "/widen/write_fork0",
+      "tpe" : "Fork",
       "sources" : [
         [
           "source",
           {
             "path" : "/widen/s_axi.aw",
             "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink_0",
+          {
+            "path" : "/widen/write_fork0_transform0_result",
+            "desc" : "Wire"
+          }
+        ],
+        [
+          "sink_1",
+          {
+            "path" : "/widen/write_fork0_control0_result",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_transform0",
+      "tpe" : "Transform",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_fork0_transform0_result",
+            "desc" : "Wire"
           }
         ]
       ],
@@ -5947,14 +6162,463 @@
       }
     },
     {
+      "path" : "/widen/write_fork0_control0_rightBuffer0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_fork0_control0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_fork0_control0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_control0_rightBuffer0_Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_fork0_control0_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_fork0_control0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_control0_rightBuffer0_Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_fork0_control0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_ewireControl",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_control0_transducer0",
+      "tpe" : "Transducer",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_fork0_control0_result",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_fork0_control0_wire0",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork0_control0_transform0",
+      "tpe" : "Transform",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_fork0_control0_wire0",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_fork0_control0_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork1",
+      "tpe" : "Fork",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_ewireControl",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink_0",
+          {
+            "path" : "/widen/write_fork1_result",
+            "desc" : "Wire"
+          }
+        ],
+        [
+          "sink_1",
+          {
+            "path" : "/widen/write_fork1_result_1",
+            "desc" : "Wire"
+          }
+        ],
+        [
+          "sink_2",
+          {
+            "path" : "/widen/write_fork1_result_2",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork1_Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_fork1_result",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_ewireTransferLast",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork1_Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_fork1_result_1",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_ewireBeatFirst",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_fork1_Unnamed2",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_fork1_result_2",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_ewireBeatLast",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_buffer",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_buffer_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_buffer_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_const0",
+      "tpe" : "Const",
+      "sources" : [
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_ewireW0",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_buffer_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_mux0/io.sources[0]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/widen/write_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/widen/s_axi.w",
-            "desc" : "IO"
+            "path" : "/widen/write_ewireW0",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_mux0/io.sources[1]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_Unnamed2",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_mux0/io.sink",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_ewireMuxSink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_Unnamed3",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_ewireBeatFirst",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_mux0/io.select",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_Unnamed4",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_ewireDemuxSource",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_demux0/io.source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_Unnamed5",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_demux0/io.sinks[0]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_buffer_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_Unnamed6",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_demux0/io.sinks[1]",
+            "desc" : "ChildIO"
           }
         ]
       ],
@@ -5973,7 +6637,73 @@
       }
     },
     {
-      "path" : "/widen/write_Unnamed2",
+      "path" : "/widen/write_Unnamed7",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/widen/write_ewireBeatLast",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_demux0/io.select",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_join0",
+      "tpe" : "Join",
+      "sources" : [
+        [
+          "source_0",
+          {
+            "path" : "/widen/write_ewireMuxSink",
+            "desc" : "Wire"
+          }
+        ],
+        [
+          "source_1",
+          {
+            "path" : "/widen/s_axi.w",
+            "desc" : "IO"
+          }
+        ],
+        [
+          "source_2",
+          {
+            "path" : "/widen/write_ewireTransferLast",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/widen/write_ewireDemuxSource",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/widen/write_Unnamed8",
       "tpe" : "Connect",
       "sources" : [
         [

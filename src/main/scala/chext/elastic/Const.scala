@@ -7,8 +7,25 @@ import chisel3.experimental.SourceInfo
 import chisel3.experimental.skipPrefix
 
 import chext.tracking
-import tracking.RigidComponent
-import tracking.uniquePrefix
+import tracking.{Component, RigidComponent, uniquePrefix}
+
+abstract class Const[Tin <: Data, Tout <: Data](
+    sink: Interface[Tout]
+)(implicit si_ : SourceInfo)
+    extends Component
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
+
+  addSinkPort("sink", sink)
+
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Const"
+  def namePrefix: String = "const"
+
+  protected final val out = sink.$bits
+
+  sink.$valid := true.B
+}
 
 // TODO make it sourceInfo aware and use macros
 object Const {

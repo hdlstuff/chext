@@ -164,7 +164,7 @@ module mem_2048x64(	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ch
 endmodule
 
 module ChiselSimpleDualPortMem(	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:134:7
-  input         clock,	// <stdin>:2084:11
+  input         clock,	// <stdin>:2324:11
   input  [10:0] raw1_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:143:16
   input  [63:0] raw1_dIn,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:143:16
   output [63:0] raw1_dOut,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:143:16
@@ -201,7 +201,7 @@ module ChiselSimpleDualPortMem(	// home/janberq/Desktop/chext/src/main/scala/che
   reg  [63:0] raw2_dOut_r;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:184:45
   reg  [63:0] raw2_dOut_r_1;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:184:45
   reg  [63:0] raw2_dOut_r_2;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:184:45
-  always @(posedge clock) begin	// <stdin>:2084:11
+  always @(posedge clock) begin	// <stdin>:2324:11
     wrReqDelayed__r_addr <= raw1_addr;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:171:45
     wrReqDelayed__r_dIn <= raw1_dIn;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:171:45
     wrReqDelayed__r_wstrb <= raw1_wstrb;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/chisel/RawMemories.scala:171:45
@@ -300,8 +300,8 @@ endmodule
 // external module chext_mem_1w1r
 
 module Counter(	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.scala:6:7
-  input  clock,	// <stdin>:2260:11, :2284:11, :2308:11, :2647:11, :2671:11, :2695:11
-         reset,	// <stdin>:2261:11, :2285:11, :2309:11, :2648:11, :2672:11, :2696:11
+  input  clock,	// <stdin>:2500:11, :2524:11, :2548:11, :2887:11, :2911:11, :2935:11
+         reset,	// <stdin>:2501:11, :2525:11, :2549:11, :2888:11, :2912:11, :2936:11
          io_incEn,	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.scala:7:14
          io_decEn,	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.scala:7:14
   output io_empty,	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.scala:7:14
@@ -309,8 +309,8 @@ module Counter(	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.
 );
 
   reg [3:0] rCounter;	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.scala:16:33
-  always @(posedge clock) begin	// <stdin>:2260:11, :2284:11, :2308:11, :2647:11, :2671:11, :2695:11
-    if (reset)	// <stdin>:2260:11, :2284:11, :2308:11, :2647:11, :2671:11, :2695:11
+  always @(posedge clock) begin	// <stdin>:2500:11, :2524:11, :2548:11, :2887:11, :2911:11, :2935:11
+    if (reset)	// <stdin>:2500:11, :2524:11, :2548:11, :2887:11, :2911:11, :2935:11
       rCounter <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.scala:16:33
     else if (~(io_incEn & io_decEn)) begin	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.scala:18:17
       if (io_incEn)	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.scala:7:14
@@ -342,8 +342,8 @@ module Counter(	// home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.
 endmodule
 
 module BasicReadWriteArbiter(	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ReadWriteArbiter.scala:21:7
-  input  clock,	// <stdin>:2332:11, :2719:11
-         reset,	// <stdin>:2333:11, :2720:11
+  input  clock,	// <stdin>:2572:11, :2959:11
+         reset,	// <stdin>:2573:11, :2960:11
          rdReq,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ReadWriteArbiter.scala:27:17
          wrReq,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ReadWriteArbiter.scala:28:17
   output chooseRd	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ReadWriteArbiter.scala:29:20
@@ -351,8 +351,8 @@ module BasicReadWriteArbiter(	// home/janberq/Desktop/chext/src/main/scala/chext
 
   reg       state;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ReadWriteArbiter.scala:31:30
   reg [2:0] count;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ReadWriteArbiter.scala:32:30
-  always @(posedge clock) begin	// <stdin>:2332:11, :2719:11
-    if (reset) begin	// <stdin>:2332:11, :2719:11
+  always @(posedge clock) begin	// <stdin>:2572:11, :2959:11
+    if (reset) begin	// <stdin>:2572:11, :2959:11
       state <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ReadWriteArbiter.scala:21:7, :31:30
       count <= 3'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ReadWriteArbiter.scala:32:30
     end
@@ -432,8 +432,8 @@ module ram_8x64(	// src/main/scala/chisel3/util/Decoupled.scala:256:91
 endmodule
 
 module Queue8_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
-  input         clock,	// <stdin>:2374:11, :2761:11
-                reset,	// <stdin>:2375:11, :2762:11
+  input         clock,	// <stdin>:2614:11, :3001:11
+                reset,	// <stdin>:2615:11, :3002:11
                 io_enq_valid,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input  [63:0] io_enq_bits,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
   input         io_deq_ready,	// src/main/scala/chisel3/util/Decoupled.scala:255:14
@@ -452,13 +452,13 @@ module Queue8_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
   wire        do_deq = ~empty & io_deq_ready & io_deq_valid_0;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :264:27, :285:16, :297:{24,39}, :298:17, :300:14
   wire        do_enq = ~(empty & io_deq_ready) & io_enq_ready & io_enq_valid;	// src/main/scala/chisel3/util/Decoupled.scala:261:25, :263:27, :286:16, :298:17, :301:{26,35}, :306:{24,39}
   assign io_enq_ready = io_deq_ready | ~(ptr_match & maybe_full);	// src/main/scala/chisel3/util/Decoupled.scala:259:27, :260:33, :262:24, :286:{16,19}, :306:{24,39}
-  always @(posedge clock) begin	// <stdin>:2374:11, :2761:11
-    if (reset) begin	// <stdin>:2374:11, :2761:11
+  always @(posedge clock) begin	// <stdin>:2614:11, :3001:11
+    if (reset) begin	// <stdin>:2614:11, :3001:11
       enq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       deq_ptr_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       maybe_full <= 1'h0;	// src/main/scala/chisel3/util/Decoupled.scala:243:7, :259:27
     end
-    else begin	// <stdin>:2374:11, :2761:11
+    else begin	// <stdin>:2614:11, :3001:11
       if (do_enq)	// src/main/scala/chisel3/util/Decoupled.scala:263:27, :298:17, :301:{26,35}
         enq_ptr_value <= enq_ptr_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
       if (do_deq)	// src/main/scala/chisel3/util/Decoupled.scala:264:27, :298:17, :300:14
@@ -502,8 +502,8 @@ module Queue8_UInt64(	// src/main/scala/chisel3/util/Decoupled.scala:243:7
 endmodule
 
 module ReadWriteToRawBridge(	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7
-  input         clock,	// <stdin>:2434:11, :2821:11
-                reset,	// <stdin>:2435:11, :2822:11
+  input         clock,	// <stdin>:2674:11, :3061:11
+                reset,	// <stdin>:2675:11, :3062:11
   input  [10:0] read_req_bits,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:16
   input         read_req_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:16
   output        read_req_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:124:16
@@ -569,8 +569,8 @@ module ReadWriteToRawBridge(	// home/janberq/Desktop/chext/src/main/scala/chext/
   reg         write_r_3;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:217:23
   wire        wrResp_rightBuffer0_source_valid =
     wrResp_rightBuffer0_source_ready & ~_ctrWriteResp_io_empty;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42, :150:36, :220:24, home/janberq/Desktop/chext/src/main/scala/chext/util/Counter.scala:30:17
-  always @(posedge clock) begin	// <stdin>:2434:11, :2821:11
-    if (reset) begin	// <stdin>:2434:11, :2821:11
+  always @(posedge clock) begin	// <stdin>:2674:11, :3061:11
+    if (reset) begin	// <stdin>:2674:11, :3061:11
       rdResp_rightBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
       rdResp_rightBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
       rdResp_rightBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :131:42
@@ -578,7 +578,7 @@ module ReadWriteToRawBridge(	// home/janberq/Desktop/chext/src/main/scala/chext/
       wrResp_rightBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, src/main/scala/chisel3/util/Counter.scala:61:40
       wrResp_rightBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:120:7, :137:42
     end
-    else begin	// <stdin>:2434:11, :2821:11
+    else begin	// <stdin>:2674:11, :3061:11
       automatic logic rdResp_rightBuffer0_do_deq =
         rdResp_rightBuffer0_sink_ready & rdResp_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:131:42
       automatic logic wrResp_rightBuffer0_do_enq;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/ElasticBridges.scala:137:42
@@ -703,8 +703,8 @@ module ReadWriteToRawBridge(	// home/janberq/Desktop/chext/src/main/scala/chext/
 endmodule
 
 module ChiselTrueDualPortRAM(	// home/janberq/Desktop/chext/src/main/scala/chext/memory/RAM.scala:74:7
-  input         clock,	// <stdin>:3022:11
-                reset,	// <stdin>:3023:11
+  input         clock,	// <stdin>:3262:11
+                reset,	// <stdin>:3263:11
   input  [10:0] read1_req_bits,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/RAM.scala:83:17
   input         read1_req_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/RAM.scala:83:17
   output        read1_req_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/RAM.scala:83:17
@@ -797,8 +797,8 @@ module ChiselTrueDualPortRAM(	// home/janberq/Desktop/chext/src/main/scala/chext
 endmodule
 
 module AddressGenerator(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:63:7
-  input         clock,	// <stdin>:3070:11, :3254:11, :4050:11, :4234:11
-                reset,	// <stdin>:3071:11, :3255:11, :4051:11, :4235:11
+  input         clock,	// <stdin>:3310:11, :3494:11, :4290:11, :4474:11
+                reset,	// <stdin>:3311:11, :3495:11, :4291:11, :4475:11
   input  [13:0] source_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:18
   input  [7:0]  source_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:18
   input  [2:0]  source_bits_size,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:18
@@ -859,7 +859,7 @@ module AddressGenerator(	// home/janberq/Desktop/chext/src/main/scala/chext/amba
                 "elastic.Transducer: no action was taken! @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala 73:32]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32
     end // always @(posedge)
   `endif // not def SYNTHESIS
-  always @(posedge clock) begin	// <stdin>:3070:11, :3254:11, :4050:11, :4234:11
+  always @(posedge clock) begin	// <stdin>:3310:11, :3494:11, :4290:11, :4474:11
     if (source_valid) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:18
       automatic logic _GEN_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:79:18, :94:20, :99:19
       _GEN_0 = transducer_last_1 | ~sink_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:79:18, :91:24, :92:14, :94:20, :99:19, :120:14
@@ -883,7 +883,7 @@ module AddressGenerator(	// home/janberq/Desktop/chext/src/main/scala/chext/amba
         transducer_ctr <= source_bits_len - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:79:18, :130:27
       end
     end
-    if (reset)	// <stdin>:3070:11, :3254:11, :4050:11, :4234:11
+    if (reset)	// <stdin>:3310:11, :3494:11, :4290:11, :4474:11
       transducer_generating <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:63:7, :82:29
     else if (source_valid) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:70:18
       if (transducer_generating)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:82:29
@@ -953,8 +953,8 @@ module StrobeGenerator(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/
 endmodule
 
 module AddressStrobeGenerator(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:180:7
-  input         clock,	// <stdin>:3493:11, :4473:11
-                reset,	// <stdin>:3494:11, :4474:11
+  input         clock,	// <stdin>:3733:11, :4713:11
+                reset,	// <stdin>:3734:11, :4714:11
   input  [13:0] source_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:191:18
   input  [7:0]  source_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:191:18
   input  [2:0]  source_bits_size,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:191:18
@@ -998,8 +998,8 @@ module AddressStrobeGenerator(	// home/janberq/Desktop/chext/src/main/scala/chex
 endmodule
 
 module Axi4FullToReadWriteBridge(	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7
-  input         clock,	// <stdin>:3534:11, :4514:11
-                reset,	// <stdin>:3535:11, :4515:11
+  input         clock,	// <stdin>:3774:11, :4754:11
+                reset,	// <stdin>:3775:11, :4755:11
   input  [13:0] s_axi_ar_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:28:17
   input  [7:0]  s_axi_ar_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:28:17
   input  [2:0]  s_axi_ar_bits_size,	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:28:17
@@ -1209,12 +1209,12 @@ module Axi4FullToReadWriteBridge(	// home/janberq/Desktop/chext/src/main/scala/c
          : ~(|_read_fork0_repeat0_count_T_7) | _read_fork0_repeat0_count_T_9
            & read_resp_ready_0);	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:36:29, :38:21, :39:31, :43:32, :66:29
   assign _GEN = read_fork0_repeat0_count_valid | (|_read_fork0_repeat0_count_T_7);	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:38:21, :43:32
-  always @(posedge clock) begin	// <stdin>:3534:11, :4514:11
+  always @(posedge clock) begin	// <stdin>:3774:11, :4754:11
     automatic logic _GEN_3;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:84:21
     automatic logic _GEN_4;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:38:21
     _GEN_3 = ~(|_write_fork1_repeat0_count_T_6) | _write_fork1_repeat0_count_T_8;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:84:21, :89:32
     _GEN_4 = ~(|_read_fork0_repeat0_count_T_7) | _read_fork0_repeat0_count_T_9;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:38:21, :43:32
-    if (reset) begin	// <stdin>:3534:11, :4514:11
+    if (reset) begin	// <stdin>:3774:11, :4754:11
       read_fork0_repeat0_leftBuffer0_enq_ptr_value <= 2'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, src/main/scala/chisel3/util/Counter.scala:61:40
       read_fork0_repeat0_leftBuffer0_deq_ptr_value <= 2'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, src/main/scala/chisel3/util/Counter.scala:61:40
       read_fork0_repeat0_leftBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, :39:31
@@ -1228,7 +1228,7 @@ module Axi4FullToReadWriteBridge(	// home/janberq/Desktop/chext/src/main/scala/c
       write_fork1_regs_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, :82:29
       read_fork0_repeat0_count_valid <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:19:7, :38:21
     end
-    else begin	// <stdin>:3534:11, :4514:11
+    else begin	// <stdin>:3774:11, :4754:11
       automatic logic read_fork0_repeat0_leftBuffer0_do_deq =
         read_fork0_repeat0_leftBuffer0_sink_ready
         & read_fork0_repeat0_leftBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/memory/AxiBridges.scala:39:31
@@ -1498,428 +1498,784 @@ module elasticDemux(	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/
   assign io_select_ready = fire;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7, :30:28
 endmodule
 
-module Widen(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  input         clock,	// <stdin>:5031:11
-                reset,	// <stdin>:5032:11
-  input  [13:0] s_axi_ar_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [7:0]  s_axi_ar_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [2:0]  s_axi_ar_bits_size,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [1:0]  s_axi_ar_bits_burst,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input         s_axi_ar_bits_lock,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [3:0]  s_axi_ar_bits_cache,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [2:0]  s_axi_ar_bits_prot,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [3:0]  s_axi_ar_bits_qos,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-                s_axi_ar_bits_region,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input         s_axi_ar_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  output        s_axi_ar_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  output [63:0] s_axi_r_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  output [1:0]  s_axi_r_bits_resp,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  output        s_axi_r_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-                s_axi_r_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input         s_axi_r_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [13:0] s_axi_aw_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [7:0]  s_axi_aw_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [2:0]  s_axi_aw_bits_size,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [1:0]  s_axi_aw_bits_burst,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input         s_axi_aw_bits_lock,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [3:0]  s_axi_aw_bits_cache,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [2:0]  s_axi_aw_bits_prot,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [3:0]  s_axi_aw_bits_qos,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-                s_axi_aw_bits_region,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input         s_axi_aw_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  output        s_axi_aw_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [63:0] s_axi_w_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input  [7:0]  s_axi_w_bits_strb,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input         s_axi_w_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-                s_axi_w_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  output        s_axi_w_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  output [1:0]  s_axi_b_bits_resp,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  output        s_axi_b_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  input         s_axi_b_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:27:17
-  output [13:0] m_axi_ar_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [7:0]  m_axi_ar_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [1:0]  m_axi_ar_bits_burst,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output        m_axi_ar_bits_lock,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [3:0]  m_axi_ar_bits_cache,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [2:0]  m_axi_ar_bits_prot,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [3:0]  m_axi_ar_bits_qos,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-                m_axi_ar_bits_region,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output        m_axi_ar_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  input         m_axi_ar_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  input  [63:0] m_axi_r_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  input  [1:0]  m_axi_r_bits_resp,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  input         m_axi_r_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-                m_axi_r_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output        m_axi_r_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [13:0] m_axi_aw_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [7:0]  m_axi_aw_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [2:0]  m_axi_aw_bits_size,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [1:0]  m_axi_aw_bits_burst,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output        m_axi_aw_bits_lock,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [3:0]  m_axi_aw_bits_cache,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [2:0]  m_axi_aw_bits_prot,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [3:0]  m_axi_aw_bits_qos,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-                m_axi_aw_bits_region,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output        m_axi_aw_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  input         m_axi_aw_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [63:0] m_axi_w_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output [7:0]  m_axi_w_bits_strb,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output        m_axi_w_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-                m_axi_w_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  input         m_axi_w_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  input  [1:0]  m_axi_b_bits_resp,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  input         m_axi_b_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
-  output        m_axi_b_ready	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+module elasticMux_1(	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:9:7
+  input  [63:0] io_sources_0_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+  input  [7:0]  io_sources_0_bits_strb,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+  input         io_sources_0_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+  output        io_sources_0_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+  output [63:0] io_sink_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+  output [7:0]  io_sink_bits_strb,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+  output        io_sink_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+  input         io_sink_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+                io_select_bits,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+                io_select_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
+  output        io_select_ready	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:19:14
 );
 
-  wire        _read_fork2_result_valid_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:241:29
-  wire        read_fork0_result_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35, :151:21
-  wire        read_fork0_rightBuffer0_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37
-  wire        read_ewireControl_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37
-  wire        read_ewireControl_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37
-  wire        read_ewireControl_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37
-  wire        _read_demux0_io_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:235:31
-  wire [63:0] _read_mux0_io_sink_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27
-  wire [1:0]  _read_mux0_io_sink_bits_resp;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27
-  wire        _read_mux0_io_sink_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27
-  wire        _read_mux0_io_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27
-  wire [66:0] _read_buffer_ram_dataOutB;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire [3:0]  _read_fork0_rightBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire [2:0]  read_fork0_control_wire0_bits_size = s_axi_ar_bits_size;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21
-  wire [2:0]  read_fork0_transform0_mask1 = 3'h7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:27
-  wire        read_fork0_rightBuffer0_sink_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_ewireBeatFirst_bits = read_ewireControl_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :201:39
-  wire        read_fork0_rightBuffer0_sink_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_ewireBeatLast_bits = read_ewireControl_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :202:38
-  wire        read_fork0_rightBuffer0_sink_bits_transferFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_fork0_rightBuffer0_sink_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_ewireTransferLast_bits = read_ewireControl_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :200:42
-  wire        read_fork0_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_fork0_rightBuffer0_sink_ready = read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :211:49
-  wire [7:0]  read_fork0_transform0_mask0 = (8'h1 << s_axi_ar_bits_size) - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:62:{27,33,45}
+  wire valid = io_select_valid & (io_select_bits | io_sources_0_valid);	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:29:40
+  wire fire = valid & io_sink_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:29:40, :30:28
+  assign io_sources_0_ready = fire & ~io_select_bits;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:9:7, :30:28, :34:{22,29}
+  assign io_sink_bits_data = io_select_bits ? 64'h0 : io_sources_0_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:9:7, :19:14, :29:40
+  assign io_sink_bits_strb = io_select_bits ? 8'h0 : io_sources_0_bits_strb;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:9:7, :19:14, :29:40
+  assign io_sink_valid = valid;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:9:7, :29:40
+  assign io_select_ready = fire;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Mux.scala:9:7, :30:28
+endmodule
+
+module elasticDemux_1(	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7
+  input  [63:0] io_source_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  input  [7:0]  io_source_bits_strb,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  input         io_source_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+                io_source_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  output        io_source_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  output [63:0] io_sinks_0_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  output [7:0]  io_sinks_0_bits_strb,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  output        io_sinks_0_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+                io_sinks_0_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  input         io_sinks_0_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  output [63:0] io_sinks_1_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  output [7:0]  io_sinks_1_bits_strb,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  output        io_sinks_1_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+                io_sinks_1_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  input         io_sinks_1_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+                io_select_bits,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+                io_select_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+  output        io_select_ready	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:19:14
+);
+
+  wire valid = io_select_valid & io_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:29:40
+  wire fire = valid & (io_select_bits ? io_sinks_1_ready : io_sinks_0_ready);	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:29:40, :30:28
+  assign io_source_ready = fire;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7, :30:28
+  assign io_sinks_0_bits_data = io_source_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7
+  assign io_sinks_0_bits_strb = io_source_bits_strb;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7
+  assign io_sinks_0_bits_last = io_source_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7
+  assign io_sinks_0_valid = valid & ~io_select_bits;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7, :29:40, :37:{23,31}
+  assign io_sinks_1_bits_data = io_source_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7
+  assign io_sinks_1_bits_strb = io_source_bits_strb;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7
+  assign io_sinks_1_bits_last = io_source_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7
+  assign io_sinks_1_valid = valid & io_select_bits;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7, :29:40, :37:23
+  assign io_select_ready = fire;	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7, :30:28
+endmodule
+
+module Widen(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  input         clock,	// <stdin>:5332:11
+                reset,	// <stdin>:5333:11
+  input  [13:0] s_axi_ar_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [7:0]  s_axi_ar_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [2:0]  s_axi_ar_bits_size,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [1:0]  s_axi_ar_bits_burst,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input         s_axi_ar_bits_lock,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [3:0]  s_axi_ar_bits_cache,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [2:0]  s_axi_ar_bits_prot,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [3:0]  s_axi_ar_bits_qos,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+                s_axi_ar_bits_region,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input         s_axi_ar_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  output        s_axi_ar_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  output [63:0] s_axi_r_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  output [1:0]  s_axi_r_bits_resp,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  output        s_axi_r_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+                s_axi_r_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input         s_axi_r_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [13:0] s_axi_aw_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [7:0]  s_axi_aw_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [2:0]  s_axi_aw_bits_size,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [1:0]  s_axi_aw_bits_burst,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input         s_axi_aw_bits_lock,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [3:0]  s_axi_aw_bits_cache,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [2:0]  s_axi_aw_bits_prot,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [3:0]  s_axi_aw_bits_qos,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+                s_axi_aw_bits_region,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input         s_axi_aw_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  output        s_axi_aw_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [63:0] s_axi_w_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input  [7:0]  s_axi_w_bits_strb,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input         s_axi_w_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  output        s_axi_w_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  output [1:0]  s_axi_b_bits_resp,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  output        s_axi_b_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  input         s_axi_b_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:28:17
+  output [13:0] m_axi_ar_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [7:0]  m_axi_ar_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [1:0]  m_axi_ar_bits_burst,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output        m_axi_ar_bits_lock,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [3:0]  m_axi_ar_bits_cache,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [2:0]  m_axi_ar_bits_prot,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [3:0]  m_axi_ar_bits_qos,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+                m_axi_ar_bits_region,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output        m_axi_ar_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  input         m_axi_ar_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  input  [63:0] m_axi_r_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  input  [1:0]  m_axi_r_bits_resp,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  input         m_axi_r_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+                m_axi_r_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output        m_axi_r_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [13:0] m_axi_aw_bits_addr,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [7:0]  m_axi_aw_bits_len,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [1:0]  m_axi_aw_bits_burst,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output        m_axi_aw_bits_lock,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [3:0]  m_axi_aw_bits_cache,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [2:0]  m_axi_aw_bits_prot,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [3:0]  m_axi_aw_bits_qos,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+                m_axi_aw_bits_region,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output        m_axi_aw_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  input         m_axi_aw_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [63:0] m_axi_w_bits_data,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output [7:0]  m_axi_w_bits_strb,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output        m_axi_w_bits_last,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+                m_axi_w_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  input         m_axi_w_ready,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  input  [1:0]  m_axi_b_bits_resp,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  input         m_axi_b_valid,	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+  output        m_axi_b_ready	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:29:17
+);
+
+  wire        read_fork0_control0_result_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21
+  wire        _read_fork2_result_valid_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:251:29
+  wire        write_fork0_control0_rightBuffer0_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37
+  wire        write_ewireControl_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37
+  wire        write_ewireControl_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37
+  wire        write_ewireControl_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37
+  wire        read_fork0_control0_rightBuffer0_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37
+  wire        read_ewireControl_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37
+  wire        read_ewireControl_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37
+  wire        read_ewireControl_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37
+  wire        _write_demux0_io_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:319:31
+  wire [63:0] _write_mux0_io_sink_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:313:27
+  wire [7:0]  _write_mux0_io_sink_bits_strb;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:313:27
+  wire        _write_mux0_io_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:313:27
+  wire [72:0] _write_buffer_ram_dataOutB;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire [3:0]  _write_fork0_control0_rightBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        _read_demux0_io_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:245:31
+  wire [63:0] _read_mux0_io_sink_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27
+  wire [1:0]  _read_mux0_io_sink_bits_resp;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27
+  wire        _read_mux0_io_sink_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27
+  wire        _read_mux0_io_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27
+  wire [66:0] _read_buffer_ram_dataOutB;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire [3:0]  _read_fork0_control0_rightBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire [2:0]  read_fork0_control0_wire0_bits_size = s_axi_ar_bits_size;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21
+  wire [2:0]  write_fork0_control0_wire0_bits_size = s_axi_aw_bits_size;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21
+  wire [2:0]  read_fork0_transform0_mask1 = 3'h7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:64:27
+  wire [2:0]  write_fork0_transform0_mask1 = 3'h7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:64:27
+  wire        read_fork0_control0_rightBuffer0_sink_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_ewireBeatFirst_bits = read_ewireControl_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :202:39
+  wire        read_fork0_control0_rightBuffer0_sink_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_ewireBeatLast_bits = read_ewireControl_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :203:38
+  wire        read_fork0_control0_rightBuffer0_sink_bits_transferFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_fork0_control0_rightBuffer0_sink_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_ewireTransferLast_bits = read_ewireControl_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :201:42
+  wire        read_fork0_control0_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_fork0_control0_rightBuffer0_sink_ready = read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :219:27
+  wire [7:0]  read_fork0_transform0_mask0 = (8'h1 << s_axi_ar_bits_size) - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:{27,33,45}
   wire [7:0]  read_fork0_transform0_addr0 =
-    s_axi_ar_bits_addr[7:0] & ~read_fork0_transform0_mask0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:62:27, :68:{27,35,42,44}
+    s_axi_ar_bits_addr[7:0] & ~read_fork0_transform0_mask0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:27, :69:{27,35,42,44}
   wire [7:0]  read_fork0_transform0_addr1 =
-    s_axi_ar_bits_addr[7:0] & {5'h1F, ~read_fork0_transform0_mask1};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:27, :68:35, :69:{27,42,44,55}
+    s_axi_ar_bits_addr[7:0] & {5'h1F, ~read_fork0_transform0_mask1};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:64:27, :69:35, :70:{27,42,44,55}
   wire [16:0] read_fork0_transform0_dtsize =
     {1'h0, {7'h0, {1'h0, s_axi_ar_bits_len} + 9'h1} << s_axi_ar_bits_size}
-    + {9'h0, read_fork0_transform0_addr0} - {9'h0, read_fork0_transform0_addr1};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :62:45, :68:27, :69:27, :73:{32,36,43,58,63,72}, :112:26
-  wire [16:0] read_fork0_transform0_len0 = {3'h0, read_fork0_transform0_dtsize[16:3]};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:73:72, :75:{26,34}
+    + {9'h0, read_fork0_transform0_addr0} - {9'h0, read_fork0_transform0_addr1};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:45, :69:27, :70:27, :74:{32,36,43,58,63,72}, :77:48, :113:26
+  wire [16:0] read_fork0_transform0_len0 = {3'h0, read_fork0_transform0_dtsize[16:3]};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:74:72, :76:{26,34}
   wire [16:0] read_fork0_transform0_len1 =
     (|(read_fork0_transform0_dtsize[2:0] & read_fork0_transform0_mask1))
       ? read_fork0_transform0_len0 + 17'h1
-      : read_fork0_transform0_len0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:27, :73:72, :75:26, :76:{26,30,39,48,60}
-  wire        read_fork0_control_wire0_bits_first;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21
-  wire        read_fork0_control_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21
-  wire        read_fork0_control_wire0_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21
-  wire        read_fork0_control_wire0_ready = read_fork0_rightBuffer0_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :211:49
-  assign read_ewireControl_bits_beatFirst = read_fork0_rightBuffer0_sink_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :211:49
-  assign read_ewireControl_bits_beatLast = read_fork0_rightBuffer0_sink_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :211:49
+      : read_fork0_transform0_len0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:64:27, :74:72, :76:26, :77:{26,30,39,48,60}
+  wire        read_fork0_control0_wire0_bits_first;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21
+  wire        read_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21
+  wire        read_fork0_control0_wire0_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21
+  wire        read_fork0_control0_wire0_ready =
+    read_fork0_control0_rightBuffer0_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :219:27
+  assign read_ewireControl_bits_beatFirst =
+    read_fork0_control0_rightBuffer0_sink_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :219:27
+  assign read_ewireControl_bits_beatLast =
+    read_fork0_control0_rightBuffer0_sink_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :219:27
   wire        read_ewireControl_bits_transferFirst =
-    read_fork0_rightBuffer0_sink_bits_transferFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :211:49
+    read_fork0_control0_rightBuffer0_sink_bits_transferFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :219:27
   assign read_ewireControl_bits_transferLast =
-    read_fork0_rightBuffer0_sink_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :211:49
-  wire        read_ewireControl_valid = read_fork0_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :211:49
-  reg  [4:0]  read_fork0_rightBuffer0_enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [4:0]  read_fork0_rightBuffer0_deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         read_fork0_rightBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_fork0_rightBuffer0_ptr_match =
-    read_fork0_rightBuffer0_enq_ptr_value == read_fork0_rightBuffer0_deq_ptr_value;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        read_fork0_rightBuffer0_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_fork0_rightBuffer0_do_enq =
-    read_fork0_rightBuffer0_source_ready & read_fork0_rightBuffer0_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_fork0_rightBuffer0_source_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_fork0_rightBuffer0_source_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_fork0_rightBuffer0_source_bits_transferFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  wire        read_fork0_rightBuffer0_source_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  assign read_fork0_rightBuffer0_sink_valid =
-    ~(read_fork0_rightBuffer0_ptr_match & ~read_fork0_rightBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  assign read_fork0_rightBuffer0_source_ready =
-    ~(read_fork0_rightBuffer0_ptr_match & read_fork0_rightBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  assign read_fork0_rightBuffer0_sink_bits_transferLast =
-    _read_fork0_rightBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  assign read_fork0_rightBuffer0_sink_bits_transferFirst =
-    _read_fork0_rightBuffer0_ram_dataOutB[1];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  assign read_fork0_rightBuffer0_sink_bits_beatLast =
-    _read_fork0_rightBuffer0_ram_dataOutB[2];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  assign read_fork0_rightBuffer0_sink_bits_beatFirst =
-    _read_fork0_rightBuffer0_ram_dataOutB[3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-  assign read_fork0_rightBuffer0_source_bits_transferFirst =
-    read_fork0_control_wire0_bits_first;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :211:49
-  assign read_fork0_rightBuffer0_source_bits_transferLast =
-    read_fork0_control_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :211:49
-  assign read_fork0_rightBuffer0_source_valid = read_fork0_control_wire0_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :211:49
-  reg         read_fork0_control_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:26
-  wire [7:0]  read_fork0_control_transducer0_mask =
-    (8'h1 << 3'h3 - s_axi_ar_bits_size) - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:62:33, :110:{32,43,55}
-  reg  [6:0]  read_fork0_control_transducer0_index;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:26
-  reg  [7:0]  read_fork0_control_transducer0_counter;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:115:28
-  wire [13:0] _read_fork0_control_transducer0_nextIndex_T_5 =
-    s_axi_ar_bits_addr >> s_axi_ar_bits_size;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:128:18
-  wire [6:0]  read_fork0_control_wire0_bits_index =
-    read_fork0_control_transducer0_state
+    read_fork0_control0_rightBuffer0_sink_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :219:27
+  wire        read_ewireControl_valid = read_fork0_control0_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :219:27
+  reg  [4:0]  read_fork0_control0_rightBuffer0_enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [4:0]  read_fork0_control0_rightBuffer0_deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg         read_fork0_control0_rightBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_fork0_control0_rightBuffer0_ptr_match =
+    read_fork0_control0_rightBuffer0_enq_ptr_value == read_fork0_control0_rightBuffer0_deq_ptr_value;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        read_fork0_control0_rightBuffer0_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_fork0_control0_rightBuffer0_do_enq =
+    read_fork0_control0_rightBuffer0_source_ready
+    & read_fork0_control0_rightBuffer0_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_fork0_control0_rightBuffer0_source_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_fork0_control0_rightBuffer0_source_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_fork0_control0_rightBuffer0_source_bits_transferFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  wire        read_fork0_control0_rightBuffer0_source_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  assign read_fork0_control0_rightBuffer0_sink_valid =
+    ~(read_fork0_control0_rightBuffer0_ptr_match
+      & ~read_fork0_control0_rightBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  assign read_fork0_control0_rightBuffer0_source_ready =
+    ~(read_fork0_control0_rightBuffer0_ptr_match
+      & read_fork0_control0_rightBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  assign read_fork0_control0_rightBuffer0_sink_bits_transferLast =
+    _read_fork0_control0_rightBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  assign read_fork0_control0_rightBuffer0_sink_bits_transferFirst =
+    _read_fork0_control0_rightBuffer0_ram_dataOutB[1];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  assign read_fork0_control0_rightBuffer0_sink_bits_beatLast =
+    _read_fork0_control0_rightBuffer0_ram_dataOutB[2];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  assign read_fork0_control0_rightBuffer0_sink_bits_beatFirst =
+    _read_fork0_control0_rightBuffer0_ram_dataOutB[3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+  assign read_fork0_control0_rightBuffer0_source_bits_transferFirst =
+    read_fork0_control0_wire0_bits_first;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :219:27
+  assign read_fork0_control0_rightBuffer0_source_bits_transferLast =
+    read_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :219:27
+  assign read_fork0_control0_rightBuffer0_source_valid = read_fork0_control0_wire0_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :219:27
+  reg         read_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:109:26
+  wire [7:0]  read_fork0_control0_transducer0_mask =
+    (8'h1 << 3'h3 - s_axi_ar_bits_size) - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :111:{32,43,55}
+  reg  [6:0]  read_fork0_control0_transducer0_index;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:113:26
+  reg  [7:0]  read_fork0_control0_transducer0_counter;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:116:28
+  wire [13:0] _read_fork0_control0_transducer0_nextIndex_T_5 =
+    s_axi_ar_bits_addr >> s_axi_ar_bits_size;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:129:18
+  wire [6:0]  read_fork0_control0_wire0_bits_index =
+    read_fork0_control0_transducer0_state
       ? ({1'h0,
-          read_fork0_control_transducer0_mask[6:0]
-            & read_fork0_control_transducer0_index} == read_fork0_control_transducer0_mask
+          read_fork0_control0_transducer0_mask[6:0]
+            & read_fork0_control0_transducer0_index} == read_fork0_control0_transducer0_mask
            ? 7'h0
-           : read_fork0_control_transducer0_index + 7'h1)
-      : _read_fork0_control_transducer0_nextIndex_T_5[6:0]
-        & read_fork0_control_transducer0_mask[6:0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :62:33, :105:21, :108:26, :110:55, :112:26, :121:23, :123:12, :124:{18,26}, :126:17, :128:{18,30}
-  assign read_fork0_control_wire0_bits_first = ~read_fork0_control_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :108:26, :137:16
-  assign read_fork0_control_wire0_bits_last =
-    read_fork0_control_transducer0_state
-      ? read_fork0_control_transducer0_counter == s_axi_ar_bits_len
-      : s_axi_ar_bits_len == 8'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :108:26, :115:28, :138:18, :140:17, :141:16
-  wire [7:0]  read_fork0_control_transform0_mask =
-    (8'h1 << 3'h3 - read_fork0_control_wire0_bits_size) - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:62:33, :105:21, :110:43, :186:{32,43,56}
+           : read_fork0_control0_transducer0_index + 7'h1)
+      : _read_fork0_control0_transducer0_nextIndex_T_5[6:0]
+        & read_fork0_control0_transducer0_mask[6:0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :77:48, :106:21, :109:26, :111:55, :113:26, :122:23, :124:12, :125:{18,26}, :127:17, :129:{18,30}
+  assign read_fork0_control0_wire0_bits_first = ~read_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :109:26, :138:16
+  assign read_fork0_control0_wire0_bits_last =
+    read_fork0_control0_transducer0_state
+      ? read_fork0_control0_transducer0_counter == s_axi_ar_bits_len
+      : s_axi_ar_bits_len == 8'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :109:26, :116:28, :139:18, :141:17, :142:16
+  wire [7:0]  read_fork0_control0_transform0_mask =
+    (8'h1 << 3'h3 - read_fork0_control0_wire0_bits_size) - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :106:21, :111:43, :187:{32,43,56}
   wire [6:0]  _GEN =
-    read_fork0_control_transform0_mask[6:0] & read_fork0_control_wire0_bits_index;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :186:56, :188:47
-  assign read_fork0_rightBuffer0_source_bits_beatFirst =
-    read_fork0_control_wire0_bits_first | _GEN == 7'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :112:26, :188:{33,47,55}, :211:49
-  assign read_fork0_rightBuffer0_source_bits_beatLast =
-    read_fork0_control_wire0_bits_last
-    | {1'h0, _GEN} == read_fork0_control_transform0_mask;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :105:21, :186:56, :188:47, :189:{31,53}, :211:49
+    read_fork0_control0_transform0_mask[6:0] & read_fork0_control0_wire0_bits_index;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :187:56, :189:47
+  assign read_fork0_control0_rightBuffer0_source_bits_beatFirst =
+    read_fork0_control0_wire0_bits_first | _GEN == 7'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :113:26, :189:{33,47,55}, :219:27
+  assign read_fork0_control0_rightBuffer0_source_bits_beatLast =
+    read_fork0_control0_wire0_bits_last
+    | {1'h0, _GEN} == read_fork0_control0_transform0_mask;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :106:21, :187:56, :189:47, :190:{31,53}, :219:27
   reg         read_buffer_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         read_buffer_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         read_buffer_maybe_full;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire        read_buffer_ptr_match = read_buffer_wrap == read_buffer_wrap_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        read_buffer_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire        read_buffer_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire        read_buffer_do_enq = read_buffer_source_ready & read_buffer_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire [63:0] read_buffer_hi_hi;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire [1:0]  read_buffer_source_bits_resp;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire        read_buffer_lo;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire        read_buffer_sink_valid = ~(read_buffer_ptr_match & ~read_buffer_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  assign read_buffer_source_ready = ~(read_buffer_ptr_match & read_buffer_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire        read_buffer_sink_bits_last = _read_buffer_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire [1:0]  read_buffer_sink_bits_resp = _read_buffer_ram_dataOutB[2:1];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  wire [63:0] read_buffer_sink_bits_data = _read_buffer_ram_dataOutB[66:3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  reg         read_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:209:29
-  reg         read_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:209:29
-  wire        read_fork0_ready_qual1_0 = m_axi_ar_ready | read_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:209:29
-  wire        read_fork0_ready_qual1_1 = read_fork0_result_ready | read_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35, :151:21, :209:29
-  wire        read_fork0_ready = read_fork0_ready_qual1_0 & read_fork0_ready_qual1_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:209:29
-  wire        read_ewireTransferLast_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:42
-  assign read_fork0_control_wire0_valid = s_axi_ar_valid & ~read_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :209:29
+  reg         read_buffer_maybe_full;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire        read_buffer_ptr_match = read_buffer_wrap == read_buffer_wrap_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        read_buffer_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire        read_buffer_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire        read_buffer_do_enq = read_buffer_source_ready & read_buffer_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire [63:0] read_buffer_hi_hi;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire [1:0]  read_buffer_source_bits_resp;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire        read_buffer_lo;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire        read_buffer_sink_valid = ~(read_buffer_ptr_match & ~read_buffer_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  assign read_buffer_source_ready = ~(read_buffer_ptr_match & read_buffer_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire        read_buffer_sink_bits_last = _read_buffer_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire [1:0]  read_buffer_sink_bits_resp = _read_buffer_ram_dataOutB[2:1];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire [63:0] read_buffer_sink_bits_data = _read_buffer_ram_dataOutB[66:3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire        write_fork0_control0_rightBuffer0_sink_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_ewireBeatFirst_bits = write_ewireControl_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :270:39
+  wire        write_fork0_control0_rightBuffer0_sink_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_ewireBeatLast_bits = write_ewireControl_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :271:38
+  wire        write_fork0_control0_rightBuffer0_sink_bits_transferFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_fork0_control0_rightBuffer0_sink_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_ewireTransferLast_bits = write_ewireControl_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :269:42
+  wire        write_fork0_control0_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_fork0_control0_rightBuffer0_sink_ready = write_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :287:27
+  wire [7:0]  write_fork0_transform0_mask0 = (8'h1 << s_axi_aw_bits_size) - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:{27,33,45}
+  wire [7:0]  write_fork0_transform0_addr0 =
+    s_axi_aw_bits_addr[7:0] & ~write_fork0_transform0_mask0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:27, :69:{27,35,42,44}
+  wire [7:0]  write_fork0_transform0_addr1 =
+    s_axi_aw_bits_addr[7:0] & {5'h1F, ~write_fork0_transform0_mask1};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:64:27, :69:35, :70:{27,42,44,55}
+  wire [16:0] write_fork0_transform0_dtsize =
+    {1'h0, {7'h0, {1'h0, s_axi_aw_bits_len} + 9'h1} << s_axi_aw_bits_size}
+    + {9'h0, write_fork0_transform0_addr0} - {9'h0, write_fork0_transform0_addr1};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:45, :69:27, :70:27, :74:{32,36,43,58,63,72}, :77:48, :113:26
+  wire [16:0] write_fork0_transform0_len0 = {3'h0, write_fork0_transform0_dtsize[16:3]};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:74:72, :76:{26,34}
+  wire [16:0] write_fork0_transform0_len1 =
+    (|(write_fork0_transform0_dtsize[2:0] & write_fork0_transform0_mask1))
+      ? write_fork0_transform0_len0 + 17'h1
+      : write_fork0_transform0_len0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:64:27, :74:72, :76:26, :77:{26,30,39,48,60}
+  wire        write_fork0_control0_wire0_bits_first;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21
+  wire        write_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21
+  wire        write_fork0_control0_wire0_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21
+  wire        write_fork0_control0_wire0_ready =
+    write_fork0_control0_rightBuffer0_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :287:27
+  assign write_ewireControl_bits_beatFirst =
+    write_fork0_control0_rightBuffer0_sink_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :287:27
+  assign write_ewireControl_bits_beatLast =
+    write_fork0_control0_rightBuffer0_sink_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :287:27
+  wire        write_ewireControl_bits_transferFirst =
+    write_fork0_control0_rightBuffer0_sink_bits_transferFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :287:27
+  assign write_ewireControl_bits_transferLast =
+    write_fork0_control0_rightBuffer0_sink_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :287:27
+  wire        write_ewireControl_valid = write_fork0_control0_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :287:27
+  reg  [4:0]  write_fork0_control0_rightBuffer0_enq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [4:0]  write_fork0_control0_rightBuffer0_deq_ptr_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg         write_fork0_control0_rightBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_fork0_control0_rightBuffer0_ptr_match =
+    write_fork0_control0_rightBuffer0_enq_ptr_value == write_fork0_control0_rightBuffer0_deq_ptr_value;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        write_fork0_control0_rightBuffer0_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_fork0_control0_rightBuffer0_do_enq =
+    write_fork0_control0_rightBuffer0_source_ready
+    & write_fork0_control0_rightBuffer0_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_fork0_control0_rightBuffer0_source_bits_beatFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_fork0_control0_rightBuffer0_source_bits_beatLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_fork0_control0_rightBuffer0_source_bits_transferFirst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  wire        write_fork0_control0_rightBuffer0_source_bits_transferLast;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  assign write_fork0_control0_rightBuffer0_sink_valid =
+    ~(write_fork0_control0_rightBuffer0_ptr_match
+      & ~write_fork0_control0_rightBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  assign write_fork0_control0_rightBuffer0_source_ready =
+    ~(write_fork0_control0_rightBuffer0_ptr_match
+      & write_fork0_control0_rightBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  assign write_fork0_control0_rightBuffer0_sink_bits_transferLast =
+    _write_fork0_control0_rightBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  assign write_fork0_control0_rightBuffer0_sink_bits_transferFirst =
+    _write_fork0_control0_rightBuffer0_ram_dataOutB[1];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  assign write_fork0_control0_rightBuffer0_sink_bits_beatLast =
+    _write_fork0_control0_rightBuffer0_ram_dataOutB[2];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  assign write_fork0_control0_rightBuffer0_sink_bits_beatFirst =
+    _write_fork0_control0_rightBuffer0_ram_dataOutB[3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+  assign write_fork0_control0_rightBuffer0_source_bits_transferFirst =
+    write_fork0_control0_wire0_bits_first;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :287:27
+  assign write_fork0_control0_rightBuffer0_source_bits_transferLast =
+    write_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :287:27
+  assign write_fork0_control0_rightBuffer0_source_valid =
+    write_fork0_control0_wire0_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :287:27
+  reg         write_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:109:26
+  wire [7:0]  write_fork0_control0_transducer0_mask =
+    (8'h1 << 3'h3 - s_axi_aw_bits_size) - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :111:{32,43,55}
+  reg  [6:0]  write_fork0_control0_transducer0_index;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:113:26
+  reg  [7:0]  write_fork0_control0_transducer0_counter;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:116:28
+  wire [13:0] _write_fork0_control0_transducer0_nextIndex_T_5 =
+    s_axi_aw_bits_addr >> s_axi_aw_bits_size;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:129:18
+  wire [6:0]  write_fork0_control0_wire0_bits_index =
+    write_fork0_control0_transducer0_state
+      ? ({1'h0,
+          write_fork0_control0_transducer0_mask[6:0]
+            & write_fork0_control0_transducer0_index} == write_fork0_control0_transducer0_mask
+           ? 7'h0
+           : write_fork0_control0_transducer0_index + 7'h1)
+      : _write_fork0_control0_transducer0_nextIndex_T_5[6:0]
+        & write_fork0_control0_transducer0_mask[6:0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :77:48, :106:21, :109:26, :111:55, :113:26, :122:23, :124:12, :125:{18,26}, :127:17, :129:{18,30}
+  assign write_fork0_control0_wire0_bits_first = ~write_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :109:26, :138:16
+  assign write_fork0_control0_wire0_bits_last =
+    write_fork0_control0_transducer0_state
+      ? write_fork0_control0_transducer0_counter == s_axi_aw_bits_len
+      : s_axi_aw_bits_len == 8'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :109:26, :116:28, :139:18, :141:17, :142:16
+  wire [7:0]  write_fork0_control0_transform0_mask =
+    (8'h1 << 3'h3 - write_fork0_control0_wire0_bits_size) - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :106:21, :111:43, :187:{32,43,56}
+  wire [6:0]  _GEN_0 =
+    write_fork0_control0_transform0_mask[6:0] & write_fork0_control0_wire0_bits_index;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :187:56, :189:47
+  assign write_fork0_control0_rightBuffer0_source_bits_beatFirst =
+    write_fork0_control0_wire0_bits_first | _GEN_0 == 7'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :113:26, :189:{33,47,55}, :287:27
+  assign write_fork0_control0_rightBuffer0_source_bits_beatLast =
+    write_fork0_control0_wire0_bits_last
+    | {1'h0, _GEN_0} == write_fork0_control0_transform0_mask;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :106:21, :187:56, :189:47, :190:{31,53}, :287:27
+  reg         write_buffer_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg         write_buffer_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg         write_buffer_maybe_full;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire        write_buffer_ptr_match = write_buffer_wrap == write_buffer_wrap_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        write_buffer_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire        write_buffer_source_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire        write_buffer_do_enq = write_buffer_source_ready & write_buffer_source_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire [63:0] write_buffer_source_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire [7:0]  write_buffer_source_bits_strb;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire        write_buffer_lo;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire        write_buffer_sink_valid =
+    ~(write_buffer_ptr_match & ~write_buffer_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  assign write_buffer_source_ready = ~(write_buffer_ptr_match & write_buffer_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire        write_buffer_sink_bits_last = _write_buffer_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire [7:0]  write_buffer_sink_bits_strb = _write_buffer_ram_dataOutB[8:1];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire [63:0] write_buffer_sink_bits_data = _write_buffer_ram_dataOutB[72:9];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  wire [63:0] write_join0_mask =
+    {{8{s_axi_w_bits_strb[7]}},
+     {8{s_axi_w_bits_strb[6]}},
+     {8{s_axi_w_bits_strb[5]}},
+     {8{s_axi_w_bits_strb[4]}},
+     {8{s_axi_w_bits_strb[3]}},
+     {8{s_axi_w_bits_strb[2]}},
+     {8{s_axi_w_bits_strb[1]}},
+     {8{s_axi_w_bits_strb[0]}}};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:330:{21,31,62}
+  reg         read_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:210:29
+  reg         read_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:210:29
+  wire        read_fork0_ready_qual1_0 = m_axi_ar_ready | read_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:210:29
+  wire        read_fork0_ready_qual1_1 =
+    read_fork0_control0_result_ready | read_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21, :210:29
+  wire        read_fork0_ready = read_fork0_ready_qual1_0 & read_fork0_ready_qual1_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:210:29
+  assign read_fork0_control0_wire0_valid = s_axi_ar_valid & ~read_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :210:29
+  wire        write_ewireTransferLast_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:269:42
+  wire        write_join0_allValid =
+    _write_mux0_io_sink_valid & s_axi_w_valid & write_ewireTransferLast_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:269:42, :313:27, :325:29
+  wire        write_ewireTransferLast_ready =
+    _write_demux0_io_source_ready & write_join0_allValid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:269:42, :319:31, :325:29
+  reg         write_fork1_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:292:29
+  reg         write_fork1_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:292:29
+  reg         write_fork1_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:292:29
+  wire        write_fork1_ready_qual1_0 =
+    write_ewireTransferLast_ready | write_fork1_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:269:42, :292:29
+  wire        write_ewireBeatFirst_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:270:39
+  wire        write_fork1_ready_qual1_1 = write_ewireBeatFirst_ready | write_fork1_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:270:39, :292:29
+  wire        write_ewireBeatLast_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:271:38
+  wire        write_fork1_ready_qual1_2 = write_ewireBeatLast_ready | write_fork1_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:271:38, :292:29
+  assign write_ewireControl_ready =
+    write_fork1_ready_qual1_0 & write_fork1_ready_qual1_1 & write_fork1_ready_qual1_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :292:29
+  assign write_ewireTransferLast_valid = write_ewireControl_valid & ~write_fork1_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :269:42, :292:29
+  wire        write_ewireBeatFirst_valid = write_ewireControl_valid & ~write_fork1_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :270:39, :292:29
+  wire        write_ewireBeatLast_valid = write_ewireControl_valid & ~write_fork1_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :271:38, :292:29
+  wire        _GEN_1 =
+    write_fork0_control0_wire0_valid & write_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :109:26, :152:21, :153:22
+  wire        _write_fork0_control0_transducer0_WIRE =
+    _GEN_1 & write_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :152:21, :153:22
+  wire        _write_fork0_control0_transducer0_WIRE_1 =
+    _GEN_1 & ~write_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :77:48, :106:21, :108:35, :152:21, :153:22, :161:21
+  wire        _write_fork0_control0_transducer0_WIRE_2 =
+    write_fork0_control0_wire0_valid & ~write_fork0_control0_transducer0_state
+    & write_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :109:26, :152:21, :167:22
+  wire        _write_fork0_control0_transducer0_WIRE_3 =
+    write_fork0_control0_wire0_valid & ~write_fork0_control0_transducer0_state
+    & ~write_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :77:48, :106:21, :108:35, :109:26, :152:21, :153:22, :161:21, :167:22
+  wire [3:0]  write_fork0_control0_transducer0_cond =
+    {_write_fork0_control0_transducer0_WIRE_3,
+     _write_fork0_control0_transducer0_WIRE_2,
+     _write_fork0_control0_transducer0_WIRE_1,
+     _write_fork0_control0_transducer0_WIRE};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21, :153:22
+  wire        write_fork0_control0_transducer0_errorAtLeastTwoActions =
+    write_fork0_control0_wire0_valid
+    & (|(write_fork0_control0_transducer0_cond
+         & {_write_fork0_control0_transducer0_WIRE_3,
+            _write_fork0_control0_transducer0_WIRE_2,
+            _write_fork0_control0_transducer0_WIRE_1,
+            _write_fork0_control0_transducer0_WIRE} - 4'h1));	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :152:21, :153:22
+  wire        write_fork0_control0_transducer0_errorNoAction =
+    write_fork0_control0_wire0_valid & write_fork0_control0_transducer0_cond == 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35
+  reg         write_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:278:29
+  reg         write_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:278:29
+  wire        write_fork0_ready_qual1_0 = m_axi_aw_ready | write_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:278:29
+  wire        write_fork0_ready_qual1_1 =
+    write_fork0_control0_wire0_valid & write_fork0_control0_wire0_bits_last
+    & write_fork0_control0_wire0_ready | write_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :152:21, :278:29
+  wire        write_fork0_ready = write_fork0_ready_qual1_0 & write_fork0_ready_qual1_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:278:29
+  wire        read_ewireTransferLast_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:201:42
+  assign write_fork0_control0_wire0_valid = s_axi_aw_valid & ~write_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :278:29
   wire        read_join0_allValid =
     _read_mux0_io_sink_valid & _read_fork2_result_valid_T_2
-    & read_ewireTransferLast_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:42, :229:27, :241:29, :247:29
-  wire        read_ewireTransferLast_ready = s_axi_r_ready & read_join0_allValid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:42, :247:29
-  reg         read_fork1_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:214:29
-  reg         read_fork1_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:214:29
-  reg         read_fork1_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:214:29
-  wire        read_fork1_ready_qual1_0 = read_ewireTransferLast_ready | read_fork1_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:42, :214:29
-  wire        read_ewireBeatFirst_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:201:39
-  wire        read_fork1_ready_qual1_1 = read_ewireBeatFirst_ready | read_fork1_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:201:39, :214:29
-  wire        read_ewireBeatLast_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:202:38
-  wire        read_fork1_ready_qual1_2 = read_ewireBeatLast_ready | read_fork1_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:202:38, :214:29
+    & read_ewireTransferLast_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:201:42, :239:27, :251:29, :256:29
+  wire        read_ewireTransferLast_ready = s_axi_r_ready & read_join0_allValid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:201:42, :256:29
+  reg         read_fork2_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:251:29
+  reg         read_fork2_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:251:29
+  wire        read_fork2_ready_qual1_0 = _read_demux0_io_source_ready | read_fork2_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:245:31, :251:29
+  wire        read_fork2_ready_qual1_1 = read_ewireTransferLast_ready | read_fork2_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:201:42, :251:29
+  wire        read_fork2_ready = read_fork2_ready_qual1_0 & read_fork2_ready_qual1_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:251:29
+  assign _read_fork2_result_valid_T_2 = ~read_fork2_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:251:29
+  reg         read_fork1_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:224:29
+  reg         read_fork1_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:224:29
+  reg         read_fork1_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:224:29
+  wire        read_fork1_ready_qual1_0 = read_ewireTransferLast_ready | read_fork1_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:201:42, :224:29
+  wire        read_ewireBeatFirst_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:202:39
+  wire        read_fork1_ready_qual1_1 = read_ewireBeatFirst_ready | read_fork1_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:202:39, :224:29
+  wire        read_ewireBeatLast_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:203:38
+  wire        read_fork1_ready_qual1_2 = read_ewireBeatLast_ready | read_fork1_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:203:38, :224:29
   assign read_ewireControl_ready =
-    read_fork1_ready_qual1_0 & read_fork1_ready_qual1_1 & read_fork1_ready_qual1_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :214:29
-  assign read_ewireTransferLast_valid = read_ewireControl_valid & ~read_fork1_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :200:42, :214:29
-  wire        read_ewireBeatFirst_valid = read_ewireControl_valid & ~read_fork1_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :201:39, :214:29
-  wire        read_ewireBeatLast_valid = read_ewireControl_valid & ~read_fork1_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :202:38, :214:29
-  wire        _GEN_0 =
-    read_fork0_control_wire0_valid & read_fork0_control_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :107:35, :108:26, :151:21, :152:22
-  wire        _read_fork0_control_transducer0_WIRE =
-    _GEN_0 & read_fork0_control_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :107:35, :151:21, :152:22
-  wire        _read_fork0_control_transducer0_WIRE_1 =
-    _GEN_0 & ~read_fork0_control_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:62:33, :76:48, :105:21, :107:35, :151:21, :152:22, :160:21
-  wire        _read_fork0_control_transducer0_WIRE_2 =
-    read_fork0_control_wire0_valid & ~read_fork0_control_transducer0_state
-    & read_fork0_control_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :107:35, :108:26, :151:21, :166:22
-  wire        _read_fork0_control_transducer0_WIRE_3 =
-    read_fork0_control_wire0_valid & ~read_fork0_control_transducer0_state
-    & ~read_fork0_control_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:62:33, :76:48, :105:21, :107:35, :108:26, :151:21, :152:22, :160:21, :166:22
-  assign read_fork0_result_ready =
-    read_fork0_control_wire0_valid & read_fork0_control_wire0_bits_last
-    & read_fork0_control_wire0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :107:35, :151:21
-  wire [3:0]  read_fork0_control_transducer0_cond =
-    {_read_fork0_control_transducer0_WIRE_3,
-     _read_fork0_control_transducer0_WIRE_2,
-     _read_fork0_control_transducer0_WIRE_1,
-     _read_fork0_control_transducer0_WIRE};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35, :151:21, :152:22
-  wire        read_fork0_control_transducer0_errorAtLeastTwoActions =
-    read_fork0_control_wire0_valid
-    & (|(read_fork0_control_transducer0_cond
-         & {_read_fork0_control_transducer0_WIRE_3,
-            _read_fork0_control_transducer0_WIRE_2,
-            _read_fork0_control_transducer0_WIRE_1,
-            _read_fork0_control_transducer0_WIRE} - 4'h1));	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :107:35, :151:21, :152:22
-  wire        read_fork0_control_transducer0_errorNoAction =
-    read_fork0_control_wire0_valid & read_fork0_control_transducer0_cond == 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :107:35
-  `ifndef SYNTHESIS	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
-    always @(posedge clock) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
-      if ((`PRINTF_COND_) & read_fork0_control_transducer0_errorAtLeastTwoActions
-          & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
+    read_fork1_ready_qual1_0 & read_fork1_ready_qual1_1 & read_fork1_ready_qual1_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :224:29
+  assign read_ewireTransferLast_valid = read_ewireControl_valid & ~read_fork1_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :201:42, :224:29
+  wire        read_ewireBeatFirst_valid = read_ewireControl_valid & ~read_fork1_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :202:39, :224:29
+  wire        read_ewireBeatLast_valid = read_ewireControl_valid & ~read_fork1_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :203:38, :224:29
+  wire        _GEN_2 =
+    read_fork0_control0_wire0_valid & read_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :109:26, :152:21, :153:22
+  wire        _read_fork0_control0_transducer0_WIRE =
+    _GEN_2 & read_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :152:21, :153:22
+  wire        _read_fork0_control0_transducer0_WIRE_1 =
+    _GEN_2 & ~read_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :77:48, :106:21, :108:35, :152:21, :153:22, :161:21
+  wire        _read_fork0_control0_transducer0_WIRE_2 =
+    read_fork0_control0_wire0_valid & ~read_fork0_control0_transducer0_state
+    & read_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :109:26, :152:21, :167:22
+  wire        _read_fork0_control0_transducer0_WIRE_3 =
+    read_fork0_control0_wire0_valid & ~read_fork0_control0_transducer0_state
+    & ~read_fork0_control0_wire0_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :77:48, :106:21, :108:35, :109:26, :152:21, :153:22, :161:21, :167:22
+  assign read_fork0_control0_result_ready =
+    read_fork0_control0_wire0_valid & read_fork0_control0_wire0_bits_last
+    & read_fork0_control0_wire0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :152:21
+  wire [3:0]  read_fork0_control0_transducer0_cond =
+    {_read_fork0_control0_transducer0_WIRE_3,
+     _read_fork0_control0_transducer0_WIRE_2,
+     _read_fork0_control0_transducer0_WIRE_1,
+     _read_fork0_control0_transducer0_WIRE};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21, :153:22
+  wire        read_fork0_control0_transducer0_errorAtLeastTwoActions =
+    read_fork0_control0_wire0_valid
+    & (|(read_fork0_control0_transducer0_cond
+         & {_read_fork0_control0_transducer0_WIRE_3,
+            _read_fork0_control0_transducer0_WIRE_2,
+            _read_fork0_control0_transducer0_WIRE_1,
+            _read_fork0_control0_transducer0_WIRE} - 4'h1));	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :152:21, :153:22
+  wire        read_fork0_control0_transducer0_errorNoAction =
+    read_fork0_control0_wire0_valid & read_fork0_control0_transducer0_cond == 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35
+  `ifndef SYNTHESIS	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+    always @(posedge clock) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorAtLeastTwoActions
+          & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
         $fwrite(32'h80000002,
-                "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
-      if ((`PRINTF_COND_) & read_fork0_control_transducer0_errorAtLeastTwoActions
-          & _read_fork0_control_transducer0_WIRE & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35, :151:21, :152:22
+                "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorAtLeastTwoActions
+          & _write_fork0_control0_transducer0_WIRE & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21, :153:22
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 107:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
-      if ((`PRINTF_COND_) & read_fork0_control_transducer0_errorAtLeastTwoActions
-          & _read_fork0_control_transducer0_WIRE_1 & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35, :151:21, :152:22
+                "elastic.Transducer: action 'accept' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorAtLeastTwoActions
+          & _write_fork0_control0_transducer0_WIRE_1 & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21, :153:22
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 107:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
-      if ((`PRINTF_COND_) & read_fork0_control_transducer0_errorAtLeastTwoActions
-          & _read_fork0_control_transducer0_WIRE_2 & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35, :151:21
+                "elastic.Transducer: action 'produce' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorAtLeastTwoActions
+          & _write_fork0_control0_transducer0_WIRE_2 & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 107:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
-      if ((`PRINTF_COND_) & read_fork0_control_transducer0_errorAtLeastTwoActions
-          & _read_fork0_control_transducer0_WIRE_3 & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35, :151:21
+                "elastic.Transducer: action 'accept' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorAtLeastTwoActions
+          & _write_fork0_control0_transducer0_WIRE_3 & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 107:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
-      if ((`PRINTF_COND_) & read_fork0_control_transducer0_errorNoAction & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
+                "elastic.Transducer: action 'produce' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorNoAction & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 107:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35
+                "elastic.Transducer: no action was taken! @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
+          & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+        $fwrite(32'h80000002,
+                "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
+          & _read_fork0_control0_transducer0_WIRE & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21, :153:22
+        $fwrite(32'h80000002,
+                "elastic.Transducer: action 'accept' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
+          & _read_fork0_control0_transducer0_WIRE_1 & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21, :153:22
+        $fwrite(32'h80000002,
+                "elastic.Transducer: action 'produce' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
+          & _read_fork0_control0_transducer0_WIRE_2 & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21
+        $fwrite(32'h80000002,
+                "elastic.Transducer: action 'accept' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
+          & _read_fork0_control0_transducer0_WIRE_3 & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, :152:21
+        $fwrite(32'h80000002,
+                "elastic.Transducer: action 'produce' @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+      if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorNoAction & ~reset)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
+        $fwrite(32'h80000002,
+                "elastic.Transducer: no action was taken! @[home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala 108:35]\n");	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35
     end // always @(posedge)
   `endif // not def SYNTHESIS
-  reg         read_fork2_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:241:29
-  reg         read_fork2_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:241:29
-  wire        read_fork2_ready_qual1_0 = _read_demux0_io_source_ready | read_fork2_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:235:31, :241:29
-  wire        read_fork2_ready_qual1_1 = read_ewireTransferLast_ready | read_fork2_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:42, :241:29
-  wire        read_fork2_ready = read_fork2_ready_qual1_0 & read_fork2_ready_qual1_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:241:29
-  assign _read_fork2_result_valid_T_2 = ~read_fork2_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:241:29
-  wire        read_buffer_sink_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-  always @(posedge clock) begin	// <stdin>:5031:11
-    if (reset) begin	// <stdin>:5031:11
-      read_fork0_rightBuffer0_enq_ptr_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      read_fork0_rightBuffer0_deq_ptr_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      read_fork0_rightBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :211:49
-      read_fork0_control_transducer0_state <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :108:26
-      read_fork0_control_transducer0_index <= 7'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:26
-      read_fork0_control_transducer0_counter <= 8'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:115:28
-      read_buffer_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      read_buffer_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      read_buffer_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :227:31
-      read_fork0_regs_0 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :209:29
-      read_fork0_regs_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :209:29
-      read_fork1_regs_0 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :214:29
-      read_fork1_regs_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :214:29
-      read_fork1_regs_2 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :214:29
-      read_fork2_regs_0 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :241:29
-      read_fork2_regs_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :241:29
+  wire        read_buffer_sink_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+  wire        write_buffer_sink_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+  always @(posedge clock) begin	// <stdin>:5332:11
+    if (reset) begin	// <stdin>:5332:11
+      read_fork0_control0_rightBuffer0_enq_ptr_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      read_fork0_control0_rightBuffer0_deq_ptr_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      read_fork0_control0_rightBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :219:27
+      read_fork0_control0_transducer0_state <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :109:26
+      read_fork0_control0_transducer0_index <= 7'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:113:26
+      read_fork0_control0_transducer0_counter <= 8'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:116:28
+      read_buffer_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, src/main/scala/chisel3/util/Counter.scala:61:40
+      read_buffer_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, src/main/scala/chisel3/util/Counter.scala:61:40
+      read_buffer_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :237:31
+      write_fork0_control0_rightBuffer0_enq_ptr_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      write_fork0_control0_rightBuffer0_deq_ptr_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      write_fork0_control0_rightBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :287:27
+      write_fork0_control0_transducer0_state <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :109:26
+      write_fork0_control0_transducer0_index <= 7'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:113:26
+      write_fork0_control0_transducer0_counter <= 8'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:116:28
+      write_buffer_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, src/main/scala/chisel3/util/Counter.scala:61:40
+      write_buffer_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, src/main/scala/chisel3/util/Counter.scala:61:40
+      write_buffer_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :304:31
+      read_fork0_regs_0 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :210:29
+      read_fork0_regs_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :210:29
+      write_fork1_regs_0 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :292:29
+      write_fork1_regs_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :292:29
+      write_fork1_regs_2 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :292:29
+      write_fork0_regs_0 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :278:29
+      write_fork0_regs_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :278:29
+      read_fork2_regs_0 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :251:29
+      read_fork2_regs_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :251:29
+      read_fork1_regs_0 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :224:29
+      read_fork1_regs_1 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :224:29
+      read_fork1_regs_2 <= 1'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:77:48, :224:29
     end
-    else begin	// <stdin>:5031:11
-      automatic logic read_fork0_rightBuffer0_do_deq =
-        read_fork0_rightBuffer0_sink_ready & read_fork0_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
+    else begin	// <stdin>:5332:11
+      automatic logic read_fork0_control0_rightBuffer0_do_deq =
+        read_fork0_control0_rightBuffer0_sink_ready
+        & read_fork0_control0_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
       automatic logic read_buffer_do_deq =
-        read_buffer_sink_ready & read_buffer_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-      if (read_fork0_rightBuffer0_do_enq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-        read_fork0_rightBuffer0_enq_ptr_value <=
-          read_fork0_rightBuffer0_enq_ptr_value + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35, src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (read_fork0_rightBuffer0_do_deq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-        read_fork0_rightBuffer0_deq_ptr_value <=
-          read_fork0_rightBuffer0_deq_ptr_value + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:107:35, src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(read_fork0_rightBuffer0_do_enq == read_fork0_rightBuffer0_do_deq))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-        read_fork0_rightBuffer0_maybe_full <= read_fork0_rightBuffer0_do_enq;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-      if (read_fork0_control_wire0_valid) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :209:29
-        if (read_fork0_control_transducer0_state)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:26
-          read_fork0_control_transducer0_state <=
-            ~(read_fork0_control_wire0_bits_last & read_fork0_control_wire0_ready)
-            & read_fork0_control_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :108:26, :152:22, :153:20, :154:21
-        else	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:26
-          read_fork0_control_transducer0_state <=
-            ~read_fork0_control_wire0_bits_last & read_fork0_control_wire0_ready
-            | read_fork0_control_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :108:26, :166:22, :172:21
+        read_buffer_sink_ready & read_buffer_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+      automatic logic write_fork0_control0_rightBuffer0_do_deq =
+        write_fork0_control0_rightBuffer0_sink_ready
+        & write_fork0_control0_rightBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+      automatic logic write_buffer_do_deq =
+        write_buffer_sink_ready & write_buffer_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+      if (read_fork0_control0_rightBuffer0_do_enq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+        read_fork0_control0_rightBuffer0_enq_ptr_value <=
+          read_fork0_control0_rightBuffer0_enq_ptr_value + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (read_fork0_control0_rightBuffer0_do_deq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+        read_fork0_control0_rightBuffer0_deq_ptr_value <=
+          read_fork0_control0_rightBuffer0_deq_ptr_value + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (~(read_fork0_control0_rightBuffer0_do_enq == read_fork0_control0_rightBuffer0_do_deq))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+        read_fork0_control0_rightBuffer0_maybe_full <=
+          read_fork0_control0_rightBuffer0_do_enq;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+      if (read_fork0_control0_wire0_valid) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :210:29
+        if (read_fork0_control0_transducer0_state)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:109:26
+          read_fork0_control0_transducer0_state <=
+            ~(read_fork0_control0_wire0_bits_last & read_fork0_control0_wire0_ready)
+            & read_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :109:26, :153:22, :154:20, :155:21
+        else	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:109:26
+          read_fork0_control0_transducer0_state <=
+            ~read_fork0_control0_wire0_bits_last & read_fork0_control0_wire0_ready
+            | read_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :109:26, :167:22, :173:21
       end
-      if (read_fork0_control_wire0_valid & read_fork0_control_wire0_ready) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :107:35, :112:26, :115:28, :151:21
-        read_fork0_control_transducer0_index <= read_fork0_control_wire0_bits_index;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :112:26
-        if (read_fork0_control_wire0_bits_last)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:105:21, :138:18
-          read_fork0_control_transducer0_counter <= 8'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:115:28
-        else	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:138:18
-          read_fork0_control_transducer0_counter <=
-            read_fork0_control_transducer0_counter + 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:62:33, :115:28, :134:17
+      if (read_fork0_control0_wire0_valid & read_fork0_control0_wire0_ready) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :113:26, :116:28, :152:21
+        read_fork0_control0_transducer0_index <= read_fork0_control0_wire0_bits_index;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :113:26
+        if (read_fork0_control0_wire0_bits_last)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :139:18
+          read_fork0_control0_transducer0_counter <= 8'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:116:28
+        else	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:139:18
+          read_fork0_control0_transducer0_counter <=
+            read_fork0_control0_transducer0_counter + 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :116:28, :135:17
       end
-      if (read_buffer_do_enq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
+      if (read_buffer_do_enq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
         read_buffer_wrap <= read_buffer_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (read_buffer_do_deq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
+      if (read_buffer_do_deq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
         read_buffer_wrap_1 <= read_buffer_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(read_buffer_do_enq == read_buffer_do_deq))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-        read_buffer_maybe_full <= read_buffer_do_enq;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-      read_fork0_regs_0 <= read_fork0_ready_qual1_0 & s_axi_ar_valid & ~read_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:209:29
-      read_fork0_regs_1 <= read_fork0_ready_qual1_1 & s_axi_ar_valid & ~read_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:209:29
-      read_fork1_regs_0 <=
-        read_fork1_ready_qual1_0 & read_ewireControl_valid & ~read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :214:29
-      read_fork1_regs_1 <=
-        read_fork1_ready_qual1_1 & read_ewireControl_valid & ~read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :214:29
-      read_fork1_regs_2 <=
-        read_fork1_ready_qual1_2 & read_ewireControl_valid & ~read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:199:37, :214:29
+      if (~(read_buffer_do_enq == read_buffer_do_deq))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+        read_buffer_maybe_full <= read_buffer_do_enq;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+      if (write_fork0_control0_rightBuffer0_do_enq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+        write_fork0_control0_rightBuffer0_enq_ptr_value <=
+          write_fork0_control0_rightBuffer0_enq_ptr_value + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (write_fork0_control0_rightBuffer0_do_deq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+        write_fork0_control0_rightBuffer0_deq_ptr_value <=
+          write_fork0_control0_rightBuffer0_deq_ptr_value + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:108:35, src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (~(write_fork0_control0_rightBuffer0_do_enq == write_fork0_control0_rightBuffer0_do_deq))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+        write_fork0_control0_rightBuffer0_maybe_full <=
+          write_fork0_control0_rightBuffer0_do_enq;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+      if (write_fork0_control0_wire0_valid) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :278:29
+        if (write_fork0_control0_transducer0_state)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:109:26
+          write_fork0_control0_transducer0_state <=
+            ~(write_fork0_control0_wire0_bits_last & write_fork0_control0_wire0_ready)
+            & write_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :109:26, :153:22, :154:20, :155:21
+        else	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:109:26
+          write_fork0_control0_transducer0_state <=
+            ~write_fork0_control0_wire0_bits_last & write_fork0_control0_wire0_ready
+            | write_fork0_control0_transducer0_state;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :109:26, :167:22, :173:21
+      end
+      if (write_fork0_control0_wire0_valid & write_fork0_control0_wire0_ready) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :108:35, :113:26, :116:28, :152:21
+        write_fork0_control0_transducer0_index <= write_fork0_control0_wire0_bits_index;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :113:26
+        if (write_fork0_control0_wire0_bits_last)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:106:21, :139:18
+          write_fork0_control0_transducer0_counter <= 8'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:116:28
+        else	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:139:18
+          write_fork0_control0_transducer0_counter <=
+            write_fork0_control0_transducer0_counter + 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:63:33, :116:28, :135:17
+      end
+      if (write_buffer_do_enq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+        write_buffer_wrap <= write_buffer_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (write_buffer_do_deq)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+        write_buffer_wrap_1 <= write_buffer_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+      if (~(write_buffer_do_enq == write_buffer_do_deq))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+        write_buffer_maybe_full <= write_buffer_do_enq;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+      read_fork0_regs_0 <= read_fork0_ready_qual1_0 & s_axi_ar_valid & ~read_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:210:29
+      read_fork0_regs_1 <= read_fork0_ready_qual1_1 & s_axi_ar_valid & ~read_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:210:29
+      write_fork1_regs_0 <=
+        write_fork1_ready_qual1_0 & write_ewireControl_valid & ~write_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :292:29
+      write_fork1_regs_1 <=
+        write_fork1_ready_qual1_1 & write_ewireControl_valid & ~write_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :292:29
+      write_fork1_regs_2 <=
+        write_fork1_ready_qual1_2 & write_ewireControl_valid & ~write_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:268:37, :292:29
+      write_fork0_regs_0 <=
+        write_fork0_ready_qual1_0 & s_axi_aw_valid & ~write_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:278:29
+      write_fork0_regs_1 <=
+        write_fork0_ready_qual1_1 & s_axi_aw_valid & ~write_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:278:29
       read_fork2_regs_0 <=
-        read_fork2_ready_qual1_0 & _read_mux0_io_sink_valid & ~read_fork2_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27, :241:29
+        read_fork2_ready_qual1_0 & _read_mux0_io_sink_valid & ~read_fork2_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27, :251:29
       read_fork2_regs_1 <=
-        read_fork2_ready_qual1_1 & _read_mux0_io_sink_valid & ~read_fork2_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27, :241:29
+        read_fork2_ready_qual1_1 & _read_mux0_io_sink_valid & ~read_fork2_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27, :251:29
+      read_fork1_regs_0 <=
+        read_fork1_ready_qual1_0 & read_ewireControl_valid & ~read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :224:29
+      read_fork1_regs_1 <=
+        read_fork1_ready_qual1_1 & read_ewireControl_valid & ~read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :224:29
+      read_fork1_regs_2 <=
+        read_fork1_ready_qual1_2 & read_ewireControl_valid & ~read_ewireControl_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:200:37, :224:29
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-      `FIRRTL_BEFORE_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
+  `ifdef ENABLE_INITIAL_REG_	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+      `FIRRTL_BEFORE_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-      automatic logic [31:0] _RANDOM[0:1];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-      `ifdef INIT_RANDOM_PROLOG_	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-        `INIT_RANDOM_PROLOG_	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
+    initial begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+      automatic logic [31:0] _RANDOM[0:2];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+      `ifdef INIT_RANDOM_PROLOG_	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+        `INIT_RANDOM_PROLOG_	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-        for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
-          _RANDOM[i[0]] = `RANDOM;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-        end	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-        read_fork0_rightBuffer0_enq_ptr_value = _RANDOM[1'h0][4:0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_fork0_rightBuffer0_deq_ptr_value = _RANDOM[1'h0][9:5];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_fork0_rightBuffer0_maybe_full = _RANDOM[1'h0][10];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :211:49, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_fork0_control_transducer0_state = _RANDOM[1'h0][11];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :108:26, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_fork0_control_transducer0_index = _RANDOM[1'h0][18:12];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :112:26, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_fork0_control_transducer0_counter = _RANDOM[1'h0][26:19];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :115:28, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_buffer_wrap = _RANDOM[1'h0][27];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_buffer_wrap_1 = _RANDOM[1'h0][28];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_buffer_maybe_full = _RANDOM[1'h0][29];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :227:31, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_fork0_regs_0 = _RANDOM[1'h0][30];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :209:29, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_fork0_regs_1 = _RANDOM[1'h0][31];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :209:29, src/main/scala/chisel3/util/Counter.scala:61:40
-        read_fork1_regs_0 = _RANDOM[1'h1][0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :214:29
-        read_fork1_regs_1 = _RANDOM[1'h1][1];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :214:29
-        read_fork1_regs_2 = _RANDOM[1'h1][2];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :214:29
-        read_fork2_regs_0 = _RANDOM[1'h1][3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :214:29, :241:29
-        read_fork2_regs_1 = _RANDOM[1'h1][4];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :214:29, :241:29
+      `ifdef RANDOMIZE_REG_INIT	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+        for (logic [1:0] i = 2'h0; i < 2'h3; i += 2'h1) begin
+          _RANDOM[i] = `RANDOM;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+        end	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+        read_fork0_control0_rightBuffer0_enq_ptr_value = _RANDOM[2'h0][4:0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_fork0_control0_rightBuffer0_deq_ptr_value = _RANDOM[2'h0][9:5];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_fork0_control0_rightBuffer0_maybe_full = _RANDOM[2'h0][10];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :219:27, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_fork0_control0_transducer0_state = _RANDOM[2'h0][11];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :109:26, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_fork0_control0_transducer0_index = _RANDOM[2'h0][18:12];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :113:26, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_fork0_control0_transducer0_counter = _RANDOM[2'h0][26:19];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :116:28, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_buffer_wrap = _RANDOM[2'h0][27];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_buffer_wrap_1 = _RANDOM[2'h0][28];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_buffer_maybe_full = _RANDOM[2'h0][29];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :237:31, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_fork0_control0_rightBuffer0_enq_ptr_value =
+          {_RANDOM[2'h0][31:30], _RANDOM[2'h1][2:0]};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_fork0_control0_rightBuffer0_deq_ptr_value = _RANDOM[2'h1][7:3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_fork0_control0_rightBuffer0_maybe_full = _RANDOM[2'h1][8];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :287:27, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_fork0_control0_transducer0_state = _RANDOM[2'h1][9];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :109:26, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_fork0_control0_transducer0_index = _RANDOM[2'h1][16:10];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :113:26, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_fork0_control0_transducer0_counter = _RANDOM[2'h1][24:17];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :116:28, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_buffer_wrap = _RANDOM[2'h1][25];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_buffer_wrap_1 = _RANDOM[2'h1][26];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_buffer_maybe_full = _RANDOM[2'h1][27];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :304:31, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_fork0_regs_0 = _RANDOM[2'h1][28];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :210:29, src/main/scala/chisel3/util/Counter.scala:61:40
+        read_fork0_regs_1 = _RANDOM[2'h1][29];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :210:29, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_fork1_regs_0 = _RANDOM[2'h1][30];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :292:29, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_fork1_regs_1 = _RANDOM[2'h1][31];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :292:29, src/main/scala/chisel3/util/Counter.scala:61:40
+        write_fork1_regs_2 = _RANDOM[2'h2][0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :292:29
+        write_fork0_regs_0 = _RANDOM[2'h2][1];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :278:29, :292:29
+        write_fork0_regs_1 = _RANDOM[2'h2][2];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :278:29, :292:29
+        read_fork2_regs_0 = _RANDOM[2'h2][3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :251:29, :292:29
+        read_fork2_regs_1 = _RANDOM[2'h2][4];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :251:29, :292:29
+        read_fork1_regs_0 = _RANDOM[2'h2][5];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :224:29, :292:29
+        read_fork1_regs_1 = _RANDOM[2'h2][6];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :224:29, :292:29
+        read_fork1_regs_2 = _RANDOM[2'h2][7];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :224:29, :292:29
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-      `FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
+    `ifdef FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+      `FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(4)
-  ) read_fork0_rightBuffer0_ram (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
+  ) read_fork0_control0_rightBuffer0_ram (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
     .clock    (clock),
-    .addrA    (read_fork0_rightBuffer0_enq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (read_fork0_rightBuffer0_do_enq),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
+    .addrA    (read_fork0_control0_rightBuffer0_enq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .writeEnA (read_fork0_control0_rightBuffer0_do_enq),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
     .dataInA
-      ({read_fork0_rightBuffer0_source_bits_beatFirst,
-        read_fork0_rightBuffer0_source_bits_beatLast,
-        read_fork0_rightBuffer0_source_bits_transferFirst,
-        read_fork0_rightBuffer0_source_bits_transferLast}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:211:49
-    .addrB    (read_fork0_rightBuffer0_deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .dataOutB (_read_fork0_rightBuffer0_ram_dataOutB)
+      ({read_fork0_control0_rightBuffer0_source_bits_beatFirst,
+        read_fork0_control0_rightBuffer0_source_bits_beatLast,
+        read_fork0_control0_rightBuffer0_source_bits_transferFirst,
+        read_fork0_control0_rightBuffer0_source_bits_transferLast}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:219:27
+    .addrB    (read_fork0_control0_rightBuffer0_deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .dataOutB (_read_fork0_control0_rightBuffer0_ram_dataOutB)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(67)
-  ) read_buffer_ram (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
+  ) read_buffer_ram (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
     .clock    (clock),
     .addrA    (read_buffer_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (read_buffer_do_enq),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-    .dataInA  ({read_buffer_hi_hi, read_buffer_source_bits_resp, read_buffer_lo}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
+    .writeEnA (read_buffer_do_enq),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+    .dataInA  ({read_buffer_hi_hi, read_buffer_source_bits_resp, read_buffer_lo}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
     .addrB    (read_buffer_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_read_buffer_ram_dataOutB)
   );
-  elasticMux read_mux0 (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27
-    .io_sources_0_bits_data (read_buffer_sink_bits_data),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-    .io_sources_0_bits_resp (read_buffer_sink_bits_resp),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-    .io_sources_0_bits_last (read_buffer_sink_bits_last),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-    .io_sources_0_valid     (read_buffer_sink_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
+  elasticMux read_mux0 (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27
+    .io_sources_0_bits_data (read_buffer_sink_bits_data),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+    .io_sources_0_bits_resp (read_buffer_sink_bits_resp),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+    .io_sources_0_bits_last (read_buffer_sink_bits_last),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+    .io_sources_0_valid     (read_buffer_sink_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
     .io_sources_0_ready     (read_buffer_sink_ready),
     .io_sources_1_bits_data (m_axi_r_bits_data),
     .io_sources_1_bits_resp (m_axi_r_bits_resp),
@@ -1930,927 +2286,985 @@ module Widen(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/
     .io_sink_bits_resp      (_read_mux0_io_sink_bits_resp),
     .io_sink_bits_last      (_read_mux0_io_sink_bits_last),
     .io_sink_valid          (_read_mux0_io_sink_valid),
-    .io_sink_ready          (read_fork2_ready),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:241:29
-    .io_select_bits         (read_ewireBeatFirst_bits),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:201:39
-    .io_select_valid        (read_ewireBeatFirst_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:201:39
+    .io_sink_ready          (read_fork2_ready),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:251:29
+    .io_select_bits         (read_ewireBeatFirst_bits),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:202:39
+    .io_select_valid        (read_ewireBeatFirst_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:202:39
     .io_select_ready        (read_ewireBeatFirst_ready)
   );
-  elasticDemux read_demux0 (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:235:31
-    .io_source_bits_data  (_read_mux0_io_sink_bits_data),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27
-    .io_source_bits_resp  (_read_mux0_io_sink_bits_resp),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27
-    .io_source_bits_last  (_read_mux0_io_sink_bits_last),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27
-    .io_source_valid      (_read_mux0_io_sink_valid & ~read_fork2_regs_0),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:229:27, :241:29
+  elasticDemux read_demux0 (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:245:31
+    .io_source_bits_data  (_read_mux0_io_sink_bits_data),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27
+    .io_source_bits_resp  (_read_mux0_io_sink_bits_resp),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27
+    .io_source_bits_last  (_read_mux0_io_sink_bits_last),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27
+    .io_source_valid      (_read_mux0_io_sink_valid & ~read_fork2_regs_0),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:239:27, :251:29
     .io_source_ready      (_read_demux0_io_source_ready),
     .io_sinks_0_bits_data (read_buffer_hi_hi),
     .io_sinks_0_bits_resp (read_buffer_source_bits_resp),
     .io_sinks_0_bits_last (read_buffer_lo),
     .io_sinks_0_valid     (read_buffer_source_valid),
-    .io_sinks_0_ready     (read_buffer_source_ready),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:227:31
-    .io_select_bits       (read_ewireBeatLast_bits),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:202:38
-    .io_select_valid      (read_ewireBeatLast_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:202:38
+    .io_sinks_0_ready     (read_buffer_source_ready),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:237:31
+    .io_select_bits       (read_ewireBeatLast_bits),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:203:38
+    .io_select_valid      (read_ewireBeatLast_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:203:38
     .io_select_ready      (read_ewireBeatLast_ready)
   );
-  assign s_axi_ar_ready = read_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :209:29
-  assign s_axi_r_bits_data = _read_mux0_io_sink_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :229:27
-  assign s_axi_r_bits_resp = _read_mux0_io_sink_bits_resp;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :229:27
-  assign s_axi_r_bits_last = read_ewireTransferLast_bits;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :200:42
-  assign s_axi_r_valid = read_join0_allValid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :247:29
-  assign s_axi_aw_ready = m_axi_aw_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign s_axi_w_ready = m_axi_w_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign s_axi_b_bits_resp = m_axi_b_bits_resp;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign s_axi_b_valid = m_axi_b_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_ar_bits_addr = s_axi_ar_bits_addr;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_ar_bits_len = read_fork0_transform0_len1[7:0] - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :76:26, :79:23
-  assign m_axi_ar_bits_burst = s_axi_ar_bits_burst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_ar_bits_lock = s_axi_ar_bits_lock;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_ar_bits_cache = s_axi_ar_bits_cache;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_ar_bits_prot = s_axi_ar_bits_prot;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_ar_bits_qos = s_axi_ar_bits_qos;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_ar_bits_region = s_axi_ar_bits_region;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_ar_valid = s_axi_ar_valid & ~read_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7, :209:29
-  assign m_axi_aw_bits_addr = s_axi_aw_bits_addr;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_aw_bits_len = s_axi_aw_bits_len;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_aw_bits_size = s_axi_aw_bits_size;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_aw_bits_burst = s_axi_aw_bits_burst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_aw_bits_lock = s_axi_aw_bits_lock;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_aw_bits_cache = s_axi_aw_bits_cache;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_aw_bits_prot = s_axi_aw_bits_prot;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_aw_bits_qos = s_axi_aw_bits_qos;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_aw_bits_region = s_axi_aw_bits_region;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_aw_valid = s_axi_aw_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_w_bits_data = s_axi_w_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_w_bits_strb = s_axi_w_bits_strb;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_w_bits_last = s_axi_w_bits_last;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_w_valid = s_axi_w_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
-  assign m_axi_b_ready = s_axi_b_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:24:7
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(5),
+    .COUNT(32),
+    .DATA_WIDTH(4)
+  ) write_fork0_control0_rightBuffer0_ram (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+    .clock    (clock),
+    .addrA    (write_fork0_control0_rightBuffer0_enq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .writeEnA (write_fork0_control0_rightBuffer0_do_enq),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+    .dataInA
+      ({write_fork0_control0_rightBuffer0_source_bits_beatFirst,
+        write_fork0_control0_rightBuffer0_source_bits_beatLast,
+        write_fork0_control0_rightBuffer0_source_bits_transferFirst,
+        write_fork0_control0_rightBuffer0_source_bits_transferLast}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:287:27
+    .addrB    (write_fork0_control0_rightBuffer0_deq_ptr_value),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .dataOutB (_write_fork0_control0_rightBuffer0_ram_dataOutB)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(1),
+    .COUNT(2),
+    .DATA_WIDTH(73)
+  ) write_buffer_ram (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+    .clock    (clock),
+    .addrA    (write_buffer_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .writeEnA (write_buffer_do_enq),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+    .dataInA
+      ({write_buffer_source_bits_data, write_buffer_source_bits_strb, write_buffer_lo}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+    .addrB    (write_buffer_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
+    .dataOutB (_write_buffer_ram_dataOutB)
+  );
+  elasticMux_1 write_mux0 (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:313:27
+    .io_sources_0_bits_data (write_buffer_sink_bits_data),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+    .io_sources_0_bits_strb (write_buffer_sink_bits_strb),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+    .io_sources_0_valid     (write_buffer_sink_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+    .io_sources_0_ready     (write_buffer_sink_ready),
+    .io_sink_bits_data      (_write_mux0_io_sink_bits_data),
+    .io_sink_bits_strb      (_write_mux0_io_sink_bits_strb),
+    .io_sink_valid          (_write_mux0_io_sink_valid),
+    .io_sink_ready          (write_ewireTransferLast_ready),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:269:42
+    .io_select_bits         (write_ewireBeatFirst_bits),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:270:39
+    .io_select_valid        (write_ewireBeatFirst_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:270:39
+    .io_select_ready        (write_ewireBeatFirst_ready)
+  );
+  elasticDemux_1 write_demux0 (	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:319:31
+    .io_source_bits_data
+      (_write_mux0_io_sink_bits_data | s_axi_w_bits_data & write_join0_mask),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:313:27, :330:21, :333:{28,40}
+    .io_source_bits_strb  (_write_mux0_io_sink_bits_strb | s_axi_w_bits_strb),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:313:27, :334:28
+    .io_source_bits_last  (write_ewireTransferLast_bits),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:269:42
+    .io_source_valid      (write_join0_allValid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:325:29
+    .io_source_ready      (_write_demux0_io_source_ready),
+    .io_sinks_0_bits_data (write_buffer_source_bits_data),
+    .io_sinks_0_bits_strb (write_buffer_source_bits_strb),
+    .io_sinks_0_bits_last (write_buffer_lo),
+    .io_sinks_0_valid     (write_buffer_source_valid),
+    .io_sinks_0_ready     (write_buffer_source_ready),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:304:31
+    .io_sinks_1_bits_data (m_axi_w_bits_data),
+    .io_sinks_1_bits_strb (m_axi_w_bits_strb),
+    .io_sinks_1_bits_last (m_axi_w_bits_last),
+    .io_sinks_1_valid     (m_axi_w_valid),
+    .io_sinks_1_ready     (m_axi_w_ready),
+    .io_select_bits       (write_ewireBeatLast_bits),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:271:38
+    .io_select_valid      (write_ewireBeatLast_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:271:38
+    .io_select_ready      (write_ewireBeatLast_ready)
+  );
+  assign s_axi_ar_ready = read_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :210:29
+  assign s_axi_r_bits_data = _read_mux0_io_sink_bits_data;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :239:27
+  assign s_axi_r_bits_resp = _read_mux0_io_sink_bits_resp;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :239:27
+  assign s_axi_r_bits_last = read_ewireTransferLast_bits;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :201:42
+  assign s_axi_r_valid = read_join0_allValid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :256:29
+  assign s_axi_aw_ready = write_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :278:29
+  assign s_axi_w_ready = write_ewireTransferLast_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :269:42
+  assign s_axi_b_bits_resp = m_axi_b_bits_resp;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign s_axi_b_valid = m_axi_b_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_ar_bits_addr = s_axi_ar_bits_addr;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_ar_bits_len = read_fork0_transform0_len1[7:0] - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :77:26, :80:23
+  assign m_axi_ar_bits_burst = s_axi_ar_bits_burst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_ar_bits_lock = s_axi_ar_bits_lock;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_ar_bits_cache = s_axi_ar_bits_cache;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_ar_bits_prot = s_axi_ar_bits_prot;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_ar_bits_qos = s_axi_ar_bits_qos;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_ar_bits_region = s_axi_ar_bits_region;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_ar_valid = s_axi_ar_valid & ~read_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :210:29
+  assign m_axi_aw_bits_addr = s_axi_aw_bits_addr;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_aw_bits_len = write_fork0_transform0_len1[7:0] - 8'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :77:26, :80:23
+  assign m_axi_aw_bits_burst = s_axi_aw_bits_burst;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_aw_bits_lock = s_axi_aw_bits_lock;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_aw_bits_cache = s_axi_aw_bits_cache;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_aw_bits_prot = s_axi_aw_bits_prot;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_aw_bits_qos = s_axi_aw_bits_qos;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_aw_bits_region = s_axi_aw_bits_region;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
+  assign m_axi_aw_valid = s_axi_aw_valid & ~write_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7, :278:29
+  assign m_axi_b_ready = s_axi_b_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Widen.scala:25:7
 endmodule
 
-module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
-  input         clock,	// <stdin>:5692:11
-                reset,	// <stdin>:5693:11
-  output        S_AXI_NORMAL_ARREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input         S_AXI_NORMAL_ARVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [13:0] S_AXI_NORMAL_ARADDR,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [7:0]  S_AXI_NORMAL_ARLEN,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [2:0]  S_AXI_NORMAL_ARSIZE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [1:0]  S_AXI_NORMAL_ARBURST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input         S_AXI_NORMAL_ARLOCK,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [3:0]  S_AXI_NORMAL_ARCACHE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [2:0]  S_AXI_NORMAL_ARPROT,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [3:0]  S_AXI_NORMAL_ARQOS,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-                S_AXI_NORMAL_ARREGION,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input         S_AXI_NORMAL_RREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  output        S_AXI_NORMAL_RVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  output [63:0] S_AXI_NORMAL_RDATA,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  output [1:0]  S_AXI_NORMAL_RRESP,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  output        S_AXI_NORMAL_RLAST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-                S_AXI_NORMAL_AWREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input         S_AXI_NORMAL_AWVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [13:0] S_AXI_NORMAL_AWADDR,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [7:0]  S_AXI_NORMAL_AWLEN,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [2:0]  S_AXI_NORMAL_AWSIZE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [1:0]  S_AXI_NORMAL_AWBURST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input         S_AXI_NORMAL_AWLOCK,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [3:0]  S_AXI_NORMAL_AWCACHE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [2:0]  S_AXI_NORMAL_AWPROT,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [3:0]  S_AXI_NORMAL_AWQOS,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-                S_AXI_NORMAL_AWREGION,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  output        S_AXI_NORMAL_WREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input         S_AXI_NORMAL_WVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [63:0] S_AXI_NORMAL_WDATA,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input  [7:0]  S_AXI_NORMAL_WSTRB,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  input         S_AXI_NORMAL_WLAST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-                S_AXI_NORMAL_BREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  output        S_AXI_NORMAL_BVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  output [1:0]  S_AXI_NORMAL_BRESP,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:23:24
-  output        S_AXI_TEST_ARREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input         S_AXI_TEST_ARVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [13:0] S_AXI_TEST_ARADDR,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [7:0]  S_AXI_TEST_ARLEN,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [2:0]  S_AXI_TEST_ARSIZE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [1:0]  S_AXI_TEST_ARBURST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input         S_AXI_TEST_ARLOCK,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [3:0]  S_AXI_TEST_ARCACHE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [2:0]  S_AXI_TEST_ARPROT,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [3:0]  S_AXI_TEST_ARQOS,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-                S_AXI_TEST_ARREGION,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input         S_AXI_TEST_RREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  output        S_AXI_TEST_RVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  output [63:0] S_AXI_TEST_RDATA,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  output [1:0]  S_AXI_TEST_RRESP,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  output        S_AXI_TEST_RLAST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-                S_AXI_TEST_AWREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input         S_AXI_TEST_AWVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [13:0] S_AXI_TEST_AWADDR,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [7:0]  S_AXI_TEST_AWLEN,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [2:0]  S_AXI_TEST_AWSIZE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [1:0]  S_AXI_TEST_AWBURST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input         S_AXI_TEST_AWLOCK,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [3:0]  S_AXI_TEST_AWCACHE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [2:0]  S_AXI_TEST_AWPROT,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [3:0]  S_AXI_TEST_AWQOS,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-                S_AXI_TEST_AWREGION,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  output        S_AXI_TEST_WREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input         S_AXI_TEST_WVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [63:0] S_AXI_TEST_WDATA,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input  [7:0]  S_AXI_TEST_WSTRB,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  input         S_AXI_TEST_WLAST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-                S_AXI_TEST_BREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  output        S_AXI_TEST_BVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
-  output [1:0]  S_AXI_TEST_BRESP	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:24:22
+module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
+  input         clock,	// <stdin>:6506:11
+                reset,	// <stdin>:6507:11
+  output        S_AXI_NORMAL_ARREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input         S_AXI_NORMAL_ARVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [13:0] S_AXI_NORMAL_ARADDR,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [7:0]  S_AXI_NORMAL_ARLEN,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [2:0]  S_AXI_NORMAL_ARSIZE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [1:0]  S_AXI_NORMAL_ARBURST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input         S_AXI_NORMAL_ARLOCK,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [3:0]  S_AXI_NORMAL_ARCACHE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [2:0]  S_AXI_NORMAL_ARPROT,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [3:0]  S_AXI_NORMAL_ARQOS,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+                S_AXI_NORMAL_ARREGION,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input         S_AXI_NORMAL_RREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  output        S_AXI_NORMAL_RVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  output [63:0] S_AXI_NORMAL_RDATA,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  output [1:0]  S_AXI_NORMAL_RRESP,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  output        S_AXI_NORMAL_RLAST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+                S_AXI_NORMAL_AWREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input         S_AXI_NORMAL_AWVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [13:0] S_AXI_NORMAL_AWADDR,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [7:0]  S_AXI_NORMAL_AWLEN,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [2:0]  S_AXI_NORMAL_AWSIZE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [1:0]  S_AXI_NORMAL_AWBURST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input         S_AXI_NORMAL_AWLOCK,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [3:0]  S_AXI_NORMAL_AWCACHE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [2:0]  S_AXI_NORMAL_AWPROT,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [3:0]  S_AXI_NORMAL_AWQOS,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+                S_AXI_NORMAL_AWREGION,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  output        S_AXI_NORMAL_WREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input         S_AXI_NORMAL_WVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [63:0] S_AXI_NORMAL_WDATA,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input  [7:0]  S_AXI_NORMAL_WSTRB,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  input         S_AXI_NORMAL_WLAST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+                S_AXI_NORMAL_BREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  output        S_AXI_NORMAL_BVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  output [1:0]  S_AXI_NORMAL_BRESP,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:23:24
+  output        S_AXI_TEST_ARREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input         S_AXI_TEST_ARVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [13:0] S_AXI_TEST_ARADDR,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [7:0]  S_AXI_TEST_ARLEN,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [2:0]  S_AXI_TEST_ARSIZE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [1:0]  S_AXI_TEST_ARBURST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input         S_AXI_TEST_ARLOCK,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [3:0]  S_AXI_TEST_ARCACHE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [2:0]  S_AXI_TEST_ARPROT,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [3:0]  S_AXI_TEST_ARQOS,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+                S_AXI_TEST_ARREGION,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input         S_AXI_TEST_RREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  output        S_AXI_TEST_RVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  output [63:0] S_AXI_TEST_RDATA,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  output [1:0]  S_AXI_TEST_RRESP,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  output        S_AXI_TEST_RLAST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+                S_AXI_TEST_AWREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input         S_AXI_TEST_AWVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [13:0] S_AXI_TEST_AWADDR,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [7:0]  S_AXI_TEST_AWLEN,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [2:0]  S_AXI_TEST_AWSIZE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [1:0]  S_AXI_TEST_AWBURST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input         S_AXI_TEST_AWLOCK,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [3:0]  S_AXI_TEST_AWCACHE,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [2:0]  S_AXI_TEST_AWPROT,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [3:0]  S_AXI_TEST_AWQOS,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+                S_AXI_TEST_AWREGION,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  output        S_AXI_TEST_WREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input         S_AXI_TEST_WVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [63:0] S_AXI_TEST_WDATA,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input  [7:0]  S_AXI_TEST_WSTRB,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  input         S_AXI_TEST_WLAST,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+                S_AXI_TEST_BREADY,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  output        S_AXI_TEST_BVALID,	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
+  output [1:0]  S_AXI_TEST_BRESP	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:24:22
 );
 
-  wire [1:0]  masterBuffer1_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [1:0]  masterBuffer1_bBuffer0_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [1:0]  masterBuffer0_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [72:0] _masterBuffer2_wBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [42:0] _masterBuffer2_awBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [66:0] _masterBuffer2_rBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [42:0] _masterBuffer2_arBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [72:0] _masterBuffer1_wBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [42:0] _masterBuffer1_awBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [66:0] _masterBuffer1_rBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [42:0] _masterBuffer1_arBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [10:0] _axiBridge2_read_req_bits;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-  wire        _axiBridge2_read_req_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-  wire        _axiBridge2_read_resp_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-  wire [10:0] _axiBridge2_write_req_bits_addr;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-  wire [63:0] _axiBridge2_write_req_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-  wire [7:0]  _axiBridge2_write_req_bits_strb;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-  wire        _axiBridge2_write_req_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-  wire        _axiBridge2_write_resp_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-  wire [72:0] _masterBuffer0_wBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [42:0] _masterBuffer0_awBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [66:0] _masterBuffer0_rBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [42:0] _masterBuffer0_arBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [10:0] _axiBridge1_read_req_bits;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-  wire        _axiBridge1_read_req_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-  wire        _axiBridge1_read_resp_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-  wire [10:0] _axiBridge1_write_req_bits_addr;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-  wire [63:0] _axiBridge1_write_req_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-  wire [7:0]  _axiBridge1_write_req_bits_strb;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-  wire        _axiBridge1_write_req_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-  wire        _axiBridge1_write_resp_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-  wire        _mem_read1_req_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire [63:0] _mem_read1_resp_bits;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire        _mem_read1_resp_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire        _mem_read2_req_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire [63:0] _mem_read2_resp_bits;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire        _mem_read2_resp_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire        _mem_write1_req_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire        _mem_write1_resp_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire        _mem_write2_req_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire        _mem_write2_resp_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-  wire [13:0] masterBuffer0_arBuffer0_hi_hi_hi = S_AXI_NORMAL_ARADDR;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [7:0]  masterBuffer0_arBuffer0_source_bits_len = S_AXI_NORMAL_ARLEN;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [2:0]  masterBuffer0_arBuffer0_source_bits_size = S_AXI_NORMAL_ARSIZE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [1:0]  masterBuffer0_arBuffer0_source_bits_burst = S_AXI_NORMAL_ARBURST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_arBuffer0_source_bits_lock = S_AXI_NORMAL_ARLOCK;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [3:0]  masterBuffer0_arBuffer0_source_bits_cache = S_AXI_NORMAL_ARCACHE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [2:0]  masterBuffer0_arBuffer0_source_bits_prot = S_AXI_NORMAL_ARPROT;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [3:0]  masterBuffer0_arBuffer0_source_bits_qos = S_AXI_NORMAL_ARQOS;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [3:0]  masterBuffer0_arBuffer0_lo_lo = S_AXI_NORMAL_ARREGION;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_arBuffer0_source_valid = S_AXI_NORMAL_ARVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_rBuffer0_sink_ready = S_AXI_NORMAL_RREADY;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [13:0] masterBuffer0_awBuffer0_hi_hi_hi = S_AXI_NORMAL_AWADDR;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [7:0]  masterBuffer0_awBuffer0_source_bits_len = S_AXI_NORMAL_AWLEN;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [2:0]  masterBuffer0_awBuffer0_source_bits_size = S_AXI_NORMAL_AWSIZE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [1:0]  masterBuffer0_awBuffer0_source_bits_burst = S_AXI_NORMAL_AWBURST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_awBuffer0_source_bits_lock = S_AXI_NORMAL_AWLOCK;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [3:0]  masterBuffer0_awBuffer0_source_bits_cache = S_AXI_NORMAL_AWCACHE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [2:0]  masterBuffer0_awBuffer0_source_bits_prot = S_AXI_NORMAL_AWPROT;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [3:0]  masterBuffer0_awBuffer0_source_bits_qos = S_AXI_NORMAL_AWQOS;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [3:0]  masterBuffer0_awBuffer0_lo_lo = S_AXI_NORMAL_AWREGION;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_awBuffer0_source_valid = S_AXI_NORMAL_AWVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [63:0] masterBuffer0_wBuffer0_source_bits_data = S_AXI_NORMAL_WDATA;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [7:0]  masterBuffer0_wBuffer0_source_bits_strb = S_AXI_NORMAL_WSTRB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_wBuffer0_lo = S_AXI_NORMAL_WLAST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_wBuffer0_source_valid = S_AXI_NORMAL_WVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_bBuffer0_sink_ready = S_AXI_NORMAL_BREADY;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [13:0] masterBuffer1_arBuffer0_hi_hi_hi = S_AXI_TEST_ARADDR;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [7:0]  masterBuffer1_arBuffer0_source_bits_len = S_AXI_TEST_ARLEN;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [2:0]  masterBuffer1_arBuffer0_source_bits_size = S_AXI_TEST_ARSIZE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [1:0]  masterBuffer1_arBuffer0_source_bits_burst = S_AXI_TEST_ARBURST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_arBuffer0_source_bits_lock = S_AXI_TEST_ARLOCK;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [3:0]  masterBuffer1_arBuffer0_source_bits_cache = S_AXI_TEST_ARCACHE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [2:0]  masterBuffer1_arBuffer0_source_bits_prot = S_AXI_TEST_ARPROT;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [3:0]  masterBuffer1_arBuffer0_source_bits_qos = S_AXI_TEST_ARQOS;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [3:0]  masterBuffer1_arBuffer0_lo_lo = S_AXI_TEST_ARREGION;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_arBuffer0_source_valid = S_AXI_TEST_ARVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_rBuffer0_sink_ready = S_AXI_TEST_RREADY;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [13:0] masterBuffer1_awBuffer0_hi_hi_hi = S_AXI_TEST_AWADDR;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [7:0]  masterBuffer1_awBuffer0_source_bits_len = S_AXI_TEST_AWLEN;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [2:0]  masterBuffer1_awBuffer0_source_bits_size = S_AXI_TEST_AWSIZE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [1:0]  masterBuffer1_awBuffer0_source_bits_burst = S_AXI_TEST_AWBURST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_awBuffer0_source_bits_lock = S_AXI_TEST_AWLOCK;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [3:0]  masterBuffer1_awBuffer0_source_bits_cache = S_AXI_TEST_AWCACHE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [2:0]  masterBuffer1_awBuffer0_source_bits_prot = S_AXI_TEST_AWPROT;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [3:0]  masterBuffer1_awBuffer0_source_bits_qos = S_AXI_TEST_AWQOS;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [3:0]  masterBuffer1_awBuffer0_lo_lo = S_AXI_TEST_AWREGION;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_awBuffer0_source_valid = S_AXI_TEST_AWVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [63:0] masterBuffer1_wBuffer0_source_bits_data = S_AXI_TEST_WDATA;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [7:0]  masterBuffer1_wBuffer0_source_bits_strb = S_AXI_TEST_WSTRB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_wBuffer0_lo = S_AXI_TEST_WLAST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_wBuffer0_source_valid = S_AXI_TEST_WVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_bBuffer0_sink_ready = S_AXI_TEST_BREADY;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [1:0]  masterBuffer0_rBuffer0_source_bits_resp = 2'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  wire [1:0]  masterBuffer0_bBuffer0_hi = 2'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  wire [1:0]  masterBuffer2_rBuffer0_source_bits_resp = 2'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-  wire [1:0]  masterBuffer2_bBuffer0_hi = 2'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-  wire [2:0]  masterBuffer2_arBuffer0_source_bits_size = 3'h3;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:49:29, :51:41
+  wire [1:0]  masterBuffer1_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [1:0]  masterBuffer1_bBuffer0_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [1:0]  masterBuffer0_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [72:0] _masterBuffer2_wBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [42:0] _masterBuffer2_awBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [66:0] _masterBuffer2_rBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [42:0] _masterBuffer2_arBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [72:0] _masterBuffer1_wBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [42:0] _masterBuffer1_awBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [66:0] _masterBuffer1_rBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [42:0] _masterBuffer1_arBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [10:0] _axiBridge2_read_req_bits;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+  wire        _axiBridge2_read_req_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+  wire        _axiBridge2_read_resp_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+  wire [10:0] _axiBridge2_write_req_bits_addr;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+  wire [63:0] _axiBridge2_write_req_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+  wire [7:0]  _axiBridge2_write_req_bits_strb;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+  wire        _axiBridge2_write_req_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+  wire        _axiBridge2_write_resp_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+  wire [72:0] _masterBuffer0_wBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [42:0] _masterBuffer0_awBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [66:0] _masterBuffer0_rBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [42:0] _masterBuffer0_arBuffer0_ram_dataOutB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [10:0] _axiBridge1_read_req_bits;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+  wire        _axiBridge1_read_req_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+  wire        _axiBridge1_read_resp_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+  wire [10:0] _axiBridge1_write_req_bits_addr;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+  wire [63:0] _axiBridge1_write_req_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+  wire [7:0]  _axiBridge1_write_req_bits_strb;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+  wire        _axiBridge1_write_req_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+  wire        _axiBridge1_write_resp_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+  wire        _mem_read1_req_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire [63:0] _mem_read1_resp_bits;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire        _mem_read1_resp_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire        _mem_read2_req_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire [63:0] _mem_read2_resp_bits;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire        _mem_read2_resp_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire        _mem_write1_req_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire        _mem_write1_resp_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire        _mem_write2_req_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire        _mem_write2_resp_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+  wire [13:0] masterBuffer0_arBuffer0_hi_hi_hi = S_AXI_NORMAL_ARADDR;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [7:0]  masterBuffer0_arBuffer0_source_bits_len = S_AXI_NORMAL_ARLEN;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [2:0]  masterBuffer0_arBuffer0_source_bits_size = S_AXI_NORMAL_ARSIZE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [1:0]  masterBuffer0_arBuffer0_source_bits_burst = S_AXI_NORMAL_ARBURST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_arBuffer0_source_bits_lock = S_AXI_NORMAL_ARLOCK;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [3:0]  masterBuffer0_arBuffer0_source_bits_cache = S_AXI_NORMAL_ARCACHE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [2:0]  masterBuffer0_arBuffer0_source_bits_prot = S_AXI_NORMAL_ARPROT;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [3:0]  masterBuffer0_arBuffer0_source_bits_qos = S_AXI_NORMAL_ARQOS;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [3:0]  masterBuffer0_arBuffer0_lo_lo = S_AXI_NORMAL_ARREGION;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_arBuffer0_source_valid = S_AXI_NORMAL_ARVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_rBuffer0_sink_ready = S_AXI_NORMAL_RREADY;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [13:0] masterBuffer0_awBuffer0_hi_hi_hi = S_AXI_NORMAL_AWADDR;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [7:0]  masterBuffer0_awBuffer0_source_bits_len = S_AXI_NORMAL_AWLEN;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [2:0]  masterBuffer0_awBuffer0_source_bits_size = S_AXI_NORMAL_AWSIZE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [1:0]  masterBuffer0_awBuffer0_source_bits_burst = S_AXI_NORMAL_AWBURST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_awBuffer0_source_bits_lock = S_AXI_NORMAL_AWLOCK;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [3:0]  masterBuffer0_awBuffer0_source_bits_cache = S_AXI_NORMAL_AWCACHE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [2:0]  masterBuffer0_awBuffer0_source_bits_prot = S_AXI_NORMAL_AWPROT;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [3:0]  masterBuffer0_awBuffer0_source_bits_qos = S_AXI_NORMAL_AWQOS;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [3:0]  masterBuffer0_awBuffer0_lo_lo = S_AXI_NORMAL_AWREGION;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_awBuffer0_source_valid = S_AXI_NORMAL_AWVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [63:0] masterBuffer0_wBuffer0_source_bits_data = S_AXI_NORMAL_WDATA;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [7:0]  masterBuffer0_wBuffer0_source_bits_strb = S_AXI_NORMAL_WSTRB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_wBuffer0_lo = S_AXI_NORMAL_WLAST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_wBuffer0_source_valid = S_AXI_NORMAL_WVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_bBuffer0_sink_ready = S_AXI_NORMAL_BREADY;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [13:0] masterBuffer1_arBuffer0_hi_hi_hi = S_AXI_TEST_ARADDR;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [7:0]  masterBuffer1_arBuffer0_source_bits_len = S_AXI_TEST_ARLEN;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [2:0]  masterBuffer1_arBuffer0_source_bits_size = S_AXI_TEST_ARSIZE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [1:0]  masterBuffer1_arBuffer0_source_bits_burst = S_AXI_TEST_ARBURST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_arBuffer0_source_bits_lock = S_AXI_TEST_ARLOCK;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [3:0]  masterBuffer1_arBuffer0_source_bits_cache = S_AXI_TEST_ARCACHE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [2:0]  masterBuffer1_arBuffer0_source_bits_prot = S_AXI_TEST_ARPROT;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [3:0]  masterBuffer1_arBuffer0_source_bits_qos = S_AXI_TEST_ARQOS;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [3:0]  masterBuffer1_arBuffer0_lo_lo = S_AXI_TEST_ARREGION;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_arBuffer0_source_valid = S_AXI_TEST_ARVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_rBuffer0_sink_ready = S_AXI_TEST_RREADY;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [13:0] masterBuffer1_awBuffer0_hi_hi_hi = S_AXI_TEST_AWADDR;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [7:0]  masterBuffer1_awBuffer0_source_bits_len = S_AXI_TEST_AWLEN;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [2:0]  masterBuffer1_awBuffer0_source_bits_size = S_AXI_TEST_AWSIZE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [1:0]  masterBuffer1_awBuffer0_source_bits_burst = S_AXI_TEST_AWBURST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_awBuffer0_source_bits_lock = S_AXI_TEST_AWLOCK;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [3:0]  masterBuffer1_awBuffer0_source_bits_cache = S_AXI_TEST_AWCACHE;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [2:0]  masterBuffer1_awBuffer0_source_bits_prot = S_AXI_TEST_AWPROT;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [3:0]  masterBuffer1_awBuffer0_source_bits_qos = S_AXI_TEST_AWQOS;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [3:0]  masterBuffer1_awBuffer0_lo_lo = S_AXI_TEST_AWREGION;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_awBuffer0_source_valid = S_AXI_TEST_AWVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [63:0] masterBuffer1_wBuffer0_source_bits_data = S_AXI_TEST_WDATA;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [7:0]  masterBuffer1_wBuffer0_source_bits_strb = S_AXI_TEST_WSTRB;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_wBuffer0_lo = S_AXI_TEST_WLAST;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_wBuffer0_source_valid = S_AXI_TEST_WVALID;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_bBuffer0_sink_ready = S_AXI_TEST_BREADY;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [1:0]  masterBuffer0_rBuffer0_source_bits_resp = 2'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  wire [1:0]  masterBuffer0_bBuffer0_hi = 2'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  wire [1:0]  masterBuffer2_rBuffer0_source_bits_resp = 2'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+  wire [1:0]  masterBuffer2_bBuffer0_hi = 2'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+  wire [2:0]  masterBuffer2_arBuffer0_source_bits_size = 3'h3;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:49:29, :51:41
+  wire [2:0]  masterBuffer2_awBuffer0_source_bits_size = 3'h3;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:49:29, :51:41
   reg         masterBuffer0_arBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer0_arBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer0_arBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  reg         masterBuffer0_arBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_arBuffer0_ptr_match =
-    masterBuffer0_arBuffer0_wrap == masterBuffer0_arBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer0_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_arBuffer0_wrap == masterBuffer0_arBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer0_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_arBuffer0_do_enq =
-    masterBuffer0_arBuffer0_source_ready & masterBuffer0_arBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_arBuffer0_source_ready & masterBuffer0_arBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_arBuffer0_sink_valid =
-    ~(masterBuffer0_arBuffer0_ptr_match & ~masterBuffer0_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_arBuffer0_ptr_match & ~masterBuffer0_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   assign masterBuffer0_arBuffer0_source_ready =
-    ~(masterBuffer0_arBuffer0_ptr_match & masterBuffer0_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_arBuffer0_ptr_match & masterBuffer0_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [3:0]  masterBuffer0_arBuffer0_sink_bits_region =
-    _masterBuffer0_arBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_arBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [3:0]  masterBuffer0_arBuffer0_sink_bits_qos =
-    _masterBuffer0_arBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_arBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [2:0]  masterBuffer0_arBuffer0_sink_bits_prot =
-    _masterBuffer0_arBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_arBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [3:0]  masterBuffer0_arBuffer0_sink_bits_cache =
-    _masterBuffer0_arBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_arBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_arBuffer0_sink_bits_lock =
-    _masterBuffer0_arBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_arBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [1:0]  masterBuffer0_arBuffer0_sink_bits_burst =
-    _masterBuffer0_arBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_arBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [2:0]  masterBuffer0_arBuffer0_sink_bits_size =
-    _masterBuffer0_arBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_arBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [7:0]  masterBuffer0_arBuffer0_sink_bits_len =
-    _masterBuffer0_arBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_arBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [13:0] masterBuffer0_arBuffer0_sink_bits_addr =
-    _masterBuffer0_arBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_arBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   reg         masterBuffer0_rBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer0_rBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer0_rBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  reg         masterBuffer0_rBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_rBuffer0_ptr_match =
-    masterBuffer0_rBuffer0_wrap == masterBuffer0_rBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer0_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_rBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_rBuffer0_wrap == masterBuffer0_rBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer0_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_rBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_rBuffer0_do_enq =
-    masterBuffer0_rBuffer0_source_ready & masterBuffer0_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire [63:0] masterBuffer0_rBuffer0_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_rBuffer0_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_rBuffer0_source_ready & masterBuffer0_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire [63:0] masterBuffer0_rBuffer0_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_rBuffer0_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_rBuffer0_sink_valid =
-    ~(masterBuffer0_rBuffer0_ptr_match & ~masterBuffer0_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_rBuffer0_ptr_match & ~masterBuffer0_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   assign masterBuffer0_rBuffer0_source_ready =
-    ~(masterBuffer0_rBuffer0_ptr_match & masterBuffer0_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_rBuffer0_ptr_match & masterBuffer0_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_rBuffer0_sink_bits_last =
-    _masterBuffer0_rBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_rBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [1:0]  masterBuffer0_rBuffer0_sink_bits_resp =
-    _masterBuffer0_rBuffer0_ram_dataOutB[2:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_rBuffer0_ram_dataOutB[2:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [63:0] masterBuffer0_rBuffer0_sink_bits_data =
-    _masterBuffer0_rBuffer0_ram_dataOutB[66:3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_rBuffer0_ram_dataOutB[66:3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   reg         masterBuffer0_awBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer0_awBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer0_awBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  reg         masterBuffer0_awBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_awBuffer0_ptr_match =
-    masterBuffer0_awBuffer0_wrap == masterBuffer0_awBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer0_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_awBuffer0_wrap == masterBuffer0_awBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer0_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_awBuffer0_do_enq =
-    masterBuffer0_awBuffer0_source_ready & masterBuffer0_awBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_awBuffer0_source_ready & masterBuffer0_awBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_awBuffer0_sink_valid =
-    ~(masterBuffer0_awBuffer0_ptr_match & ~masterBuffer0_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_awBuffer0_ptr_match & ~masterBuffer0_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   assign masterBuffer0_awBuffer0_source_ready =
-    ~(masterBuffer0_awBuffer0_ptr_match & masterBuffer0_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_awBuffer0_ptr_match & masterBuffer0_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [3:0]  masterBuffer0_awBuffer0_sink_bits_region =
-    _masterBuffer0_awBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_awBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [3:0]  masterBuffer0_awBuffer0_sink_bits_qos =
-    _masterBuffer0_awBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_awBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [2:0]  masterBuffer0_awBuffer0_sink_bits_prot =
-    _masterBuffer0_awBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_awBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [3:0]  masterBuffer0_awBuffer0_sink_bits_cache =
-    _masterBuffer0_awBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_awBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_awBuffer0_sink_bits_lock =
-    _masterBuffer0_awBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_awBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [1:0]  masterBuffer0_awBuffer0_sink_bits_burst =
-    _masterBuffer0_awBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_awBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [2:0]  masterBuffer0_awBuffer0_sink_bits_size =
-    _masterBuffer0_awBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_awBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [7:0]  masterBuffer0_awBuffer0_sink_bits_len =
-    _masterBuffer0_awBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_awBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [13:0] masterBuffer0_awBuffer0_sink_bits_addr =
-    _masterBuffer0_awBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_awBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   reg         masterBuffer0_wBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer0_wBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer0_wBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  reg         masterBuffer0_wBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_wBuffer0_ptr_match =
-    masterBuffer0_wBuffer0_wrap == masterBuffer0_wBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer0_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_wBuffer0_wrap == masterBuffer0_wBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer0_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_wBuffer0_do_enq =
-    masterBuffer0_wBuffer0_source_ready & masterBuffer0_wBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_wBuffer0_source_ready & masterBuffer0_wBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_wBuffer0_sink_valid =
-    ~(masterBuffer0_wBuffer0_ptr_match & ~masterBuffer0_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_wBuffer0_ptr_match & ~masterBuffer0_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   assign masterBuffer0_wBuffer0_source_ready =
-    ~(masterBuffer0_wBuffer0_ptr_match & masterBuffer0_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_wBuffer0_ptr_match & masterBuffer0_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_wBuffer0_sink_bits_last =
-    _masterBuffer0_wBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_wBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [7:0]  masterBuffer0_wBuffer0_sink_bits_strb =
-    _masterBuffer0_wBuffer0_ram_dataOutB[8:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_wBuffer0_ram_dataOutB[8:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire [63:0] masterBuffer0_wBuffer0_sink_bits_data =
-    _masterBuffer0_wBuffer0_ram_dataOutB[72:9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    _masterBuffer0_wBuffer0_ram_dataOutB[72:9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   reg         masterBuffer0_bBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer0_bBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer0_bBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  reg         masterBuffer0_bBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_bBuffer0_ptr_match =
-    masterBuffer0_bBuffer0_wrap == masterBuffer0_bBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer0_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_bBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_bBuffer0_wrap == masterBuffer0_bBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer0_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_bBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_bBuffer0_do_enq =
-    masterBuffer0_bBuffer0_source_ready & masterBuffer0_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    masterBuffer0_bBuffer0_source_ready & masterBuffer0_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   wire        masterBuffer0_bBuffer0_sink_valid =
-    ~(masterBuffer0_bBuffer0_ptr_match & ~masterBuffer0_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_bBuffer0_ptr_match & ~masterBuffer0_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   assign masterBuffer0_bBuffer0_source_ready =
-    ~(masterBuffer0_bBuffer0_ptr_match & masterBuffer0_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    ~(masterBuffer0_bBuffer0_ptr_match & masterBuffer0_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
   reg         masterBuffer1_arBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer1_arBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer1_arBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  reg         masterBuffer1_arBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_arBuffer0_ptr_match =
-    masterBuffer1_arBuffer0_wrap == masterBuffer1_arBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer1_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_arBuffer0_wrap == masterBuffer1_arBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer1_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_arBuffer0_do_enq =
-    masterBuffer1_arBuffer0_source_ready & masterBuffer1_arBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_arBuffer0_source_ready & masterBuffer1_arBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_arBuffer0_sink_valid =
-    ~(masterBuffer1_arBuffer0_ptr_match & ~masterBuffer1_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_arBuffer0_ptr_match & ~masterBuffer1_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   assign masterBuffer1_arBuffer0_source_ready =
-    ~(masterBuffer1_arBuffer0_ptr_match & masterBuffer1_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_arBuffer0_ptr_match & masterBuffer1_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [3:0]  masterBuffer1_arBuffer0_sink_bits_region =
-    _masterBuffer1_arBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_arBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [3:0]  masterBuffer1_arBuffer0_sink_bits_qos =
-    _masterBuffer1_arBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_arBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [2:0]  masterBuffer1_arBuffer0_sink_bits_prot =
-    _masterBuffer1_arBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_arBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [3:0]  masterBuffer1_arBuffer0_sink_bits_cache =
-    _masterBuffer1_arBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_arBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_arBuffer0_sink_bits_lock =
-    _masterBuffer1_arBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_arBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [1:0]  masterBuffer1_arBuffer0_sink_bits_burst =
-    _masterBuffer1_arBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_arBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [2:0]  masterBuffer1_arBuffer0_sink_bits_size =
-    _masterBuffer1_arBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_arBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [7:0]  masterBuffer1_arBuffer0_sink_bits_len =
-    _masterBuffer1_arBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_arBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [13:0] masterBuffer1_arBuffer0_sink_bits_addr =
-    _masterBuffer1_arBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_arBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   reg         masterBuffer1_rBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer1_rBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer1_rBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  reg         masterBuffer1_rBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_rBuffer0_ptr_match =
-    masterBuffer1_rBuffer0_wrap == masterBuffer1_rBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer1_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_rBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_rBuffer0_wrap == masterBuffer1_rBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer1_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_rBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_rBuffer0_do_enq =
-    masterBuffer1_rBuffer0_source_ready & masterBuffer1_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [63:0] masterBuffer1_rBuffer0_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire [1:0]  masterBuffer1_rBuffer0_source_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_rBuffer0_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_rBuffer0_source_ready & masterBuffer1_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [63:0] masterBuffer1_rBuffer0_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire [1:0]  masterBuffer1_rBuffer0_source_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_rBuffer0_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_rBuffer0_sink_valid =
-    ~(masterBuffer1_rBuffer0_ptr_match & ~masterBuffer1_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_rBuffer0_ptr_match & ~masterBuffer1_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   assign masterBuffer1_rBuffer0_source_ready =
-    ~(masterBuffer1_rBuffer0_ptr_match & masterBuffer1_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_rBuffer0_ptr_match & masterBuffer1_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_rBuffer0_sink_bits_last =
-    _masterBuffer1_rBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_rBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [1:0]  masterBuffer1_rBuffer0_sink_bits_resp =
-    _masterBuffer1_rBuffer0_ram_dataOutB[2:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_rBuffer0_ram_dataOutB[2:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [63:0] masterBuffer1_rBuffer0_sink_bits_data =
-    _masterBuffer1_rBuffer0_ram_dataOutB[66:3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_rBuffer0_ram_dataOutB[66:3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   reg         masterBuffer1_awBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer1_awBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer1_awBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  reg         masterBuffer1_awBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_awBuffer0_ptr_match =
-    masterBuffer1_awBuffer0_wrap == masterBuffer1_awBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer1_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_awBuffer0_wrap == masterBuffer1_awBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer1_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_awBuffer0_do_enq =
-    masterBuffer1_awBuffer0_source_ready & masterBuffer1_awBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_awBuffer0_source_ready & masterBuffer1_awBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_awBuffer0_sink_valid =
-    ~(masterBuffer1_awBuffer0_ptr_match & ~masterBuffer1_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_awBuffer0_ptr_match & ~masterBuffer1_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   assign masterBuffer1_awBuffer0_source_ready =
-    ~(masterBuffer1_awBuffer0_ptr_match & masterBuffer1_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_awBuffer0_ptr_match & masterBuffer1_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [3:0]  masterBuffer1_awBuffer0_sink_bits_region =
-    _masterBuffer1_awBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_awBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [3:0]  masterBuffer1_awBuffer0_sink_bits_qos =
-    _masterBuffer1_awBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_awBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [2:0]  masterBuffer1_awBuffer0_sink_bits_prot =
-    _masterBuffer1_awBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_awBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [3:0]  masterBuffer1_awBuffer0_sink_bits_cache =
-    _masterBuffer1_awBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_awBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_awBuffer0_sink_bits_lock =
-    _masterBuffer1_awBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_awBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [1:0]  masterBuffer1_awBuffer0_sink_bits_burst =
-    _masterBuffer1_awBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_awBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [2:0]  masterBuffer1_awBuffer0_sink_bits_size =
-    _masterBuffer1_awBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_awBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [7:0]  masterBuffer1_awBuffer0_sink_bits_len =
-    _masterBuffer1_awBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_awBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [13:0] masterBuffer1_awBuffer0_sink_bits_addr =
-    _masterBuffer1_awBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_awBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   reg         masterBuffer1_wBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer1_wBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer1_wBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  reg         masterBuffer1_wBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_wBuffer0_ptr_match =
-    masterBuffer1_wBuffer0_wrap == masterBuffer1_wBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer1_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_wBuffer0_wrap == masterBuffer1_wBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer1_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_wBuffer0_do_enq =
-    masterBuffer1_wBuffer0_source_ready & masterBuffer1_wBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_wBuffer0_source_ready & masterBuffer1_wBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_wBuffer0_sink_valid =
-    ~(masterBuffer1_wBuffer0_ptr_match & ~masterBuffer1_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_wBuffer0_ptr_match & ~masterBuffer1_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   assign masterBuffer1_wBuffer0_source_ready =
-    ~(masterBuffer1_wBuffer0_ptr_match & masterBuffer1_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_wBuffer0_ptr_match & masterBuffer1_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_wBuffer0_sink_bits_last =
-    _masterBuffer1_wBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_wBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [7:0]  masterBuffer1_wBuffer0_sink_bits_strb =
-    _masterBuffer1_wBuffer0_ram_dataOutB[8:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_wBuffer0_ram_dataOutB[8:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire [63:0] masterBuffer1_wBuffer0_sink_bits_data =
-    _masterBuffer1_wBuffer0_ram_dataOutB[72:9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    _masterBuffer1_wBuffer0_ram_dataOutB[72:9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   reg         masterBuffer1_bBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer1_bBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer1_bBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  reg         masterBuffer1_bBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_bBuffer0_ptr_match =
-    masterBuffer1_bBuffer0_wrap == masterBuffer1_bBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer1_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_bBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_bBuffer0_wrap == masterBuffer1_bBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer1_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_bBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_bBuffer0_do_enq =
-    masterBuffer1_bBuffer0_source_ready & masterBuffer1_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    masterBuffer1_bBuffer0_source_ready & masterBuffer1_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   wire        masterBuffer1_bBuffer0_sink_valid =
-    ~(masterBuffer1_bBuffer0_ptr_match & ~masterBuffer1_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_bBuffer0_ptr_match & ~masterBuffer1_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   assign masterBuffer1_bBuffer0_source_ready =
-    ~(masterBuffer1_bBuffer0_ptr_match & masterBuffer1_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    ~(masterBuffer1_bBuffer0_ptr_match & masterBuffer1_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
   reg         masterBuffer2_arBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer2_arBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer2_arBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  reg         masterBuffer2_arBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_arBuffer0_ptr_match =
-    masterBuffer2_arBuffer0_wrap == masterBuffer2_arBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer2_arBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_arBuffer0_wrap == masterBuffer2_arBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer2_arBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_arBuffer0_do_enq =
-    masterBuffer2_arBuffer0_source_ready & masterBuffer2_arBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [13:0] masterBuffer2_arBuffer0_hi_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [7:0]  masterBuffer2_arBuffer0_source_bits_len;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [1:0]  masterBuffer2_arBuffer0_source_bits_burst;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_arBuffer0_source_bits_lock;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [3:0]  masterBuffer2_arBuffer0_source_bits_cache;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [2:0]  masterBuffer2_arBuffer0_source_bits_prot;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [3:0]  masterBuffer2_arBuffer0_source_bits_qos;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [3:0]  masterBuffer2_arBuffer0_lo_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_arBuffer0_source_ready & masterBuffer2_arBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [13:0] masterBuffer2_arBuffer0_hi_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [7:0]  masterBuffer2_arBuffer0_source_bits_len;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [1:0]  masterBuffer2_arBuffer0_source_bits_burst;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_arBuffer0_source_bits_lock;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [3:0]  masterBuffer2_arBuffer0_source_bits_cache;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [2:0]  masterBuffer2_arBuffer0_source_bits_prot;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [3:0]  masterBuffer2_arBuffer0_source_bits_qos;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [3:0]  masterBuffer2_arBuffer0_lo_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_arBuffer0_sink_valid =
-    ~(masterBuffer2_arBuffer0_ptr_match & ~masterBuffer2_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    ~(masterBuffer2_arBuffer0_ptr_match & ~masterBuffer2_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   assign masterBuffer2_arBuffer0_source_ready =
-    ~(masterBuffer2_arBuffer0_ptr_match & masterBuffer2_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    ~(masterBuffer2_arBuffer0_ptr_match & masterBuffer2_arBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [3:0]  masterBuffer2_arBuffer0_sink_bits_region =
-    _masterBuffer2_arBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_arBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [3:0]  masterBuffer2_arBuffer0_sink_bits_qos =
-    _masterBuffer2_arBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_arBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [2:0]  masterBuffer2_arBuffer0_sink_bits_prot =
-    _masterBuffer2_arBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_arBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [3:0]  masterBuffer2_arBuffer0_sink_bits_cache =
-    _masterBuffer2_arBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_arBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_arBuffer0_sink_bits_lock =
-    _masterBuffer2_arBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_arBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [1:0]  masterBuffer2_arBuffer0_sink_bits_burst =
-    _masterBuffer2_arBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_arBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [2:0]  masterBuffer2_arBuffer0_sink_bits_size =
-    _masterBuffer2_arBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_arBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [7:0]  masterBuffer2_arBuffer0_sink_bits_len =
-    _masterBuffer2_arBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_arBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [13:0] masterBuffer2_arBuffer0_sink_bits_addr =
-    _masterBuffer2_arBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_arBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   reg         masterBuffer2_rBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer2_rBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer2_rBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  reg         masterBuffer2_rBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_rBuffer0_ptr_match =
-    masterBuffer2_rBuffer0_wrap == masterBuffer2_rBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer2_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_rBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_rBuffer0_wrap == masterBuffer2_rBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer2_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_rBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_rBuffer0_do_enq =
-    masterBuffer2_rBuffer0_source_ready & masterBuffer2_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [63:0] masterBuffer2_rBuffer0_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_rBuffer0_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_rBuffer0_source_ready & masterBuffer2_rBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [63:0] masterBuffer2_rBuffer0_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_rBuffer0_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_rBuffer0_sink_valid =
-    ~(masterBuffer2_rBuffer0_ptr_match & ~masterBuffer2_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    ~(masterBuffer2_rBuffer0_ptr_match & ~masterBuffer2_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   assign masterBuffer2_rBuffer0_source_ready =
-    ~(masterBuffer2_rBuffer0_ptr_match & masterBuffer2_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    ~(masterBuffer2_rBuffer0_ptr_match & masterBuffer2_rBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_rBuffer0_sink_bits_last =
-    _masterBuffer2_rBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_rBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [1:0]  masterBuffer2_rBuffer0_sink_bits_resp =
-    _masterBuffer2_rBuffer0_ram_dataOutB[2:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_rBuffer0_ram_dataOutB[2:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [63:0] masterBuffer2_rBuffer0_sink_bits_data =
-    _masterBuffer2_rBuffer0_ram_dataOutB[66:3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_rBuffer0_ram_dataOutB[66:3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   reg         masterBuffer2_awBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer2_awBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer2_awBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  reg         masterBuffer2_awBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_awBuffer0_ptr_match =
-    masterBuffer2_awBuffer0_wrap == masterBuffer2_awBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer2_awBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_awBuffer0_wrap == masterBuffer2_awBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer2_awBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_awBuffer0_do_enq =
-    masterBuffer2_awBuffer0_source_ready & masterBuffer2_awBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [13:0] masterBuffer2_awBuffer0_hi_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [7:0]  masterBuffer2_awBuffer0_source_bits_len;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [2:0]  masterBuffer2_awBuffer0_source_bits_size;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [1:0]  masterBuffer2_awBuffer0_source_bits_burst;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_awBuffer0_source_bits_lock;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [3:0]  masterBuffer2_awBuffer0_source_bits_cache;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [2:0]  masterBuffer2_awBuffer0_source_bits_prot;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [3:0]  masterBuffer2_awBuffer0_source_bits_qos;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [3:0]  masterBuffer2_awBuffer0_lo_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_awBuffer0_source_ready & masterBuffer2_awBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [13:0] masterBuffer2_awBuffer0_hi_hi_hi;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [7:0]  masterBuffer2_awBuffer0_source_bits_len;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [1:0]  masterBuffer2_awBuffer0_source_bits_burst;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_awBuffer0_source_bits_lock;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [3:0]  masterBuffer2_awBuffer0_source_bits_cache;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [2:0]  masterBuffer2_awBuffer0_source_bits_prot;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [3:0]  masterBuffer2_awBuffer0_source_bits_qos;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [3:0]  masterBuffer2_awBuffer0_lo_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_awBuffer0_sink_valid =
-    ~(masterBuffer2_awBuffer0_ptr_match & ~masterBuffer2_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    ~(masterBuffer2_awBuffer0_ptr_match & ~masterBuffer2_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   assign masterBuffer2_awBuffer0_source_ready =
-    ~(masterBuffer2_awBuffer0_ptr_match & masterBuffer2_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    ~(masterBuffer2_awBuffer0_ptr_match & masterBuffer2_awBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [3:0]  masterBuffer2_awBuffer0_sink_bits_region =
-    _masterBuffer2_awBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_awBuffer0_ram_dataOutB[3:0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [3:0]  masterBuffer2_awBuffer0_sink_bits_qos =
-    _masterBuffer2_awBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_awBuffer0_ram_dataOutB[7:4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [2:0]  masterBuffer2_awBuffer0_sink_bits_prot =
-    _masterBuffer2_awBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_awBuffer0_ram_dataOutB[10:8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [3:0]  masterBuffer2_awBuffer0_sink_bits_cache =
-    _masterBuffer2_awBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_awBuffer0_ram_dataOutB[14:11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_awBuffer0_sink_bits_lock =
-    _masterBuffer2_awBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_awBuffer0_ram_dataOutB[15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [1:0]  masterBuffer2_awBuffer0_sink_bits_burst =
-    _masterBuffer2_awBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_awBuffer0_ram_dataOutB[17:16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [2:0]  masterBuffer2_awBuffer0_sink_bits_size =
-    _masterBuffer2_awBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_awBuffer0_ram_dataOutB[20:18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [7:0]  masterBuffer2_awBuffer0_sink_bits_len =
-    _masterBuffer2_awBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_awBuffer0_ram_dataOutB[28:21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [13:0] masterBuffer2_awBuffer0_sink_bits_addr =
-    _masterBuffer2_awBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_awBuffer0_ram_dataOutB[42:29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   reg         masterBuffer2_wBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer2_wBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer2_wBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  reg         masterBuffer2_wBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_wBuffer0_ptr_match =
-    masterBuffer2_wBuffer0_wrap == masterBuffer2_wBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer2_wBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_wBuffer0_wrap == masterBuffer2_wBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer2_wBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_wBuffer0_do_enq =
-    masterBuffer2_wBuffer0_source_ready & masterBuffer2_wBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [63:0] masterBuffer2_wBuffer0_source_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire [7:0]  masterBuffer2_wBuffer0_source_bits_strb;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_wBuffer0_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_wBuffer0_source_ready & masterBuffer2_wBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [63:0] masterBuffer2_wBuffer0_source_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire [7:0]  masterBuffer2_wBuffer0_source_bits_strb;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_wBuffer0_lo;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_wBuffer0_sink_valid =
-    ~(masterBuffer2_wBuffer0_ptr_match & ~masterBuffer2_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    ~(masterBuffer2_wBuffer0_ptr_match & ~masterBuffer2_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   assign masterBuffer2_wBuffer0_source_ready =
-    ~(masterBuffer2_wBuffer0_ptr_match & masterBuffer2_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    ~(masterBuffer2_wBuffer0_ptr_match & masterBuffer2_wBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_wBuffer0_sink_bits_last =
-    _masterBuffer2_wBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_wBuffer0_ram_dataOutB[0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [7:0]  masterBuffer2_wBuffer0_sink_bits_strb =
-    _masterBuffer2_wBuffer0_ram_dataOutB[8:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_wBuffer0_ram_dataOutB[8:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire [63:0] masterBuffer2_wBuffer0_sink_bits_data =
-    _masterBuffer2_wBuffer0_ram_dataOutB[72:9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    _masterBuffer2_wBuffer0_ram_dataOutB[72:9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   reg         masterBuffer2_bBuffer0_wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg         masterBuffer2_bBuffer0_wrap_1;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg         masterBuffer2_bBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  reg         masterBuffer2_bBuffer0_maybe_full;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_bBuffer0_ptr_match =
-    masterBuffer2_bBuffer0_wrap == masterBuffer2_bBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-  wire        masterBuffer2_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_bBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_bBuffer0_wrap == masterBuffer2_bBuffer0_wrap_1;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+  wire        masterBuffer2_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_bBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_bBuffer0_do_enq =
-    masterBuffer2_bBuffer0_source_ready & masterBuffer2_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    masterBuffer2_bBuffer0_source_ready & masterBuffer2_bBuffer0_source_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   wire        masterBuffer2_bBuffer0_sink_valid =
-    ~(masterBuffer2_bBuffer0_ptr_match & ~masterBuffer2_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer0_arBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_awBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer0_wBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-  wire        masterBuffer1_arBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_awBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer1_wBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-  wire        masterBuffer2_arBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_rBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_awBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_wBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    ~(masterBuffer2_bBuffer0_ptr_match & ~masterBuffer2_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer0_arBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_awBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer0_wBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+  wire        masterBuffer1_arBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_awBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer1_wBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+  wire        masterBuffer2_arBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_rBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_awBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_wBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
   assign masterBuffer2_bBuffer0_source_ready =
-    ~(masterBuffer2_bBuffer0_ptr_match & masterBuffer2_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  wire        masterBuffer2_bBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  always @(posedge clock) begin	// <stdin>:5692:11
-    if (reset) begin	// <stdin>:5692:11
-      masterBuffer0_arBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_arBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_arBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-      masterBuffer0_rBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_rBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_rBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-      masterBuffer0_awBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_awBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_awBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-      masterBuffer0_wBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_wBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_wBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-      masterBuffer0_bBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_bBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer0_bBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-      masterBuffer1_arBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_arBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_arBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-      masterBuffer1_rBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_rBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_rBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-      masterBuffer1_awBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_awBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_awBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-      masterBuffer1_wBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_wBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_wBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-      masterBuffer1_bBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_bBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer1_bBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-      masterBuffer2_arBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_arBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_arBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-      masterBuffer2_rBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_rBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_rBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-      masterBuffer2_awBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_awBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_awBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-      masterBuffer2_wBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_wBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_wBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-      masterBuffer2_bBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_bBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-      masterBuffer2_bBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
+    ~(masterBuffer2_bBuffer0_ptr_match & masterBuffer2_bBuffer0_maybe_full);	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  wire        masterBuffer2_bBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  always @(posedge clock) begin	// <stdin>:6506:11
+    if (reset) begin	// <stdin>:6506:11
+      masterBuffer0_arBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_arBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_arBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+      masterBuffer0_rBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_rBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_rBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+      masterBuffer0_awBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_awBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_awBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+      masterBuffer0_wBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_wBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_wBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+      masterBuffer0_bBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_bBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer0_bBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+      masterBuffer1_arBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_arBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_arBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+      masterBuffer1_rBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_rBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_rBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+      masterBuffer1_awBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_awBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_awBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+      masterBuffer1_wBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_wBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_wBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+      masterBuffer1_bBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_bBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer1_bBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+      masterBuffer2_arBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_arBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_arBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+      masterBuffer2_rBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_rBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_rBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+      masterBuffer2_awBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_awBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_awBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+      masterBuffer2_wBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_wBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_wBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+      masterBuffer2_bBuffer0_wrap <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_bBuffer0_wrap_1 <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+      masterBuffer2_bBuffer0_maybe_full <= 1'h0;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
     end
-    else begin	// <stdin>:5692:11
+    else begin	// <stdin>:6506:11
       automatic logic masterBuffer0_arBuffer0_do_deq =
-        masterBuffer0_arBuffer0_sink_ready & masterBuffer0_arBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer0_arBuffer0_sink_ready & masterBuffer0_arBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
       automatic logic masterBuffer0_rBuffer0_do_deq =
-        masterBuffer0_rBuffer0_sink_ready & masterBuffer0_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer0_rBuffer0_sink_ready & masterBuffer0_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
       automatic logic masterBuffer0_awBuffer0_do_deq =
-        masterBuffer0_awBuffer0_sink_ready & masterBuffer0_awBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer0_awBuffer0_sink_ready & masterBuffer0_awBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
       automatic logic masterBuffer0_wBuffer0_do_deq =
-        masterBuffer0_wBuffer0_sink_ready & masterBuffer0_wBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer0_wBuffer0_sink_ready & masterBuffer0_wBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
       automatic logic masterBuffer0_bBuffer0_do_deq =
-        masterBuffer0_bBuffer0_sink_ready & masterBuffer0_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer0_bBuffer0_sink_ready & masterBuffer0_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
       automatic logic masterBuffer1_arBuffer0_do_deq =
-        masterBuffer1_arBuffer0_sink_ready & masterBuffer1_arBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+        masterBuffer1_arBuffer0_sink_ready & masterBuffer1_arBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
       automatic logic masterBuffer1_rBuffer0_do_deq =
-        masterBuffer1_rBuffer0_sink_ready & masterBuffer1_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+        masterBuffer1_rBuffer0_sink_ready & masterBuffer1_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
       automatic logic masterBuffer1_awBuffer0_do_deq =
-        masterBuffer1_awBuffer0_sink_ready & masterBuffer1_awBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+        masterBuffer1_awBuffer0_sink_ready & masterBuffer1_awBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
       automatic logic masterBuffer1_wBuffer0_do_deq =
-        masterBuffer1_wBuffer0_sink_ready & masterBuffer1_wBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+        masterBuffer1_wBuffer0_sink_ready & masterBuffer1_wBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
       automatic logic masterBuffer1_bBuffer0_do_deq =
-        masterBuffer1_bBuffer0_sink_ready & masterBuffer1_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+        masterBuffer1_bBuffer0_sink_ready & masterBuffer1_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
       automatic logic masterBuffer2_arBuffer0_do_deq =
-        masterBuffer2_arBuffer0_sink_ready & masterBuffer2_arBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+        masterBuffer2_arBuffer0_sink_ready & masterBuffer2_arBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
       automatic logic masterBuffer2_rBuffer0_do_deq =
-        masterBuffer2_rBuffer0_sink_ready & masterBuffer2_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+        masterBuffer2_rBuffer0_sink_ready & masterBuffer2_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
       automatic logic masterBuffer2_awBuffer0_do_deq =
-        masterBuffer2_awBuffer0_sink_ready & masterBuffer2_awBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+        masterBuffer2_awBuffer0_sink_ready & masterBuffer2_awBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
       automatic logic masterBuffer2_wBuffer0_do_deq =
-        masterBuffer2_wBuffer0_sink_ready & masterBuffer2_wBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+        masterBuffer2_wBuffer0_sink_ready & masterBuffer2_wBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
       automatic logic masterBuffer2_bBuffer0_do_deq =
-        masterBuffer2_bBuffer0_sink_ready & masterBuffer2_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-      if (masterBuffer0_arBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer2_bBuffer0_sink_ready & masterBuffer2_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+      if (masterBuffer0_arBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_arBuffer0_wrap <= masterBuffer0_arBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer0_arBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+      if (masterBuffer0_arBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_arBuffer0_wrap_1 <= masterBuffer0_arBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer0_arBuffer0_do_enq == masterBuffer0_arBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-        masterBuffer0_arBuffer0_maybe_full <= masterBuffer0_arBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-      if (masterBuffer0_rBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+      if (~(masterBuffer0_arBuffer0_do_enq == masterBuffer0_arBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+        masterBuffer0_arBuffer0_maybe_full <= masterBuffer0_arBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+      if (masterBuffer0_rBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_rBuffer0_wrap <= masterBuffer0_rBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer0_rBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+      if (masterBuffer0_rBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_rBuffer0_wrap_1 <= masterBuffer0_rBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer0_rBuffer0_do_enq == masterBuffer0_rBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-        masterBuffer0_rBuffer0_maybe_full <= masterBuffer0_rBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-      if (masterBuffer0_awBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+      if (~(masterBuffer0_rBuffer0_do_enq == masterBuffer0_rBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+        masterBuffer0_rBuffer0_maybe_full <= masterBuffer0_rBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+      if (masterBuffer0_awBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_awBuffer0_wrap <= masterBuffer0_awBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer0_awBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+      if (masterBuffer0_awBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_awBuffer0_wrap_1 <= masterBuffer0_awBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer0_awBuffer0_do_enq == masterBuffer0_awBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-        masterBuffer0_awBuffer0_maybe_full <= masterBuffer0_awBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-      if (masterBuffer0_wBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+      if (~(masterBuffer0_awBuffer0_do_enq == masterBuffer0_awBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+        masterBuffer0_awBuffer0_maybe_full <= masterBuffer0_awBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+      if (masterBuffer0_wBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_wBuffer0_wrap <= masterBuffer0_wBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer0_wBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+      if (masterBuffer0_wBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_wBuffer0_wrap_1 <= masterBuffer0_wBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer0_wBuffer0_do_enq == masterBuffer0_wBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-        masterBuffer0_wBuffer0_maybe_full <= masterBuffer0_wBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-      if (masterBuffer0_bBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+      if (~(masterBuffer0_wBuffer0_do_enq == masterBuffer0_wBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+        masterBuffer0_wBuffer0_maybe_full <= masterBuffer0_wBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+      if (masterBuffer0_bBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_bBuffer0_wrap <= masterBuffer0_bBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer0_bBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+      if (masterBuffer0_bBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
         masterBuffer0_bBuffer0_wrap_1 <= masterBuffer0_bBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer0_bBuffer0_do_enq == masterBuffer0_bBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-        masterBuffer0_bBuffer0_maybe_full <= masterBuffer0_bBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-      if (masterBuffer1_arBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (~(masterBuffer0_bBuffer0_do_enq == masterBuffer0_bBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+        masterBuffer0_bBuffer0_maybe_full <= masterBuffer0_bBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+      if (masterBuffer1_arBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_arBuffer0_wrap <= masterBuffer1_arBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer1_arBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (masterBuffer1_arBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_arBuffer0_wrap_1 <= masterBuffer1_arBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer1_arBuffer0_do_enq == masterBuffer1_arBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-        masterBuffer1_arBuffer0_maybe_full <= masterBuffer1_arBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-      if (masterBuffer1_rBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (~(masterBuffer1_arBuffer0_do_enq == masterBuffer1_arBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+        masterBuffer1_arBuffer0_maybe_full <= masterBuffer1_arBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+      if (masterBuffer1_rBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_rBuffer0_wrap <= masterBuffer1_rBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer1_rBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (masterBuffer1_rBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_rBuffer0_wrap_1 <= masterBuffer1_rBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer1_rBuffer0_do_enq == masterBuffer1_rBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-        masterBuffer1_rBuffer0_maybe_full <= masterBuffer1_rBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-      if (masterBuffer1_awBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (~(masterBuffer1_rBuffer0_do_enq == masterBuffer1_rBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+        masterBuffer1_rBuffer0_maybe_full <= masterBuffer1_rBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+      if (masterBuffer1_awBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_awBuffer0_wrap <= masterBuffer1_awBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer1_awBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (masterBuffer1_awBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_awBuffer0_wrap_1 <= masterBuffer1_awBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer1_awBuffer0_do_enq == masterBuffer1_awBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-        masterBuffer1_awBuffer0_maybe_full <= masterBuffer1_awBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-      if (masterBuffer1_wBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (~(masterBuffer1_awBuffer0_do_enq == masterBuffer1_awBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+        masterBuffer1_awBuffer0_maybe_full <= masterBuffer1_awBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+      if (masterBuffer1_wBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_wBuffer0_wrap <= masterBuffer1_wBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer1_wBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (masterBuffer1_wBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_wBuffer0_wrap_1 <= masterBuffer1_wBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer1_wBuffer0_do_enq == masterBuffer1_wBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-        masterBuffer1_wBuffer0_maybe_full <= masterBuffer1_wBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-      if (masterBuffer1_bBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (~(masterBuffer1_wBuffer0_do_enq == masterBuffer1_wBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+        masterBuffer1_wBuffer0_maybe_full <= masterBuffer1_wBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+      if (masterBuffer1_bBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_bBuffer0_wrap <= masterBuffer1_bBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer1_bBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+      if (masterBuffer1_bBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
         masterBuffer1_bBuffer0_wrap_1 <= masterBuffer1_bBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer1_bBuffer0_do_enq == masterBuffer1_bBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-        masterBuffer1_bBuffer0_maybe_full <= masterBuffer1_bBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-      if (masterBuffer2_arBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (~(masterBuffer1_bBuffer0_do_enq == masterBuffer1_bBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+        masterBuffer1_bBuffer0_maybe_full <= masterBuffer1_bBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+      if (masterBuffer2_arBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_arBuffer0_wrap <= masterBuffer2_arBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer2_arBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (masterBuffer2_arBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_arBuffer0_wrap_1 <= masterBuffer2_arBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer2_arBuffer0_do_enq == masterBuffer2_arBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-        masterBuffer2_arBuffer0_maybe_full <= masterBuffer2_arBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-      if (masterBuffer2_rBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (~(masterBuffer2_arBuffer0_do_enq == masterBuffer2_arBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+        masterBuffer2_arBuffer0_maybe_full <= masterBuffer2_arBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+      if (masterBuffer2_rBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_rBuffer0_wrap <= masterBuffer2_rBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer2_rBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (masterBuffer2_rBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_rBuffer0_wrap_1 <= masterBuffer2_rBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer2_rBuffer0_do_enq == masterBuffer2_rBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-        masterBuffer2_rBuffer0_maybe_full <= masterBuffer2_rBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-      if (masterBuffer2_awBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (~(masterBuffer2_rBuffer0_do_enq == masterBuffer2_rBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+        masterBuffer2_rBuffer0_maybe_full <= masterBuffer2_rBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+      if (masterBuffer2_awBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_awBuffer0_wrap <= masterBuffer2_awBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer2_awBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (masterBuffer2_awBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_awBuffer0_wrap_1 <= masterBuffer2_awBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer2_awBuffer0_do_enq == masterBuffer2_awBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-        masterBuffer2_awBuffer0_maybe_full <= masterBuffer2_awBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-      if (masterBuffer2_wBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (~(masterBuffer2_awBuffer0_do_enq == masterBuffer2_awBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+        masterBuffer2_awBuffer0_maybe_full <= masterBuffer2_awBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+      if (masterBuffer2_wBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_wBuffer0_wrap <= masterBuffer2_wBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer2_wBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (masterBuffer2_wBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_wBuffer0_wrap_1 <= masterBuffer2_wBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer2_wBuffer0_do_enq == masterBuffer2_wBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-        masterBuffer2_wBuffer0_maybe_full <= masterBuffer2_wBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-      if (masterBuffer2_bBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (~(masterBuffer2_wBuffer0_do_enq == masterBuffer2_wBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+        masterBuffer2_wBuffer0_maybe_full <= masterBuffer2_wBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+      if (masterBuffer2_bBuffer0_do_enq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_bBuffer0_wrap <= masterBuffer2_bBuffer0_wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (masterBuffer2_bBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (masterBuffer2_bBuffer0_do_deq)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
         masterBuffer2_bBuffer0_wrap_1 <= masterBuffer2_bBuffer0_wrap_1 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
-      if (~(masterBuffer2_bBuffer0_do_enq == masterBuffer2_bBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-        masterBuffer2_bBuffer0_maybe_full <= masterBuffer2_bBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+      if (~(masterBuffer2_bBuffer0_do_enq == masterBuffer2_bBuffer0_do_deq))	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+        masterBuffer2_bBuffer0_maybe_full <= masterBuffer2_bBuffer0_do_enq;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
-      `FIRRTL_BEFORE_INITIAL	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
+  `ifdef ENABLE_INITIAL_REG_	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
+      `FIRRTL_BEFORE_INITIAL	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
-      automatic logic [31:0] _RANDOM[0:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
-      `ifdef INIT_RANDOM_PROLOG_	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
-        `INIT_RANDOM_PROLOG_	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
+    initial begin	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
+      automatic logic [31:0] _RANDOM[0:1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
+      `ifdef INIT_RANDOM_PROLOG_	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
+        `INIT_RANDOM_PROLOG_	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
+      `ifdef RANDOMIZE_REG_INIT	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
         for (logic [1:0] i = 2'h0; i < 2'h2; i += 2'h1) begin
-          _RANDOM[i[0]] = `RANDOM;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
-        end	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
-        masterBuffer0_arBuffer0_wrap = _RANDOM[1'h0][0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_arBuffer0_wrap_1 = _RANDOM[1'h0][1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_arBuffer0_maybe_full = _RANDOM[1'h0][2];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_rBuffer0_wrap = _RANDOM[1'h0][3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_rBuffer0_wrap_1 = _RANDOM[1'h0][4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_rBuffer0_maybe_full = _RANDOM[1'h0][5];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_awBuffer0_wrap = _RANDOM[1'h0][6];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_awBuffer0_wrap_1 = _RANDOM[1'h0][7];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_awBuffer0_maybe_full = _RANDOM[1'h0][8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_wBuffer0_wrap = _RANDOM[1'h0][9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_wBuffer0_wrap_1 = _RANDOM[1'h0][10];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_wBuffer0_maybe_full = _RANDOM[1'h0][11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_bBuffer0_wrap = _RANDOM[1'h0][12];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_bBuffer0_wrap_1 = _RANDOM[1'h0][13];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer0_bBuffer0_maybe_full = _RANDOM[1'h0][14];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_arBuffer0_wrap = _RANDOM[1'h0][15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_arBuffer0_wrap_1 = _RANDOM[1'h0][16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_arBuffer0_maybe_full = _RANDOM[1'h0][17];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_rBuffer0_wrap = _RANDOM[1'h0][18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_rBuffer0_wrap_1 = _RANDOM[1'h0][19];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_rBuffer0_maybe_full = _RANDOM[1'h0][20];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_awBuffer0_wrap = _RANDOM[1'h0][21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_awBuffer0_wrap_1 = _RANDOM[1'h0][22];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_awBuffer0_maybe_full = _RANDOM[1'h0][23];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_wBuffer0_wrap = _RANDOM[1'h0][24];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_wBuffer0_wrap_1 = _RANDOM[1'h0][25];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_wBuffer0_maybe_full = _RANDOM[1'h0][26];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_bBuffer0_wrap = _RANDOM[1'h0][27];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_bBuffer0_wrap_1 = _RANDOM[1'h0][28];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer1_bBuffer0_maybe_full = _RANDOM[1'h0][29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_arBuffer0_wrap = _RANDOM[1'h0][30];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_arBuffer0_wrap_1 = _RANDOM[1'h0][31];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_arBuffer0_maybe_full = _RANDOM[1'h1][0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-        masterBuffer2_rBuffer0_wrap = _RANDOM[1'h1][1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_rBuffer0_wrap_1 = _RANDOM[1'h1][2];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_rBuffer0_maybe_full = _RANDOM[1'h1][3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-        masterBuffer2_awBuffer0_wrap = _RANDOM[1'h1][4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_awBuffer0_wrap_1 = _RANDOM[1'h1][5];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_awBuffer0_maybe_full = _RANDOM[1'h1][6];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-        masterBuffer2_wBuffer0_wrap = _RANDOM[1'h1][7];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_wBuffer0_wrap_1 = _RANDOM[1'h1][8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_wBuffer0_maybe_full = _RANDOM[1'h1][9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
-        masterBuffer2_bBuffer0_wrap = _RANDOM[1'h1][10];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_bBuffer0_wrap_1 = _RANDOM[1'h1][11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
-        masterBuffer2_bBuffer0_maybe_full = _RANDOM[1'h1][12];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :51:41
+          _RANDOM[i[0]] = `RANDOM;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
+        end	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
+        masterBuffer0_arBuffer0_wrap = _RANDOM[1'h0][0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_arBuffer0_wrap_1 = _RANDOM[1'h0][1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_arBuffer0_maybe_full = _RANDOM[1'h0][2];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_rBuffer0_wrap = _RANDOM[1'h0][3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_rBuffer0_wrap_1 = _RANDOM[1'h0][4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_rBuffer0_maybe_full = _RANDOM[1'h0][5];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_awBuffer0_wrap = _RANDOM[1'h0][6];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_awBuffer0_wrap_1 = _RANDOM[1'h0][7];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_awBuffer0_maybe_full = _RANDOM[1'h0][8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_wBuffer0_wrap = _RANDOM[1'h0][9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_wBuffer0_wrap_1 = _RANDOM[1'h0][10];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_wBuffer0_maybe_full = _RANDOM[1'h0][11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_bBuffer0_wrap = _RANDOM[1'h0][12];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_bBuffer0_wrap_1 = _RANDOM[1'h0][13];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer0_bBuffer0_maybe_full = _RANDOM[1'h0][14];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_arBuffer0_wrap = _RANDOM[1'h0][15];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_arBuffer0_wrap_1 = _RANDOM[1'h0][16];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_arBuffer0_maybe_full = _RANDOM[1'h0][17];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_rBuffer0_wrap = _RANDOM[1'h0][18];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_rBuffer0_wrap_1 = _RANDOM[1'h0][19];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_rBuffer0_maybe_full = _RANDOM[1'h0][20];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_awBuffer0_wrap = _RANDOM[1'h0][21];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_awBuffer0_wrap_1 = _RANDOM[1'h0][22];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_awBuffer0_maybe_full = _RANDOM[1'h0][23];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_wBuffer0_wrap = _RANDOM[1'h0][24];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_wBuffer0_wrap_1 = _RANDOM[1'h0][25];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_wBuffer0_maybe_full = _RANDOM[1'h0][26];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_bBuffer0_wrap = _RANDOM[1'h0][27];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_bBuffer0_wrap_1 = _RANDOM[1'h0][28];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer1_bBuffer0_maybe_full = _RANDOM[1'h0][29];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_arBuffer0_wrap = _RANDOM[1'h0][30];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_arBuffer0_wrap_1 = _RANDOM[1'h0][31];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_arBuffer0_maybe_full = _RANDOM[1'h1][0];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+        masterBuffer2_rBuffer0_wrap = _RANDOM[1'h1][1];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_rBuffer0_wrap_1 = _RANDOM[1'h1][2];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_rBuffer0_maybe_full = _RANDOM[1'h1][3];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+        masterBuffer2_awBuffer0_wrap = _RANDOM[1'h1][4];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_awBuffer0_wrap_1 = _RANDOM[1'h1][5];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_awBuffer0_maybe_full = _RANDOM[1'h1][6];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+        masterBuffer2_wBuffer0_wrap = _RANDOM[1'h1][7];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_wBuffer0_wrap_1 = _RANDOM[1'h1][8];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_wBuffer0_maybe_full = _RANDOM[1'h1][9];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
+        masterBuffer2_bBuffer0_wrap = _RANDOM[1'h1][10];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_bBuffer0_wrap_1 = _RANDOM[1'h1][11];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41, src/main/scala/chisel3/util/Counter.scala:61:40
+        masterBuffer2_bBuffer0_maybe_full = _RANDOM[1'h1][12];	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :51:41
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
-      `FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7
+    `ifdef FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
+      `FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  ChiselTrueDualPortRAM mem (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
+  ChiselTrueDualPortRAM mem (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
     .clock                (clock),
     .reset                (reset),
-    .read1_req_bits       (_axiBridge1_read_req_bits),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-    .read1_req_valid      (_axiBridge1_read_req_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
+    .read1_req_bits       (_axiBridge1_read_req_bits),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+    .read1_req_valid      (_axiBridge1_read_req_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
     .read1_req_ready      (_mem_read1_req_ready),
     .read1_resp_bits      (_mem_read1_resp_bits),
     .read1_resp_valid     (_mem_read1_resp_valid),
-    .read1_resp_ready     (_axiBridge1_read_resp_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-    .read2_req_bits       (_axiBridge2_read_req_bits),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-    .read2_req_valid      (_axiBridge2_read_req_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
+    .read1_resp_ready     (_axiBridge1_read_resp_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+    .read2_req_bits       (_axiBridge2_read_req_bits),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+    .read2_req_valid      (_axiBridge2_read_req_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
     .read2_req_ready      (_mem_read2_req_ready),
     .read2_resp_bits      (_mem_read2_resp_bits),
     .read2_resp_valid     (_mem_read2_resp_valid),
-    .read2_resp_ready     (_axiBridge2_read_resp_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-    .write1_req_bits_addr (_axiBridge1_write_req_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-    .write1_req_bits_data (_axiBridge1_write_req_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-    .write1_req_bits_strb (_axiBridge1_write_req_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-    .write1_req_valid     (_axiBridge1_write_req_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
+    .read2_resp_ready     (_axiBridge2_read_resp_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+    .write1_req_bits_addr (_axiBridge1_write_req_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+    .write1_req_bits_data (_axiBridge1_write_req_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+    .write1_req_bits_strb (_axiBridge1_write_req_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+    .write1_req_valid     (_axiBridge1_write_req_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
     .write1_req_ready     (_mem_write1_req_ready),
     .write1_resp_valid    (_mem_write1_resp_valid),
-    .write1_resp_ready    (_axiBridge1_write_resp_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
-    .write2_req_bits_addr (_axiBridge2_write_req_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-    .write2_req_bits_data (_axiBridge2_write_req_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-    .write2_req_bits_strb (_axiBridge2_write_req_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
-    .write2_req_valid     (_axiBridge2_write_req_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
+    .write1_resp_ready    (_axiBridge1_write_resp_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
+    .write2_req_bits_addr (_axiBridge2_write_req_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+    .write2_req_bits_data (_axiBridge2_write_req_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+    .write2_req_bits_strb (_axiBridge2_write_req_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
+    .write2_req_valid     (_axiBridge2_write_req_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
     .write2_req_ready     (_mem_write2_req_ready),
     .write2_resp_valid    (_mem_write2_resp_valid),
-    .write2_resp_ready    (_axiBridge2_write_resp_ready)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
+    .write2_resp_ready    (_axiBridge2_write_resp_ready)	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
   );
-  Axi4FullToReadWriteBridge axiBridge1 (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:30:34
+  Axi4FullToReadWriteBridge axiBridge1 (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:30:34
     .clock                (clock),
     .reset                (reset),
-    .s_axi_ar_bits_addr   (masterBuffer0_arBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_ar_bits_len    (masterBuffer0_arBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_ar_bits_size   (masterBuffer0_arBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_ar_bits_burst  (masterBuffer0_arBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_ar_bits_lock   (masterBuffer0_arBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_ar_bits_cache  (masterBuffer0_arBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_ar_bits_prot   (masterBuffer0_arBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_ar_bits_qos    (masterBuffer0_arBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_ar_bits_region (masterBuffer0_arBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_ar_valid       (masterBuffer0_arBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    .s_axi_ar_bits_addr   (masterBuffer0_arBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_ar_bits_len    (masterBuffer0_arBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_ar_bits_size   (masterBuffer0_arBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_ar_bits_burst  (masterBuffer0_arBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_ar_bits_lock   (masterBuffer0_arBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_ar_bits_cache  (masterBuffer0_arBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_ar_bits_prot   (masterBuffer0_arBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_ar_bits_qos    (masterBuffer0_arBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_ar_bits_region (masterBuffer0_arBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_ar_valid       (masterBuffer0_arBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .s_axi_ar_ready       (masterBuffer0_arBuffer0_sink_ready),
     .s_axi_r_bits_data    (masterBuffer0_rBuffer0_hi_hi),
     .s_axi_r_bits_last    (masterBuffer0_rBuffer0_lo),
     .s_axi_r_valid        (masterBuffer0_rBuffer0_source_valid),
-    .s_axi_r_ready        (masterBuffer0_rBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_bits_addr   (masterBuffer0_awBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_bits_len    (masterBuffer0_awBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_bits_size   (masterBuffer0_awBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_bits_burst  (masterBuffer0_awBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_bits_lock   (masterBuffer0_awBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_bits_cache  (masterBuffer0_awBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_bits_prot   (masterBuffer0_awBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_bits_qos    (masterBuffer0_awBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_bits_region (masterBuffer0_awBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_aw_valid       (masterBuffer0_awBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    .s_axi_r_ready        (masterBuffer0_rBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_bits_addr   (masterBuffer0_awBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_bits_len    (masterBuffer0_awBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_bits_size   (masterBuffer0_awBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_bits_burst  (masterBuffer0_awBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_bits_lock   (masterBuffer0_awBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_bits_cache  (masterBuffer0_awBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_bits_prot   (masterBuffer0_awBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_bits_qos    (masterBuffer0_awBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_bits_region (masterBuffer0_awBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_aw_valid       (masterBuffer0_awBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .s_axi_aw_ready       (masterBuffer0_awBuffer0_sink_ready),
-    .s_axi_w_bits_data    (masterBuffer0_wBuffer0_sink_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_w_bits_strb    (masterBuffer0_wBuffer0_sink_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .s_axi_w_valid        (masterBuffer0_wBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    .s_axi_w_bits_data    (masterBuffer0_wBuffer0_sink_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_w_bits_strb    (masterBuffer0_wBuffer0_sink_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .s_axi_w_valid        (masterBuffer0_wBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .s_axi_w_ready        (masterBuffer0_wBuffer0_sink_ready),
     .s_axi_b_valid        (masterBuffer0_bBuffer0_source_valid),
-    .s_axi_b_ready        (masterBuffer0_bBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    .s_axi_b_ready        (masterBuffer0_bBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .read_req_bits        (_axiBridge1_read_req_bits),
     .read_req_valid       (_axiBridge1_read_req_valid),
-    .read_req_ready       (_mem_read1_req_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-    .read_resp_bits       (_mem_read1_resp_bits),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-    .read_resp_valid      (_mem_read1_resp_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
+    .read_req_ready       (_mem_read1_req_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+    .read_resp_bits       (_mem_read1_resp_bits),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+    .read_resp_valid      (_mem_read1_resp_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
     .read_resp_ready      (_axiBridge1_read_resp_ready),
     .write_req_bits_addr  (_axiBridge1_write_req_bits_addr),
     .write_req_bits_data  (_axiBridge1_write_req_bits_data),
     .write_req_bits_strb  (_axiBridge1_write_req_bits_strb),
     .write_req_valid      (_axiBridge1_write_req_valid),
-    .write_req_ready      (_mem_write1_req_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-    .write_resp_valid     (_mem_write1_resp_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
+    .write_req_ready      (_mem_write1_req_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+    .write_resp_valid     (_mem_write1_resp_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
     .write_resp_ready     (_axiBridge1_write_resp_ready)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(43)
-  ) masterBuffer0_arBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  ) masterBuffer0_arBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .clock    (clock),
     .addrA    (masterBuffer0_arBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer0_arBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    .writeEnA (masterBuffer0_arBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .dataInA
       ({masterBuffer0_arBuffer0_hi_hi_hi,
         masterBuffer0_arBuffer0_source_bits_len,
@@ -2860,7 +3274,7 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
         masterBuffer0_arBuffer0_source_bits_cache,
         masterBuffer0_arBuffer0_source_bits_prot,
         masterBuffer0_arBuffer0_source_bits_qos,
-        masterBuffer0_arBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer0_arBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .addrB    (masterBuffer0_arBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer0_arBuffer0_ram_dataOutB)
   );
@@ -2868,14 +3282,14 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(67)
-  ) masterBuffer0_rBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  ) masterBuffer0_rBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .clock    (clock),
     .addrA    (masterBuffer0_rBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer0_rBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    .writeEnA (masterBuffer0_rBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .dataInA
       ({masterBuffer0_rBuffer0_hi_hi,
         masterBuffer0_rBuffer0_source_bits_resp,
-        masterBuffer0_rBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer0_rBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .addrB    (masterBuffer0_rBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer0_rBuffer0_ram_dataOutB)
   );
@@ -2883,10 +3297,10 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(43)
-  ) masterBuffer0_awBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  ) masterBuffer0_awBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .clock    (clock),
     .addrA    (masterBuffer0_awBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer0_awBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    .writeEnA (masterBuffer0_awBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .dataInA
       ({masterBuffer0_awBuffer0_hi_hi_hi,
         masterBuffer0_awBuffer0_source_bits_len,
@@ -2896,7 +3310,7 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
         masterBuffer0_awBuffer0_source_bits_cache,
         masterBuffer0_awBuffer0_source_bits_prot,
         masterBuffer0_awBuffer0_source_bits_qos,
-        masterBuffer0_awBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer0_awBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .addrB    (masterBuffer0_awBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer0_awBuffer0_ram_dataOutB)
   );
@@ -2904,14 +3318,14 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(73)
-  ) masterBuffer0_wBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  ) masterBuffer0_wBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .clock    (clock),
     .addrA    (masterBuffer0_wBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer0_wBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    .writeEnA (masterBuffer0_wBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .dataInA
       ({masterBuffer0_wBuffer0_source_bits_data,
         masterBuffer0_wBuffer0_source_bits_strb,
-        masterBuffer0_wBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+        masterBuffer0_wBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .addrB    (masterBuffer0_wBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer0_wBuffer0_ram_dataOutB)
   );
@@ -2919,102 +3333,101 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(2)
-  ) masterBuffer0_bBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+  ) masterBuffer0_bBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .clock    (clock),
     .addrA    (masterBuffer0_bBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer0_bBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
-    .dataInA  (masterBuffer0_bBuffer0_hi),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:32:42
+    .writeEnA (masterBuffer0_bBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
+    .dataInA  (masterBuffer0_bBuffer0_hi),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:32:42
     .addrB    (masterBuffer0_bBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (masterBuffer0_bBuffer0_sink_bits_resp)
   );
-  Axi4FullToReadWriteBridge axiBridge2 (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:40:34
+  Axi4FullToReadWriteBridge axiBridge2 (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:40:34
     .clock                (clock),
     .reset                (reset),
-    .s_axi_ar_bits_addr   (masterBuffer2_arBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_ar_bits_len    (masterBuffer2_arBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_ar_bits_size   (masterBuffer2_arBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_ar_bits_burst  (masterBuffer2_arBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_ar_bits_lock   (masterBuffer2_arBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_ar_bits_cache  (masterBuffer2_arBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_ar_bits_prot   (masterBuffer2_arBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_ar_bits_qos    (masterBuffer2_arBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_ar_bits_region (masterBuffer2_arBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_ar_valid       (masterBuffer2_arBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .s_axi_ar_bits_addr   (masterBuffer2_arBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_ar_bits_len    (masterBuffer2_arBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_ar_bits_size   (masterBuffer2_arBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_ar_bits_burst  (masterBuffer2_arBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_ar_bits_lock   (masterBuffer2_arBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_ar_bits_cache  (masterBuffer2_arBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_ar_bits_prot   (masterBuffer2_arBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_ar_bits_qos    (masterBuffer2_arBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_ar_bits_region (masterBuffer2_arBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_ar_valid       (masterBuffer2_arBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .s_axi_ar_ready       (masterBuffer2_arBuffer0_sink_ready),
     .s_axi_r_bits_data    (masterBuffer2_rBuffer0_hi_hi),
     .s_axi_r_bits_last    (masterBuffer2_rBuffer0_lo),
     .s_axi_r_valid        (masterBuffer2_rBuffer0_source_valid),
-    .s_axi_r_ready        (masterBuffer2_rBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_bits_addr   (masterBuffer2_awBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_bits_len    (masterBuffer2_awBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_bits_size   (masterBuffer2_awBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_bits_burst  (masterBuffer2_awBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_bits_lock   (masterBuffer2_awBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_bits_cache  (masterBuffer2_awBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_bits_prot   (masterBuffer2_awBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_bits_qos    (masterBuffer2_awBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_bits_region (masterBuffer2_awBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_aw_valid       (masterBuffer2_awBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .s_axi_r_ready        (masterBuffer2_rBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_bits_addr   (masterBuffer2_awBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_bits_len    (masterBuffer2_awBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_bits_size   (masterBuffer2_awBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_bits_burst  (masterBuffer2_awBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_bits_lock   (masterBuffer2_awBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_bits_cache  (masterBuffer2_awBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_bits_prot   (masterBuffer2_awBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_bits_qos    (masterBuffer2_awBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_bits_region (masterBuffer2_awBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_aw_valid       (masterBuffer2_awBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .s_axi_aw_ready       (masterBuffer2_awBuffer0_sink_ready),
-    .s_axi_w_bits_data    (masterBuffer2_wBuffer0_sink_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_w_bits_strb    (masterBuffer2_wBuffer0_sink_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .s_axi_w_valid        (masterBuffer2_wBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .s_axi_w_bits_data    (masterBuffer2_wBuffer0_sink_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_w_bits_strb    (masterBuffer2_wBuffer0_sink_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .s_axi_w_valid        (masterBuffer2_wBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .s_axi_w_ready        (masterBuffer2_wBuffer0_sink_ready),
     .s_axi_b_valid        (masterBuffer2_bBuffer0_source_valid),
-    .s_axi_b_ready        (masterBuffer2_bBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .s_axi_b_ready        (masterBuffer2_bBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .read_req_bits        (_axiBridge2_read_req_bits),
     .read_req_valid       (_axiBridge2_read_req_valid),
-    .read_req_ready       (_mem_read2_req_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-    .read_resp_bits       (_mem_read2_resp_bits),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-    .read_resp_valid      (_mem_read2_resp_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
+    .read_req_ready       (_mem_read2_req_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+    .read_resp_bits       (_mem_read2_resp_bits),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+    .read_resp_valid      (_mem_read2_resp_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
     .read_resp_ready      (_axiBridge2_read_resp_ready),
     .write_req_bits_addr  (_axiBridge2_write_req_bits_addr),
     .write_req_bits_data  (_axiBridge2_write_req_bits_data),
     .write_req_bits_strb  (_axiBridge2_write_req_bits_strb),
     .write_req_valid      (_axiBridge2_write_req_valid),
-    .write_req_ready      (_mem_write2_req_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
-    .write_resp_valid     (_mem_write2_resp_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:26:27
+    .write_req_ready      (_mem_write2_req_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
+    .write_resp_valid     (_mem_write2_resp_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:26:27
     .write_resp_ready     (_axiBridge2_write_resp_ready)
   );
-  wire [1:0]  masterBuffer2_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-  Widen widen (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:49:29
+  wire [1:0]  masterBuffer2_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+  Widen widen (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:49:29
     .clock                (clock),
     .reset                (reset),
-    .s_axi_ar_bits_addr   (masterBuffer1_arBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_ar_bits_len    (masterBuffer1_arBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_ar_bits_size   (masterBuffer1_arBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_ar_bits_burst  (masterBuffer1_arBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_ar_bits_lock   (masterBuffer1_arBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_ar_bits_cache  (masterBuffer1_arBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_ar_bits_prot   (masterBuffer1_arBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_ar_bits_qos    (masterBuffer1_arBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_ar_bits_region (masterBuffer1_arBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_ar_valid       (masterBuffer1_arBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    .s_axi_ar_bits_addr   (masterBuffer1_arBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_ar_bits_len    (masterBuffer1_arBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_ar_bits_size   (masterBuffer1_arBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_ar_bits_burst  (masterBuffer1_arBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_ar_bits_lock   (masterBuffer1_arBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_ar_bits_cache  (masterBuffer1_arBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_ar_bits_prot   (masterBuffer1_arBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_ar_bits_qos    (masterBuffer1_arBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_ar_bits_region (masterBuffer1_arBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_ar_valid       (masterBuffer1_arBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .s_axi_ar_ready       (masterBuffer1_arBuffer0_sink_ready),
     .s_axi_r_bits_data    (masterBuffer1_rBuffer0_hi_hi),
     .s_axi_r_bits_resp    (masterBuffer1_rBuffer0_source_bits_resp),
     .s_axi_r_bits_last    (masterBuffer1_rBuffer0_lo),
     .s_axi_r_valid        (masterBuffer1_rBuffer0_source_valid),
-    .s_axi_r_ready        (masterBuffer1_rBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_bits_addr   (masterBuffer1_awBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_bits_len    (masterBuffer1_awBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_bits_size   (masterBuffer1_awBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_bits_burst  (masterBuffer1_awBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_bits_lock   (masterBuffer1_awBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_bits_cache  (masterBuffer1_awBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_bits_prot   (masterBuffer1_awBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_bits_qos    (masterBuffer1_awBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_bits_region (masterBuffer1_awBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_aw_valid       (masterBuffer1_awBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    .s_axi_r_ready        (masterBuffer1_rBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_bits_addr   (masterBuffer1_awBuffer0_sink_bits_addr),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_bits_len    (masterBuffer1_awBuffer0_sink_bits_len),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_bits_size   (masterBuffer1_awBuffer0_sink_bits_size),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_bits_burst  (masterBuffer1_awBuffer0_sink_bits_burst),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_bits_lock   (masterBuffer1_awBuffer0_sink_bits_lock),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_bits_cache  (masterBuffer1_awBuffer0_sink_bits_cache),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_bits_prot   (masterBuffer1_awBuffer0_sink_bits_prot),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_bits_qos    (masterBuffer1_awBuffer0_sink_bits_qos),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_bits_region (masterBuffer1_awBuffer0_sink_bits_region),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_aw_valid       (masterBuffer1_awBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .s_axi_aw_ready       (masterBuffer1_awBuffer0_sink_ready),
-    .s_axi_w_bits_data    (masterBuffer1_wBuffer0_sink_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_w_bits_strb    (masterBuffer1_wBuffer0_sink_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_w_bits_last    (masterBuffer1_wBuffer0_sink_bits_last),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .s_axi_w_valid        (masterBuffer1_wBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    .s_axi_w_bits_data    (masterBuffer1_wBuffer0_sink_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_w_bits_strb    (masterBuffer1_wBuffer0_sink_bits_strb),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .s_axi_w_valid        (masterBuffer1_wBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .s_axi_w_ready        (masterBuffer1_wBuffer0_sink_ready),
     .s_axi_b_bits_resp    (masterBuffer1_bBuffer0_hi),
     .s_axi_b_valid        (masterBuffer1_bBuffer0_source_valid),
-    .s_axi_b_ready        (masterBuffer1_bBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    .s_axi_b_ready        (masterBuffer1_bBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .m_axi_ar_bits_addr   (masterBuffer2_arBuffer0_hi_hi_hi),
     .m_axi_ar_bits_len    (masterBuffer2_arBuffer0_source_bits_len),
     .m_axi_ar_bits_burst  (masterBuffer2_arBuffer0_source_bits_burst),
@@ -3024,15 +3437,14 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .m_axi_ar_bits_qos    (masterBuffer2_arBuffer0_source_bits_qos),
     .m_axi_ar_bits_region (masterBuffer2_arBuffer0_lo_lo),
     .m_axi_ar_valid       (masterBuffer2_arBuffer0_source_valid),
-    .m_axi_ar_ready       (masterBuffer2_arBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .m_axi_r_bits_data    (masterBuffer2_rBuffer0_sink_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .m_axi_r_bits_resp    (masterBuffer2_rBuffer0_sink_bits_resp),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .m_axi_r_bits_last    (masterBuffer2_rBuffer0_sink_bits_last),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .m_axi_r_valid        (masterBuffer2_rBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .m_axi_ar_ready       (masterBuffer2_arBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .m_axi_r_bits_data    (masterBuffer2_rBuffer0_sink_bits_data),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .m_axi_r_bits_resp    (masterBuffer2_rBuffer0_sink_bits_resp),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .m_axi_r_bits_last    (masterBuffer2_rBuffer0_sink_bits_last),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .m_axi_r_valid        (masterBuffer2_rBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .m_axi_r_ready        (masterBuffer2_rBuffer0_sink_ready),
     .m_axi_aw_bits_addr   (masterBuffer2_awBuffer0_hi_hi_hi),
     .m_axi_aw_bits_len    (masterBuffer2_awBuffer0_source_bits_len),
-    .m_axi_aw_bits_size   (masterBuffer2_awBuffer0_source_bits_size),
     .m_axi_aw_bits_burst  (masterBuffer2_awBuffer0_source_bits_burst),
     .m_axi_aw_bits_lock   (masterBuffer2_awBuffer0_source_bits_lock),
     .m_axi_aw_bits_cache  (masterBuffer2_awBuffer0_source_bits_cache),
@@ -3040,24 +3452,24 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .m_axi_aw_bits_qos    (masterBuffer2_awBuffer0_source_bits_qos),
     .m_axi_aw_bits_region (masterBuffer2_awBuffer0_lo_lo),
     .m_axi_aw_valid       (masterBuffer2_awBuffer0_source_valid),
-    .m_axi_aw_ready       (masterBuffer2_awBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .m_axi_aw_ready       (masterBuffer2_awBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .m_axi_w_bits_data    (masterBuffer2_wBuffer0_source_bits_data),
     .m_axi_w_bits_strb    (masterBuffer2_wBuffer0_source_bits_strb),
     .m_axi_w_bits_last    (masterBuffer2_wBuffer0_lo),
     .m_axi_w_valid        (masterBuffer2_wBuffer0_source_valid),
-    .m_axi_w_ready        (masterBuffer2_wBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .m_axi_b_bits_resp    (masterBuffer2_bBuffer0_sink_bits_resp),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .m_axi_b_valid        (masterBuffer2_bBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .m_axi_w_ready        (masterBuffer2_wBuffer0_source_ready),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .m_axi_b_bits_resp    (masterBuffer2_bBuffer0_sink_bits_resp),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .m_axi_b_valid        (masterBuffer2_bBuffer0_sink_valid),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .m_axi_b_ready        (masterBuffer2_bBuffer0_sink_ready)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(43)
-  ) masterBuffer1_arBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  ) masterBuffer1_arBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .clock    (clock),
     .addrA    (masterBuffer1_arBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer1_arBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    .writeEnA (masterBuffer1_arBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .dataInA
       ({masterBuffer1_arBuffer0_hi_hi_hi,
         masterBuffer1_arBuffer0_source_bits_len,
@@ -3067,7 +3479,7 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
         masterBuffer1_arBuffer0_source_bits_cache,
         masterBuffer1_arBuffer0_source_bits_prot,
         masterBuffer1_arBuffer0_source_bits_qos,
-        masterBuffer1_arBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+        masterBuffer1_arBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .addrB    (masterBuffer1_arBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer1_arBuffer0_ram_dataOutB)
   );
@@ -3075,14 +3487,14 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(67)
-  ) masterBuffer1_rBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  ) masterBuffer1_rBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .clock    (clock),
     .addrA    (masterBuffer1_rBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer1_rBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    .writeEnA (masterBuffer1_rBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .dataInA
       ({masterBuffer1_rBuffer0_hi_hi,
         masterBuffer1_rBuffer0_source_bits_resp,
-        masterBuffer1_rBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+        masterBuffer1_rBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .addrB    (masterBuffer1_rBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer1_rBuffer0_ram_dataOutB)
   );
@@ -3090,10 +3502,10 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(43)
-  ) masterBuffer1_awBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  ) masterBuffer1_awBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .clock    (clock),
     .addrA    (masterBuffer1_awBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer1_awBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    .writeEnA (masterBuffer1_awBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .dataInA
       ({masterBuffer1_awBuffer0_hi_hi_hi,
         masterBuffer1_awBuffer0_source_bits_len,
@@ -3103,7 +3515,7 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
         masterBuffer1_awBuffer0_source_bits_cache,
         masterBuffer1_awBuffer0_source_bits_prot,
         masterBuffer1_awBuffer0_source_bits_qos,
-        masterBuffer1_awBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+        masterBuffer1_awBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .addrB    (masterBuffer1_awBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer1_awBuffer0_ram_dataOutB)
   );
@@ -3111,14 +3523,14 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(73)
-  ) masterBuffer1_wBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  ) masterBuffer1_wBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .clock    (clock),
     .addrA    (masterBuffer1_wBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer1_wBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    .writeEnA (masterBuffer1_wBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .dataInA
       ({masterBuffer1_wBuffer0_source_bits_data,
         masterBuffer1_wBuffer0_source_bits_strb,
-        masterBuffer1_wBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+        masterBuffer1_wBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .addrB    (masterBuffer1_wBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer1_wBuffer0_ram_dataOutB)
   );
@@ -3126,11 +3538,11 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(2)
-  ) masterBuffer1_bBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+  ) masterBuffer1_bBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .clock    (clock),
     .addrA    (masterBuffer1_bBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer1_bBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
-    .dataInA  (masterBuffer1_bBuffer0_hi),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:50:40
+    .writeEnA (masterBuffer1_bBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
+    .dataInA  (masterBuffer1_bBuffer0_hi),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:50:40
     .addrB    (masterBuffer1_bBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (masterBuffer1_bBuffer0_sink_bits_resp)
   );
@@ -3138,10 +3550,10 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(43)
-  ) masterBuffer2_arBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  ) masterBuffer2_arBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .clock    (clock),
     .addrA    (masterBuffer2_arBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer2_arBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .writeEnA (masterBuffer2_arBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .dataInA
       ({masterBuffer2_arBuffer0_hi_hi_hi,
         masterBuffer2_arBuffer0_source_bits_len,
@@ -3151,7 +3563,7 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
         masterBuffer2_arBuffer0_source_bits_cache,
         masterBuffer2_arBuffer0_source_bits_prot,
         masterBuffer2_arBuffer0_source_bits_qos,
-        masterBuffer2_arBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+        masterBuffer2_arBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .addrB    (masterBuffer2_arBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer2_arBuffer0_ram_dataOutB)
   );
@@ -3159,14 +3571,14 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(67)
-  ) masterBuffer2_rBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  ) masterBuffer2_rBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .clock    (clock),
     .addrA    (masterBuffer2_rBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer2_rBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .writeEnA (masterBuffer2_rBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .dataInA
       ({masterBuffer2_rBuffer0_hi_hi,
         masterBuffer2_rBuffer0_source_bits_resp,
-        masterBuffer2_rBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+        masterBuffer2_rBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .addrB    (masterBuffer2_rBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer2_rBuffer0_ram_dataOutB)
   );
@@ -3174,10 +3586,10 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(43)
-  ) masterBuffer2_awBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  ) masterBuffer2_awBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .clock    (clock),
     .addrA    (masterBuffer2_awBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer2_awBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .writeEnA (masterBuffer2_awBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .dataInA
       ({masterBuffer2_awBuffer0_hi_hi_hi,
         masterBuffer2_awBuffer0_source_bits_len,
@@ -3187,7 +3599,7 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
         masterBuffer2_awBuffer0_source_bits_cache,
         masterBuffer2_awBuffer0_source_bits_prot,
         masterBuffer2_awBuffer0_source_bits_qos,
-        masterBuffer2_awBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+        masterBuffer2_awBuffer0_lo_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .addrB    (masterBuffer2_awBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer2_awBuffer0_ram_dataOutB)
   );
@@ -3195,14 +3607,14 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(73)
-  ) masterBuffer2_wBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  ) masterBuffer2_wBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .clock    (clock),
     .addrA    (masterBuffer2_wBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer2_wBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .writeEnA (masterBuffer2_wBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .dataInA
       ({masterBuffer2_wBuffer0_source_bits_data,
         masterBuffer2_wBuffer0_source_bits_strb,
-        masterBuffer2_wBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+        masterBuffer2_wBuffer0_lo}),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .addrB    (masterBuffer2_wBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (_masterBuffer2_wBuffer0_ram_dataOutB)
   );
@@ -3210,31 +3622,31 @@ module Widen_Tbtop(	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(2)
-  ) masterBuffer2_bBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+  ) masterBuffer2_bBuffer0_ram (	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .clock    (clock),
     .addrA    (masterBuffer2_bBuffer0_wrap),	// src/main/scala/chisel3/util/Counter.scala:61:40
-    .writeEnA (masterBuffer2_bBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
-    .dataInA  (masterBuffer2_bBuffer0_hi),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:51:41
+    .writeEnA (masterBuffer2_bBuffer0_do_enq),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
+    .dataInA  (masterBuffer2_bBuffer0_hi),	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:51:41
     .addrB    (masterBuffer2_bBuffer0_wrap_1),	// src/main/scala/chisel3/util/Counter.scala:61:40
     .dataOutB (masterBuffer2_bBuffer0_sink_bits_resp)
   );
-  assign S_AXI_NORMAL_ARREADY = masterBuffer0_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  assign S_AXI_NORMAL_RVALID = masterBuffer0_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  assign S_AXI_NORMAL_RDATA = masterBuffer0_rBuffer0_sink_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  assign S_AXI_NORMAL_RRESP = masterBuffer0_rBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  assign S_AXI_NORMAL_RLAST = masterBuffer0_rBuffer0_sink_bits_last;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  assign S_AXI_NORMAL_AWREADY = masterBuffer0_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  assign S_AXI_NORMAL_WREADY = masterBuffer0_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  assign S_AXI_NORMAL_BVALID = masterBuffer0_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  assign S_AXI_NORMAL_BRESP = masterBuffer0_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :32:42
-  assign S_AXI_TEST_ARREADY = masterBuffer1_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-  assign S_AXI_TEST_RVALID = masterBuffer1_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-  assign S_AXI_TEST_RDATA = masterBuffer1_rBuffer0_sink_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-  assign S_AXI_TEST_RRESP = masterBuffer1_rBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-  assign S_AXI_TEST_RLAST = masterBuffer1_rBuffer0_sink_bits_last;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-  assign S_AXI_TEST_AWREADY = masterBuffer1_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-  assign S_AXI_TEST_WREADY = masterBuffer1_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-  assign S_AXI_TEST_BVALID = masterBuffer1_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
-  assign S_AXI_TEST_BRESP = masterBuffer1_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.scala:14:7, :50:40
+  assign S_AXI_NORMAL_ARREADY = masterBuffer0_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  assign S_AXI_NORMAL_RVALID = masterBuffer0_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  assign S_AXI_NORMAL_RDATA = masterBuffer0_rBuffer0_sink_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  assign S_AXI_NORMAL_RRESP = masterBuffer0_rBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  assign S_AXI_NORMAL_RLAST = masterBuffer0_rBuffer0_sink_bits_last;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  assign S_AXI_NORMAL_AWREADY = masterBuffer0_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  assign S_AXI_NORMAL_WREADY = masterBuffer0_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  assign S_AXI_NORMAL_BVALID = masterBuffer0_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  assign S_AXI_NORMAL_BRESP = masterBuffer0_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :32:42
+  assign S_AXI_TEST_ARREADY = masterBuffer1_arBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+  assign S_AXI_TEST_RVALID = masterBuffer1_rBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+  assign S_AXI_TEST_RDATA = masterBuffer1_rBuffer0_sink_bits_data;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+  assign S_AXI_TEST_RRESP = masterBuffer1_rBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+  assign S_AXI_TEST_RLAST = masterBuffer1_rBuffer0_sink_bits_last;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+  assign S_AXI_TEST_AWREADY = masterBuffer1_awBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+  assign S_AXI_TEST_WREADY = masterBuffer1_wBuffer0_source_ready;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+  assign S_AXI_TEST_BVALID = masterBuffer1_bBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
+  assign S_AXI_TEST_BRESP = masterBuffer1_bBuffer0_sink_bits_resp;	// home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala:14:7, :50:40
 endmodule
 

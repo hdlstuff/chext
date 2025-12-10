@@ -2,6 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util.log2Ceil
+import chisel3.util.{Fill, Cat}
 
 import chext.elastic
 import elastic.ConnectOp._
@@ -93,7 +94,7 @@ class Widen(val cfg: WidenConfig) extends Module {
       source: elastic.Interface[axi4.full.AddressChannel],
       sink: elastic.Interface[Control],
       size: Int
-  ) = prefix("control") {
+  ): AffectsChiselPrefix = new AffectsChiselPrefix {
     val gen0 = new Bundle {
       val index = UInt(7.W)
       val size = UInt(3.W)
@@ -195,7 +196,7 @@ class Widen(val cfg: WidenConfig) extends Module {
 
   private def implRead() = prefix("read") {
     val numOutstanding = 32
-    
+
     val ewireControl = elastic.EWire(genControl)
     val ewireTransferLast = elastic.EWire(Bool())
     val ewireBeatFirst = elastic.EWire(Bool())
@@ -207,8 +208,17 @@ class Widen(val cfg: WidenConfig) extends Module {
     dontTouch(ewireBeatLast)
 
     val fork0 = new elastic.Fork(s_axi.ar) {
-      val transform0 = transformAx(fork(), m_axi.ar, log2Ceil(axiCfg.wData) - 3)
-      generateControl(fork(), elastic.SinkBuffer(ewireControl, numOutstanding), log2Ceil(axiCfg.wData) - 3)
+      val transform0 = transformAx(
+        fork(),
+        m_axi.ar,
+        log2Ceil(axiCfg.wData) - 3
+      )
+
+      val control0 = generateControl(
+        fork(),
+        elastic.SinkBuffer(ewireControl, numOutstanding),
+        log2Ceil(axiCfg.wData) - 3
+      )
     }
 
     val fork1 = new elastic.Fork(ewireControl) {
@@ -219,47 +229,119 @@ class Widen(val cfg: WidenConfig) extends Module {
 
     val genData = chiselTypeOf(m_axi.r.$bits)
 
-    val wireMuxSink = elastic.EWire(genData)
-    val wireMuxSink0 = elastic.EWire(genData)
-    val wireDemuxSource = elastic.EWire(genData)
-    val wireDemuxSink = elastic.EWire(genData)
+    val ewireMuxSink = elastic.EWire(genData)
+    val ewireMuxSink0 = elastic.EWire(genData)
+    val ewireDemuxSource = elastic.EWire(genData)
+    val ewireDemuxSink = elastic.EWire(genData)
 
     val buffer = elastic.Queue(genData, 2)
 
     val mux0 = elastic.Mux(
       Seq(buffer.sink, m_axi.r),
-      wireMuxSink,
+      ewireMuxSink,
       ewireBeatFirst
     )
 
     val demux0 = elastic.Demux(
-      wireDemuxSource,
-      Seq(buffer.source, wireDemuxSink),
+      ewireDemuxSource,
+      Seq(buffer.source, ewireDemuxSink),
       ewireBeatLast
     )
 
-    val fork2 = new elastic.Fork(wireMuxSink) {
-      fork() :=> wireDemuxSource
-      fork() :=> wireMuxSink0
-
+    val fork2 = new elastic.Fork(ewireMuxSink) {
+      fork() :=> ewireDemuxSource
+      fork() :=> ewireMuxSink0
     }
 
     val join0 = new elastic.Join(s_axi.r) {
-      out := join(wireMuxSink0)
+      out := join(ewireMuxSink0)
       out.last := join(ewireTransferLast)
     }
 
-    wireDemuxSink.deq() // disposed
-    wireDemuxSink.markSource()
+    ewireDemuxSink.deq() // disposed
+    ewireDemuxSink.markSource()
   }
 
   private def implWrite() = prefix("write") {
-    // val transform0 = transformAx(s_axi.aw, m_axi.aw, log2Ceil(axiCfg.wData) - 3)
+    val numOutstanding = 32
 
-    // fix later:
-    s_axi.aw :=> m_axi.aw
-    s_axi.w :=> m_axi.w
+    val ewireControl = elastic.EWire(genControl)
+    val ewireTransferLast = elastic.EWire(Bool())
+    val ewireBeatFirst = elastic.EWire(Bool())
+    val ewireBeatLast = elastic.EWire(Bool())
+
+    dontTouch(ewireControl)
+    dontTouch(ewireTransferLast)
+    dontTouch(ewireBeatFirst)
+    dontTouch(ewireBeatLast)
+
+    val fork0 = new elastic.Fork(s_axi.aw) {
+      val transform0 = transformAx(
+        fork(),
+        m_axi.aw,
+        log2Ceil(axiCfg.wData) - 3
+      )
+
+      val control0 = generateControl(
+        fork(),
+        elastic.SinkBuffer(ewireControl, numOutstanding),
+        log2Ceil(axiCfg.wData) - 3
+      )
+    }
+
+    val fork1 = new elastic.Fork(ewireControl) {
+      fork { in.transferLast } :=> ewireTransferLast
+      fork { in.beatFirst } :=> ewireBeatFirst
+      fork { in.beatLast } :=> ewireBeatLast
+    }
+
+    val genData = chiselTypeOf(m_axi.w.$bits)
+
+    val ewireW0 = elastic.EWire(genData)
+    val ewireMuxSink = elastic.EWire(genData)
+    val ewireDemuxSource = elastic.EWire(genData)
+
+    val buffer = elastic.Queue(genData, 2)
+
+    val const0 = new elastic.Const(ewireW0) {
+      out.data := 0.U
+      out.strb := 0.U
+      out.last := false.B
+      out.user := 0.U
+    }
+
+    val mux0 = elastic.Mux(
+      Seq(buffer.sink, ewireW0),
+      ewireMuxSink,
+      ewireBeatFirst
+    )
+
+    val demux0 = elastic.Demux(
+      ewireDemuxSource,
+      Seq(buffer.source, m_axi.w),
+      ewireBeatLast
+    )
+
+    val join0 = new elastic.Join(ewireDemuxSource) {
+      val opA = join(ewireMuxSink)
+      val opB = join(s_axi.w)
+      val transferLast = join(ewireTransferLast)
+
+      val mask = Cat(opB.strb.asBools.reverse.map { x => Fill(8, x) })
+      dontTouch(mask)
+
+      out.data := opA.data | (opB.data & mask)
+      out.strb := opA.strb | opB.strb
+
+      // or, equivalently, we can also use opB.last ?
+      // TODO: assert that they are the same thing
+      out.last := transferLast
+
+      out.user := 0.U
+    }
+
     m_axi.b :=> s_axi.b
+
   }
 
   if (axiCfg.read)
@@ -267,5 +349,10 @@ class Widen(val cfg: WidenConfig) extends Module {
 
   if (axiCfg.write)
     implWrite()
+    // {
+    //   s_axi.aw :=> m_axi.aw
+    //   s_axi.w :=> m_axi.w
+    //   m_axi.b :=> s_axi.b
+    // }
 
 }
