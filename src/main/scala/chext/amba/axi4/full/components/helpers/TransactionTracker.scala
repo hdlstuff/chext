@@ -40,6 +40,10 @@ class TransactionTracker(
     val query = new IdCountPort
   })
 
+  // def, because called from the parent module
+  private def outstandingMax = (-1).S(wOutstanding.W).asUInt
+  private val numIds = 1 << wIdTracked
+
   def noQuery() = {
     io.query.id := DontCare
   }
@@ -73,11 +77,9 @@ class TransactionTracker(
 
   def canInitiate(id: UInt, port: UInt): Bool = {
     val (count_, port_) = getCountPort(id)
-    count_ === 0.U || port_ === port
+    count_ === 0.U || (port_ === port && count_ <= outstandingMax)
   }
 
-  private val outstandingMax = (-1).S(wOutstanding.W).asUInt
-  private val numIds = 1 << wIdTracked
   private val tableNumOutstanding = RegInit(
     VecInit( //
       Seq.fill(numIds) {
@@ -108,8 +110,8 @@ class TransactionTracker(
       tableNumOutstanding(io.initiate.id) :=
         tableNumOutstanding(io.initiate.id) + 1.U
     }.elsewhen(!io.initiate.en && io.complete.en) {
-      tableNumOutstanding(io.initiate.id) :=
-        tableNumOutstanding(io.initiate.id) - 1.U
+      tableNumOutstanding(io.complete.id) :=
+        tableNumOutstanding(io.complete.id) - 1.U
     }
   }
 
