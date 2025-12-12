@@ -69,22 +69,22 @@ module TransactionTracker(	// home/janberq/Desktop/chext/src/main/scala/chext/am
   output [3:0] io_query_port	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:37:14
 );
 
-  reg  [4:0]      tableNumOutstanding_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44
-  reg  [4:0]      tableNumOutstanding_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44
-  reg  [4:0]      tableNumOutstanding_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44
-  reg  [4:0]      tableNumOutstanding_3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44
-  reg  [4:0]      tableNumOutstanding_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44
-  reg  [4:0]      tableNumOutstanding_5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44
-  reg  [4:0]      tableNumOutstanding_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44
-  reg  [4:0]      tableNumOutstanding_7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44
-  reg  [3:0]      tablePort_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-  reg  [3:0]      tablePort_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-  reg  [3:0]      tablePort_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-  reg  [3:0]      tablePort_3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-  reg  [3:0]      tablePort_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-  reg  [3:0]      tablePort_5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-  reg  [3:0]      tablePort_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-  reg  [3:0]      tablePort_7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
+  reg  [4:0]      tableNumOutstanding_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44
+  reg  [4:0]      tableNumOutstanding_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44
+  reg  [4:0]      tableNumOutstanding_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44
+  reg  [4:0]      tableNumOutstanding_3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44
+  reg  [4:0]      tableNumOutstanding_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44
+  reg  [4:0]      tableNumOutstanding_5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44
+  reg  [4:0]      tableNumOutstanding_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44
+  reg  [4:0]      tableNumOutstanding_7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44
+  reg  [3:0]      tablePort_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+  reg  [3:0]      tablePort_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+  reg  [3:0]      tablePort_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+  reg  [3:0]      tablePort_3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+  reg  [3:0]      tablePort_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+  reg  [3:0]      tablePort_5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+  reg  [3:0]      tablePort_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+  reg  [3:0]      tablePort_7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
   wire [7:0][4:0] _GEN =
     {{tableNumOutstanding_7},
      {tableNumOutstanding_6},
@@ -93,7 +93,7 @@ module TransactionTracker(	// home/janberq/Desktop/chext/src/main/scala/chext/am
      {tableNumOutstanding_3},
      {tableNumOutstanding_2},
      {tableNumOutstanding_1},
-     {tableNumOutstanding_0}};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :100:45
+     {tableNumOutstanding_0}};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :101:45
   wire [7:0][3:0] _GEN_0 =
     {{tablePort_7},
      {tablePort_6},
@@ -102,168 +102,168 @@ module TransactionTracker(	// home/janberq/Desktop/chext/src/main/scala/chext/am
      {tablePort_3},
      {tablePort_2},
      {tablePort_1},
-     {tablePort_0}};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :118:17
+     {tablePort_0}};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :119:17
   always @(posedge clock) begin	// <stdin>:14182:11, :14441:11, :16646:11, :16905:11, :19110:11, :19369:11, :21574:11, :21833:11, :24038:11, :24297:11, :26502:11, :26761:11, :28966:11, :29225:11, :31430:11, :31689:11, :33894:11, :34153:11, :36358:11, :36617:11, :38822:11, :39081:11, :41286:11, :41545:11, :43750:11, :44009:11, :46214:11, :46473:11, :48678:11, :48937:11, :51142:11, :51401:11
     if (reset) begin	// <stdin>:14182:11, :14441:11, :16646:11, :16905:11, :19110:11, :19369:11, :21574:11, :21833:11, :24038:11, :24297:11, :26502:11, :26761:11, :28966:11, :29225:11, :31430:11, :31689:11, :33894:11, :34153:11, :36358:11, :36617:11, :38822:11, :39081:11, :41286:11, :41545:11, :43750:11, :44009:11, :46214:11, :46473:11, :48678:11, :48937:11, :51142:11, :51401:11
-      tableNumOutstanding_0 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :83:12
-      tableNumOutstanding_1 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :83:12
-      tableNumOutstanding_2 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :83:12
-      tableNumOutstanding_3 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :83:12
-      tableNumOutstanding_4 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :83:12
-      tableNumOutstanding_5 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :83:12
-      tableNumOutstanding_6 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :83:12
-      tableNumOutstanding_7 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :83:12
-      tablePort_0 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :90:12
-      tablePort_1 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :90:12
-      tablePort_2 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :90:12
-      tablePort_3 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :90:12
-      tablePort_4 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :90:12
-      tablePort_5 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :90:12
-      tablePort_6 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :90:12
-      tablePort_7 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :90:12
+      tableNumOutstanding_0 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :84:12
+      tableNumOutstanding_1 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :84:12
+      tableNumOutstanding_2 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :84:12
+      tableNumOutstanding_3 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :84:12
+      tableNumOutstanding_4 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :84:12
+      tableNumOutstanding_5 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :84:12
+      tableNumOutstanding_6 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :84:12
+      tableNumOutstanding_7 <= 5'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :84:12
+      tablePort_0 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :91:12
+      tablePort_1 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :91:12
+      tablePort_2 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :91:12
+      tablePort_3 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :91:12
+      tablePort_4 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :91:12
+      tablePort_5 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :91:12
+      tablePort_6 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :91:12
+      tablePort_7 <= 4'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :91:12
     end
     else begin	// <stdin>:14182:11, :14441:11, :16646:11, :16905:11, :19110:11, :19369:11, :21574:11, :21833:11, :24038:11, :24297:11, :26502:11, :26761:11, :28966:11, :29225:11, :31430:11, :31689:11, :33894:11, :34153:11, :36358:11, :36617:11, :38822:11, :39081:11, :41286:11, :41545:11, :43750:11, :44009:11, :46214:11, :46473:11, :48678:11, :48937:11, :51142:11, :51401:11
-      automatic logic _GEN_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      automatic logic _GEN_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      automatic logic _GEN_3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      automatic logic _GEN_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      automatic logic _GEN_5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      automatic logic _GEN_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      automatic logic _GEN_7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      automatic logic _GEN_8;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      automatic logic _GEN_9;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      automatic logic _GEN_10;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      automatic logic _GEN_11;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      automatic logic _GEN_12;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      automatic logic _GEN_13;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      automatic logic _GEN_14;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      automatic logic _GEN_15;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      automatic logic _GEN_16;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:104:43
-      automatic logic _GEN_17;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:104:43
-      automatic logic _GEN_18;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:104:43
-      automatic logic _GEN_19;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:104:43
-      automatic logic _GEN_20;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:104:43
-      automatic logic _GEN_21;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:104:43
-      automatic logic _GEN_22;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:104:43
-      _GEN_1 = io_initiate_id == 3'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      _GEN_2 = io_initiate_en & _GEN_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      _GEN_3 = io_initiate_id == 3'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      _GEN_4 = io_initiate_en & _GEN_3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      _GEN_5 = io_initiate_id == 3'h2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      _GEN_6 = io_initiate_en & _GEN_5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      _GEN_7 = io_initiate_id == 3'h3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      _GEN_8 = io_initiate_en & _GEN_7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      _GEN_9 = io_initiate_id == 3'h4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      _GEN_10 = io_initiate_en & _GEN_9;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      _GEN_11 = io_initiate_id == 3'h5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      _GEN_12 = io_initiate_en & _GEN_11;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      _GEN_13 = io_initiate_id == 3'h6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-      _GEN_14 = io_initiate_en & _GEN_13;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      _GEN_15 = io_initiate_en & (&io_initiate_id);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-      _GEN_16 = io_complete_id == 3'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31, :104:43
-      _GEN_17 = io_complete_id == 3'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31, :104:43
-      _GEN_18 = io_complete_id == 3'h2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31, :104:43
-      _GEN_19 = io_complete_id == 3'h3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31, :104:43
-      _GEN_20 = io_complete_id == 3'h4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31, :104:43
-      _GEN_21 = io_complete_id == 3'h5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31, :104:43
-      _GEN_22 = io_complete_id == 3'h6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31, :104:43
-      if (io_initiate_id == io_complete_id) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:97:{23,43}, :103:26, :108:45
-        if (io_initiate_en & ~io_complete_en) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:108:{25,28}
-          automatic logic [4:0] _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:110:45
-          _tableNumOutstanding_T_4 = _GEN[io_initiate_id] + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:100:45, :110:45
-          if (_GEN_1)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-            tableNumOutstanding_0 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :110:45
-          if (_GEN_3)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-            tableNumOutstanding_1 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :110:45
-          if (_GEN_5)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-            tableNumOutstanding_2 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :110:45
-          if (_GEN_7)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-            tableNumOutstanding_3 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :110:45
-          if (_GEN_9)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-            tableNumOutstanding_4 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :110:45
-          if (_GEN_11)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-            tableNumOutstanding_5 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :110:45
-          if (_GEN_13)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-            tableNumOutstanding_6 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :110:45
-          if (&io_initiate_id)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:94:31
-            tableNumOutstanding_7 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :110:45
+      automatic logic _GEN_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      automatic logic _GEN_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      automatic logic _GEN_3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      automatic logic _GEN_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      automatic logic _GEN_5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      automatic logic _GEN_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      automatic logic _GEN_7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      automatic logic _GEN_8;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      automatic logic _GEN_9;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      automatic logic _GEN_10;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      automatic logic _GEN_11;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      automatic logic _GEN_12;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      automatic logic _GEN_13;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      automatic logic _GEN_14;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      automatic logic _GEN_15;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      automatic logic _GEN_16;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:105:43
+      automatic logic _GEN_17;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:105:43
+      automatic logic _GEN_18;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:105:43
+      automatic logic _GEN_19;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:105:43
+      automatic logic _GEN_20;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:105:43
+      automatic logic _GEN_21;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:105:43
+      automatic logic _GEN_22;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:105:43
+      _GEN_1 = io_initiate_id == 3'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      _GEN_2 = io_initiate_en & _GEN_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      _GEN_3 = io_initiate_id == 3'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      _GEN_4 = io_initiate_en & _GEN_3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      _GEN_5 = io_initiate_id == 3'h2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      _GEN_6 = io_initiate_en & _GEN_5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      _GEN_7 = io_initiate_id == 3'h3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      _GEN_8 = io_initiate_en & _GEN_7;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      _GEN_9 = io_initiate_id == 3'h4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      _GEN_10 = io_initiate_en & _GEN_9;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      _GEN_11 = io_initiate_id == 3'h5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      _GEN_12 = io_initiate_en & _GEN_11;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      _GEN_13 = io_initiate_id == 3'h6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+      _GEN_14 = io_initiate_en & _GEN_13;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      _GEN_15 = io_initiate_en & (&io_initiate_id);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+      _GEN_16 = io_complete_id == 3'h0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31, :105:43
+      _GEN_17 = io_complete_id == 3'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31, :105:43
+      _GEN_18 = io_complete_id == 3'h2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31, :105:43
+      _GEN_19 = io_complete_id == 3'h3;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31, :105:43
+      _GEN_20 = io_complete_id == 3'h4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31, :105:43
+      _GEN_21 = io_complete_id == 3'h5;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31, :105:43
+      _GEN_22 = io_complete_id == 3'h6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31, :105:43
+      if (io_initiate_id == io_complete_id) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:{23,43}, :104:26, :109:45
+        if (io_initiate_en & ~io_complete_en) begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:109:{25,28}
+          automatic logic [4:0] _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:111:45
+          _tableNumOutstanding_T_4 = _GEN[io_initiate_id] + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:101:45, :111:45
+          if (_GEN_1)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+            tableNumOutstanding_0 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :111:45
+          if (_GEN_3)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+            tableNumOutstanding_1 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :111:45
+          if (_GEN_5)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+            tableNumOutstanding_2 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :111:45
+          if (_GEN_7)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+            tableNumOutstanding_3 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :111:45
+          if (_GEN_9)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+            tableNumOutstanding_4 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :111:45
+          if (_GEN_11)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+            tableNumOutstanding_5 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :111:45
+          if (_GEN_13)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+            tableNumOutstanding_6 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :111:45
+          if (&io_initiate_id)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:95:31
+            tableNumOutstanding_7 <= _tableNumOutstanding_T_4;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :111:45
         end
-        else begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:108:25
-          automatic logic       _GEN_23 = ~io_initiate_en & io_complete_en;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:111:{16,32}
-          automatic logic [4:0] _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:113:45
-          _tableNumOutstanding_T_6 = _GEN[io_complete_id] - 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:100:45, :105:45, :113:45
-          if (_GEN_23 & _GEN_16)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :104:43, :111:{32,51}, :112:43
-            tableNumOutstanding_0 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :113:45
-          if (_GEN_23 & _GEN_17)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :104:43, :111:{32,51}, :112:43
-            tableNumOutstanding_1 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :113:45
-          if (_GEN_23 & _GEN_18)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :104:43, :111:{32,51}, :112:43
-            tableNumOutstanding_2 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :113:45
-          if (_GEN_23 & _GEN_19)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :104:43, :111:{32,51}, :112:43
-            tableNumOutstanding_3 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :113:45
-          if (_GEN_23 & _GEN_20)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :104:43, :111:{32,51}, :112:43
-            tableNumOutstanding_4 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :113:45
-          if (_GEN_23 & _GEN_21)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :104:43, :111:{32,51}, :112:43
-            tableNumOutstanding_5 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :113:45
-          if (_GEN_23 & _GEN_22)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :104:43, :111:{32,51}, :112:43
-            tableNumOutstanding_6 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :113:45
-          if (_GEN_23 & (&io_complete_id))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :104:43, :111:{32,51}, :112:43
-            tableNumOutstanding_7 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :113:45
+        else begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:109:25
+          automatic logic       _GEN_23 = ~io_initiate_en & io_complete_en;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:112:{16,32}
+          automatic logic [4:0] _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:114:45
+          _tableNumOutstanding_T_6 = _GEN[io_complete_id] - 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:101:45, :106:45, :114:45
+          if (_GEN_23 & _GEN_16)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :105:43, :112:{32,51}, :113:43
+            tableNumOutstanding_0 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :114:45
+          if (_GEN_23 & _GEN_17)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :105:43, :112:{32,51}, :113:43
+            tableNumOutstanding_1 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :114:45
+          if (_GEN_23 & _GEN_18)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :105:43, :112:{32,51}, :113:43
+            tableNumOutstanding_2 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :114:45
+          if (_GEN_23 & _GEN_19)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :105:43, :112:{32,51}, :113:43
+            tableNumOutstanding_3 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :114:45
+          if (_GEN_23 & _GEN_20)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :105:43, :112:{32,51}, :113:43
+            tableNumOutstanding_4 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :114:45
+          if (_GEN_23 & _GEN_21)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :105:43, :112:{32,51}, :113:43
+            tableNumOutstanding_5 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :114:45
+          if (_GEN_23 & _GEN_22)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :105:43, :112:{32,51}, :113:43
+            tableNumOutstanding_6 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :114:45
+          if (_GEN_23 & (&io_complete_id))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :105:43, :112:{32,51}, :113:43
+            tableNumOutstanding_7 <= _tableNumOutstanding_T_6;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :114:45
         end
       end
-      else begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:97:{23,43}, :103:26, :108:45
-        automatic logic [4:0] _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:100:45
-        automatic logic [4:0] _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:105:45
-        _tableNumOutstanding_T = _GEN[io_initiate_id] + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:100:45
-        _tableNumOutstanding_T_2 = _GEN[io_complete_id] - 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:100:45, :105:45
-        if (io_complete_en & _GEN_16)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:26, :103:26, :104:43
-          tableNumOutstanding_0 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :105:45
-        else if (_GEN_2)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-          tableNumOutstanding_0 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :100:45
-        if (io_complete_en & _GEN_17)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:26, :103:26, :104:43
-          tableNumOutstanding_1 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :105:45
-        else if (_GEN_4)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-          tableNumOutstanding_1 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :100:45
-        if (io_complete_en & _GEN_18)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:26, :103:26, :104:43
-          tableNumOutstanding_2 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :105:45
-        else if (_GEN_6)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-          tableNumOutstanding_2 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :100:45
-        if (io_complete_en & _GEN_19)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:26, :103:26, :104:43
-          tableNumOutstanding_3 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :105:45
-        else if (_GEN_8)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-          tableNumOutstanding_3 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :100:45
-        if (io_complete_en & _GEN_20)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:26, :103:26, :104:43
-          tableNumOutstanding_4 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :105:45
-        else if (_GEN_10)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-          tableNumOutstanding_4 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :100:45
-        if (io_complete_en & _GEN_21)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:26, :103:26, :104:43
-          tableNumOutstanding_5 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :105:45
-        else if (_GEN_12)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-          tableNumOutstanding_5 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :100:45
-        if (io_complete_en & _GEN_22)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:26, :103:26, :104:43
-          tableNumOutstanding_6 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :105:45
-        else if (_GEN_14)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-          tableNumOutstanding_6 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :100:45
-        if (io_complete_en & (&io_complete_id))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:26, :103:26, :104:43
-          tableNumOutstanding_7 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :105:45
-        else if (_GEN_15)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-          tableNumOutstanding_7 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:82:44, :100:45
+      else begin	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:98:{23,43}, :104:26, :109:45
+        automatic logic [4:0] _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:101:45
+        automatic logic [4:0] _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:106:45
+        _tableNumOutstanding_T = _GEN[io_initiate_id] + 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:101:45
+        _tableNumOutstanding_T_2 = _GEN[io_complete_id] - 5'h1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:101:45, :106:45
+        if (io_complete_en & _GEN_16)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:99:26, :104:26, :105:43
+          tableNumOutstanding_0 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :106:45
+        else if (_GEN_2)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+          tableNumOutstanding_0 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :101:45
+        if (io_complete_en & _GEN_17)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:99:26, :104:26, :105:43
+          tableNumOutstanding_1 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :106:45
+        else if (_GEN_4)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+          tableNumOutstanding_1 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :101:45
+        if (io_complete_en & _GEN_18)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:99:26, :104:26, :105:43
+          tableNumOutstanding_2 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :106:45
+        else if (_GEN_6)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+          tableNumOutstanding_2 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :101:45
+        if (io_complete_en & _GEN_19)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:99:26, :104:26, :105:43
+          tableNumOutstanding_3 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :106:45
+        else if (_GEN_8)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+          tableNumOutstanding_3 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :101:45
+        if (io_complete_en & _GEN_20)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:99:26, :104:26, :105:43
+          tableNumOutstanding_4 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :106:45
+        else if (_GEN_10)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+          tableNumOutstanding_4 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :101:45
+        if (io_complete_en & _GEN_21)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:99:26, :104:26, :105:43
+          tableNumOutstanding_5 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :106:45
+        else if (_GEN_12)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+          tableNumOutstanding_5 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :101:45
+        if (io_complete_en & _GEN_22)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:99:26, :104:26, :105:43
+          tableNumOutstanding_6 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :106:45
+        else if (_GEN_14)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+          tableNumOutstanding_6 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :101:45
+        if (io_complete_en & (&io_complete_id))	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:99:26, :104:26, :105:43
+          tableNumOutstanding_7 <= _tableNumOutstanding_T_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :106:45
+        else if (_GEN_15)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+          tableNumOutstanding_7 <= _tableNumOutstanding_T;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:83:44, :101:45
       end
-      if (_GEN_2)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-        tablePort_0 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-      if (_GEN_4)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-        tablePort_1 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-      if (_GEN_6)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-        tablePort_2 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-      if (_GEN_8)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-        tablePort_3 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-      if (_GEN_10)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-        tablePort_4 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-      if (_GEN_12)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-        tablePort_5 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-      if (_GEN_14)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-        tablePort_6 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
-      if (_GEN_15)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34, :93:24, :94:31
-        tablePort_7 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:89:34
+      if (_GEN_2)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+        tablePort_0 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+      if (_GEN_4)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+        tablePort_1 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+      if (_GEN_6)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+        tablePort_2 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+      if (_GEN_8)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+        tablePort_3 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+      if (_GEN_10)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+        tablePort_4 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+      if (_GEN_12)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+        tablePort_5 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+      if (_GEN_14)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+        tablePort_6 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
+      if (_GEN_15)	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34, :94:24, :95:31
+        tablePort_7 <= io_initiate_port;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:90:34
     end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7
@@ -279,30 +279,30 @@ module TransactionTracker(	// home/janberq/Desktop/chext/src/main/scala/chext/am
         for (logic [1:0] i = 2'h0; i < 2'h3; i += 2'h1) begin
           _RANDOM[i] = `RANDOM;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7
         end	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7
-        tableNumOutstanding_0 = _RANDOM[2'h0][4:0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44
-        tableNumOutstanding_1 = _RANDOM[2'h0][9:5];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44
-        tableNumOutstanding_2 = _RANDOM[2'h0][14:10];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44
-        tableNumOutstanding_3 = _RANDOM[2'h0][19:15];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44
-        tableNumOutstanding_4 = _RANDOM[2'h0][24:20];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44
-        tableNumOutstanding_5 = _RANDOM[2'h0][29:25];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44
-        tableNumOutstanding_6 = {_RANDOM[2'h0][31:30], _RANDOM[2'h1][2:0]};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44
-        tableNumOutstanding_7 = _RANDOM[2'h1][7:3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44
-        tablePort_0 = _RANDOM[2'h1][11:8];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44, :89:34
-        tablePort_1 = _RANDOM[2'h1][15:12];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44, :89:34
-        tablePort_2 = _RANDOM[2'h1][19:16];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44, :89:34
-        tablePort_3 = _RANDOM[2'h1][23:20];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44, :89:34
-        tablePort_4 = _RANDOM[2'h1][27:24];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44, :89:34
-        tablePort_5 = _RANDOM[2'h1][31:28];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :82:44, :89:34
-        tablePort_6 = _RANDOM[2'h2][3:0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :89:34
-        tablePort_7 = _RANDOM[2'h2][7:4];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :89:34
+        tableNumOutstanding_0 = _RANDOM[2'h0][4:0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44
+        tableNumOutstanding_1 = _RANDOM[2'h0][9:5];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44
+        tableNumOutstanding_2 = _RANDOM[2'h0][14:10];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44
+        tableNumOutstanding_3 = _RANDOM[2'h0][19:15];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44
+        tableNumOutstanding_4 = _RANDOM[2'h0][24:20];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44
+        tableNumOutstanding_5 = _RANDOM[2'h0][29:25];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44
+        tableNumOutstanding_6 = {_RANDOM[2'h0][31:30], _RANDOM[2'h1][2:0]};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44
+        tableNumOutstanding_7 = _RANDOM[2'h1][7:3];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44
+        tablePort_0 = _RANDOM[2'h1][11:8];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44, :90:34
+        tablePort_1 = _RANDOM[2'h1][15:12];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44, :90:34
+        tablePort_2 = _RANDOM[2'h1][19:16];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44, :90:34
+        tablePort_3 = _RANDOM[2'h1][23:20];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44, :90:34
+        tablePort_4 = _RANDOM[2'h1][27:24];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44, :90:34
+        tablePort_5 = _RANDOM[2'h1][31:28];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :83:44, :90:34
+        tablePort_6 = _RANDOM[2'h2][3:0];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :90:34
+        tablePort_7 = _RANDOM[2'h2][7:4];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :90:34
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7
       `FIRRTL_AFTER_INITIAL	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_query_count = _GEN[io_query_id];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :100:45, :117:18
-  assign io_query_port = _GEN_0[io_query_id];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :118:17
+  assign io_query_count = _GEN[io_query_id];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :101:45, :118:18
+  assign io_query_port = _GEN_0[io_query_id];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:11:7, :119:17
 endmodule
 
 module elasticDemux(	// home/janberq/Desktop/chext/src/main/scala/chext/elastic/Demux.scala:9:7
@@ -2267,7 +2267,7 @@ module Demux(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/
     | ~(write_portQueue_ptr_match & write_portQueue_maybe_full);	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:140:34
   assign write_portQueue_source_bits =
     s_axi__slaveBuffer0_awBuffer0_sink_bits_addr[15:12];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :140:34, :157:16, home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala:25:50
-  wire [2:0]  _GEN = {1'h0, s_axi__slaveBuffer0_arBuffer0_sink_bits_id};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:53:7, :59:35, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:68:20
+  wire [2:0]  _GEN = {1'h0, s_axi__slaveBuffer0_arBuffer0_sink_bits_id};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:53:7, :59:35, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:69:20
   reg         write_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:166:31
   reg         write_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:166:31
   reg         write_fork0_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:166:31
@@ -2280,15 +2280,16 @@ module Demux(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/
   wire        write_fork0_ready =
     write_fork0_ready_qual1_0 & write_fork0_ready_qual1_1 & write_fork0_ready_qual1_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:166:31
   assign write_portQueue_source_valid = write_awPort_valid & ~write_fork0_regs_2;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:140:34, :151:32, :166:31
-  wire [2:0]  _GEN_0 = {1'h0, s_axi__slaveBuffer0_awBuffer0_sink_bits_id};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:53:7, :59:35, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:73:17
+  wire [2:0]  _GEN_0 = {1'h0, s_axi__slaveBuffer0_awBuffer0_sink_bits_id};	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:53:7, :59:35, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:74:17
   wire        _write_stall0_awPort_valid_T =
     _write_transactionTracker_io_query_count == 5'h0
     | {16'h0,
-       _write_transactionTracker_io_query_port} == s_axi__slaveBuffer0_awBuffer0_sink_bits_addr[31:12];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :128:36, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:79:{12,20,30}, home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala:25:50
+       _write_transactionTracker_io_query_port} == s_axi__slaveBuffer0_awBuffer0_sink_bits_addr[31:12]
+    & _write_transactionTracker_io_query_count != 5'h1F;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :128:36, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:44:55, :80:{12,20,30,39,49}, home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala:25:50
   wire        s_axi__slaveBuffer0_awBuffer0_sink_ready =
-    _write_stall0_awPort_valid_T & write_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :151:32, :166:31, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:79:20
+    _write_stall0_awPort_valid_T & write_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :151:32, :166:31, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:80:20
   assign write_awPort_valid =
-    _write_stall0_awPort_valid_T & s_axi__slaveBuffer0_awBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :151:32, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:79:20
+    _write_stall0_awPort_valid_T & s_axi__slaveBuffer0_awBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :151:32, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:80:20
   reg         read_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:98:31
   reg         read_fork0_regs_1;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:98:31
   wire        read_fork0_ready_qual1_0 = _read_demux_io_source_ready | read_fork0_regs_0;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:98:31, :103:20
@@ -2297,11 +2298,12 @@ module Demux(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/
   wire        _read_stall0_arPort_valid_T =
     _read_transactionTracker_io_query_count == 5'h0
     | {16'h0,
-       _read_transactionTracker_io_query_port} == s_axi__slaveBuffer0_arBuffer0_sink_bits_addr[31:12];	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :67:36, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:79:{12,20,30}, home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala:25:50
+       _read_transactionTracker_io_query_port} == s_axi__slaveBuffer0_arBuffer0_sink_bits_addr[31:12]
+    & _read_transactionTracker_io_query_count != 5'h1F;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :67:36, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:44:55, :80:{12,20,30,39,49}, home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala:25:50
   wire        s_axi__slaveBuffer0_arBuffer0_sink_ready =
-    _read_stall0_arPort_valid_T & read_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :83:32, :98:31, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:79:20
+    _read_stall0_arPort_valid_T & read_fork0_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :83:32, :98:31, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:80:20
   assign read_arPort_valid =
-    _read_stall0_arPort_valid_T & s_axi__slaveBuffer0_arBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :83:32, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:79:20
+    _read_stall0_arPort_valid_T & s_axi__slaveBuffer0_arBuffer0_sink_valid;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :83:32, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:80:20
   wire        s_axi__slaveBuffer0_wBuffer0_sink_ready;	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35
   always @(posedge clock) begin	// <stdin>:14787:11, :17251:11, :19715:11, :22179:11, :24643:11, :27107:11, :29571:11, :32035:11, :34499:11, :36963:11, :39427:11, :41891:11, :44355:11, :46819:11, :49283:11, :51747:11
     if (reset) begin	// <stdin>:14787:11, :17251:11, :19715:11, :22179:11, :24643:11, :27107:11, :29571:11, :32035:11, :34499:11, :36963:11, :39427:11, :41891:11, :44355:11, :46819:11, :49283:11, :51747:11
@@ -2525,13 +2527,13 @@ module Demux(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/
     .clock            (clock),
     .reset            (reset),
     .io_initiate_en   (read_fork0_ready & read_arPort_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:81:42, :83:32, :98:31
-    .io_initiate_id   (_GEN),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:68:20
+    .io_initiate_id   (_GEN),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:69:20
     .io_initiate_port (s_axi__slaveBuffer0_arBuffer0_sink_bits_addr[15:12]),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :89:16, home/janberq/Desktop/chext/src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala:25:50
     .io_complete_en
       (s_axi__slaveBuffer0_rBuffer0_source_ready & _read_arbiter_io_sink_valid
        & _read_arbiter_io_sink_bits_last),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :112:22, :118:26
-    .io_complete_id   ({1'h0, _read_arbiter_io_sink_bits_id}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:53:7, :112:22, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:57:20
-    .io_query_id      (_GEN),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:68:20
+    .io_complete_id   ({1'h0, _read_arbiter_io_sink_bits_id}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:53:7, :112:22, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:58:20
+    .io_query_id      (_GEN),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:69:20
     .io_query_count   (_read_transactionTracker_io_query_count),
     .io_query_port    (_read_transactionTracker_io_query_port)
   );
@@ -2857,12 +2859,12 @@ module Demux(	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/
     .clock            (clock),
     .reset            (reset),
     .io_initiate_en   (write_fork0_ready & write_awPort_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:149:42, :151:32, :166:31
-    .io_initiate_id   (_GEN_0),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:73:17
+    .io_initiate_id   (_GEN_0),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:74:17
     .io_initiate_port (write_portQueue_source_bits),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:140:34
     .io_complete_en
       (s_axi__slaveBuffer0_bBuffer0_source_ready & _write_arbiter_io_sink_valid),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:59:35, :187:22
-    .io_complete_id   ({1'h0, _write_arbiter_io_sink_bits_id}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:53:7, :187:22, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:57:20
-    .io_query_id      (_GEN_0),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:73:17
+    .io_complete_id   ({1'h0, _write_arbiter_io_sink_bits_id}),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Demux.scala:53:7, :187:22, home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:58:20
+    .io_query_id      (_GEN_0),	// home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/helpers/TransactionTracker.scala:74:17
     .io_query_count   (_write_transactionTracker_io_query_count),
     .io_query_port    (_write_transactionTracker_io_query_port)
   );

@@ -77,7 +77,7 @@ class TransactionTracker(
 
   def canInitiate(id: UInt, port: UInt): Bool = {
     val (count_, port_) = getCountPort(id)
-    count_ === 0.U || (port_ === port && count_ <= outstandingMax)
+    count_ === 0.U || (port_ === port && count_ < outstandingMax)
   }
 
   private val tableNumOutstanding = RegInit(
