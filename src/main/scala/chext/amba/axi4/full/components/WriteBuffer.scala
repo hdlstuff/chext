@@ -65,8 +65,10 @@ object WriteBuffer {
     import axi4.full.WriteAddressChannel
     import elastic.ConnectOp._
 
-    master.ar :=> slave.ar
-    slave.r :=> master.r
+    if (master.cfg.read) {
+      master.ar :=> slave.ar
+      slave.r :=> master.r
+    }
 
     master.aw :=> writeBuffer.source.aw
     writeBuffer.sink.aw :=> slave.aw.asInstanceOf[elastic.Interface[WriteAddressChannel]]

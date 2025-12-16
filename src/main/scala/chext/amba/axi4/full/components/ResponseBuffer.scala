@@ -52,8 +52,11 @@ case class ResponseBufferConfig(
     val writePassThrough: Boolean = false,
     val readPassThrough: Boolean = false
 ) {
-  require(bufLengthR >= 2)
-  require(bufLengthB >= 2)
+  if (axiCfg.read && !readPassThrough)
+    require(bufLengthR >= 2)
+
+  if (axiCfg.write && !writePassThrough)
+    require(bufLengthB >= 2)
 }
 
 class ResponseBuffer(val cfg: ResponseBufferConfig) extends Module {
