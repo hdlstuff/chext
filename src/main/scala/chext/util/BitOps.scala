@@ -133,7 +133,7 @@ object BitOps {
       chisel3.experimental.requireIsHardware(x)
       require(x.widthKnown)
 
-      extractLittle((0 until x.getWidth).filter(indices.contains))
+      extractLittle((0 until x.getWidth).filter { (x) => !indices.contains(x) })
     }
   }
 }
@@ -147,6 +147,8 @@ private object BitOps_Emit extends App {
     val out4 = IO(Output(UInt(8.W)))
     val out5 = IO(Output(UInt(8.W)))
     val out6 = IO(Output(UInt(8.W)))
+    val out7 = IO(Output(UInt(8.W)))
+    val out8 = IO(Output(UInt(8.W)))
 
     import BitOps._
 
@@ -156,6 +158,8 @@ private object BitOps_Emit extends App {
     out4 := in.resetMsbN(3)
     out5 := in.extractBig(Seq(4, 3, 0))
     out6 := in.extractBig(Seq(7, 5, 2))
+    out7 := in.extract(Seq(7, 5, 2))
+    out8 := in.drop(Seq(7, 5, 2))
   }
 
   emitVerilog(new MyModule, Array("--target-dir", "output/"))
