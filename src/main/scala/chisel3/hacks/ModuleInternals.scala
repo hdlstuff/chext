@@ -2,7 +2,8 @@ package chisel3.hacks
 
 import chisel3.{Data, RawModule}
 import chisel3.experimental.{BaseModule, SourceInfo}
-import chisel3.internal.{HasId, WireBinding}
+import chisel3.internal.HasId
+import chisel3.internal.binding.WireBinding
 import chisel3.internal.firrtl.ir.{Command, DefInstance}
 
 object ModuleInternals {
@@ -56,10 +57,24 @@ object ModuleInternals {
   }
 
   def getCommands(module: RawModule): Seq[Command] = {
-    val field = classOf[RawModule].getDeclaredField("_commands")
-    field.setAccessible(true)
-    val vb = field.get(module).asInstanceOf[scala.collection.immutable.VectorBuilder[Command]]
-    vb.result()
+    import chisel3.internal.firrtl.ir.Block
+    import scala.collection.mutable.Builder
+    import scala.collection.immutable.ArraySeq
+
+    val fieldBody = classOf[BaseModule].getDeclaredField("_body")
+    fieldBody.setAccessible(true)
+    val body = fieldBody.get(module).asInstanceOf[Block]
+
+    val fieldCommands = classOf[Block].getDeclaredField("_commands")
+    fieldCommands.setAccessible(true)
+    val arrayBuilder = fieldCommands.get(body).asInstanceOf[Builder[Command, ArraySeq[Command]]]
+
+    try {
+      arrayBuilder.result()
+    } catch {
+      case _: NullPointerException => Seq.empty
+      case e: Exception            => throw e
+    }
   }
 
   def getChildrenSourceInfo(parent: RawModule): Map[BaseModule, SourceInfo] = {

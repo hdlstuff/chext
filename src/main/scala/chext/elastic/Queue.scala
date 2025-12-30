@@ -111,11 +111,13 @@ private object memory_impl {
     }
   }
 
+  @scala.annotation.nowarn("cat=deprecation")
+  // TODO Replace with ExtModule
   class chext_mem_1w1r(
       val count: Int,
       val addrWidth: Int,
       val dataWidth: Int
-  ) extends BlackBox(
+  ) extends BlackBox(  // TODO Replace with ExtModule
         Map(
           "COUNT" -> count,
           "ADDR_WIDTH" -> addrWidth,
@@ -156,11 +158,13 @@ private object memory_impl {
     }
   }
 
+  @scala.annotation.nowarn("cat=deprecation")
+  // TODO Replace with ExtModule
   class chext_syncmem_1w1r(
       val count: Int,
       val addrWidth: Int,
       val dataWidth: Int
-  ) extends BlackBox(
+  ) extends BlackBox(  // TODO Replace with ExtModule
         Map(
           "COUNT" -> count,
           "ADDR_WIDTH" -> addrWidth,

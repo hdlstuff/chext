@@ -2,14 +2,14 @@ package chisel3.hacks
 
 import chisel3.{Data, Aggregate}
 import chisel3.experimental.BaseModule
-import chisel3.internal.{
+import chisel3.internal.binding.{
   ChildBinding,
   PortBinding,
   SecretPortBinding,
   WireBinding,
-  AggregateViewBinding,
-  HasId
+  AggregateViewBinding
 }
+import chisel3.internal.HasId
 import scala.annotation.nowarn
 
 import scala.reflect.ClassTag

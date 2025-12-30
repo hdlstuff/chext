@@ -1,0 +1,351 @@
+{
+  "name" : "Transducer_Tbtop",
+  "path" : "/",
+  "sources" : [
+    {
+      "path" : "/source",
+      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
+      "args" : {
+        
+      }
+    }
+  ],
+  "sinks" : [
+    {
+      "path" : "/sink",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    }
+  ],
+  "wires" : [
+    {
+      "path" : "/randomStall0_stall_rightBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall0_stall_rightBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall0_stall_rightBuffer0_source",
+      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall1_stall_rightBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall1_stall_rightBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall1_stall_rightBuffer0_source",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/sink_",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/source_",
+      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
+      "args" : {
+        
+      }
+    }
+  ],
+  "components" : [
+    {
+      "path" : "/randomStall0_stall_rightBuffer0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/randomStall0_stall_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/randomStall0_stall_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "/randomStall0",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall0_stall_rightBuffer0_Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/randomStall0_stall_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/randomStall0_stall_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "/randomStall0",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall0_stall_rightBuffer0_Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/randomStall0_stall_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/source_",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "/randomStall0",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall0_stall",
+      "tpe" : "Stall",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/randomStall0_stall_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "/randomStall0",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall1_stall_rightBuffer0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/randomStall1_stall_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/randomStall1_stall_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "/randomStall1",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall1_stall_rightBuffer0_Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/randomStall1_stall_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/randomStall1_stall_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "/randomStall1",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall1_stall_rightBuffer0_Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/randomStall1_stall_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "/randomStall1",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall1_stall",
+      "tpe" : "Stall",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/sink_",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/randomStall1_stall_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "/randomStall1",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/transducer0",
+      "tpe" : "Transducer",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/source_",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/sink_",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    }
+  ],
+  "containers" : [
+    {
+      "path" : "/randomStall0",
+      "tpe" : "RandomStall",
+      "children" : [
+        "/randomStall0_stall_rightBuffer0",
+        "/randomStall0_stall_rightBuffer0_Unnamed0",
+        "/randomStall0_stall_rightBuffer0_Unnamed1",
+        "/randomStall0_stall"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/randomStall1",
+      "tpe" : "RandomStall",
+      "children" : [
+        "/randomStall1_stall_rightBuffer0",
+        "/randomStall1_stall_rightBuffer0_Unnamed0",
+        "/randomStall1_stall_rightBuffer0_Unnamed1",
+        "/randomStall1_stall"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    }
+  ],
+  "children" : [
+  ],
+  "args" : {
+    
+  }
+}

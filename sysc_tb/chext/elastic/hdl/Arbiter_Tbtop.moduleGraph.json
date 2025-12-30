@@ -1,0 +1,1459 @@
+{
+  "name" : "Arbiter_Tbtop",
+  "path" : "/",
+  "sources" : [
+    {
+      "path" : "/rr_sources.15",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.14",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.13",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.12",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.11",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.10",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.09",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.08",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.07",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.06",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.05",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.04",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.03",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.02",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.01",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_sources.00",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.15",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.14",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.13",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.12",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.11",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.10",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.09",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.08",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.07",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.06",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.05",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.04",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.03",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.02",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.01",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sources.00",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    }
+  ],
+  "sinks" : [
+    {
+      "path" : "/rr_sink",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/rr_select",
+      "tpe" : "chext.elastic.Interface[UInt<4>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_sink",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/priority_select",
+      "tpe" : "chext.elastic.Interface[UInt<4>]",
+      "args" : {
+        
+      }
+    }
+  ],
+  "wires" : [
+    {
+      "path" : "/arbiter_1/io.sources[0]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[1]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[2]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[3]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[4]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[5]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[6]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[7]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[8]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[9]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[10]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[11]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[12]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[13]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[14]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sources[15]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[0]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[1]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[2]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[3]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[4]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[5]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[6]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[7]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[8]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[9]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[10]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[11]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[12]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[13]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[14]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sources[15]",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.select",
+      "tpe" : "chext.elastic.Interface[UInt<4>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter_1/io.sink",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.select",
+      "tpe" : "chext.elastic.Interface[UInt<4>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/arbiter/io.sink",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    }
+  ],
+  "components" : [
+    {
+      "path" : "/Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.00",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[0]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.01",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[1]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed2",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.02",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[2]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed3",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.03",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[3]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed4",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.04",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[4]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed5",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.05",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[5]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed6",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.06",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[6]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed7",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.07",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[7]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed8",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.08",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[8]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed9",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.09",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[9]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed10",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.10",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[10]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed11",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.11",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[11]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed12",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.12",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[12]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed13",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.13",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[13]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed14",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.14",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[14]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed15",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/rr_sources.15",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter/io.sources[15]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed16",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/arbiter/io.sink",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/rr_sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed17",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/arbiter/io.select",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/rr_select",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed18",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.00",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[0]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed19",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.01",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[1]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed20",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.02",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[2]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed21",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.03",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[3]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed22",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.04",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[4]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed23",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.05",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[5]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed24",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.06",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[6]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed25",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.07",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[7]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed26",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.08",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[8]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed27",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.09",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[9]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed28",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.10",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[10]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed29",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.11",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[11]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed30",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.12",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[12]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed31",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.13",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[13]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed32",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.14",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[14]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed33",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/priority_sources.15",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/arbiter_1/io.sources[15]",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed34",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/arbiter_1/io.sink",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/priority_sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/Unnamed35",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/arbiter_1/io.select",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/priority_select",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    }
+  ],
+  "containers" : [
+  ],
+  "children" : [
+  ],
+  "args" : {
+    
+  }
+}

@@ -2,6 +2,7 @@ package chisel3.hacks
 
 import chisel3.Module
 import chisel3.RawModule
+import chisel3.experimental.BaseModule
 import chisel3.ChiselException
 
 import scala.collection.mutable.HashMap
@@ -45,8 +46,14 @@ object deferred {
           }
 
           val atModuleBodyEnd = {
-            val methods = classOf[RawModule].getDeclaredMethods()
-            methods.filter(_.getName() == "atModuleBodyEnd").head
+            val methods = classOf[BaseModule].getDeclaredMethods()
+            val matchedMethods = methods.filter(_.getName() == "atModuleBodyEnd")
+
+            require(
+              matchedMethods.nonEmpty,
+              "atModuleBodyEnd, empty matched methods, maybe Chisel had a breaking change?"
+            )
+            matchedMethods.head
           }
 
           atModuleBodyEnd.invoke(currentModule, atModuleBodyEndHandler)

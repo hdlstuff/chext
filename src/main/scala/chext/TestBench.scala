@@ -83,6 +83,7 @@ trait TestBenchTop extends HasHdlinfoModule {
   private def getValidDirection(x: Data): hdlinfo.PortDirection = {
     import chisel3.reflect.DataMirror
 
+    @scala.annotation.nowarn
     val result = DataMirror.directionOf(x) match {
       case ActualDirection.Output => hdlinfo.PortDirection.output
       case ActualDirection.Input  => hdlinfo.PortDirection.input
@@ -358,9 +359,9 @@ trait TestBench extends App {
   def emit[T <: HasHdlinfoModule](genModule: => T): Unit = {
     val pkgPath = _pkgName.replace('.', '/')
     val hdlPath = f"./sysc_tb/${pkgPath}/hdl/"
-    var module: HasHdlinfoModule = null
+    var moduleName: String = null
 
-    emitVerilog(
+    chext.emitSystemVerilog(
       {
         val module = genModule
 
@@ -373,9 +374,11 @@ trait TestBench extends App {
 
         }
 
+        moduleName = module.name
+
         module
       },
-      Array("--target-dir", hdlPath)
+      hdlPath
     )
   }
 }

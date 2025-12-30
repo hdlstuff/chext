@@ -35,8 +35,8 @@ case class xpm_memory_spram_config(
 ) {
   val writeEnabledWidthA = writeDataWidthA / byteWriteWidthA
 
-  def toParams: Map[String, chisel3.experimental.Param] = {
-    import chisel3.experimental.{Param, IntParam, StringParam}
+  def toParams: Map[String, chisel3.Param] = {
+    import chisel3.{Param, IntParam, StringParam}
 
     // NOTE: Commented out variables are not present in Xilinx 2022.2
     Map(
@@ -71,6 +71,8 @@ case class xpm_memory_spram_config(
   }
 }
 
+@scala.annotation.nowarn("cat=deprecation")
+// TODO Replace with ExtModule
 class xpm_memory_spram(cfg: xpm_memory_spram_config)
     extends BlackBox(cfg.toParams) {
   val io = IO(new Bundle {
