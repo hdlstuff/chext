@@ -636,22 +636,22 @@ module AddressGenerator(
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_0
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_1
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_2
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_3
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: no action was taken! @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
   always @(posedge clock) begin
@@ -1228,22 +1228,22 @@ module AddressGenerator_4(
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_0
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_1
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_2
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_3
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: no action was taken! @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
   always @(posedge clock) begin
@@ -1480,7 +1480,6 @@ module Unburst(
   output         m_axi_b_ready
 );
 
-  wire       write_wire0_valid;
   wire       _GEN;
   wire       write_lastRepeated_bits;
   wire       _GEN_0;
@@ -1488,8 +1487,9 @@ module Unburst(
   wire       _write_addressStrobeGenerator_source_ready;
   wire       _read_addressStrobeGenerator_source_ready;
   wire [7:0] read_ar_fork0_rightBuffer0_source_bits = s_axi_ar_bits_len;
-  reg  [2:0] read_ar_fork0_rightBuffer0_enq_ptr_value;
-  reg  [2:0] read_ar_fork0_rightBuffer0_deq_ptr_value;
+  wire [7:0] write_fork0_rightBuffer0_source_bits = s_axi_aw_bits_len;
+  reg  [4:0] read_ar_fork0_rightBuffer0_enq_ptr_value;
+  reg  [4:0] read_ar_fork0_rightBuffer0_deq_ptr_value;
   reg        read_ar_fork0_rightBuffer0_maybe_full;
   wire       read_ar_fork0_rightBuffer0_ptr_match =
     read_ar_fork0_rightBuffer0_enq_ptr_value == read_ar_fork0_rightBuffer0_deq_ptr_value;
@@ -1501,6 +1501,19 @@ module Unburst(
     ~(read_ar_fork0_rightBuffer0_ptr_match & ~read_ar_fork0_rightBuffer0_maybe_full);
   assign read_ar_fork0_result_ready =
     ~(read_ar_fork0_rightBuffer0_ptr_match & read_ar_fork0_rightBuffer0_maybe_full);
+  reg  [4:0] write_fork0_rightBuffer0_enq_ptr_value;
+  reg  [4:0] write_fork0_rightBuffer0_deq_ptr_value;
+  reg        write_fork0_rightBuffer0_maybe_full;
+  wire       write_fork0_rightBuffer0_ptr_match =
+    write_fork0_rightBuffer0_enq_ptr_value == write_fork0_rightBuffer0_deq_ptr_value;
+  wire       write_fork0_rightBuffer0_source_valid;
+  wire       write_fork0_result_ready;
+  wire       write_fork0_rightBuffer0_do_enq =
+    write_fork0_result_ready & write_fork0_rightBuffer0_source_valid;
+  wire       write_wire0_valid =
+    ~(write_fork0_rightBuffer0_ptr_match & ~write_fork0_rightBuffer0_maybe_full);
+  assign write_fork0_result_ready =
+    ~(write_fork0_rightBuffer0_ptr_match & write_fork0_rightBuffer0_maybe_full);
   wire       write_joined_valid = m_axi_b_valid & write_wire0_valid & _GEN_0;
   wire       write_joined_fire = write_joined_valid & _GEN_1;
   reg  [1:0] write_transducerReduceResp_respReg;
@@ -1536,23 +1549,29 @@ module Unburst(
       if ((`PRINTF_COND_) & write_transducerReduceResp_errorAtLeastTwoActions
           & _write_transducerReduceResp_cond_WIRE_0 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Unburst.scala:138:46]\n");
+                "elastic.Transducer: action 'accept' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/Unburst.scala:138:46]\n");
       if ((`PRINTF_COND_) & write_transducerReduceResp_errorAtLeastTwoActions
           & _write_transducerReduceResp_cond_WIRE_1 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'consume' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Unburst.scala:138:46]\n");
+                "elastic.Transducer: action 'consume' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/Unburst.scala:138:46]\n");
       if ((`PRINTF_COND_) & write_transducerReduceResp_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/Unburst.scala:138:46]\n");
+                "elastic.Transducer: no action was taken! @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/Unburst.scala:138:46]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
   reg  [8:0] write_repeat0_count_state;
   reg        write_repeat0_count_valid;
   wire [8:0] _write_repeat0_count_nextState_T = write_repeat0_count_state + 9'h1;
-  wire [8:0] _GEN_2 = {1'h0, s_axi_aw_bits_len};
+  wire [7:0] write_wire0_bits;
+  wire [8:0] _GEN_2 = {1'h0, write_wire0_bits};
   wire       _write_repeat0_count_T_2 = _write_repeat0_count_nextState_T == _GEN_2 + 9'h1;
   wire [8:0] _write_repeat0_count_T_6 = _GEN_2 + 9'h1;
   wire       _write_repeat0_count_T_8 = _write_repeat0_count_T_6 == 9'h1;
+  wire       write_fork0_rightBuffer0_sink_ready =
+    write_wire0_valid
+    & (write_repeat0_count_valid
+         ? _write_repeat0_count_T_2 & write_joined_fire
+         : ~(|_write_repeat0_count_T_6) | _write_repeat0_count_T_8 & write_joined_fire);
   assign _GEN_0 = write_repeat0_count_valid | (|_write_repeat0_count_T_6);
   assign write_lastRepeated_bits =
     write_repeat0_count_valid ? _write_repeat0_count_T_2 : _write_repeat0_count_T_8;
@@ -1577,23 +1596,21 @@ module Unburst(
   reg        write_fork0_regs_1;
   wire       write_fork0_ready_qual1_0 =
     _write_addressStrobeGenerator_source_ready | write_fork0_regs_0;
-  wire       write_fork0_ready_qual1_1 =
-    write_wire0_valid
-    & (write_repeat0_count_valid
-         ? _write_repeat0_count_T_2 & write_joined_fire
-         : ~(|_write_repeat0_count_T_6) | _write_repeat0_count_T_8 & write_joined_fire)
-    | write_fork0_regs_1;
+  wire       write_fork0_ready_qual1_1 = write_fork0_result_ready | write_fork0_regs_1;
   wire       write_fork0_ready = write_fork0_ready_qual1_0 & write_fork0_ready_qual1_1;
-  assign write_wire0_valid = s_axi_aw_valid & ~write_fork0_regs_1;
+  assign write_fork0_rightBuffer0_source_valid = s_axi_aw_valid & ~write_fork0_regs_1;
   always @(posedge clock) begin
     automatic logic _GEN_4;
     automatic logic _GEN_5;
     _GEN_4 = ~(|_write_repeat0_count_T_6) | _write_repeat0_count_T_8;
     _GEN_5 = ~(|_read_r_repeat0_count_T_6) | _read_r_repeat0_count_T_8;
     if (reset) begin
-      read_ar_fork0_rightBuffer0_enq_ptr_value <= 3'h0;
-      read_ar_fork0_rightBuffer0_deq_ptr_value <= 3'h0;
+      read_ar_fork0_rightBuffer0_enq_ptr_value <= 5'h0;
+      read_ar_fork0_rightBuffer0_deq_ptr_value <= 5'h0;
       read_ar_fork0_rightBuffer0_maybe_full <= 1'h0;
+      write_fork0_rightBuffer0_enq_ptr_value <= 5'h0;
+      write_fork0_rightBuffer0_deq_ptr_value <= 5'h0;
+      write_fork0_rightBuffer0_maybe_full <= 1'h0;
       write_transducerReduceResp_respReg <= 2'h0;
       read_ar_fork0_regs_0 <= 1'h0;
       read_ar_fork0_regs_1 <= 1'h0;
@@ -1605,14 +1622,24 @@ module Unburst(
     else begin
       automatic logic read_ar_fork0_rightBuffer0_do_deq =
         read_ar_fork0_rightBuffer0_sink_ready & read_wire0_valid;
+      automatic logic write_fork0_rightBuffer0_do_deq =
+        write_fork0_rightBuffer0_sink_ready & write_wire0_valid;
       if (read_ar_fork0_rightBuffer0_do_enq)
         read_ar_fork0_rightBuffer0_enq_ptr_value <=
-          read_ar_fork0_rightBuffer0_enq_ptr_value + 3'h1;
+          read_ar_fork0_rightBuffer0_enq_ptr_value + 5'h1;
       if (read_ar_fork0_rightBuffer0_do_deq)
         read_ar_fork0_rightBuffer0_deq_ptr_value <=
-          read_ar_fork0_rightBuffer0_deq_ptr_value + 3'h1;
+          read_ar_fork0_rightBuffer0_deq_ptr_value + 5'h1;
       if (read_ar_fork0_rightBuffer0_do_enq != read_ar_fork0_rightBuffer0_do_deq)
         read_ar_fork0_rightBuffer0_maybe_full <= read_ar_fork0_rightBuffer0_do_enq;
+      if (write_fork0_rightBuffer0_do_enq)
+        write_fork0_rightBuffer0_enq_ptr_value <=
+          write_fork0_rightBuffer0_enq_ptr_value + 5'h1;
+      if (write_fork0_rightBuffer0_do_deq)
+        write_fork0_rightBuffer0_deq_ptr_value <=
+          write_fork0_rightBuffer0_deq_ptr_value + 5'h1;
+      if (write_fork0_rightBuffer0_do_enq != write_fork0_rightBuffer0_do_deq)
+        write_fork0_rightBuffer0_maybe_full <= write_fork0_rightBuffer0_do_enq;
       if (write_joined_valid) begin
         if (write_lastRepeated_bits) begin
           if (s_axi_b_ready)
@@ -1690,8 +1717,8 @@ module Unburst(
     .sink_ready              (m_axi_ar_ready)
   );
   chext_mem_1w1r #(
-    .ADDR_WIDTH(3),
-    .COUNT(8),
+    .ADDR_WIDTH(5),
+    .COUNT(32),
     .DATA_WIDTH(8)
   ) read_ar_fork0_rightBuffer0_ram (
     .clock    (clock),
@@ -1724,6 +1751,18 @@ module Unburst(
     .sink_bits_user_region   (m_axi_aw_bits_region),
     .sink_valid              (m_axi_aw_valid),
     .sink_ready              (m_axi_aw_ready)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(5),
+    .COUNT(32),
+    .DATA_WIDTH(8)
+  ) write_fork0_rightBuffer0_ram (
+    .clock    (clock),
+    .addrA    (write_fork0_rightBuffer0_enq_ptr_value),
+    .writeEnA (write_fork0_rightBuffer0_do_enq),
+    .dataInA  (write_fork0_rightBuffer0_source_bits),
+    .addrB    (write_fork0_rightBuffer0_deq_ptr_value),
+    .dataOutB (write_wire0_bits)
   );
   assign s_axi_ar_ready = s_axi_ar_ready_0;
   assign s_axi_r_bits_data = m_axi_r_bits_data;

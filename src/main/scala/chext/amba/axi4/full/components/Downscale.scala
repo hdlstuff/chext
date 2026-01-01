@@ -16,8 +16,8 @@ import helpers.{SteerLeft, SteerRight}
 case class DownscaleConfig(
     val axiSlaveCfg: axi4.Config,
     val wDataMaster: Int,
-    val readOffsetLastQueueLength: Int = 16,
-    val writeOffsetLastQueueLength: Int = 16
+    val numOutstandingRead: Int = 32,
+    val numOutstandingWrite: Int = 32
 ) {
   require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
   require(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
@@ -53,7 +53,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataSlave >> 3)))
-    val offsetLastQueue = elastic.Queue(genOffsetLast, readOffsetLastQueueLength)
+    val ewireOffsetLastQueue = elastic.EWire(genOffsetLast)
 
     def implAR(): Unit = prefix("ar") {
       val arTransformed = Wire(chiselTypeOf(m_axi.ar))
@@ -73,7 +73,10 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
       }
 
       val fork0 = new elastic.Fork(arTransformed) {
-        val transform0 = new elastic.Transform(fork(), addressGenerator.source) {
+        val transform0 = new elastic.Transform(
+          fork(),
+          elastic.SinkBuffer(addressGenerator.source, numOutstandingRead)
+        ) {
           out.addr := in.addr
           out.len := in.len
           out.size := in.size
@@ -84,14 +87,14 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         fork() :=> m_axi.ar
       }
 
-      val transform1 = new elastic.Transform(addressGenerator.sink, offsetLastQueue.source) {
+      val transform1 = new elastic.Transform(addressGenerator.sink, ewireOffsetLastQueue) {
         out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
         out._2 := in.last
       }
     }
 
     def implR(): Unit = prefix("r") {
-      val zipped = elastic.Zip(m_axi.r, offsetLastQueue.sink)
+      val zipped = elastic.Zip(m_axi.r, ewireOffsetLastQueue)
 
       val transducerReduceResp = new elastic.Transducer(zipped, s_axi.r) {
         val dataReg = RegInit(0.U(axiSlaveCfg.wData.W))
@@ -130,7 +133,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
 
   private def implWrite(): Unit = prefix("write") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataSlave >> 3)))
-    val offsetLastQueue = elastic.Queue(genOffsetLast, writeOffsetLastQueueLength)
+    val ewireOffsetLast = elastic.EWire(genOffsetLast)
 
     def implAW(): Unit = prefix("aw") {
       val awTransformed = Wire(chiselTypeOf(m_axi.aw))
@@ -150,7 +153,10 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
       }
 
       val fork0 = new elastic.Fork(awTransformed) {
-        val transform0 = new elastic.Transform(fork(), addressGenerator.source) {
+        val transform0 = new elastic.Transform(
+          fork(),
+          elastic.SinkBuffer( addressGenerator.source, numOutstandingWrite)
+        ) {
           out.addr := in.addr
           out.len := in.len
           out.size := in.size
@@ -161,19 +167,19 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         fork() :=> m_axi.aw
       }
 
-      val transform1 = new elastic.Transform(addressGenerator.sink, offsetLastQueue.source) {
+      val transform1 = new elastic.Transform(addressGenerator.sink, ewireOffsetLast) {
         out._1 := in.addr.dropLsbN(log2Ceil(wDataMaster >> 3))
         out._2 := in.last
       }
     }
 
     def implW(): Unit = prefix("w") {
-      offsetLastQueue.sink.nodeq()
-      offsetLastQueue.sink.markSource()
+      ewireOffsetLast.nodeq()
+      ewireOffsetLast.markSource()
 
       val transducerRepeatData = new elastic.Transducer(s_axi.w, m_axi.w) {
-        val bits = offsetLastQueue.sink.$bits
-        val valid = offsetLastQueue.sink.$valid
+        val bits = ewireOffsetLast.$bits
+        val valid = ewireOffsetLast.$valid
 
         val steerRight = Module(new SteerRight(wDataSlave, wDataMaster))
         val steerRightStrobe = Module(new SteerRight(wStrobeSlave, wStrobeMaster))
@@ -192,9 +198,9 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
         packet {
           when(valid) {
             when(bits._2 /* last */ ) {
-              accept { offsetLastQueue.sink.deq() }
+              accept { ewireOffsetLast.deq() }
             }.otherwise {
-              produce { offsetLastQueue.sink.deq() }
+              produce { ewireOffsetLast.deq() }
             }
           }.otherwise {
             stall {}

@@ -784,14 +784,28 @@
       }
     },
     {
-      "path" : "/downscale/read_offsetLastQueue_sink",
-      "tpe" : "chext.elastic.Interface[Bundle2]",
+      "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
       "args" : {
         
       }
     },
     {
-      "path" : "/downscale/read_offsetLastQueue_source",
+      "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_source",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/downscale/read_ewireOffsetLastQueue",
       "tpe" : "chext.elastic.Interface[Bundle2]",
       "args" : {
         
@@ -826,14 +840,28 @@
       }
     },
     {
-      "path" : "/downscale/write_offsetLastQueue_sink",
-      "tpe" : "chext.elastic.Interface[Bundle2]",
+      "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
       "args" : {
         
       }
     },
     {
-      "path" : "/downscale/write_offsetLastQueue_source",
+      "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_source",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/downscale/write_ewireOffsetLast",
       "tpe" : "chext.elastic.Interface[Bundle2]",
       "args" : {
         
@@ -924,6 +952,27 @@
       }
     },
     {
+      "path" : "/unburst/write_fork0_rightBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[UInt<8>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/write_fork0_rightBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[UInt<8>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/write_fork0_rightBuffer0_source",
+      "tpe" : "chext.elastic.Interface[UInt<8>]",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/unburst/write_fork0_transform0_result",
       "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
       "args" : {
@@ -952,13 +1001,6 @@
       }
     },
     {
-      "path" : "/unburst/read_addressStrobeGenerator/source",
-      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/unburst/write_addressStrobeGenerator/source",
       "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
       "args" : {
@@ -966,8 +1008,8 @@
       }
     },
     {
-      "path" : "/unburst/read_addressStrobeGenerator/sink",
-      "tpe" : "chext.elastic.Interface[AddrSizeStrobeLastBundle]",
+      "path" : "/unburst/read_addressStrobeGenerator/source",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
       "args" : {
         
       }
@@ -980,28 +1022,7 @@
       }
     },
     {
-      "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/source",
-      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/source",
-      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/sink",
-      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/sink",
+      "path" : "/unburst/read_addressStrobeGenerator/sink",
       "tpe" : "chext.elastic.Interface[AddrSizeStrobeLastBundle]",
       "args" : {
         
@@ -1030,6 +1051,34 @@
     },
     {
       "path" : "/unburst/write_addressStrobeGenerator/strobeGenerator/sink",
+      "tpe" : "chext.elastic.Interface[AddrSizeStrobeLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/source",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/source",
+      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/sink",
+      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/sink",
       "tpe" : "chext.elastic.Interface[AddrSizeStrobeLastBundle]",
       "args" : {
         
@@ -3552,32 +3601,6 @@
       }
     },
     {
-      "path" : "/downscale/read_offsetLastQueue",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/downscale/read_offsetLastQueue_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/downscale/read_offsetLastQueue_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/downscale/read_ar_transform0",
       "tpe" : "Transform",
       "sources" : [
@@ -3637,6 +3660,84 @@
       }
     },
     {
+      "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/downscale/read_addressGenerator/source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/downscale/read_ar_fork0_transform0",
       "tpe" : "Transform",
       "sources" : [
@@ -3652,8 +3753,8 @@
         [
           "sink",
           {
-            "path" : "/downscale/read_addressGenerator/source",
-            "desc" : "ChildIO"
+            "path" : "/downscale/read_ar_fork0_transform0_rightBuffer0_interface",
+            "desc" : "Wire"
           }
         ]
       ],
@@ -3704,7 +3805,7 @@
         [
           "sink",
           {
-            "path" : "/downscale/read_offsetLastQueue_source",
+            "path" : "/downscale/read_ewireOffsetLastQueue",
             "desc" : "Wire"
           }
         ]
@@ -3732,32 +3833,6 @@
           {
             "path" : "/downscale/s_axi.r",
             "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/downscale/write_offsetLastQueue",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/downscale/write_offsetLastQueue_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/downscale/write_offsetLastQueue_sink",
-            "desc" : "Wire"
           }
         ]
       ],
@@ -3826,6 +3901,84 @@
       }
     },
     {
+      "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/downscale/write_addressGenerator/source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/downscale/write_aw_fork0_transform0",
       "tpe" : "Transform",
       "sources" : [
@@ -3841,8 +3994,8 @@
         [
           "sink",
           {
-            "path" : "/downscale/write_addressGenerator/source",
-            "desc" : "ChildIO"
+            "path" : "/downscale/write_aw_fork0_transform0_rightBuffer0_interface",
+            "desc" : "Wire"
           }
         ]
       ],
@@ -3893,7 +4046,7 @@
         [
           "sink",
           {
-            "path" : "/downscale/write_offsetLastQueue_source",
+            "path" : "/downscale/write_ewireOffsetLast",
             "desc" : "Wire"
           }
         ]
@@ -4289,6 +4442,84 @@
       }
     },
     {
+      "path" : "/unburst/write_fork0_rightBuffer0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/write_fork0_rightBuffer0_Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/write_fork0_rightBuffer0_Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/write_wire0",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/unburst/write_fork0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
@@ -4304,7 +4535,7 @@
         [
           "sink",
           {
-            "path" : "/unburst/write_wire0",
+            "path" : "/unburst/write_fork0_rightBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -4445,136 +4676,6 @@
       }
     },
     {
-      "path" : "/unburst/read_addressStrobeGenerator/Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/source",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/unburst/read_addressStrobeGenerator/Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/sink",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/unburst/read_addressStrobeGenerator/Unnamed2",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/sink",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/sink",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/transducer",
-      "tpe" : "Transducer",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/source",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/sink",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/transform0",
-      "tpe" : "Transform",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/source",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/sink",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/unburst/write_addressStrobeGenerator/Unnamed0",
       "tpe" : "Connect",
       "sources" : [
@@ -4695,6 +4796,136 @@
           "sink",
           {
             "path" : "/unburst/write_addressStrobeGenerator/strobeGenerator/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/read_addressStrobeGenerator/Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/read_addressStrobeGenerator/Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/sink",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/read_addressStrobeGenerator/Unnamed2",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/sink",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/transducer",
+      "tpe" : "Transducer",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/addressGenerator/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/transform0",
+      "tpe" : "Transform",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/read_addressStrobeGenerator/strobeGenerator/sink",
             "desc" : "IO"
           }
         ]

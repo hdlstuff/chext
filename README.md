@@ -52,11 +52,11 @@ fit when you want:
 Use the provided `build.sbt` (example below mirrors the attached config):
 
 ```scala
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "2.13.18"
 ThisBuild / version := "0.1.1"
 ThisBuild / organization := "hdlstuff"
 
-val chiselVersion = "6.0.0"
+val chiselVersion = "7.6.0"
 val circeVersion = "0.14.1"
 
 lazy val root = (project in file("."))
@@ -65,7 +65,7 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "org.chipsalliance" %% "chisel" % chiselVersion,
       "hdlstuff" %% "hdlinfo" % "0.1.0",
-      "hdlstuff" %% "chext" % "0.2.1",
+      "hdlstuff" %% "chext" % "0.2.2",
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion

@@ -16,8 +16,8 @@ import helpers.{SteerLeft, SteerRight}
 case class UpscaleConfig(
     val axiSlaveCfg: axi4.Config,
     val wDataMaster: Int,
-    val readOffsetQueueLength: Int = 16,
-    val writeOffsetQueueLength: Int = 16
+    val numOutstandingRead: Int = 32,
+    val numOutstandingWrite: Int = 32
 ) {
   require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
   require(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
@@ -42,22 +42,26 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataMaster >> 3)))
-    val offsetQueue = elastic.Queue(UInt(wOffset.W), readOffsetQueueLength)
+    val ewireOffset = elastic.EWire(UInt(wOffset.W))
 
     def implAR(): Unit = prefix("ar") {
       val fork0 = new elastic.Fork(s_axi.ar) {
-        val transform0 = new elastic.Transform(fork(), addressGenerator.source) {
-          out.addr := in.addr
-          out.len := in.len
-          out.size := in.size
-          out.burst := in.burst
-          out.user := 0.U
-        }
+        val transform0 =
+          new elastic.Transform(
+            fork(),
+            elastic.SinkBuffer(addressGenerator.source, numOutstandingRead)
+          ) {
+            out.addr := in.addr
+            out.len := in.len
+            out.size := in.size
+            out.burst := in.burst
+            out.user := 0.U
+          }
 
         fork() :=> m_axi.ar
       }
 
-      val transform0 = new elastic.Transform(addressGenerator.sink, offsetQueue.source) {
+      val transform0 = new elastic.Transform(addressGenerator.sink, ewireOffset) {
         out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
       }
     }
@@ -67,7 +71,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
 
       val join0 = new elastic.Join(s_axi.r) {
         val beat = join(m_axi.r)
-        val offset = join(offsetQueue.sink)
+        val offset = join(ewireOffset)
 
         steerRight.dataIn := beat.data
         steerRight.offsetIn := offset
@@ -87,11 +91,14 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
 
   private def implWrite(): Unit = prefix("write") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataMaster >> 3)))
-    val offsetQueue = elastic.Queue(UInt(wOffset.W), writeOffsetQueueLength)
+    val ewireOffset = elastic.EWire(UInt(wOffset.W))
 
     def implAW(): Unit = prefix("aw") {
       val fork0 = new elastic.Fork(s_axi.aw) {
-        val transform0 = new elastic.Transform(fork(), addressGenerator.source) {
+        val transform0 = new elastic.Transform(
+          fork(),
+          elastic.SinkBuffer(addressGenerator.source, numOutstandingWrite)
+        ) {
           out.addr := in.addr
           out.len := in.len
           out.size := in.size
@@ -102,7 +109,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
         fork() :=> m_axi.aw
       }
 
-      val transform0 = new elastic.Transform(addressGenerator.sink, offsetQueue.source) {
+      val transform0 = new elastic.Transform(addressGenerator.sink, ewireOffset) {
         out := in.addr.dropLsbN(log2Ceil(wDataSlave >> 3))
       }
     }
@@ -113,7 +120,7 @@ class Upscale(val cfg: UpscaleConfig) extends Module {
 
       val join0 = new elastic.Join(m_axi.w) {
         val beat = join(s_axi.w)
-        val offset = join(offsetQueue.sink)
+        val offset = join(ewireOffset)
 
         steerLeft.dataIn := beat.data
         steerLeft.offsetIn := offset

@@ -99,13 +99,16 @@ object BitOps {
       if (indices.isEmpty)
         0.U(0.W)
       else {
-        WireInit(
+        val extractLittleResult = Wire(UInt(indices.length.W))
+
+        extractLittleResult :=
           VecInit
             .tabulate(indices.length) { //
               (idx) => { x(indices(idx)) }
             }
             .asUInt
-        )
+
+        extractLittleResult
       }
     }
 

@@ -11,8 +11,8 @@ import axi4.Ops._
 
 case class UnburstConfig(
     val axiCfg: axi4.Config,
-    val numOutstandingRead: Int = 8,
-    val numOutstandingWrite: Int = 8
+    val numOutstandingRead: Int = 32,
+    val numOutstandingWrite: Int = 32
 ) {
   require(axiCfg.wId == 0, "axiCfg.wId must be zero!")
   require(!axiCfg.lite, "axiCfg.lite must be false!")
@@ -105,7 +105,7 @@ class Unburst(val cfg: UnburstConfig) extends Module {
           out.user := in
         }
 
-        fork(in.len) :=> wire0
+        fork(in.len) :=> elastic.SinkBuffer(wire0, numOutstandingWrite)
       }
 
       val transform0 = new elastic.Transform(addressStrobeGenerator.sink, m_axi.aw) {

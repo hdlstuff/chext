@@ -749,6 +749,27 @@
       }
     },
     {
+      "path" : "/unburst/write_fork0_rightBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[UInt<8>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/write_fork0_rightBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[UInt<8>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/write_fork0_rightBuffer0_source",
+      "tpe" : "chext.elastic.Interface[UInt<8>]",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/unburst/write_fork0_transform0_result",
       "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
       "args" : {
@@ -3528,6 +3549,84 @@
       }
     },
     {
+      "path" : "/unburst/write_fork0_rightBuffer0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/write_fork0_rightBuffer0_Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_interface",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/unburst/write_fork0_rightBuffer0_Unnamed1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/unburst/write_fork0_rightBuffer0_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/unburst/write_wire0",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/unburst/write_fork0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
@@ -3543,7 +3642,7 @@
         [
           "sink",
           {
-            "path" : "/unburst/write_wire0",
+            "path" : "/unburst/write_fork0_rightBuffer0_interface",
             "desc" : "Wire"
           }
         ]

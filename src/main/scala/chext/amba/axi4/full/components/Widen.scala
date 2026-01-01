@@ -12,7 +12,9 @@ import chext.amba.axi4
 import chisel3.experimental.{prefix, AffectsChiselPrefix}
 
 case class WidenConfig(
-    val axiCfg: axi4.Config
+    val axiCfg: axi4.Config,
+    val numOutstandingRead: Int = 32,
+    val numOutstandingWrite: Int = 32
 ) {
   require(!axiCfg.lite, "Widen requires an AXI4-Full interface.")
 }
@@ -195,8 +197,6 @@ class Widen(val cfg: WidenConfig) extends Module {
   }
 
   private def implRead() = prefix("read") {
-    val numOutstanding = 32
-
     val ewireControl = elastic.EWire(genControl)
     val ewireTransferLast = elastic.EWire(Bool())
     val ewireBeatFirst = elastic.EWire(Bool())
@@ -216,7 +216,7 @@ class Widen(val cfg: WidenConfig) extends Module {
 
       val control0 = generateControl(
         fork(),
-        elastic.SinkBuffer(ewireControl, numOutstanding),
+        elastic.SinkBuffer(ewireControl, numOutstandingRead),
         log2Ceil(axiCfg.wData) - 3
       )
     }
@@ -263,8 +263,6 @@ class Widen(val cfg: WidenConfig) extends Module {
   }
 
   private def implWrite() = prefix("write") {
-    val numOutstanding = 32
-
     val ewireControl = elastic.EWire(genControl)
     val ewireTransferLast = elastic.EWire(Bool())
     val ewireBeatFirst = elastic.EWire(Bool())
@@ -284,7 +282,7 @@ class Widen(val cfg: WidenConfig) extends Module {
 
       val control0 = generateControl(
         fork(),
-        elastic.SinkBuffer(ewireControl, numOutstanding),
+        elastic.SinkBuffer(ewireControl, numOutstandingWrite),
         log2Ceil(axiCfg.wData) - 3
       )
     }

@@ -636,22 +636,22 @@ module AddressGenerator(
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_0
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_1
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_2
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_3
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: no action was taken! @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
   always @(posedge clock) begin
@@ -1217,22 +1217,22 @@ module AddressGenerator_4(
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_0
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_1
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_2
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_3
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: no action was taken! @[/home/soenmez/repos/hdlstuff/hdlstuff/repos/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
   always @(posedge clock) begin
@@ -1384,87 +1384,136 @@ module Upscale(
   output         m_axi_b_ready
 );
 
-  wire [1:0] write_offsetQueue_sink_bits;
-  wire [1:0] read_offsetQueue_sink_bits;
-  wire       _write_addressGenerator_source_ready;
-  wire [3:0] _write_addressGenerator_sink_bits_addr;
-  wire       _read_addressGenerator_source_ready;
-  wire [3:0] _read_addressGenerator_sink_bits_addr;
-  reg  [3:0] read_offsetQueue_enq_ptr_value;
-  reg  [3:0] read_offsetQueue_deq_ptr_value;
-  reg        read_offsetQueue_maybe_full;
-  wire       read_offsetQueue_ptr_match =
-    read_offsetQueue_enq_ptr_value == read_offsetQueue_deq_ptr_value;
-  wire       read_offsetQueue_source_valid;
-  wire       read_offsetQueue_source_ready;
-  wire       read_offsetQueue_do_enq =
-    read_offsetQueue_source_ready & read_offsetQueue_source_valid;
-  wire       read_offsetQueue_sink_valid =
-    ~(read_offsetQueue_ptr_match & ~read_offsetQueue_maybe_full);
-  assign read_offsetQueue_source_ready =
-    ~(read_offsetQueue_ptr_match & read_offsetQueue_maybe_full);
-  wire [1:0] read_offsetQueue_source_bits = _read_addressGenerator_sink_bits_addr[3:2];
-  reg  [3:0] write_offsetQueue_enq_ptr_value;
-  reg  [3:0] write_offsetQueue_deq_ptr_value;
-  reg        write_offsetQueue_maybe_full;
-  wire       write_offsetQueue_ptr_match =
-    write_offsetQueue_enq_ptr_value == write_offsetQueue_deq_ptr_value;
-  wire       write_offsetQueue_source_valid;
-  wire       write_offsetQueue_source_ready;
-  wire       write_offsetQueue_do_enq =
-    write_offsetQueue_source_ready & write_offsetQueue_source_valid;
-  wire       write_offsetQueue_sink_valid =
-    ~(write_offsetQueue_ptr_match & ~write_offsetQueue_maybe_full);
-  assign write_offsetQueue_source_ready =
-    ~(write_offsetQueue_ptr_match & write_offsetQueue_maybe_full);
-  wire [1:0] write_offsetQueue_source_bits = _write_addressGenerator_sink_bits_addr[3:2];
-  reg        read_ar_fork0_regs_0;
-  reg        read_ar_fork0_regs_1;
-  wire       read_ar_fork0_ready_qual1_0 =
-    _read_addressGenerator_source_ready | read_ar_fork0_regs_0;
-  wire       read_ar_fork0_ready_qual1_1 = m_axi_ar_ready | read_ar_fork0_regs_1;
-  wire       s_axi_ar_ready_0 = read_ar_fork0_ready_qual1_0 & read_ar_fork0_ready_qual1_1;
-  wire       m_axi_w_valid_0 = s_axi_w_valid & write_offsetQueue_sink_valid;
-  wire       write_offsetQueue_sink_ready = m_axi_w_ready & m_axi_w_valid_0;
-  reg        write_aw_fork0_regs_0;
-  reg        write_aw_fork0_regs_1;
-  wire       write_aw_fork0_ready_qual1_0 =
-    _write_addressGenerator_source_ready | write_aw_fork0_regs_0;
-  wire       write_aw_fork0_ready_qual1_1 = m_axi_aw_ready | write_aw_fork0_regs_1;
-  wire       s_axi_aw_ready_0 =
+  wire [16:0] _write_aw_fork0_transform0_rightBuffer0_ram_dataOutB;
+  wire [3:0]  _write_addressGenerator_sink_bits_addr;
+  wire        _write_addressGenerator_sink_valid;
+  wire [16:0] _read_ar_fork0_transform0_rightBuffer0_ram_dataOutB;
+  wire [3:0]  _read_addressGenerator_sink_bits_addr;
+  wire        _read_addressGenerator_sink_valid;
+  wire [7:0]  read_ar_fork0_transform0_rightBuffer0_source_bits_len = s_axi_ar_bits_len;
+  wire [2:0]  read_ar_fork0_transform0_rightBuffer0_source_bits_size = s_axi_ar_bits_size;
+  wire [1:0]  read_ar_fork0_transform0_rightBuffer0_source_bits_burst =
+    s_axi_ar_bits_burst;
+  wire [7:0]  write_aw_fork0_transform0_rightBuffer0_source_bits_len = s_axi_aw_bits_len;
+  wire [2:0]  write_aw_fork0_transform0_rightBuffer0_source_bits_size =
+    s_axi_aw_bits_size;
+  wire [1:0]  write_aw_fork0_transform0_rightBuffer0_source_bits_burst =
+    s_axi_aw_bits_burst;
+  reg  [4:0]  read_ar_fork0_transform0_rightBuffer0_enq_ptr_value;
+  reg  [4:0]  read_ar_fork0_transform0_rightBuffer0_deq_ptr_value;
+  reg         read_ar_fork0_transform0_rightBuffer0_maybe_full;
+  wire        read_ar_fork0_transform0_rightBuffer0_ptr_match =
+    read_ar_fork0_transform0_rightBuffer0_enq_ptr_value == read_ar_fork0_transform0_rightBuffer0_deq_ptr_value;
+  wire        read_ar_fork0_transform0_rightBuffer0_source_valid;
+  wire        read_ar_fork0_transform0_result_ready;
+  wire        read_ar_fork0_transform0_rightBuffer0_do_enq =
+    read_ar_fork0_transform0_result_ready
+    & read_ar_fork0_transform0_rightBuffer0_source_valid;
+  wire [3:0]  read_ar_fork0_transform0_rightBuffer0_source_bits_addr;
+  wire        read_ar_fork0_transform0_rightBuffer0_sink_valid =
+    ~(read_ar_fork0_transform0_rightBuffer0_ptr_match
+      & ~read_ar_fork0_transform0_rightBuffer0_maybe_full);
+  assign read_ar_fork0_transform0_result_ready =
+    ~(read_ar_fork0_transform0_rightBuffer0_ptr_match
+      & read_ar_fork0_transform0_rightBuffer0_maybe_full);
+  wire [1:0]  read_ar_fork0_transform0_rightBuffer0_sink_bits_burst =
+    _read_ar_fork0_transform0_rightBuffer0_ram_dataOutB[1:0];
+  wire [2:0]  read_ar_fork0_transform0_rightBuffer0_sink_bits_size =
+    _read_ar_fork0_transform0_rightBuffer0_ram_dataOutB[4:2];
+  wire [7:0]  read_ar_fork0_transform0_rightBuffer0_sink_bits_len =
+    _read_ar_fork0_transform0_rightBuffer0_ram_dataOutB[12:5];
+  wire [3:0]  read_ar_fork0_transform0_rightBuffer0_sink_bits_addr =
+    _read_ar_fork0_transform0_rightBuffer0_ram_dataOutB[16:13];
+  assign read_ar_fork0_transform0_rightBuffer0_source_bits_addr = s_axi_ar_bits_addr[3:0];
+  reg  [4:0]  write_aw_fork0_transform0_rightBuffer0_enq_ptr_value;
+  reg  [4:0]  write_aw_fork0_transform0_rightBuffer0_deq_ptr_value;
+  reg         write_aw_fork0_transform0_rightBuffer0_maybe_full;
+  wire        write_aw_fork0_transform0_rightBuffer0_ptr_match =
+    write_aw_fork0_transform0_rightBuffer0_enq_ptr_value == write_aw_fork0_transform0_rightBuffer0_deq_ptr_value;
+  wire        write_aw_fork0_transform0_rightBuffer0_source_valid;
+  wire        write_aw_fork0_transform0_result_ready;
+  wire        write_aw_fork0_transform0_rightBuffer0_do_enq =
+    write_aw_fork0_transform0_result_ready
+    & write_aw_fork0_transform0_rightBuffer0_source_valid;
+  wire [3:0]  write_aw_fork0_transform0_rightBuffer0_source_bits_addr;
+  wire        write_aw_fork0_transform0_rightBuffer0_sink_valid =
+    ~(write_aw_fork0_transform0_rightBuffer0_ptr_match
+      & ~write_aw_fork0_transform0_rightBuffer0_maybe_full);
+  assign write_aw_fork0_transform0_result_ready =
+    ~(write_aw_fork0_transform0_rightBuffer0_ptr_match
+      & write_aw_fork0_transform0_rightBuffer0_maybe_full);
+  wire [1:0]  write_aw_fork0_transform0_rightBuffer0_sink_bits_burst =
+    _write_aw_fork0_transform0_rightBuffer0_ram_dataOutB[1:0];
+  wire [2:0]  write_aw_fork0_transform0_rightBuffer0_sink_bits_size =
+    _write_aw_fork0_transform0_rightBuffer0_ram_dataOutB[4:2];
+  wire [7:0]  write_aw_fork0_transform0_rightBuffer0_sink_bits_len =
+    _write_aw_fork0_transform0_rightBuffer0_ram_dataOutB[12:5];
+  wire [3:0]  write_aw_fork0_transform0_rightBuffer0_sink_bits_addr =
+    _write_aw_fork0_transform0_rightBuffer0_ram_dataOutB[16:13];
+  assign write_aw_fork0_transform0_rightBuffer0_source_bits_addr =
+    s_axi_aw_bits_addr[3:0];
+  reg         read_ar_fork0_regs_0;
+  reg         read_ar_fork0_regs_1;
+  wire        read_ar_fork0_ready_qual1_0 =
+    read_ar_fork0_transform0_result_ready | read_ar_fork0_regs_0;
+  wire        read_ar_fork0_ready_qual1_1 = m_axi_ar_ready | read_ar_fork0_regs_1;
+  wire        s_axi_ar_ready_0 =
+    read_ar_fork0_ready_qual1_0 & read_ar_fork0_ready_qual1_1;
+  assign read_ar_fork0_transform0_rightBuffer0_source_valid =
+    s_axi_ar_valid & ~read_ar_fork0_regs_0;
+  wire        m_axi_w_valid_0 = s_axi_w_valid & _write_addressGenerator_sink_valid;
+  wire        write_ewireOffset_ready = m_axi_w_ready & m_axi_w_valid_0;
+  reg         write_aw_fork0_regs_0;
+  reg         write_aw_fork0_regs_1;
+  wire        write_aw_fork0_ready_qual1_0 =
+    write_aw_fork0_transform0_result_ready | write_aw_fork0_regs_0;
+  wire        write_aw_fork0_ready_qual1_1 = m_axi_aw_ready | write_aw_fork0_regs_1;
+  wire        s_axi_aw_ready_0 =
     write_aw_fork0_ready_qual1_0 & write_aw_fork0_ready_qual1_1;
-  wire       s_axi_r_valid_0 = m_axi_r_valid & read_offsetQueue_sink_valid;
-  wire       read_offsetQueue_sink_ready = s_axi_r_ready & s_axi_r_valid_0;
+  assign write_aw_fork0_transform0_rightBuffer0_source_valid =
+    s_axi_aw_valid & ~write_aw_fork0_regs_0;
+  wire        s_axi_r_valid_0 = m_axi_r_valid & _read_addressGenerator_sink_valid;
+  wire        read_ewireOffset_ready = s_axi_r_ready & s_axi_r_valid_0;
+  wire        read_ar_fork0_transform0_rightBuffer0_sink_ready;
+  wire        write_aw_fork0_transform0_rightBuffer0_sink_ready;
   always @(posedge clock) begin
     if (reset) begin
-      read_offsetQueue_enq_ptr_value <= 4'h0;
-      read_offsetQueue_deq_ptr_value <= 4'h0;
-      read_offsetQueue_maybe_full <= 1'h0;
-      write_offsetQueue_enq_ptr_value <= 4'h0;
-      write_offsetQueue_deq_ptr_value <= 4'h0;
-      write_offsetQueue_maybe_full <= 1'h0;
+      read_ar_fork0_transform0_rightBuffer0_enq_ptr_value <= 5'h0;
+      read_ar_fork0_transform0_rightBuffer0_deq_ptr_value <= 5'h0;
+      read_ar_fork0_transform0_rightBuffer0_maybe_full <= 1'h0;
+      write_aw_fork0_transform0_rightBuffer0_enq_ptr_value <= 5'h0;
+      write_aw_fork0_transform0_rightBuffer0_deq_ptr_value <= 5'h0;
+      write_aw_fork0_transform0_rightBuffer0_maybe_full <= 1'h0;
       read_ar_fork0_regs_0 <= 1'h0;
       read_ar_fork0_regs_1 <= 1'h0;
       write_aw_fork0_regs_0 <= 1'h0;
       write_aw_fork0_regs_1 <= 1'h0;
     end
     else begin
-      automatic logic read_offsetQueue_do_deq =
-        read_offsetQueue_sink_ready & read_offsetQueue_sink_valid;
-      automatic logic write_offsetQueue_do_deq =
-        write_offsetQueue_sink_ready & write_offsetQueue_sink_valid;
-      if (read_offsetQueue_do_enq)
-        read_offsetQueue_enq_ptr_value <= read_offsetQueue_enq_ptr_value + 4'h1;
-      if (read_offsetQueue_do_deq)
-        read_offsetQueue_deq_ptr_value <= read_offsetQueue_deq_ptr_value + 4'h1;
-      if (read_offsetQueue_do_enq != read_offsetQueue_do_deq)
-        read_offsetQueue_maybe_full <= read_offsetQueue_do_enq;
-      if (write_offsetQueue_do_enq)
-        write_offsetQueue_enq_ptr_value <= write_offsetQueue_enq_ptr_value + 4'h1;
-      if (write_offsetQueue_do_deq)
-        write_offsetQueue_deq_ptr_value <= write_offsetQueue_deq_ptr_value + 4'h1;
-      if (write_offsetQueue_do_enq != write_offsetQueue_do_deq)
-        write_offsetQueue_maybe_full <= write_offsetQueue_do_enq;
+      automatic logic read_ar_fork0_transform0_rightBuffer0_do_deq =
+        read_ar_fork0_transform0_rightBuffer0_sink_ready
+        & read_ar_fork0_transform0_rightBuffer0_sink_valid;
+      automatic logic write_aw_fork0_transform0_rightBuffer0_do_deq =
+        write_aw_fork0_transform0_rightBuffer0_sink_ready
+        & write_aw_fork0_transform0_rightBuffer0_sink_valid;
+      if (read_ar_fork0_transform0_rightBuffer0_do_enq)
+        read_ar_fork0_transform0_rightBuffer0_enq_ptr_value <=
+          read_ar_fork0_transform0_rightBuffer0_enq_ptr_value + 5'h1;
+      if (read_ar_fork0_transform0_rightBuffer0_do_deq)
+        read_ar_fork0_transform0_rightBuffer0_deq_ptr_value <=
+          read_ar_fork0_transform0_rightBuffer0_deq_ptr_value + 5'h1;
+      if (read_ar_fork0_transform0_rightBuffer0_do_enq != read_ar_fork0_transform0_rightBuffer0_do_deq)
+        read_ar_fork0_transform0_rightBuffer0_maybe_full <=
+          read_ar_fork0_transform0_rightBuffer0_do_enq;
+      if (write_aw_fork0_transform0_rightBuffer0_do_enq)
+        write_aw_fork0_transform0_rightBuffer0_enq_ptr_value <=
+          write_aw_fork0_transform0_rightBuffer0_enq_ptr_value + 5'h1;
+      if (write_aw_fork0_transform0_rightBuffer0_do_deq)
+        write_aw_fork0_transform0_rightBuffer0_deq_ptr_value <=
+          write_aw_fork0_transform0_rightBuffer0_deq_ptr_value + 5'h1;
+      if (write_aw_fork0_transform0_rightBuffer0_do_enq != write_aw_fork0_transform0_rightBuffer0_do_deq)
+        write_aw_fork0_transform0_rightBuffer0_maybe_full <=
+          write_aw_fork0_transform0_rightBuffer0_do_enq;
       read_ar_fork0_regs_0 <=
         read_ar_fork0_ready_qual1_0 & s_axi_ar_valid & ~s_axi_ar_ready_0;
       read_ar_fork0_regs_1 <=
@@ -1478,73 +1527,81 @@ module Upscale(
   AddressGenerator_4 read_addressGenerator (
     .clock             (clock),
     .reset             (reset),
-    .source_bits_addr  (s_axi_ar_bits_addr[3:0]),
-    .source_bits_len   (s_axi_ar_bits_len),
-    .source_bits_size  (s_axi_ar_bits_size),
-    .source_bits_burst (s_axi_ar_bits_burst),
-    .source_valid      (s_axi_ar_valid & ~read_ar_fork0_regs_0),
-    .source_ready      (_read_addressGenerator_source_ready),
+    .source_bits_addr  (read_ar_fork0_transform0_rightBuffer0_sink_bits_addr),
+    .source_bits_len   (read_ar_fork0_transform0_rightBuffer0_sink_bits_len),
+    .source_bits_size  (read_ar_fork0_transform0_rightBuffer0_sink_bits_size),
+    .source_bits_burst (read_ar_fork0_transform0_rightBuffer0_sink_bits_burst),
+    .source_valid      (read_ar_fork0_transform0_rightBuffer0_sink_valid),
+    .source_ready      (read_ar_fork0_transform0_rightBuffer0_sink_ready),
     .sink_bits_addr    (_read_addressGenerator_sink_bits_addr),
-    .sink_valid        (read_offsetQueue_source_valid),
-    .sink_ready        (read_offsetQueue_source_ready)
+    .sink_valid        (_read_addressGenerator_sink_valid),
+    .sink_ready        (read_ewireOffset_ready)
   );
   chext_mem_1w1r #(
-    .ADDR_WIDTH(4),
-    .COUNT(16),
-    .DATA_WIDTH(2)
-  ) read_offsetQueue_ram (
+    .ADDR_WIDTH(5),
+    .COUNT(32),
+    .DATA_WIDTH(17)
+  ) read_ar_fork0_transform0_rightBuffer0_ram (
     .clock    (clock),
-    .addrA    (read_offsetQueue_enq_ptr_value),
-    .writeEnA (read_offsetQueue_do_enq),
-    .dataInA  (read_offsetQueue_source_bits),
-    .addrB    (read_offsetQueue_deq_ptr_value),
-    .dataOutB (read_offsetQueue_sink_bits)
+    .addrA    (read_ar_fork0_transform0_rightBuffer0_enq_ptr_value),
+    .writeEnA (read_ar_fork0_transform0_rightBuffer0_do_enq),
+    .dataInA
+      ({read_ar_fork0_transform0_rightBuffer0_source_bits_addr,
+        read_ar_fork0_transform0_rightBuffer0_source_bits_len,
+        read_ar_fork0_transform0_rightBuffer0_source_bits_size,
+        read_ar_fork0_transform0_rightBuffer0_source_bits_burst}),
+    .addrB    (read_ar_fork0_transform0_rightBuffer0_deq_ptr_value),
+    .dataOutB (_read_ar_fork0_transform0_rightBuffer0_ram_dataOutB)
   );
   SteerRight read_r_steerRight (
     .dataIn   (m_axi_r_bits_data),
-    .offsetIn (read_offsetQueue_sink_bits),
+    .offsetIn (_read_addressGenerator_sink_bits_addr[3:2]),
     .dataOut  (s_axi_r_bits_data)
   );
   AddressGenerator_4 write_addressGenerator (
     .clock             (clock),
     .reset             (reset),
-    .source_bits_addr  (s_axi_aw_bits_addr[3:0]),
-    .source_bits_len   (s_axi_aw_bits_len),
-    .source_bits_size  (s_axi_aw_bits_size),
-    .source_bits_burst (s_axi_aw_bits_burst),
-    .source_valid      (s_axi_aw_valid & ~write_aw_fork0_regs_0),
-    .source_ready      (_write_addressGenerator_source_ready),
+    .source_bits_addr  (write_aw_fork0_transform0_rightBuffer0_sink_bits_addr),
+    .source_bits_len   (write_aw_fork0_transform0_rightBuffer0_sink_bits_len),
+    .source_bits_size  (write_aw_fork0_transform0_rightBuffer0_sink_bits_size),
+    .source_bits_burst (write_aw_fork0_transform0_rightBuffer0_sink_bits_burst),
+    .source_valid      (write_aw_fork0_transform0_rightBuffer0_sink_valid),
+    .source_ready      (write_aw_fork0_transform0_rightBuffer0_sink_ready),
     .sink_bits_addr    (_write_addressGenerator_sink_bits_addr),
-    .sink_valid        (write_offsetQueue_source_valid),
-    .sink_ready        (write_offsetQueue_source_ready)
+    .sink_valid        (_write_addressGenerator_sink_valid),
+    .sink_ready        (write_ewireOffset_ready)
   );
   chext_mem_1w1r #(
-    .ADDR_WIDTH(4),
-    .COUNT(16),
-    .DATA_WIDTH(2)
-  ) write_offsetQueue_ram (
+    .ADDR_WIDTH(5),
+    .COUNT(32),
+    .DATA_WIDTH(17)
+  ) write_aw_fork0_transform0_rightBuffer0_ram (
     .clock    (clock),
-    .addrA    (write_offsetQueue_enq_ptr_value),
-    .writeEnA (write_offsetQueue_do_enq),
-    .dataInA  (write_offsetQueue_source_bits),
-    .addrB    (write_offsetQueue_deq_ptr_value),
-    .dataOutB (write_offsetQueue_sink_bits)
+    .addrA    (write_aw_fork0_transform0_rightBuffer0_enq_ptr_value),
+    .writeEnA (write_aw_fork0_transform0_rightBuffer0_do_enq),
+    .dataInA
+      ({write_aw_fork0_transform0_rightBuffer0_source_bits_addr,
+        write_aw_fork0_transform0_rightBuffer0_source_bits_len,
+        write_aw_fork0_transform0_rightBuffer0_source_bits_size,
+        write_aw_fork0_transform0_rightBuffer0_source_bits_burst}),
+    .addrB    (write_aw_fork0_transform0_rightBuffer0_deq_ptr_value),
+    .dataOutB (_write_aw_fork0_transform0_rightBuffer0_ram_dataOutB)
   );
   SteerLeft write_w_steerLeft (
     .dataIn   (s_axi_w_bits_data),
-    .offsetIn (write_offsetQueue_sink_bits),
+    .offsetIn (_write_addressGenerator_sink_bits_addr[3:2]),
     .dataOut  (m_axi_w_bits_data)
   );
   SteerLeft_1 write_w_steerLeftStrobe (
     .dataIn   (s_axi_w_bits_strb),
-    .offsetIn (write_offsetQueue_sink_bits),
+    .offsetIn (_write_addressGenerator_sink_bits_addr[3:2]),
     .dataOut  (m_axi_w_bits_strb)
   );
   assign s_axi_ar_ready = s_axi_ar_ready_0;
   assign s_axi_r_bits_last = m_axi_r_bits_last;
   assign s_axi_r_valid = s_axi_r_valid_0;
   assign s_axi_aw_ready = s_axi_aw_ready_0;
-  assign s_axi_w_ready = write_offsetQueue_sink_ready;
+  assign s_axi_w_ready = write_ewireOffset_ready;
   assign s_axi_b_valid = m_axi_b_valid;
   assign m_axi_ar_bits_addr = s_axi_ar_bits_addr;
   assign m_axi_ar_bits_len = s_axi_ar_bits_len;
@@ -1556,7 +1613,7 @@ module Upscale(
   assign m_axi_ar_bits_qos = s_axi_ar_bits_qos;
   assign m_axi_ar_bits_region = s_axi_ar_bits_region;
   assign m_axi_ar_valid = s_axi_ar_valid & ~read_ar_fork0_regs_1;
-  assign m_axi_r_ready = read_offsetQueue_sink_ready;
+  assign m_axi_r_ready = read_ewireOffset_ready;
   assign m_axi_aw_bits_addr = s_axi_aw_bits_addr;
   assign m_axi_aw_bits_len = s_axi_aw_bits_len;
   assign m_axi_aw_bits_size = s_axi_aw_bits_size;
