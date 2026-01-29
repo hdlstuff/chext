@@ -215,8 +215,8 @@ class Widen(val cfg: WidenConfig) extends Module {
       )
 
       val control0 = generateControl(
-        fork(),
-        elastic.SinkBuffer(ewireControl, numOutstandingRead),
+        elastic.SourceBuffer(fork(), numOutstandingRead),
+        ewireControl,
         log2Ceil(axiCfg.wData) - 3
       )
     }
@@ -281,8 +281,8 @@ class Widen(val cfg: WidenConfig) extends Module {
       )
 
       val control0 = generateControl(
-        fork(),
-        elastic.SinkBuffer(ewireControl, numOutstandingWrite),
+        elastic.SourceBuffer(fork(), numOutstandingWrite),
+        ewireControl,
         log2Ceil(axiCfg.wData) - 3
       )
     }
@@ -347,10 +347,5 @@ class Widen(val cfg: WidenConfig) extends Module {
 
   if (axiCfg.write)
     implWrite()
-    // {
-    //   s_axi.aw :=> m_axi.aw
-    //   s_axi.w :=> m_axi.w
-    //   m_axi.b :=> s_axi.b
-    // }
 
 }
