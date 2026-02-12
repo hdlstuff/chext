@@ -212,8 +212,8 @@ final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
     val wireTask = Wire(elastic.Interface(genTask))
 
     val fork0 = new elastic.Fork(sourceTask) {
-      fork { in.length } :=> wireLength
-      fork() :=> wireTask
+      fork { in.length } :=> elastic.SinkBuffer(wireLength, numOutstandingTasks)
+      fork() :=> wireTask /* buffered later */
       fork() :=> read0.sourceTask
     }
 
@@ -241,7 +241,7 @@ final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
       }
 
     val transform1 =
-      new elastic.Transform(wireTask, wireSource1) {
+      new elastic.Transform(wireTask, elastic.SinkBuffer(wireSource1, numOutstandingTasks)) {
         out.data := 0.U // invalid
         out.index := in.length
         out.last := true.B
@@ -255,8 +255,8 @@ final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
     val wireTask = Wire(elastic.Interface(genTask))
 
     val fork0 = new elastic.Fork(sourceTask) {
-      fork { in.length } :=> wireLength
-      fork() :=> wireTask
+      fork { in.length } :=> elastic.SinkBuffer(wireLength, numOutstandingTasks)
+      fork() :=> wireTask /* buffered later */
       fork() :=> read0.sourceTask
     }
 
