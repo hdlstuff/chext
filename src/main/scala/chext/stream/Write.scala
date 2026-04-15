@@ -60,11 +60,11 @@ final class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
   val m_axi = IO(axi4.full.Master(axiCfg))
 
   {
-    val taskFiltered = Wire(elastic.Interface(genTask))
+    val taskFiltered = elastic.EWire(genTask)
 
-    val taskAW = Wire(elastic.Interface(genTask))
-    val taskW = Wire(elastic.Interface(genTask))
-    val taskB = Wire(elastic.Interface(genTask))
+    val taskAW = elastic.EWire(genTask)
+    val taskW = elastic.EWire(genTask)
+    val taskB = elastic.EWire(genTask)
 
     checkAlignment(sourceTask, axiCfg, "Write")
 
@@ -129,10 +129,10 @@ final class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
           out.user := in.user
         }
 
-      val wireUserKeep = Wire(elastic.Interface(new Bundle {
+      val wireUserKeep = elastic.EWire(new Bundle {
         val user = genUser.cloneType
         val keep = Bool()
-      }))
+      })
 
       val join0 = new elastic.Join(wireUserKeep) {
         val chunk = join(chunk0.sink)
@@ -169,7 +169,7 @@ final class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
           out.user := 0.U
         }
 
-      val wireLast = Wire(elastic.Interface(Bool()))
+      val wireLast = elastic.EWire(Bool())
 
       val repeat0 = new elastic.Repeat(chunk0.sink, wireLast, wLength) {
         len { _.length }
@@ -220,8 +220,8 @@ final class Write[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
   } else if (resultMode == WriteResultMode.KeepAll) {
     sourceData :=> write0.sourceData
 
-    val wireTask0 = Wire(elastic.Interface(genTask))
-    val wireTask1 = Wire(elastic.Interface(genTask))
+    val wireTask0 = elastic.EWire(genTask)
+    val wireTask1 = elastic.EWire(genTask)
 
     val fork0 = new elastic.Fork(sourceTask) {
       fork() :=> wireTask0
@@ -229,8 +229,8 @@ final class Write[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
       fork() :=> write0.sourceTask
     }
 
-    val wireSelect = Wire(elastic.Interface(UInt(1.W)))
-    val wireSource1 = Wire(elastic.Interface(genResult))
+    val wireSelect = elastic.EWire(UInt(1.W))
+    val wireSource1 = elastic.EWire(genResult)
 
     val transform0 =
       new elastic.Transform(wireTask0, elastic.SinkBuffer(wireSelect, numOutstandingTasks)) {

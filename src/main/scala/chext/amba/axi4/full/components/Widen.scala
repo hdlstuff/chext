@@ -105,7 +105,7 @@ class Widen(val cfg: WidenConfig) extends Module {
       val last = Bool()
     }
 
-    val wire0 = Wire(elastic.Interface(gen0))
+    val wire0 = elastic.EWire(gen0)
 
     val transducer0 = new elastic.Transducer(source, wire0) {
       val state = RegInit(false.B)

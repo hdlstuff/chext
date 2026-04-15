@@ -24,8 +24,8 @@ abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interfa
   def tpe: String = "Wrap"
   def namePrefix: String = "wrap"
 
-  protected val in = Wire(chiselTypeOf(source.$bits))
-  protected val out = Wire(chiselTypeOf(sink.$bits))
+  protected val in = EWire.like(source)
+  protected val out = EWire.like(sink)
 
   protected def delay: Int
   protected def queueLength: Int = delay + 1

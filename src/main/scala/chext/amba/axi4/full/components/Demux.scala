@@ -78,7 +78,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
 
     def arLogic: Unit = {
       val genArPort = new Bundle2(s_axi_.ar.$bits.cloneType, genPort)
-      val arPort = Wire(elastic.Interface(genArPort))
+      val arPort = elastic.EWire(genArPort)
 
       val stall0 = new elastic.Stall(s_axi_.ar, arPort) {
         val id = in.id
@@ -92,8 +92,8 @@ class Demux(val cfg: DemuxConfig) extends Module {
         fire { transactionTracker.initiate(id, port) }
       }
 
-      val demuxInput = Wire(elastic.Interface(s_axi_.ar.$bits.cloneType))
-      val demuxSelect = Wire(elastic.Interface(genPort))
+      val demuxInput = elastic.EWire(s_axi_.ar.$bits.cloneType)
+      val demuxSelect = elastic.EWire(genPort)
 
       val fork0 = new elastic.Fork(arPort) {
         fork(in._1) :=> demuxInput
@@ -146,7 +146,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
 
     def awLogic: Unit = {
       val genAwPort = new Bundle2(s_axi_.aw.$bits.cloneType, genPort)
-      val awPort = Wire(elastic.Interface(genAwPort))
+      val awPort = elastic.EWire(genAwPort)
 
       val stall0 = new elastic.Stall(s_axi_.aw, awPort) {
         val id = in.id
@@ -160,8 +160,8 @@ class Demux(val cfg: DemuxConfig) extends Module {
         fire { transactionTracker.initiate(id, port) }
       }
 
-      val demuxInput = Wire(elastic.Interface(s_axi_.aw.$bits.cloneType))
-      val demuxSelect = Wire(elastic.Interface(genPort))
+      val demuxInput = elastic.EWire(s_axi_.aw.$bits.cloneType)
+      val demuxSelect = elastic.EWire(genPort)
 
       val fork0 = new elastic.Fork(awPort) {
         fork(in._1) :=> demuxInput

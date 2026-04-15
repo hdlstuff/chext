@@ -88,10 +88,10 @@ private class Read0[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
   val m_axi = IO(axi4.full.Master(axiCfg))
 
   {
-    val taskFiltered = Wire(elastic.Interface(genTask))
+    val taskFiltered = elastic.EWire(genTask)
 
-    val taskAR = Wire(elastic.Interface(genTask))
-    val taskR = Wire(elastic.Interface(genTask))
+    val taskAR = elastic.EWire(genTask)
+    val taskR = elastic.EWire(genTask)
 
     checkAlignment(sourceTask, axiCfg, "Read")
 
@@ -147,8 +147,8 @@ private class Read0[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
         val user = genUser.cloneType
       }
 
-      val wireLengthUser = Wire(elastic.Interface(genLengthUser))
-      val wireIndexLastUser = Wire(elastic.Interface(genIndexLastUser))
+      val wireLengthUser = elastic.EWire(genLengthUser)
+      val wireIndexLastUser = elastic.EWire(genIndexLastUser)
 
       val transform0 =
         new elastic.Transform(taskR, elastic.SinkBuffer(wireLengthUser, numOutstandingTasks)) {
@@ -208,8 +208,8 @@ final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
     sourceTask :=> read0.sourceTask
     read0.sinkResult :=> sinkResult
   } else if (resultMode == ReadResultMode.LastAlwaysInvalid) {
-    val wireLength = Wire(elastic.Interface(UInt(wLength.W)))
-    val wireTask = Wire(elastic.Interface(genTask))
+    val wireLength = elastic.EWire(UInt(wLength.W))
+    val wireTask = elastic.EWire(genTask)
 
     val fork0 = new elastic.Fork(sourceTask) {
       fork { in.length } :=> elastic.SinkBuffer(wireLength, numOutstandingTasks)
@@ -217,10 +217,10 @@ final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
       fork() :=> read0.sourceTask
     }
 
-    val wireSelect = Wire(elastic.Interface(UInt(1.W)))
+    val wireSelect = elastic.EWire(UInt(1.W))
 
-    val wireSource0 = Wire(elastic.Interface(genResult))
-    val wireSource1 = Wire(elastic.Interface(genResult))
+    val wireSource0 = elastic.EWire(genResult)
+    val wireSource1 = elastic.EWire(genResult)
 
     val repeat0 =
       new elastic.Repeat(
@@ -251,8 +251,8 @@ final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
     val mux0 = elastic.Mux(Seq(wireSource0, wireSource1), sinkResult, wireSelect)
 
   } else if (resultMode == ReadResultMode.LastSometimesInvalid) {
-    val wireLength = Wire(elastic.Interface(UInt(wLength.W)))
-    val wireTask = Wire(elastic.Interface(genTask))
+    val wireLength = elastic.EWire(UInt(wLength.W))
+    val wireTask = elastic.EWire(genTask)
 
     val fork0 = new elastic.Fork(sourceTask) {
       fork { in.length } :=> elastic.SinkBuffer(wireLength, numOutstandingTasks)
@@ -260,10 +260,10 @@ final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
       fork() :=> read0.sourceTask
     }
 
-    val wireSelect = Wire(elastic.Interface(UInt(1.W)))
+    val wireSelect = elastic.EWire(UInt(1.W))
 
-    val wireSource0 = Wire(elastic.Interface(genResult))
-    val wireSource1 = Wire(elastic.Interface(genResult))
+    val wireSource0 = elastic.EWire(genResult)
+    val wireSource1 = elastic.EWire(genResult)
 
     val repeat0 =
       new elastic.Repeat(

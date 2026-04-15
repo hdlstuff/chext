@@ -71,141 +71,238 @@ module Fold_Tbtop(
   input         sink_ready
 );
 
-  wire        fold0_stage1_fork0_leftBuffer1_sink_bits;
-  wire        fold0_stage1_fork0_leftBuffer0_sink_bits;
-  wire        _fold0_stage2_fork0_mux0_io_sources_0_ready;
-  wire        _fold0_stage2_fork0_mux0_io_sources_1_ready;
-  wire [63:0] _fold0_stage2_fork0_mux0_io_sink_bits;
-  wire        _fold0_stage2_fork0_mux0_io_sink_valid;
-  wire        _fold0_stage2_fork0_mux0_io_select_ready;
-  wire        _fold0_stage2_fork0_demux1_io_source_ready;
-  wire [63:0] _fold0_stage2_fork0_demux1_io_sinks_1_bits;
-  wire        _fold0_stage2_fork0_demux1_io_sinks_1_valid;
-  wire        _fold0_stage2_fork0_demux1_io_select_ready;
-  wire        _fold0_stage2_fork0_demux0_io_source_ready;
-  wire        _fold0_stage2_fork0_demux0_io_select_ready;
-  wire        _fold0_stage1_fork0_demux0_io_source_ready;
-  wire [63:0] _fold0_stage1_fork0_demux0_io_sinks_1_bits;
-  wire        _fold0_stage1_fork0_demux0_io_sinks_1_valid;
-  wire [63:0] _fold0_stage1_fork0_mux0_io_sink_bits;
-  wire        _fold0_stage1_fork0_mux0_io_sink_valid;
-  wire [66:0] _fold0_stage1_fork0_transform0_leftBuffer0_ram_dataOutB;
-  wire        fold0_stage1_fork0_transform0_leftBuffer0_source_bits_last =
-    source_bits_last;
-  wire        fold0_stage1_fork0_transform0_leftBuffer0_source_bits_zero =
-    source_bits_zero;
-  wire        fold0_stage1_fork0_leftBuffer1_source_bits = source_bits_last;
+  wire [63:0] fold0_stage2_fork0_temp_bits;
+  wire        fold0_stage2_fork0_temp_valid;
+  wire [63:0] fold0_stage2_fork0_disposed_bits;
+  wire        fold0_stage2_fork0_disposed_valid;
+  wire        fold0_stage1_result_ready;
+  wire [63:0] fold0_stage1_opA_bits;
+  wire        fold0_stage1_opA_valid;
+  wire        fold0_stage1_fork0_sourceBuffer1_sink_bits;
+  wire        fold0_stage1_fork0_sourceBuffer1_sink_valid;
+  wire        fold0_stage1_fork0_sourceBuffer1_source_ready;
+  wire        fold0_stage1_fork0_sourceBuffer1_interface_ready;
+  wire        fold0_stage1_fork0_x16_valid;
+  wire        fold0_stage1_fork0_sinkBuffer0_source_ready;
+  wire        fold0_stage1_fork0_temp_ready;
+  wire        fold0_stage1_fork0_sinkBuffer0_interface_valid;
+  wire [63:0] fold0_stage1_fork0_sinkBuffer0_interface_bits;
+  wire        fold0_stage1_fork0_sourceBuffer0_sink_bits;
+  wire        fold0_stage1_fork0_sourceBuffer0_sink_valid;
+  wire        fold0_stage1_fork0_sourceBuffer0_source_ready;
+  wire        fold0_stage1_fork0_sourceBuffer0_interface_ready;
+  wire        fold0_stage1_fork0_x11_valid;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_sink_valid;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_source_ready;
+  wire        fold0_stage1_fork0_transform0_x1_valid;
+  wire        fold0_stage1_opB_ready;
+  wire        fold0_stage0_init_ready;
+  wire [63:0] fold0_stage0_bits_operand;
+  wire        fold0_stage0_bits_first;
+  wire [66:0] _fold0_stage1_fork0_transform0_sourceBuffer0_ram_dataOutB;
+  wire        wire0_ready = sink_ready;
+  wire        fold0_stage0_bits_last = source_bits_last;
+  wire        fold0_stage0_bits_zero = source_bits_zero;
+  wire        fold0_stage0_valid = source_valid;
+  wire        fold0_const0_interface_bits = 1'h0;
+  wire        fold0_const0_interface_valid = 1'h1;
+  wire        fold0_stage2_fork0_disposed_ready = 1'h1;
+  wire [63:0] fold0_stage0_result_bits;
+  wire        fold0_stage0_result_valid;
+  wire        fold0_stage0_init_valid = fold0_const0_interface_valid;
   wire [63:0] fold0_sinkA_bits;
   wire [63:0] fold0_sinkB_bits;
+  wire [63:0] fold0_sourceResult_bits = fold0_sinkA_bits + fold0_sinkB_bits;
   reg  [31:0] fold0_count;
-  wire        _fold0_T = sink_ready & _fold0_stage1_fork0_demux0_io_sinks_1_valid;
+  wire [63:0] wire0_bits;
+  wire        fold0_stage0_result_ready = wire0_ready;
+  wire        wire0_valid;
+  wire        _fold0_T = wire0_ready & wire0_valid;
   wire        fold0_sinkA_valid;
   wire        fold0_sinkB_valid;
-  wire        fold0_join0_allValid = fold0_sinkA_valid & fold0_sinkB_valid;
-  wire        fold0_join0_fire =
-    _fold0_stage2_fork0_mux0_io_sources_0_ready & fold0_join0_allValid;
+  wire        fold0_sourceResult_ready;
+  wire        fold0_sourceResult_valid = fold0_sinkA_valid & fold0_sinkB_valid;
+  wire        fold0_join0_fire = fold0_sourceResult_ready & fold0_sourceResult_valid;
   wire        fold0_sinkA_ready;
   assign fold0_sinkA_ready = fold0_join0_fire;
   wire        fold0_sinkB_ready;
   assign fold0_sinkB_ready = fold0_join0_fire;
+  wire [63:0] fold0_stage1_fork0_transform0_x1_bits_operand = fold0_stage0_bits_operand;
+  wire        fold0_stage1_fork0_transform0_x1_bits_first = fold0_stage0_bits_first;
+  wire        fold0_stage1_fork0_x11_bits = fold0_stage0_bits_first;
+  wire        fold0_stage1_fork0_transform0_x1_bits_last = fold0_stage0_bits_last;
+  wire        fold0_stage1_fork0_x16_bits = fold0_stage0_bits_last;
+  wire        fold0_stage1_fork0_transform0_x1_bits_zero = fold0_stage0_bits_zero;
+  wire        fold0_const0_interface_ready = fold0_stage0_init_ready;
+  assign wire0_bits = fold0_stage0_result_bits;
+  assign wire0_valid = fold0_stage0_result_valid;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_interface_ready =
+    fold0_stage1_opB_ready;
   reg         fold0_stage0_transducerFirstLogic_state;
-  wire        fold0_stage1_fork0_transform0_leftBuffer0_source_bits_first =
-    fold0_stage0_transducerFirstLogic_state;
-  wire        fold0_stage1_fork0_leftBuffer0_source_bits =
-    fold0_stage0_transducerFirstLogic_state;
-  wire [63:0] fold0_stage1_fork0_transform0_leftBuffer0_source_bits_operand =
-    {{32{source_bits_data[31]}}, source_bits_data};
-  reg         fold0_stage1_fork0_transform0_leftBuffer0_enq_ptr_value;
-  reg         fold0_stage1_fork0_transform0_leftBuffer0_deq_ptr_value;
-  reg         fold0_stage1_fork0_transform0_leftBuffer0_maybe_full;
-  wire        fold0_stage1_fork0_transform0_leftBuffer0_ptr_match =
-    fold0_stage1_fork0_transform0_leftBuffer0_enq_ptr_value == fold0_stage1_fork0_transform0_leftBuffer0_deq_ptr_value;
-  wire        fold0_stage1_fork0_transform0_leftBuffer0_source_valid;
-  wire        fold0_stage1_fork0_transform0_x1_ready;
-  wire        fold0_stage1_fork0_transform0_leftBuffer0_do_enq =
-    fold0_stage1_fork0_transform0_x1_ready
-    & fold0_stage1_fork0_transform0_leftBuffer0_source_valid;
+  assign fold0_stage0_bits_first = fold0_stage0_transducerFirstLogic_state;
+  assign fold0_stage0_bits_operand = {{32{source_bits_data[31]}}, source_bits_data};
+  wire [63:0] fold0_stage0_init_bits = {64{fold0_const0_interface_bits}};
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_source_valid =
+    fold0_stage1_fork0_transform0_x1_valid;
+  wire [63:0] fold0_stage1_fork0_transform0_sourceBuffer0_source_bits_operand =
+    fold0_stage1_fork0_transform0_x1_bits_operand;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_source_bits_first =
+    fold0_stage1_fork0_transform0_x1_bits_first;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_source_bits_last =
+    fold0_stage1_fork0_transform0_x1_bits_last;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_source_bits_zero =
+    fold0_stage1_fork0_transform0_x1_bits_zero;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_sink_ready =
+    fold0_stage1_fork0_transform0_sourceBuffer0_interface_ready;
+  wire        fold0_stage1_fork0_transform0_x1_ready =
+    fold0_stage1_fork0_transform0_sourceBuffer0_source_ready;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_interface_valid =
+    fold0_stage1_fork0_transform0_sourceBuffer0_sink_valid;
+  reg         fold0_stage1_fork0_transform0_sourceBuffer0_enq_ptr_value;
+  reg         fold0_stage1_fork0_transform0_sourceBuffer0_deq_ptr_value;
+  reg         fold0_stage1_fork0_transform0_sourceBuffer0_maybe_full;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_ptr_match =
+    fold0_stage1_fork0_transform0_sourceBuffer0_enq_ptr_value == fold0_stage1_fork0_transform0_sourceBuffer0_deq_ptr_value;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_do_enq =
+    fold0_stage1_fork0_transform0_sourceBuffer0_source_ready
+    & fold0_stage1_fork0_transform0_sourceBuffer0_source_valid;
+  assign fold0_stage1_fork0_transform0_sourceBuffer0_sink_valid =
+    ~(fold0_stage1_fork0_transform0_sourceBuffer0_ptr_match
+      & ~fold0_stage1_fork0_transform0_sourceBuffer0_maybe_full);
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_sink_bits_zero =
+    _fold0_stage1_fork0_transform0_sourceBuffer0_ram_dataOutB[0];
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_sink_bits_last =
+    _fold0_stage1_fork0_transform0_sourceBuffer0_ram_dataOutB[1];
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_sink_bits_first =
+    _fold0_stage1_fork0_transform0_sourceBuffer0_ram_dataOutB[2];
+  wire [63:0] fold0_stage1_fork0_transform0_sourceBuffer0_sink_bits_operand =
+    _fold0_stage1_fork0_transform0_sourceBuffer0_ram_dataOutB[66:3];
+  wire [63:0] fold0_stage1_fork0_transform0_sourceBuffer0_interface_bits_operand =
+    fold0_stage1_fork0_transform0_sourceBuffer0_sink_bits_operand;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_interface_bits_first =
+    fold0_stage1_fork0_transform0_sourceBuffer0_sink_bits_first;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_interface_bits_last =
+    fold0_stage1_fork0_transform0_sourceBuffer0_sink_bits_last;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_interface_bits_zero =
+    fold0_stage1_fork0_transform0_sourceBuffer0_sink_bits_zero;
+  assign fold0_stage1_fork0_transform0_sourceBuffer0_source_ready =
+    fold0_stage1_fork0_transform0_sourceBuffer0_sink_ready
+    | ~(fold0_stage1_fork0_transform0_sourceBuffer0_ptr_match
+        & fold0_stage1_fork0_transform0_sourceBuffer0_maybe_full);
   wire        fold0_stage1_opB_valid =
-    ~(fold0_stage1_fork0_transform0_leftBuffer0_ptr_match
-      & ~fold0_stage1_fork0_transform0_leftBuffer0_maybe_full);
-  wire        fold0_stage1_opB_bits_zero =
-    _fold0_stage1_fork0_transform0_leftBuffer0_ram_dataOutB[0];
-  wire        fold0_stage1_fork0_transform0_leftBuffer0_sink_bits_last =
-    _fold0_stage1_fork0_transform0_leftBuffer0_ram_dataOutB[1];
-  wire        fold0_stage1_fork0_transform0_leftBuffer0_sink_bits_first =
-    _fold0_stage1_fork0_transform0_leftBuffer0_ram_dataOutB[2];
+    fold0_stage1_fork0_transform0_sourceBuffer0_interface_valid;
   wire [63:0] fold0_stage1_opB_bits_operand =
-    _fold0_stage1_fork0_transform0_leftBuffer0_ram_dataOutB[66:3];
-  wire        fold0_stage1_fork0_transform0_leftBuffer0_sink_ready;
-  assign fold0_stage1_fork0_transform0_x1_ready =
-    fold0_stage1_fork0_transform0_leftBuffer0_sink_ready
-    | ~(fold0_stage1_fork0_transform0_leftBuffer0_ptr_match
-        & fold0_stage1_fork0_transform0_leftBuffer0_maybe_full);
-  reg         fold0_stage1_fork0_leftBuffer0_enq_ptr_value;
-  reg         fold0_stage1_fork0_leftBuffer0_deq_ptr_value;
-  reg         fold0_stage1_fork0_leftBuffer0_maybe_full;
-  wire        fold0_stage1_fork0_leftBuffer0_ptr_match =
-    fold0_stage1_fork0_leftBuffer0_enq_ptr_value == fold0_stage1_fork0_leftBuffer0_deq_ptr_value;
-  wire        fold0_stage1_fork0_leftBuffer0_source_valid;
-  wire        fold0_stage1_fork0_x11_ready;
-  wire        fold0_stage1_fork0_leftBuffer0_do_enq =
-    fold0_stage1_fork0_x11_ready & fold0_stage1_fork0_leftBuffer0_source_valid;
-  wire        fold0_stage1_fork0_leftBuffer0_sink_valid =
-    ~(fold0_stage1_fork0_leftBuffer0_ptr_match
-      & ~fold0_stage1_fork0_leftBuffer0_maybe_full);
-  wire        fold0_stage1_fork0_leftBuffer0_sink_ready;
-  assign fold0_stage1_fork0_x11_ready =
-    fold0_stage1_fork0_leftBuffer0_sink_ready
-    | ~(fold0_stage1_fork0_leftBuffer0_ptr_match
-        & fold0_stage1_fork0_leftBuffer0_maybe_full);
-  reg         fold0_stage1_fork0_rightBuffer0_enq_ptr_value;
-  reg         fold0_stage1_fork0_rightBuffer0_deq_ptr_value;
-  reg         fold0_stage1_fork0_rightBuffer0_maybe_full;
-  wire        fold0_stage1_fork0_rightBuffer0_ptr_match =
-    fold0_stage1_fork0_rightBuffer0_enq_ptr_value == fold0_stage1_fork0_rightBuffer0_deq_ptr_value;
-  wire        fold0_stage1_fork0_rightBuffer0_source_valid;
-  wire        fold0_stage1_fork0_rightBuffer0_source_ready;
-  wire        fold0_stage1_fork0_rightBuffer0_do_enq =
-    fold0_stage1_fork0_rightBuffer0_source_ready
-    & fold0_stage1_fork0_rightBuffer0_source_valid;
-  wire        fold0_stage1_fork0_rightBuffer0_sink_valid =
-    ~(fold0_stage1_fork0_rightBuffer0_ptr_match
-      & ~fold0_stage1_fork0_rightBuffer0_maybe_full);
-  assign fold0_stage1_fork0_rightBuffer0_source_ready =
-    ~(fold0_stage1_fork0_rightBuffer0_ptr_match
-      & fold0_stage1_fork0_rightBuffer0_maybe_full);
-  reg         fold0_stage1_fork0_leftBuffer1_enq_ptr_value;
-  reg         fold0_stage1_fork0_leftBuffer1_deq_ptr_value;
-  reg         fold0_stage1_fork0_leftBuffer1_maybe_full;
-  wire        fold0_stage1_fork0_leftBuffer1_ptr_match =
-    fold0_stage1_fork0_leftBuffer1_enq_ptr_value == fold0_stage1_fork0_leftBuffer1_deq_ptr_value;
-  wire        fold0_stage1_fork0_leftBuffer1_source_valid;
-  wire        fold0_stage1_fork0_x16_ready;
-  wire        fold0_stage1_fork0_leftBuffer1_do_enq =
-    fold0_stage1_fork0_x16_ready & fold0_stage1_fork0_leftBuffer1_source_valid;
-  wire        fold0_stage1_fork0_leftBuffer1_sink_valid =
-    ~(fold0_stage1_fork0_leftBuffer1_ptr_match
-      & ~fold0_stage1_fork0_leftBuffer1_maybe_full);
-  wire        fold0_stage1_fork0_leftBuffer1_sink_ready;
-  assign fold0_stage1_fork0_x16_ready =
-    fold0_stage1_fork0_leftBuffer1_sink_ready
-    | ~(fold0_stage1_fork0_leftBuffer1_ptr_match
-        & fold0_stage1_fork0_leftBuffer1_maybe_full);
+    fold0_stage1_fork0_transform0_sourceBuffer0_interface_bits_operand;
+  wire        fold0_stage1_opB_bits_zero =
+    fold0_stage1_fork0_transform0_sourceBuffer0_interface_bits_zero;
+  wire [63:0] fold0_stage2_fork0_result_bits = fold0_stage1_opB_bits_operand;
+  wire [63:0] fold0_stage1_fork0_sinkBuffer0_sink_bits;
+  wire        fold0_stage2_fork0_result_1_bits = fold0_stage1_opB_bits_zero;
+  wire        fold0_stage2_fork0_result_2_bits = fold0_stage1_opB_bits_zero;
+  wire        fold0_stage2_fork0_result_3_bits = fold0_stage1_opB_bits_zero;
+  wire        fold0_stage1_fork0_sinkBuffer0_sink_valid;
+  wire        fold0_stage1_fork0_sourceBuffer0_source_valid =
+    fold0_stage1_fork0_x11_valid;
+  wire        fold0_stage1_fork0_sourceBuffer0_source_bits = fold0_stage1_fork0_x11_bits;
+  wire        fold0_stage1_fork0_sourceBuffer0_sink_ready =
+    fold0_stage1_fork0_sourceBuffer0_interface_ready;
+  wire        fold0_stage1_fork0_x11_ready =
+    fold0_stage1_fork0_sourceBuffer0_source_ready;
+  wire        fold0_stage1_fork0_sourceBuffer0_interface_valid =
+    fold0_stage1_fork0_sourceBuffer0_sink_valid;
+  reg         fold0_stage1_fork0_sourceBuffer0_enq_ptr_value;
+  reg         fold0_stage1_fork0_sourceBuffer0_deq_ptr_value;
+  reg         fold0_stage1_fork0_sourceBuffer0_maybe_full;
+  wire        fold0_stage1_fork0_sourceBuffer0_ptr_match =
+    fold0_stage1_fork0_sourceBuffer0_enq_ptr_value == fold0_stage1_fork0_sourceBuffer0_deq_ptr_value;
+  wire        fold0_stage1_fork0_sourceBuffer0_do_enq =
+    fold0_stage1_fork0_sourceBuffer0_source_ready
+    & fold0_stage1_fork0_sourceBuffer0_source_valid;
+  assign fold0_stage1_fork0_sourceBuffer0_sink_valid =
+    ~(fold0_stage1_fork0_sourceBuffer0_ptr_match
+      & ~fold0_stage1_fork0_sourceBuffer0_maybe_full);
+  wire        fold0_stage1_fork0_sourceBuffer0_interface_bits =
+    fold0_stage1_fork0_sourceBuffer0_sink_bits;
+  assign fold0_stage1_fork0_sourceBuffer0_source_ready =
+    fold0_stage1_fork0_sourceBuffer0_sink_ready
+    | ~(fold0_stage1_fork0_sourceBuffer0_ptr_match
+        & fold0_stage1_fork0_sourceBuffer0_maybe_full);
+  wire        fold0_stage1_fork0_sinkBuffer0_sink_ready = fold0_stage1_fork0_temp_ready;
+  wire [63:0] fold0_stage1_fork0_sinkBuffer0_source_bits =
+    fold0_stage1_fork0_sinkBuffer0_interface_bits;
+  wire        fold0_stage1_fork0_sinkBuffer0_source_valid =
+    fold0_stage1_fork0_sinkBuffer0_interface_valid;
+  wire        fold0_stage1_fork0_sinkBuffer0_interface_ready =
+    fold0_stage1_fork0_sinkBuffer0_source_ready;
+  wire        fold0_stage1_fork0_temp_valid = fold0_stage1_fork0_sinkBuffer0_sink_valid;
+  reg         fold0_stage1_fork0_sinkBuffer0_enq_ptr_value;
+  reg         fold0_stage1_fork0_sinkBuffer0_deq_ptr_value;
+  reg         fold0_stage1_fork0_sinkBuffer0_maybe_full;
+  wire        fold0_stage1_fork0_sinkBuffer0_ptr_match =
+    fold0_stage1_fork0_sinkBuffer0_enq_ptr_value == fold0_stage1_fork0_sinkBuffer0_deq_ptr_value;
+  wire        fold0_stage1_fork0_sinkBuffer0_do_enq =
+    fold0_stage1_fork0_sinkBuffer0_source_ready
+    & fold0_stage1_fork0_sinkBuffer0_source_valid;
+  assign fold0_stage1_fork0_sinkBuffer0_sink_valid =
+    ~(fold0_stage1_fork0_sinkBuffer0_ptr_match
+      & ~fold0_stage1_fork0_sinkBuffer0_maybe_full);
+  assign fold0_stage1_fork0_sinkBuffer0_source_ready =
+    ~(fold0_stage1_fork0_sinkBuffer0_ptr_match
+      & fold0_stage1_fork0_sinkBuffer0_maybe_full);
+  wire [63:0] fold0_stage1_fork0_temp_bits = fold0_stage1_fork0_sinkBuffer0_sink_bits;
+  wire        fold0_stage1_fork0_sourceBuffer1_source_valid =
+    fold0_stage1_fork0_x16_valid;
+  wire        fold0_stage1_fork0_sourceBuffer1_source_bits = fold0_stage1_fork0_x16_bits;
+  wire        fold0_stage1_fork0_sourceBuffer1_sink_ready =
+    fold0_stage1_fork0_sourceBuffer1_interface_ready;
+  wire        fold0_stage1_fork0_x16_ready =
+    fold0_stage1_fork0_sourceBuffer1_source_ready;
+  wire        fold0_stage1_fork0_sourceBuffer1_interface_valid =
+    fold0_stage1_fork0_sourceBuffer1_sink_valid;
+  reg         fold0_stage1_fork0_sourceBuffer1_enq_ptr_value;
+  reg         fold0_stage1_fork0_sourceBuffer1_deq_ptr_value;
+  reg         fold0_stage1_fork0_sourceBuffer1_maybe_full;
+  wire        fold0_stage1_fork0_sourceBuffer1_ptr_match =
+    fold0_stage1_fork0_sourceBuffer1_enq_ptr_value == fold0_stage1_fork0_sourceBuffer1_deq_ptr_value;
+  wire        fold0_stage1_fork0_sourceBuffer1_do_enq =
+    fold0_stage1_fork0_sourceBuffer1_source_ready
+    & fold0_stage1_fork0_sourceBuffer1_source_valid;
+  assign fold0_stage1_fork0_sourceBuffer1_sink_valid =
+    ~(fold0_stage1_fork0_sourceBuffer1_ptr_match
+      & ~fold0_stage1_fork0_sourceBuffer1_maybe_full);
+  wire        fold0_stage1_fork0_sourceBuffer1_interface_bits =
+    fold0_stage1_fork0_sourceBuffer1_sink_bits;
+  assign fold0_stage1_fork0_sourceBuffer1_source_ready =
+    fold0_stage1_fork0_sourceBuffer1_sink_ready
+    | ~(fold0_stage1_fork0_sourceBuffer1_ptr_match
+        & fold0_stage1_fork0_sourceBuffer1_maybe_full);
   reg         fold0_stage2_fork0_regs_0;
   reg         fold0_stage2_fork0_regs_1;
   reg         fold0_stage2_fork0_regs_2;
   reg         fold0_stage2_fork0_regs_3;
+  wire        fold0_stage2_fork0_result_ready;
   wire        fold0_stage2_fork0_ready_qual1_0 =
-    _fold0_stage2_fork0_demux0_io_source_ready | fold0_stage2_fork0_regs_0;
+    fold0_stage2_fork0_result_ready | fold0_stage2_fork0_regs_0;
+  wire        fold0_stage2_fork0_result_1_ready;
   wire        fold0_stage2_fork0_ready_qual1_1 =
-    _fold0_stage2_fork0_demux0_io_select_ready | fold0_stage2_fork0_regs_1;
+    fold0_stage2_fork0_result_1_ready | fold0_stage2_fork0_regs_1;
+  wire        fold0_stage2_fork0_result_2_ready;
   wire        fold0_stage2_fork0_ready_qual1_2 =
-    _fold0_stage2_fork0_demux1_io_select_ready | fold0_stage2_fork0_regs_2;
+    fold0_stage2_fork0_result_2_ready | fold0_stage2_fork0_regs_2;
+  wire        fold0_stage2_fork0_result_3_ready;
   wire        fold0_stage2_fork0_ready_qual1_3 =
-    _fold0_stage2_fork0_mux0_io_select_ready | fold0_stage2_fork0_regs_3;
-  assign fold0_stage1_fork0_transform0_leftBuffer0_sink_ready =
+    fold0_stage2_fork0_result_3_ready | fold0_stage2_fork0_regs_3;
+  assign fold0_stage1_opB_ready =
     fold0_stage2_fork0_ready_qual1_0 & fold0_stage2_fork0_ready_qual1_1
     & fold0_stage2_fork0_ready_qual1_2 & fold0_stage2_fork0_ready_qual1_3;
+  wire        fold0_stage2_fork0_result_valid =
+    fold0_stage1_opB_valid & ~fold0_stage2_fork0_regs_0;
+  wire        fold0_stage2_fork0_result_1_valid =
+    fold0_stage1_opB_valid & ~fold0_stage2_fork0_regs_1;
+  wire        fold0_stage2_fork0_result_2_valid =
+    fold0_stage1_opB_valid & ~fold0_stage2_fork0_regs_2;
+  wire        fold0_stage2_fork0_result_3_valid =
+    fold0_stage1_opB_valid & ~fold0_stage2_fork0_regs_3;
   reg         fold0_stage1_fork0_regs_0;
   reg         fold0_stage1_fork0_regs_1;
   reg         fold0_stage1_fork0_regs_2;
@@ -218,12 +315,10 @@ module Fold_Tbtop(
   wire        fold0_stage0_ready =
     fold0_stage1_fork0_ready_qual1_0 & fold0_stage1_fork0_ready_qual1_1
     & fold0_stage1_fork0_ready_qual1_2;
-  assign fold0_stage1_fork0_transform0_leftBuffer0_source_valid =
-    source_valid & ~fold0_stage1_fork0_regs_0;
-  assign fold0_stage1_fork0_leftBuffer0_source_valid =
-    source_valid & ~fold0_stage1_fork0_regs_1;
-  assign fold0_stage1_fork0_leftBuffer1_source_valid =
-    source_valid & ~fold0_stage1_fork0_regs_2;
+  assign fold0_stage1_fork0_transform0_x1_valid =
+    fold0_stage0_valid & ~fold0_stage1_fork0_regs_0;
+  assign fold0_stage1_fork0_x11_valid = fold0_stage0_valid & ~fold0_stage1_fork0_regs_1;
+  assign fold0_stage1_fork0_x16_valid = fold0_stage0_valid & ~fold0_stage1_fork0_regs_2;
   wire        _GEN = source_valid & fold0_stage0_transducerFirstLogic_state;
   wire        _fold0_stage0_transducerFirstLogic_cond_WIRE_0 = _GEN & source_bits_last;
   wire        _fold0_stage0_transducerFirstLogic_cond_WIRE_1 = _GEN & ~source_bits_last;
@@ -252,37 +347,36 @@ module Fold_Tbtop(
       if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
           & _fold0_stage0_transducerFirstLogic_cond_WIRE_0 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
+                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
       if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
           & _fold0_stage0_transducerFirstLogic_cond_WIRE_1 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
+                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
       if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
           & _fold0_stage0_transducerFirstLogic_cond_WIRE_2 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
+                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
       if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[/home/janberq/Desktop/chext/src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
+                "elastic.Transducer: no action was taken! @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
-  wire        fold0_stage1_fork0_rightBuffer0_sink_ready;
   always @(posedge clock) begin
     if (reset) begin
       fold0_count <= 32'h0;
       fold0_stage0_transducerFirstLogic_state <= 1'h1;
-      fold0_stage1_fork0_transform0_leftBuffer0_enq_ptr_value <= 1'h0;
-      fold0_stage1_fork0_transform0_leftBuffer0_deq_ptr_value <= 1'h0;
-      fold0_stage1_fork0_transform0_leftBuffer0_maybe_full <= 1'h0;
-      fold0_stage1_fork0_leftBuffer0_enq_ptr_value <= 1'h0;
-      fold0_stage1_fork0_leftBuffer0_deq_ptr_value <= 1'h0;
-      fold0_stage1_fork0_leftBuffer0_maybe_full <= 1'h0;
-      fold0_stage1_fork0_rightBuffer0_enq_ptr_value <= 1'h0;
-      fold0_stage1_fork0_rightBuffer0_deq_ptr_value <= 1'h0;
-      fold0_stage1_fork0_rightBuffer0_maybe_full <= 1'h0;
-      fold0_stage1_fork0_leftBuffer1_enq_ptr_value <= 1'h0;
-      fold0_stage1_fork0_leftBuffer1_deq_ptr_value <= 1'h0;
-      fold0_stage1_fork0_leftBuffer1_maybe_full <= 1'h0;
+      fold0_stage1_fork0_transform0_sourceBuffer0_enq_ptr_value <= 1'h0;
+      fold0_stage1_fork0_transform0_sourceBuffer0_deq_ptr_value <= 1'h0;
+      fold0_stage1_fork0_transform0_sourceBuffer0_maybe_full <= 1'h0;
+      fold0_stage1_fork0_sourceBuffer0_enq_ptr_value <= 1'h0;
+      fold0_stage1_fork0_sourceBuffer0_deq_ptr_value <= 1'h0;
+      fold0_stage1_fork0_sourceBuffer0_maybe_full <= 1'h0;
+      fold0_stage1_fork0_sinkBuffer0_enq_ptr_value <= 1'h0;
+      fold0_stage1_fork0_sinkBuffer0_deq_ptr_value <= 1'h0;
+      fold0_stage1_fork0_sinkBuffer0_maybe_full <= 1'h0;
+      fold0_stage1_fork0_sourceBuffer1_enq_ptr_value <= 1'h0;
+      fold0_stage1_fork0_sourceBuffer1_deq_ptr_value <= 1'h0;
+      fold0_stage1_fork0_sourceBuffer1_maybe_full <= 1'h0;
       fold0_stage2_fork0_regs_0 <= 1'h0;
       fold0_stage2_fork0_regs_1 <= 1'h0;
       fold0_stage2_fork0_regs_2 <= 1'h0;
@@ -292,17 +386,18 @@ module Fold_Tbtop(
       fold0_stage1_fork0_regs_2 <= 1'h0;
     end
     else begin
-      automatic logic fold0_stage1_fork0_transform0_leftBuffer0_do_deq =
-        fold0_stage1_fork0_transform0_leftBuffer0_sink_ready & fold0_stage1_opB_valid;
-      automatic logic fold0_stage1_fork0_leftBuffer0_do_deq =
-        fold0_stage1_fork0_leftBuffer0_sink_ready
-        & fold0_stage1_fork0_leftBuffer0_sink_valid;
-      automatic logic fold0_stage1_fork0_rightBuffer0_do_deq =
-        fold0_stage1_fork0_rightBuffer0_sink_ready
-        & fold0_stage1_fork0_rightBuffer0_sink_valid;
-      automatic logic fold0_stage1_fork0_leftBuffer1_do_deq =
-        fold0_stage1_fork0_leftBuffer1_sink_ready
-        & fold0_stage1_fork0_leftBuffer1_sink_valid;
+      automatic logic fold0_stage1_fork0_transform0_sourceBuffer0_do_deq =
+        fold0_stage1_fork0_transform0_sourceBuffer0_sink_ready
+        & fold0_stage1_fork0_transform0_sourceBuffer0_sink_valid;
+      automatic logic fold0_stage1_fork0_sourceBuffer0_do_deq =
+        fold0_stage1_fork0_sourceBuffer0_sink_ready
+        & fold0_stage1_fork0_sourceBuffer0_sink_valid;
+      automatic logic fold0_stage1_fork0_sinkBuffer0_do_deq =
+        fold0_stage1_fork0_sinkBuffer0_sink_ready
+        & fold0_stage1_fork0_sinkBuffer0_sink_valid;
+      automatic logic fold0_stage1_fork0_sourceBuffer1_do_deq =
+        fold0_stage1_fork0_sourceBuffer1_sink_ready
+        & fold0_stage1_fork0_sourceBuffer1_sink_valid;
       if (_fold0_T)
         fold0_count <= fold0_count + 32'h1;
       if (source_valid) begin
@@ -313,188 +408,190 @@ module Fold_Tbtop(
           fold0_stage0_transducerFirstLogic_state <=
             fold0_stage0_ready & source_bits_last;
       end
-      if (fold0_stage1_fork0_transform0_leftBuffer0_do_enq)
-        fold0_stage1_fork0_transform0_leftBuffer0_enq_ptr_value <=
-          fold0_stage1_fork0_transform0_leftBuffer0_enq_ptr_value - 1'h1;
-      if (fold0_stage1_fork0_transform0_leftBuffer0_do_deq)
-        fold0_stage1_fork0_transform0_leftBuffer0_deq_ptr_value <=
-          fold0_stage1_fork0_transform0_leftBuffer0_deq_ptr_value - 1'h1;
-      if (fold0_stage1_fork0_transform0_leftBuffer0_do_enq != fold0_stage1_fork0_transform0_leftBuffer0_do_deq)
-        fold0_stage1_fork0_transform0_leftBuffer0_maybe_full <=
-          fold0_stage1_fork0_transform0_leftBuffer0_do_enq;
-      if (fold0_stage1_fork0_leftBuffer0_do_enq)
-        fold0_stage1_fork0_leftBuffer0_enq_ptr_value <=
-          fold0_stage1_fork0_leftBuffer0_enq_ptr_value - 1'h1;
-      if (fold0_stage1_fork0_leftBuffer0_do_deq)
-        fold0_stage1_fork0_leftBuffer0_deq_ptr_value <=
-          fold0_stage1_fork0_leftBuffer0_deq_ptr_value - 1'h1;
-      if (fold0_stage1_fork0_leftBuffer0_do_enq != fold0_stage1_fork0_leftBuffer0_do_deq)
-        fold0_stage1_fork0_leftBuffer0_maybe_full <=
-          fold0_stage1_fork0_leftBuffer0_do_enq;
-      if (fold0_stage1_fork0_rightBuffer0_do_enq)
-        fold0_stage1_fork0_rightBuffer0_enq_ptr_value <=
-          fold0_stage1_fork0_rightBuffer0_enq_ptr_value - 1'h1;
-      if (fold0_stage1_fork0_rightBuffer0_do_deq)
-        fold0_stage1_fork0_rightBuffer0_deq_ptr_value <=
-          fold0_stage1_fork0_rightBuffer0_deq_ptr_value - 1'h1;
-      if (fold0_stage1_fork0_rightBuffer0_do_enq != fold0_stage1_fork0_rightBuffer0_do_deq)
-        fold0_stage1_fork0_rightBuffer0_maybe_full <=
-          fold0_stage1_fork0_rightBuffer0_do_enq;
-      if (fold0_stage1_fork0_leftBuffer1_do_enq)
-        fold0_stage1_fork0_leftBuffer1_enq_ptr_value <=
-          fold0_stage1_fork0_leftBuffer1_enq_ptr_value - 1'h1;
-      if (fold0_stage1_fork0_leftBuffer1_do_deq)
-        fold0_stage1_fork0_leftBuffer1_deq_ptr_value <=
-          fold0_stage1_fork0_leftBuffer1_deq_ptr_value - 1'h1;
-      if (fold0_stage1_fork0_leftBuffer1_do_enq != fold0_stage1_fork0_leftBuffer1_do_deq)
-        fold0_stage1_fork0_leftBuffer1_maybe_full <=
-          fold0_stage1_fork0_leftBuffer1_do_enq;
+      if (fold0_stage1_fork0_transform0_sourceBuffer0_do_enq)
+        fold0_stage1_fork0_transform0_sourceBuffer0_enq_ptr_value <=
+          fold0_stage1_fork0_transform0_sourceBuffer0_enq_ptr_value - 1'h1;
+      if (fold0_stage1_fork0_transform0_sourceBuffer0_do_deq)
+        fold0_stage1_fork0_transform0_sourceBuffer0_deq_ptr_value <=
+          fold0_stage1_fork0_transform0_sourceBuffer0_deq_ptr_value - 1'h1;
+      if (fold0_stage1_fork0_transform0_sourceBuffer0_do_enq != fold0_stage1_fork0_transform0_sourceBuffer0_do_deq)
+        fold0_stage1_fork0_transform0_sourceBuffer0_maybe_full <=
+          fold0_stage1_fork0_transform0_sourceBuffer0_do_enq;
+      if (fold0_stage1_fork0_sourceBuffer0_do_enq)
+        fold0_stage1_fork0_sourceBuffer0_enq_ptr_value <=
+          fold0_stage1_fork0_sourceBuffer0_enq_ptr_value - 1'h1;
+      if (fold0_stage1_fork0_sourceBuffer0_do_deq)
+        fold0_stage1_fork0_sourceBuffer0_deq_ptr_value <=
+          fold0_stage1_fork0_sourceBuffer0_deq_ptr_value - 1'h1;
+      if (fold0_stage1_fork0_sourceBuffer0_do_enq != fold0_stage1_fork0_sourceBuffer0_do_deq)
+        fold0_stage1_fork0_sourceBuffer0_maybe_full <=
+          fold0_stage1_fork0_sourceBuffer0_do_enq;
+      if (fold0_stage1_fork0_sinkBuffer0_do_enq)
+        fold0_stage1_fork0_sinkBuffer0_enq_ptr_value <=
+          fold0_stage1_fork0_sinkBuffer0_enq_ptr_value - 1'h1;
+      if (fold0_stage1_fork0_sinkBuffer0_do_deq)
+        fold0_stage1_fork0_sinkBuffer0_deq_ptr_value <=
+          fold0_stage1_fork0_sinkBuffer0_deq_ptr_value - 1'h1;
+      if (fold0_stage1_fork0_sinkBuffer0_do_enq != fold0_stage1_fork0_sinkBuffer0_do_deq)
+        fold0_stage1_fork0_sinkBuffer0_maybe_full <=
+          fold0_stage1_fork0_sinkBuffer0_do_enq;
+      if (fold0_stage1_fork0_sourceBuffer1_do_enq)
+        fold0_stage1_fork0_sourceBuffer1_enq_ptr_value <=
+          fold0_stage1_fork0_sourceBuffer1_enq_ptr_value - 1'h1;
+      if (fold0_stage1_fork0_sourceBuffer1_do_deq)
+        fold0_stage1_fork0_sourceBuffer1_deq_ptr_value <=
+          fold0_stage1_fork0_sourceBuffer1_deq_ptr_value - 1'h1;
+      if (fold0_stage1_fork0_sourceBuffer1_do_enq != fold0_stage1_fork0_sourceBuffer1_do_deq)
+        fold0_stage1_fork0_sourceBuffer1_maybe_full <=
+          fold0_stage1_fork0_sourceBuffer1_do_enq;
       fold0_stage2_fork0_regs_0 <=
         fold0_stage2_fork0_ready_qual1_0 & fold0_stage1_opB_valid
-        & ~fold0_stage1_fork0_transform0_leftBuffer0_sink_ready;
+        & ~fold0_stage1_opB_ready;
       fold0_stage2_fork0_regs_1 <=
         fold0_stage2_fork0_ready_qual1_1 & fold0_stage1_opB_valid
-        & ~fold0_stage1_fork0_transform0_leftBuffer0_sink_ready;
+        & ~fold0_stage1_opB_ready;
       fold0_stage2_fork0_regs_2 <=
         fold0_stage2_fork0_ready_qual1_2 & fold0_stage1_opB_valid
-        & ~fold0_stage1_fork0_transform0_leftBuffer0_sink_ready;
+        & ~fold0_stage1_opB_ready;
       fold0_stage2_fork0_regs_3 <=
         fold0_stage2_fork0_ready_qual1_3 & fold0_stage1_opB_valid
-        & ~fold0_stage1_fork0_transform0_leftBuffer0_sink_ready;
+        & ~fold0_stage1_opB_ready;
       fold0_stage1_fork0_regs_0 <=
-        fold0_stage1_fork0_ready_qual1_0 & source_valid & ~fold0_stage0_ready;
+        fold0_stage1_fork0_ready_qual1_0 & fold0_stage0_valid & ~fold0_stage0_ready;
       fold0_stage1_fork0_regs_1 <=
-        fold0_stage1_fork0_ready_qual1_1 & source_valid & ~fold0_stage0_ready;
+        fold0_stage1_fork0_ready_qual1_1 & fold0_stage0_valid & ~fold0_stage0_ready;
       fold0_stage1_fork0_regs_2 <=
-        fold0_stage1_fork0_ready_qual1_2 & source_valid & ~fold0_stage0_ready;
+        fold0_stage1_fork0_ready_qual1_2 & fold0_stage0_valid & ~fold0_stage0_ready;
     end
   end // always @(posedge)
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(67)
-  ) fold0_stage1_fork0_transform0_leftBuffer0_ram (
+  ) fold0_stage1_fork0_transform0_sourceBuffer0_ram (
     .clock    (clock),
-    .addrA    (fold0_stage1_fork0_transform0_leftBuffer0_enq_ptr_value),
-    .writeEnA (fold0_stage1_fork0_transform0_leftBuffer0_do_enq),
+    .addrA    (fold0_stage1_fork0_transform0_sourceBuffer0_enq_ptr_value),
+    .writeEnA (fold0_stage1_fork0_transform0_sourceBuffer0_do_enq),
     .dataInA
-      ({fold0_stage1_fork0_transform0_leftBuffer0_source_bits_operand,
-        fold0_stage1_fork0_transform0_leftBuffer0_source_bits_first,
-        fold0_stage1_fork0_transform0_leftBuffer0_source_bits_last,
-        fold0_stage1_fork0_transform0_leftBuffer0_source_bits_zero}),
-    .addrB    (fold0_stage1_fork0_transform0_leftBuffer0_deq_ptr_value),
-    .dataOutB (_fold0_stage1_fork0_transform0_leftBuffer0_ram_dataOutB)
+      ({fold0_stage1_fork0_transform0_sourceBuffer0_source_bits_operand,
+        fold0_stage1_fork0_transform0_sourceBuffer0_source_bits_first,
+        fold0_stage1_fork0_transform0_sourceBuffer0_source_bits_last,
+        fold0_stage1_fork0_transform0_sourceBuffer0_source_bits_zero}),
+    .addrB    (fold0_stage1_fork0_transform0_sourceBuffer0_deq_ptr_value),
+    .dataOutB (_fold0_stage1_fork0_transform0_sourceBuffer0_ram_dataOutB)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(1)
-  ) fold0_stage1_fork0_leftBuffer0_ram (
+  ) fold0_stage1_fork0_sourceBuffer0_ram (
     .clock    (clock),
-    .addrA    (fold0_stage1_fork0_leftBuffer0_enq_ptr_value),
-    .writeEnA (fold0_stage1_fork0_leftBuffer0_do_enq),
-    .dataInA  (fold0_stage1_fork0_leftBuffer0_source_bits),
-    .addrB    (fold0_stage1_fork0_leftBuffer0_deq_ptr_value),
-    .dataOutB (fold0_stage1_fork0_leftBuffer0_sink_bits)
+    .addrA    (fold0_stage1_fork0_sourceBuffer0_enq_ptr_value),
+    .writeEnA (fold0_stage1_fork0_sourceBuffer0_do_enq),
+    .dataInA  (fold0_stage1_fork0_sourceBuffer0_source_bits),
+    .addrB    (fold0_stage1_fork0_sourceBuffer0_deq_ptr_value),
+    .dataOutB (fold0_stage1_fork0_sourceBuffer0_sink_bits)
   );
-  wire [63:0] fold0_stage1_fork0_rightBuffer0_sink_bits;
+  wire        fold0_stage1_opA_ready;
   elasticMux fold0_stage1_fork0_mux0 (
-    .io_sources_0_bits  (fold0_stage1_fork0_rightBuffer0_sink_bits),
-    .io_sources_0_valid (fold0_stage1_fork0_rightBuffer0_sink_valid),
-    .io_sources_0_ready (fold0_stage1_fork0_rightBuffer0_sink_ready),
-    .io_sources_1_bits  (64'h0),
-    .io_sources_1_valid (1'h1),
-    .io_sources_1_ready (/* unused */),
-    .io_sink_bits       (_fold0_stage1_fork0_mux0_io_sink_bits),
-    .io_sink_valid      (_fold0_stage1_fork0_mux0_io_sink_valid),
-    .io_sink_ready      (_fold0_stage2_fork0_demux1_io_source_ready),
-    .io_select_bits     (fold0_stage1_fork0_leftBuffer0_sink_bits),
-    .io_select_valid    (fold0_stage1_fork0_leftBuffer0_sink_valid),
-    .io_select_ready    (fold0_stage1_fork0_leftBuffer0_sink_ready)
+    .io_sources_0_bits  (fold0_stage1_fork0_temp_bits),
+    .io_sources_0_valid (fold0_stage1_fork0_temp_valid),
+    .io_sources_0_ready (fold0_stage1_fork0_temp_ready),
+    .io_sources_1_bits  (fold0_stage0_init_bits),
+    .io_sources_1_valid (fold0_stage0_init_valid),
+    .io_sources_1_ready (fold0_stage0_init_ready),
+    .io_sink_bits       (fold0_stage1_opA_bits),
+    .io_sink_valid      (fold0_stage1_opA_valid),
+    .io_sink_ready      (fold0_stage1_opA_ready),
+    .io_select_bits     (fold0_stage1_fork0_sourceBuffer0_interface_bits),
+    .io_select_valid    (fold0_stage1_fork0_sourceBuffer0_interface_valid),
+    .io_select_ready    (fold0_stage1_fork0_sourceBuffer0_interface_ready)
   );
-  wire [63:0] fold0_stage1_fork0_rightBuffer0_source_bits;
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(64)
-  ) fold0_stage1_fork0_rightBuffer0_ram (
+  ) fold0_stage1_fork0_sinkBuffer0_ram (
     .clock    (clock),
-    .addrA    (fold0_stage1_fork0_rightBuffer0_enq_ptr_value),
-    .writeEnA (fold0_stage1_fork0_rightBuffer0_do_enq),
-    .dataInA  (fold0_stage1_fork0_rightBuffer0_source_bits),
-    .addrB    (fold0_stage1_fork0_rightBuffer0_deq_ptr_value),
-    .dataOutB (fold0_stage1_fork0_rightBuffer0_sink_bits)
+    .addrA    (fold0_stage1_fork0_sinkBuffer0_enq_ptr_value),
+    .writeEnA (fold0_stage1_fork0_sinkBuffer0_do_enq),
+    .dataInA  (fold0_stage1_fork0_sinkBuffer0_source_bits),
+    .addrB    (fold0_stage1_fork0_sinkBuffer0_deq_ptr_value),
+    .dataOutB (fold0_stage1_fork0_sinkBuffer0_sink_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(1)
-  ) fold0_stage1_fork0_leftBuffer1_ram (
+  ) fold0_stage1_fork0_sourceBuffer1_ram (
     .clock    (clock),
-    .addrA    (fold0_stage1_fork0_leftBuffer1_enq_ptr_value),
-    .writeEnA (fold0_stage1_fork0_leftBuffer1_do_enq),
-    .dataInA  (fold0_stage1_fork0_leftBuffer1_source_bits),
-    .addrB    (fold0_stage1_fork0_leftBuffer1_deq_ptr_value),
-    .dataOutB (fold0_stage1_fork0_leftBuffer1_sink_bits)
+    .addrA    (fold0_stage1_fork0_sourceBuffer1_enq_ptr_value),
+    .writeEnA (fold0_stage1_fork0_sourceBuffer1_do_enq),
+    .dataInA  (fold0_stage1_fork0_sourceBuffer1_source_bits),
+    .addrB    (fold0_stage1_fork0_sourceBuffer1_deq_ptr_value),
+    .dataOutB (fold0_stage1_fork0_sourceBuffer1_sink_bits)
   );
+  wire [63:0] fold0_stage1_result_bits;
+  wire        fold0_stage1_result_valid;
   elasticDemux fold0_stage1_fork0_demux0 (
-    .io_source_bits   (_fold0_stage2_fork0_mux0_io_sink_bits),
-    .io_source_valid  (_fold0_stage2_fork0_mux0_io_sink_valid),
-    .io_source_ready  (_fold0_stage1_fork0_demux0_io_source_ready),
-    .io_sinks_0_bits  (fold0_stage1_fork0_rightBuffer0_source_bits),
-    .io_sinks_0_valid (fold0_stage1_fork0_rightBuffer0_source_valid),
-    .io_sinks_0_ready (fold0_stage1_fork0_rightBuffer0_source_ready),
-    .io_sinks_1_bits  (_fold0_stage1_fork0_demux0_io_sinks_1_bits),
-    .io_sinks_1_valid (_fold0_stage1_fork0_demux0_io_sinks_1_valid),
-    .io_sinks_1_ready (sink_ready),
-    .io_select_bits   (fold0_stage1_fork0_leftBuffer1_sink_bits),
-    .io_select_valid  (fold0_stage1_fork0_leftBuffer1_sink_valid),
-    .io_select_ready  (fold0_stage1_fork0_leftBuffer1_sink_ready)
+    .io_source_bits   (fold0_stage1_result_bits),
+    .io_source_valid  (fold0_stage1_result_valid),
+    .io_source_ready  (fold0_stage1_result_ready),
+    .io_sinks_0_bits  (fold0_stage1_fork0_sinkBuffer0_interface_bits),
+    .io_sinks_0_valid (fold0_stage1_fork0_sinkBuffer0_interface_valid),
+    .io_sinks_0_ready (fold0_stage1_fork0_sinkBuffer0_interface_ready),
+    .io_sinks_1_bits  (fold0_stage0_result_bits),
+    .io_sinks_1_valid (fold0_stage0_result_valid),
+    .io_sinks_1_ready (fold0_stage0_result_ready),
+    .io_select_bits   (fold0_stage1_fork0_sourceBuffer1_interface_bits),
+    .io_select_valid  (fold0_stage1_fork0_sourceBuffer1_interface_valid),
+    .io_select_ready  (fold0_stage1_fork0_sourceBuffer1_interface_ready)
   );
   elasticDemux fold0_stage2_fork0_demux0 (
-    .io_source_bits   (fold0_stage1_opB_bits_operand),
-    .io_source_valid  (fold0_stage1_opB_valid & ~fold0_stage2_fork0_regs_0),
-    .io_source_ready  (_fold0_stage2_fork0_demux0_io_source_ready),
+    .io_source_bits   (fold0_stage2_fork0_result_bits),
+    .io_source_valid  (fold0_stage2_fork0_result_valid),
+    .io_source_ready  (fold0_stage2_fork0_result_ready),
     .io_sinks_0_bits  (fold0_sinkA_bits),
     .io_sinks_0_valid (fold0_sinkA_valid),
     .io_sinks_0_ready (fold0_sinkA_ready),
-    .io_sinks_1_bits  (/* unused */),
-    .io_sinks_1_valid (/* unused */),
-    .io_sinks_1_ready (1'h1),
-    .io_select_bits   (fold0_stage1_opB_bits_zero),
-    .io_select_valid  (fold0_stage1_opB_valid & ~fold0_stage2_fork0_regs_1),
-    .io_select_ready  (_fold0_stage2_fork0_demux0_io_select_ready)
+    .io_sinks_1_bits  (fold0_stage2_fork0_disposed_bits),
+    .io_sinks_1_valid (fold0_stage2_fork0_disposed_valid),
+    .io_sinks_1_ready (fold0_stage2_fork0_disposed_ready),
+    .io_select_bits   (fold0_stage2_fork0_result_1_bits),
+    .io_select_valid  (fold0_stage2_fork0_result_1_valid),
+    .io_select_ready  (fold0_stage2_fork0_result_1_ready)
   );
+  wire        fold0_stage2_fork0_temp_ready;
   elasticDemux fold0_stage2_fork0_demux1 (
-    .io_source_bits   (_fold0_stage1_fork0_mux0_io_sink_bits),
-    .io_source_valid  (_fold0_stage1_fork0_mux0_io_sink_valid),
-    .io_source_ready  (_fold0_stage2_fork0_demux1_io_source_ready),
+    .io_source_bits   (fold0_stage1_opA_bits),
+    .io_source_valid  (fold0_stage1_opA_valid),
+    .io_source_ready  (fold0_stage1_opA_ready),
     .io_sinks_0_bits  (fold0_sinkB_bits),
     .io_sinks_0_valid (fold0_sinkB_valid),
     .io_sinks_0_ready (fold0_sinkB_ready),
-    .io_sinks_1_bits  (_fold0_stage2_fork0_demux1_io_sinks_1_bits),
-    .io_sinks_1_valid (_fold0_stage2_fork0_demux1_io_sinks_1_valid),
-    .io_sinks_1_ready (_fold0_stage2_fork0_mux0_io_sources_1_ready),
-    .io_select_bits   (fold0_stage1_opB_bits_zero),
-    .io_select_valid  (fold0_stage1_opB_valid & ~fold0_stage2_fork0_regs_2),
-    .io_select_ready  (_fold0_stage2_fork0_demux1_io_select_ready)
+    .io_sinks_1_bits  (fold0_stage2_fork0_temp_bits),
+    .io_sinks_1_valid (fold0_stage2_fork0_temp_valid),
+    .io_sinks_1_ready (fold0_stage2_fork0_temp_ready),
+    .io_select_bits   (fold0_stage2_fork0_result_2_bits),
+    .io_select_valid  (fold0_stage2_fork0_result_2_valid),
+    .io_select_ready  (fold0_stage2_fork0_result_2_ready)
   );
   elasticMux fold0_stage2_fork0_mux0 (
-    .io_sources_0_bits  (fold0_sinkA_bits + fold0_sinkB_bits),
-    .io_sources_0_valid (fold0_join0_allValid),
-    .io_sources_0_ready (_fold0_stage2_fork0_mux0_io_sources_0_ready),
-    .io_sources_1_bits  (_fold0_stage2_fork0_demux1_io_sinks_1_bits),
-    .io_sources_1_valid (_fold0_stage2_fork0_demux1_io_sinks_1_valid),
-    .io_sources_1_ready (_fold0_stage2_fork0_mux0_io_sources_1_ready),
-    .io_sink_bits       (_fold0_stage2_fork0_mux0_io_sink_bits),
-    .io_sink_valid      (_fold0_stage2_fork0_mux0_io_sink_valid),
-    .io_sink_ready      (_fold0_stage1_fork0_demux0_io_source_ready),
-    .io_select_bits     (fold0_stage1_opB_bits_zero),
-    .io_select_valid    (fold0_stage1_opB_valid & ~fold0_stage2_fork0_regs_3),
-    .io_select_ready    (_fold0_stage2_fork0_mux0_io_select_ready)
+    .io_sources_0_bits  (fold0_sourceResult_bits),
+    .io_sources_0_valid (fold0_sourceResult_valid),
+    .io_sources_0_ready (fold0_sourceResult_ready),
+    .io_sources_1_bits  (fold0_stage2_fork0_temp_bits),
+    .io_sources_1_valid (fold0_stage2_fork0_temp_valid),
+    .io_sources_1_ready (fold0_stage2_fork0_temp_ready),
+    .io_sink_bits       (fold0_stage1_result_bits),
+    .io_sink_valid      (fold0_stage1_result_valid),
+    .io_sink_ready      (fold0_stage1_result_ready),
+    .io_select_bits     (fold0_stage2_fork0_result_3_bits),
+    .io_select_valid    (fold0_stage2_fork0_result_3_valid),
+    .io_select_ready    (fold0_stage2_fork0_result_3_ready)
   );
   assign source_ready = source_valid & fold0_stage0_ready;
-  assign sink_bits_result = _fold0_stage1_fork0_demux0_io_sinks_1_bits[31:0];
-  assign sink_valid = _fold0_stage1_fork0_demux0_io_sinks_1_valid;
+  assign sink_bits_result = wire0_bits[31:0];
+  assign sink_valid = wire0_valid;
 endmodule
 

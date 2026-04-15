@@ -21,42 +21,42 @@
   ],
   "wires" : [
     {
-      "path" : "/randomStall0_stall_rightBuffer0_interface",
+      "path" : "/randomStall0_stall_sinkBuffer0_interface",
       "tpe" : "chext.elastic.Interface[AnonymousBundle]",
       "args" : {
         
       }
     },
     {
-      "path" : "/randomStall0_stall_rightBuffer0_sink",
+      "path" : "/randomStall0_stall_sinkBuffer0_sink",
       "tpe" : "chext.elastic.Interface[AnonymousBundle]",
       "args" : {
         
       }
     },
     {
-      "path" : "/randomStall0_stall_rightBuffer0_source",
+      "path" : "/randomStall0_stall_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[AnonymousBundle]",
       "args" : {
         
       }
     },
     {
-      "path" : "/randomStall1_stall_rightBuffer0_interface",
+      "path" : "/randomStall1_stall_sinkBuffer0_interface",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/randomStall1_stall_rightBuffer0_sink",
+      "path" : "/randomStall1_stall_sinkBuffer0_sink",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/randomStall1_stall_rightBuffer0_source",
+      "path" : "/randomStall1_stall_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
@@ -79,13 +79,13 @@
   ],
   "components" : [
     {
-      "path" : "/randomStall0_stall_rightBuffer0",
+      "path" : "/randomStall0_stall_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/randomStall0_stall_rightBuffer0_source",
+            "path" : "/randomStall0_stall_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -94,7 +94,7 @@
         [
           "sink",
           {
-            "path" : "/randomStall0_stall_rightBuffer0_sink",
+            "path" : "/randomStall0_stall_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -105,13 +105,13 @@
       }
     },
     {
-      "path" : "/randomStall0_stall_rightBuffer0_Unnamed0",
+      "path" : "/randomStall0_stall_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/randomStall0_stall_rightBuffer0_interface",
+            "path" : "/randomStall0_stall_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -120,7 +120,7 @@
         [
           "sink",
           {
-            "path" : "/randomStall0_stall_rightBuffer0_source",
+            "path" : "/randomStall0_stall_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -131,13 +131,13 @@
       }
     },
     {
-      "path" : "/randomStall0_stall_rightBuffer0_Unnamed1",
+      "path" : "/randomStall0_stall_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/randomStall0_stall_rightBuffer0_sink",
+            "path" : "/randomStall0_stall_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -172,7 +172,7 @@
         [
           "sink",
           {
-            "path" : "/randomStall0_stall_rightBuffer0_interface",
+            "path" : "/randomStall0_stall_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -183,13 +183,13 @@
       }
     },
     {
-      "path" : "/randomStall1_stall_rightBuffer0",
+      "path" : "/randomStall1_stall_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/randomStall1_stall_rightBuffer0_source",
+            "path" : "/randomStall1_stall_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -198,7 +198,7 @@
         [
           "sink",
           {
-            "path" : "/randomStall1_stall_rightBuffer0_sink",
+            "path" : "/randomStall1_stall_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -209,13 +209,13 @@
       }
     },
     {
-      "path" : "/randomStall1_stall_rightBuffer0_Unnamed0",
+      "path" : "/randomStall1_stall_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/randomStall1_stall_rightBuffer0_interface",
+            "path" : "/randomStall1_stall_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -224,7 +224,7 @@
         [
           "sink",
           {
-            "path" : "/randomStall1_stall_rightBuffer0_source",
+            "path" : "/randomStall1_stall_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -235,13 +235,13 @@
       }
     },
     {
-      "path" : "/randomStall1_stall_rightBuffer0_Unnamed1",
+      "path" : "/randomStall1_stall_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/randomStall1_stall_rightBuffer0_sink",
+            "path" : "/randomStall1_stall_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -276,7 +276,7 @@
         [
           "sink",
           {
-            "path" : "/randomStall1_stall_rightBuffer0_interface",
+            "path" : "/randomStall1_stall_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -318,9 +318,9 @@
       "path" : "/randomStall0",
       "tpe" : "RandomStall",
       "children" : [
-        "/randomStall0_stall_rightBuffer0",
-        "/randomStall0_stall_rightBuffer0_Unnamed0",
-        "/randomStall0_stall_rightBuffer0_Unnamed1",
+        "/randomStall0_stall_sinkBuffer0",
+        "/randomStall0_stall_sinkBuffer0_Unnamed0",
+        "/randomStall0_stall_sinkBuffer0_Unnamed1",
         "/randomStall0_stall"
       ],
       "parent" : "",
@@ -332,9 +332,9 @@
       "path" : "/randomStall1",
       "tpe" : "RandomStall",
       "children" : [
-        "/randomStall1_stall_rightBuffer0",
-        "/randomStall1_stall_rightBuffer0_Unnamed0",
-        "/randomStall1_stall_rightBuffer0_Unnamed1",
+        "/randomStall1_stall_sinkBuffer0",
+        "/randomStall1_stall_sinkBuffer0_Unnamed0",
+        "/randomStall1_stall_sinkBuffer0_Unnamed1",
         "/randomStall1_stall"
       ],
       "parent" : "",

@@ -68,7 +68,10 @@ function(generate_tb)
             ${GEN_TB_TARGET_NAME}
             SYSTEMC
             SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hdl/${MODULE}.sv
-            VERILATOR_ARGS --trace -I${CMAKE_SOURCE_DIR}/../verilog
+            VERILATOR_ARGS
+                --trace
+                -I${CMAKE_SOURCE_DIR}/../verilog
+                -Wno-fatal
         )
 
         hdlscw(

@@ -60,22 +60,22 @@ module AddressGenerator(
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_0
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_1
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_2
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorAtLeastTwoActions & _transducer_cond_WIRE_3
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
       if ((`PRINTF_COND_) & transducer_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[/home/janberq/Desktop/chext/src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
+                "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/AddressGenerator.scala:73:32]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
   always @(posedge clock) begin

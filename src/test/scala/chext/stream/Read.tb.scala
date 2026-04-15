@@ -73,7 +73,7 @@ class Read_Tbtop(
 
 }
 
-object Read_TB extends chext.TestBench {
+object Read_Tb extends chext.TestBench {
   emit(
     new Read_Tbtop(
       ReadConfig(axi4.Config(wAddr = 32, wData = 64), resultMode = ReadResultMode.DropEmpty),

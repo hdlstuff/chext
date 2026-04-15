@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
 
 private object _wrap {
   def apply[T <: Data](t: T)(implicit si: SourceInfo): Interface[T] = {
-    val result = Wire(Interface(chiselTypeOf(t)))
+    val result = EWire(chiselTypeOf(t))
     result.$bits := t
     result
   }

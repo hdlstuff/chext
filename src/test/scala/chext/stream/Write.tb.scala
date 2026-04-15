@@ -78,7 +78,7 @@ class Write_Tbtop(
   declareElasticInterface(rd_sinkResult, "Rd_Result")
 }
 
-object Write_TB extends chext.TestBench {
+object Write_Tb extends chext.TestBench {
   emit(
     new Write_Tbtop(
       WriteConfig(axi4.Config(wAddr = 20, wData = 32), resultMode = WriteResultMode.DropEmpty),

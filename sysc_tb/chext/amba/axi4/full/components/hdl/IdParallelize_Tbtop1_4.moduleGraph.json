@@ -84,14 +84,14 @@
       }
     },
     {
-      "path" : "/dut/read_m_ar_rightBuffer0_sink",
+      "path" : "/dut/read_m_ar_sinkBuffer0_sink",
       "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
       "args" : {
         
       }
     },
     {
-      "path" : "/dut/read_m_ar_rightBuffer0_source",
+      "path" : "/dut/read_m_ar_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
       "args" : {
         
@@ -105,14 +105,14 @@
       }
     },
     {
-      "path" : "/dut/read_s_r_rightBuffer0_sink",
+      "path" : "/dut/read_s_r_sinkBuffer0_sink",
       "tpe" : "chext.elastic.Interface[ReadDataChannel]",
       "args" : {
         
       }
     },
     {
-      "path" : "/dut/read_s_r_rightBuffer0_source",
+      "path" : "/dut/read_s_r_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[ReadDataChannel]",
       "args" : {
         
@@ -126,14 +126,14 @@
       }
     },
     {
-      "path" : "/dut/write_m_aw_rightBuffer0_sink",
+      "path" : "/dut/write_m_aw_sinkBuffer0_sink",
       "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
       "args" : {
         
       }
     },
     {
-      "path" : "/dut/write_m_aw_rightBuffer0_source",
+      "path" : "/dut/write_m_aw_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
       "args" : {
         
@@ -147,22 +147,15 @@
       }
     },
     {
-      "path" : "/dut/write_s_b_rightBuffer0_sink",
+      "path" : "/dut/write_s_b_sinkBuffer0_sink",
       "tpe" : "chext.elastic.Interface[WriteResponseChannel]",
       "args" : {
         
       }
     },
     {
-      "path" : "/dut/write_s_b_rightBuffer0_source",
+      "path" : "/dut/write_s_b_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[WriteResponseChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/dut/read_bufferPayload/io.rdReq",
-      "tpe" : "chext.elastic.Interface[UInt<5>]",
       "args" : {
         
       }
@@ -175,8 +168,8 @@
       }
     },
     {
-      "path" : "/dut/read_bufferPayload/io.rdResp",
-      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "path" : "/dut/read_bufferPayload/io.rdReq",
+      "tpe" : "chext.elastic.Interface[UInt<5>]",
       "args" : {
         
       }
@@ -189,14 +182,7 @@
       }
     },
     {
-      "path" : "/dut/read_bufferPayload/rdQueue_sink",
-      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/dut/read_bufferPayload/rdQueue_source",
+      "path" : "/dut/read_bufferPayload/io.rdResp",
       "tpe" : "chext.elastic.Interface[ReadDataChannel]",
       "args" : {
         
@@ -212,6 +198,20 @@
     {
       "path" : "/dut/write_bufferPayload/rdQueue_source",
       "tpe" : "chext.elastic.Interface[WriteResponseChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/dut/read_bufferPayload/rdQueue_sink",
+      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/dut/read_bufferPayload/rdQueue_source",
+      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
       "args" : {
         
       }
@@ -479,13 +479,13 @@
       }
     },
     {
-      "path" : "/dut/read_m_ar_rightBuffer0",
+      "path" : "/dut/read_m_ar_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/dut/read_m_ar_rightBuffer0_source",
+            "path" : "/dut/read_m_ar_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -494,7 +494,7 @@
         [
           "sink",
           {
-            "path" : "/dut/read_m_ar_rightBuffer0_sink",
+            "path" : "/dut/read_m_ar_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -505,7 +505,7 @@
       }
     },
     {
-      "path" : "/dut/read_m_ar_rightBuffer0_Unnamed0",
+      "path" : "/dut/read_m_ar_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -520,7 +520,7 @@
         [
           "sink",
           {
-            "path" : "/dut/read_m_ar_rightBuffer0_source",
+            "path" : "/dut/read_m_ar_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -531,13 +531,13 @@
       }
     },
     {
-      "path" : "/dut/read_m_ar_rightBuffer0_Unnamed1",
+      "path" : "/dut/read_m_ar_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/dut/read_m_ar_rightBuffer0_sink",
+            "path" : "/dut/read_m_ar_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -557,13 +557,13 @@
       }
     },
     {
-      "path" : "/dut/read_s_r_rightBuffer0",
+      "path" : "/dut/read_s_r_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/dut/read_s_r_rightBuffer0_source",
+            "path" : "/dut/read_s_r_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -572,7 +572,7 @@
         [
           "sink",
           {
-            "path" : "/dut/read_s_r_rightBuffer0_sink",
+            "path" : "/dut/read_s_r_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -583,7 +583,7 @@
       }
     },
     {
-      "path" : "/dut/read_s_r_rightBuffer0_Unnamed0",
+      "path" : "/dut/read_s_r_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -598,7 +598,7 @@
         [
           "sink",
           {
-            "path" : "/dut/read_s_r_rightBuffer0_source",
+            "path" : "/dut/read_s_r_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -609,13 +609,13 @@
       }
     },
     {
-      "path" : "/dut/read_s_r_rightBuffer0_Unnamed1",
+      "path" : "/dut/read_s_r_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/dut/read_s_r_rightBuffer0_sink",
+            "path" : "/dut/read_s_r_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -661,13 +661,13 @@
       }
     },
     {
-      "path" : "/dut/write_m_aw_rightBuffer0",
+      "path" : "/dut/write_m_aw_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/dut/write_m_aw_rightBuffer0_source",
+            "path" : "/dut/write_m_aw_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -676,7 +676,7 @@
         [
           "sink",
           {
-            "path" : "/dut/write_m_aw_rightBuffer0_sink",
+            "path" : "/dut/write_m_aw_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -687,7 +687,7 @@
       }
     },
     {
-      "path" : "/dut/write_m_aw_rightBuffer0_Unnamed0",
+      "path" : "/dut/write_m_aw_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -702,7 +702,7 @@
         [
           "sink",
           {
-            "path" : "/dut/write_m_aw_rightBuffer0_source",
+            "path" : "/dut/write_m_aw_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -713,13 +713,13 @@
       }
     },
     {
-      "path" : "/dut/write_m_aw_rightBuffer0_Unnamed1",
+      "path" : "/dut/write_m_aw_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/dut/write_m_aw_rightBuffer0_sink",
+            "path" : "/dut/write_m_aw_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -739,13 +739,13 @@
       }
     },
     {
-      "path" : "/dut/write_s_b_rightBuffer0",
+      "path" : "/dut/write_s_b_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/dut/write_s_b_rightBuffer0_source",
+            "path" : "/dut/write_s_b_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -754,7 +754,7 @@
         [
           "sink",
           {
-            "path" : "/dut/write_s_b_rightBuffer0_sink",
+            "path" : "/dut/write_s_b_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -765,7 +765,7 @@
       }
     },
     {
-      "path" : "/dut/write_s_b_rightBuffer0_Unnamed0",
+      "path" : "/dut/write_s_b_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -780,7 +780,7 @@
         [
           "sink",
           {
-            "path" : "/dut/write_s_b_rightBuffer0_source",
+            "path" : "/dut/write_s_b_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -791,13 +791,13 @@
       }
     },
     {
-      "path" : "/dut/write_s_b_rightBuffer0_Unnamed1",
+      "path" : "/dut/write_s_b_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/dut/write_s_b_rightBuffer0_sink",
+            "path" : "/dut/write_s_b_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -869,58 +869,6 @@
       }
     },
     {
-      "path" : "/dut/read_bufferPayload/rdQueue",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/dut/read_bufferPayload/rdQueue_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/dut/read_bufferPayload/rdQueue_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/dut/read_bufferPayload/Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/dut/read_bufferPayload/rdQueue_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/dut/read_bufferPayload/io.rdResp",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/dut/write_bufferPayload/rdQueue",
       "tpe" : "Queue",
       "sources" : [
@@ -963,6 +911,58 @@
           "sink",
           {
             "path" : "/dut/write_bufferPayload/io.rdResp",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/dut/read_bufferPayload/rdQueue",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/dut/read_bufferPayload/rdQueue_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/dut/read_bufferPayload/rdQueue_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/dut/read_bufferPayload/Unnamed0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/dut/read_bufferPayload/rdQueue_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/dut/read_bufferPayload/io.rdResp",
             "desc" : "IO"
           }
         ]

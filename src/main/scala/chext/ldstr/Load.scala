@@ -36,8 +36,8 @@ class Load[Tuser <: Data](val cfg: LoadConfig[Tuser]) extends Module {
   val m_axi = IO(axi4.full.Master(axiCfg))
 
   {
-    val taskAR = Wire(elastic.Interface(genTask))
-    val taskR = Wire(elastic.Interface(genTask))
+    val taskAR = elastic.EWire(genTask)
+    val taskR = elastic.EWire(genTask)
 
     checkAlignment(sourceTask, axiCfg, "Load")
 
@@ -58,7 +58,7 @@ class Load[Tuser <: Data](val cfg: LoadConfig[Tuser]) extends Module {
     }
 
     prefix("r") {
-      val wireUser = Wire(elastic.Interface(genUser))
+      val wireUser = elastic.EWire(genUser)
 
       val transform0 =
         new elastic.Transform(taskR, elastic.SinkBuffer(wireUser, numOutstandingTasks)) {

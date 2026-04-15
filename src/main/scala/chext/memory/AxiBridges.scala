@@ -31,7 +31,7 @@ class Axi4FullToReadWriteBridge(val axiCfg: axi4.Config) extends Module {
 
   private def implRead() = prefix("read") {
     val addressGenerator = Module(new AddressGenerator(axiCfg.wAddr))
-    val idLast = Wire(elastic.Interface(new IdLastBundle(axiCfg.wId)))
+    val idLast = elastic.EWire(new IdLastBundle(axiCfg.wId))
 
     val fork0 = new elastic.Fork(s_axi.ar) {
       val repeat0 =
@@ -77,7 +77,7 @@ class Axi4FullToReadWriteBridge(val axiCfg: axi4.Config) extends Module {
 
   private def implWrite() = prefix("write") {
     val addressStrobeGenerator = Module(new AddressStrobeGenerator(axiCfg.wAddr, wData))
-    val idLast = Wire(elastic.Interface(new IdLastBundle(axiCfg.wId)))
+    val idLast = elastic.EWire(new IdLastBundle(axiCfg.wId))
 
     val fork1 = new elastic.Fork(s_axi.aw) {
       val repeat0 =
@@ -114,7 +114,7 @@ class Axi4FullToReadWriteBridge(val axiCfg: axi4.Config) extends Module {
       out.strb := addrStrobe.strb & w.strb
     }
 
-    val idLastJoined = Wire(elastic.Interface(new IdLastBundle(axiCfg.wId)))
+    val idLastJoined = elastic.EWire(new IdLastBundle(axiCfg.wId))
 
     val join1 = new elastic.Join(idLastJoined) {
       out := join(idLast)

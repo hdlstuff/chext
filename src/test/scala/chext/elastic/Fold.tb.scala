@@ -16,7 +16,7 @@ class Fold_Tbtop extends Module with chext.TestBenchTop {
   }))
 
   {
-    val wire0 = Wire(Interface(SInt(64.W)))
+    val wire0 = EWire(SInt(64.W))
 
     val fold0 = new Fold(
       source,

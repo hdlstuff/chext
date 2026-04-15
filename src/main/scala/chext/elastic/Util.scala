@@ -7,7 +7,7 @@ import chisel3.experimental.requireIsHardware
 object Constant {
   def apply[T <: Data](constant: T) = {
     requireIsHardware(constant, "The constant parameter must be a Chisel hardware.")
-    val interface = Wire(Interface(chiselTypeOf(constant)))
+    val interface = EWire(chiselTypeOf(constant))
     interface.enq(constant)
     interface
   }

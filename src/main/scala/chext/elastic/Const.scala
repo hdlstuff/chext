@@ -29,11 +29,14 @@ abstract class Const[Tin <: Data, Tout <: Data](
 
 // TODO make it sourceInfo aware and use macros
 object Const {
-  def apply[T <: Data](constant: T, name: String = "const") = {
+  def apply[T <: Data](
+      constant: T,
+      name: String = "const"
+  )(implicit si: SourceInfo): Interface[T] = {
     requireIsHardware(constant, "The constant parameter must be a Chisel hardware.")
 
     uniquePrefix(name) {
-      val interface = Wire(Interface(chiselTypeOf(constant)))
+      val interface = EWire(chiselTypeOf(constant))
 
       val component = skipPrefix { new RigidComponent("Const", "const") }
       component.sink("sink", interface)
@@ -47,7 +50,7 @@ object Const {
     requireIsChiselType(gen, "The gen parameter must be a Chisel type.")
 
     uniquePrefix(name) {
-      val interface = Wire(Interface(gen.cloneType))
+      val interface = EWire(gen.cloneType)
 
       val component = new RigidComponent("Const", "const")
       component.sink("sink", interface)

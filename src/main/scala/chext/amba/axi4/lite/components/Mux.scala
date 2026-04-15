@@ -90,7 +90,7 @@ class Mux(val cfg: MuxConfig) extends Module {
     )
 
     def awLogic: Unit = {
-      val arbiterSelect = Wire(elastic.Interface(genPort))
+      val arbiterSelect = elastic.EWire(genPort)
 
       elastic.Arbiter(
         s_axil_.map { _.aw },

@@ -61,8 +61,8 @@ class Mux(val cfg: MuxConfig) extends Module {
     }
 
     def rLogic: Unit = {
-      val demuxInput = Wire(elastic.Interface(m_axi_.r.$bits.cloneType))
-      val demuxSelect = Wire(elastic.Interface(UInt(wPort.W)))
+      val demuxInput = elastic.EWire(m_axi_.r.$bits.cloneType)
+      val demuxSelect = elastic.EWire(UInt(wPort.W))
 
       val fork0 = new elastic.Fork(m_axi_.r) {
         fork { in } :=> demuxInput
@@ -105,8 +105,8 @@ class Mux(val cfg: MuxConfig) extends Module {
     }
 
     def bLogic: Unit = {
-      val demuxInput = Wire(elastic.Interface(m_axi_.b.$bits.cloneType))
-      val demuxSelect = Wire(elastic.Interface(UInt(wPort.W)))
+      val demuxInput = elastic.EWire(m_axi_.b.$bits.cloneType)
+      val demuxSelect = elastic.EWire(UInt(wPort.W))
 
       val fork1 = new elastic.Fork(m_axi_.b) {
         fork { in } :=> demuxInput

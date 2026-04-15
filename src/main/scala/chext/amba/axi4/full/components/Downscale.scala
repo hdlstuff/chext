@@ -56,7 +56,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
     val ewireOffsetLastQueue = elastic.EWire(genOffsetLast)
 
     def implAR(): Unit = prefix("ar") {
-      val arTransformed = Wire(chiselTypeOf(m_axi.ar))
+      val arTransformed = elastic.EWire.like(m_axi.ar)
 
       val transform0 = new elastic.Transform(s_axi.ar, arTransformed) {
         out := in
@@ -136,7 +136,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module {
     val ewireOffsetLast = elastic.EWire(genOffsetLast)
 
     def implAW(): Unit = prefix("aw") {
-      val awTransformed = Wire(chiselTypeOf(m_axi.aw))
+      val awTransformed = elastic.EWire.like(m_axi.aw)
 
       val transform0 = new elastic.Transform(s_axi.aw, awTransformed) {
         out := in

@@ -39,8 +39,8 @@ class Store[Tuser <: Data](val cfg: StoreConfig[Tuser]) extends Module {
   val m_axi = IO(axi4.full.Master(axiCfg))
 
   {
-    val taskAW = Wire(elastic.Interface(genTask))
-    val taskB = Wire(elastic.Interface(genTask))
+    val taskAW = elastic.EWire(genTask)
+    val taskB = elastic.EWire(genTask)
 
     checkAlignment(sourceTask, axiCfg, "Store")
 
@@ -70,7 +70,7 @@ class Store[Tuser <: Data](val cfg: StoreConfig[Tuser]) extends Module {
     }
 
     prefix("b") {
-      val wireUser = Wire(elastic.Interface(genUser))
+      val wireUser = elastic.EWire(genUser)
 
       val transform0 =
         new elastic.Transform(taskB, elastic.SinkBuffer(wireUser, numOutstandingTasks)) {

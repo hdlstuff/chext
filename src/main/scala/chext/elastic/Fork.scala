@@ -38,7 +38,7 @@ abstract class Fork[T <: Data](
     * @return
     */
   protected final def fork[TT <: Data](tt: TT = in): Interface[TT] = {
-    val result = Wire(new Interface(chiselTypeOf(tt)))
+    val result = EWire(chiselTypeOf(tt))
     result.$bits := tt
     addSinkPort(f"sink_${sinkList.length}", result)
     sinkList.addOne(result)

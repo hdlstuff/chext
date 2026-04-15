@@ -201,7 +201,7 @@ object EWire {
       gen,
       sourceInfo.makeMessage((x) => "elastic.EWire: expected Chisel type for gen $x")
     )
-    Wire(Interface(gen))
+    dontTouch { Wire(Interface(gen)) }
   }
 
   def like[T <: Data](hw: Interface[T])(implicit sourceInfo: SourceInfo) = {
@@ -209,7 +209,7 @@ object EWire {
       hw,
       sourceInfo.makeMessage((x) => "elastic.EWire: expected hardware for hw $x")
     )
-    Wire(Interface(chiselTypeOf(hw.$bits)))
+    dontTouch { Wire(Interface(chiselTypeOf(hw.$bits))) }
   }
 }
 

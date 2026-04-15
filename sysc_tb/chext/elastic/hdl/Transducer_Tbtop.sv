@@ -55,61 +55,93 @@ module Transducer_Tbtop(
   input         sink_ready
 );
 
-  wire [31:0] randomStall1_stall_rightBuffer0_sink_bits;
-  wire        sink__ready;
+  wire [31:0] randomStall1_stall_sinkBuffer0_sink_bits;
+  wire        randomStall1_stall_sinkBuffer0_source_ready;
+  wire        randomStall1_stall_sinkBuffer0_interface_valid;
+  wire [31:0] sink__bits;
+  wire        randomStall0_stall_sinkBuffer0_sink_valid;
+  wire        randomStall0_stall_sinkBuffer0_source_ready;
+  wire        source__ready;
+  wire        randomStall0_stall_sinkBuffer0_interface_valid;
   wire        _randomStall1_rand_prng_io_out_0;
   wire        _randomStall1_rand_prng_io_out_1;
   wire        _randomStall1_rand_prng_io_out_2;
   wire        _randomStall1_rand_prng_io_out_3;
-  wire [41:0] _randomStall0_stall_rightBuffer0_ram_dataOutB;
+  wire [41:0] _randomStall0_stall_sinkBuffer0_ram_dataOutB;
   wire        _randomStall0_rand_prng_io_out_0;
   wire        _randomStall0_rand_prng_io_out_1;
   wire        _randomStall0_rand_prng_io_out_2;
   wire        _randomStall0_rand_prng_io_out_3;
-  wire [7:0]  randomStall0_stall_rightBuffer0_source_bits_skip = source_bits_skip;
-  wire [31:0] randomStall0_stall_rightBuffer0_source_bits_data = source_bits_data;
-  wire        randomStall0_stall_rightBuffer0_source_bits_bad = source_bits_bad;
-  wire        randomStall0_stall_rightBuffer0_source_bits_stallForever =
+  wire [7:0]  randomStall0_stall_sinkBuffer0_interface_bits_skip = source_bits_skip;
+  wire [31:0] randomStall0_stall_sinkBuffer0_interface_bits_data = source_bits_data;
+  wire        randomStall0_stall_sinkBuffer0_interface_bits_bad = source_bits_bad;
+  wire        randomStall0_stall_sinkBuffer0_interface_bits_stallForever =
     source_bits_stallForever;
-  wire        randomStall1_stall_rightBuffer0_sink_ready = sink_ready;
-  reg         randomStall0_stall_rightBuffer0_enq_ptr_value;
-  reg         randomStall0_stall_rightBuffer0_deq_ptr_value;
-  reg         randomStall0_stall_rightBuffer0_maybe_full;
-  wire        randomStall0_stall_rightBuffer0_ptr_match =
-    randomStall0_stall_rightBuffer0_enq_ptr_value == randomStall0_stall_rightBuffer0_deq_ptr_value;
-  wire        randomStall0_stall_rightBuffer0_source_valid;
-  wire        randomStall0_stall_rightBuffer0_source_ready;
-  wire        randomStall0_stall_rightBuffer0_do_enq =
-    randomStall0_stall_rightBuffer0_source_ready
-    & randomStall0_stall_rightBuffer0_source_valid;
-  wire        source__valid =
-    ~(randomStall0_stall_rightBuffer0_ptr_match
-      & ~randomStall0_stall_rightBuffer0_maybe_full);
-  assign randomStall0_stall_rightBuffer0_source_ready =
-    ~(randomStall0_stall_rightBuffer0_ptr_match
-      & randomStall0_stall_rightBuffer0_maybe_full);
+  wire        randomStall1_stall_sinkBuffer0_sink_ready = sink_ready;
+  wire        randomStall0_stall_sinkBuffer0_sink_ready = source__ready;
+  wire [31:0] source__bits_data;
+  wire [31:0] randomStall1_stall_sinkBuffer0_interface_bits = sink__bits;
+  wire [7:0]  randomStall0_stall_sinkBuffer0_source_bits_skip =
+    randomStall0_stall_sinkBuffer0_interface_bits_skip;
+  wire [31:0] randomStall0_stall_sinkBuffer0_source_bits_data =
+    randomStall0_stall_sinkBuffer0_interface_bits_data;
+  wire        randomStall0_stall_sinkBuffer0_source_bits_bad =
+    randomStall0_stall_sinkBuffer0_interface_bits_bad;
+  wire        randomStall0_stall_sinkBuffer0_source_bits_stallForever =
+    randomStall0_stall_sinkBuffer0_interface_bits_stallForever;
+  wire        randomStall0_stall_sinkBuffer0_source_valid =
+    randomStall0_stall_sinkBuffer0_interface_valid;
+  wire        randomStall0_stall_sinkBuffer0_interface_ready =
+    randomStall0_stall_sinkBuffer0_source_ready;
+  wire        source__valid = randomStall0_stall_sinkBuffer0_sink_valid;
+  reg         randomStall0_stall_sinkBuffer0_enq_ptr_value;
+  reg         randomStall0_stall_sinkBuffer0_deq_ptr_value;
+  reg         randomStall0_stall_sinkBuffer0_maybe_full;
+  wire        randomStall0_stall_sinkBuffer0_ptr_match =
+    randomStall0_stall_sinkBuffer0_enq_ptr_value == randomStall0_stall_sinkBuffer0_deq_ptr_value;
+  wire        randomStall0_stall_sinkBuffer0_do_enq =
+    randomStall0_stall_sinkBuffer0_source_ready
+    & randomStall0_stall_sinkBuffer0_source_valid;
+  assign randomStall0_stall_sinkBuffer0_sink_valid =
+    ~(randomStall0_stall_sinkBuffer0_ptr_match
+      & ~randomStall0_stall_sinkBuffer0_maybe_full);
+  assign randomStall0_stall_sinkBuffer0_source_ready =
+    ~(randomStall0_stall_sinkBuffer0_ptr_match
+      & randomStall0_stall_sinkBuffer0_maybe_full);
+  wire        randomStall0_stall_sinkBuffer0_sink_bits_stallForever =
+    _randomStall0_stall_sinkBuffer0_ram_dataOutB[0];
+  wire        randomStall0_stall_sinkBuffer0_sink_bits_bad =
+    _randomStall0_stall_sinkBuffer0_ram_dataOutB[1];
+  wire [31:0] randomStall0_stall_sinkBuffer0_sink_bits_data =
+    _randomStall0_stall_sinkBuffer0_ram_dataOutB[33:2];
+  wire [7:0]  randomStall0_stall_sinkBuffer0_sink_bits_skip =
+    _randomStall0_stall_sinkBuffer0_ram_dataOutB[41:34];
+  wire [7:0]  source__bits_skip = randomStall0_stall_sinkBuffer0_sink_bits_skip;
+  assign source__bits_data = randomStall0_stall_sinkBuffer0_sink_bits_data;
+  wire        source__bits_bad = randomStall0_stall_sinkBuffer0_sink_bits_bad;
   wire        source__bits_stallForever =
-    _randomStall0_stall_rightBuffer0_ram_dataOutB[0];
-  wire        source__bits_bad = _randomStall0_stall_rightBuffer0_ram_dataOutB[1];
-  wire [31:0] source__bits_data = _randomStall0_stall_rightBuffer0_ram_dataOutB[33:2];
-  wire [7:0]  source__bits_skip = _randomStall0_stall_rightBuffer0_ram_dataOutB[41:34];
-  wire [31:0] randomStall1_stall_rightBuffer0_source_bits = source__bits_data;
-  reg         randomStall1_stall_rightBuffer0_enq_ptr_value;
-  reg         randomStall1_stall_rightBuffer0_deq_ptr_value;
-  reg         randomStall1_stall_rightBuffer0_maybe_full;
-  wire        randomStall1_stall_rightBuffer0_ptr_match =
-    randomStall1_stall_rightBuffer0_enq_ptr_value == randomStall1_stall_rightBuffer0_deq_ptr_value;
-  wire        randomStall1_stall_rightBuffer0_source_valid;
-  wire        randomStall1_stall_rightBuffer0_source_ready;
-  wire        randomStall1_stall_rightBuffer0_do_enq =
-    randomStall1_stall_rightBuffer0_source_ready
-    & randomStall1_stall_rightBuffer0_source_valid;
-  wire        randomStall1_stall_rightBuffer0_sink_valid =
-    ~(randomStall1_stall_rightBuffer0_ptr_match
-      & ~randomStall1_stall_rightBuffer0_maybe_full);
-  assign randomStall1_stall_rightBuffer0_source_ready =
-    ~(randomStall1_stall_rightBuffer0_ptr_match
-      & randomStall1_stall_rightBuffer0_maybe_full);
+    randomStall0_stall_sinkBuffer0_sink_bits_stallForever;
+  assign sink__bits = source__bits_data;
+  wire [31:0] randomStall1_stall_sinkBuffer0_source_bits =
+    randomStall1_stall_sinkBuffer0_interface_bits;
+  wire        randomStall1_stall_sinkBuffer0_source_valid =
+    randomStall1_stall_sinkBuffer0_interface_valid;
+  wire        randomStall1_stall_sinkBuffer0_interface_ready =
+    randomStall1_stall_sinkBuffer0_source_ready;
+  reg         randomStall1_stall_sinkBuffer0_enq_ptr_value;
+  reg         randomStall1_stall_sinkBuffer0_deq_ptr_value;
+  reg         randomStall1_stall_sinkBuffer0_maybe_full;
+  wire        randomStall1_stall_sinkBuffer0_ptr_match =
+    randomStall1_stall_sinkBuffer0_enq_ptr_value == randomStall1_stall_sinkBuffer0_deq_ptr_value;
+  wire        randomStall1_stall_sinkBuffer0_do_enq =
+    randomStall1_stall_sinkBuffer0_source_ready
+    & randomStall1_stall_sinkBuffer0_source_valid;
+  wire        randomStall1_stall_sinkBuffer0_sink_valid =
+    ~(randomStall1_stall_sinkBuffer0_ptr_match
+      & ~randomStall1_stall_sinkBuffer0_maybe_full);
+  assign randomStall1_stall_sinkBuffer0_source_ready =
+    ~(randomStall1_stall_sinkBuffer0_ptr_match
+      & randomStall1_stall_sinkBuffer0_maybe_full);
   reg  [7:0]  transducer0_state;
   wire        _transducer0_cond_WIRE_0 =
     source__valid & ~source__bits_stallForever & ~(|transducer0_state);
@@ -120,9 +152,13 @@ module Transducer_Tbtop(
   wire        _transducer0_cond_WIRE_3 =
     source__valid & ~(source__bits_stallForever | ~(|transducer0_state))
     & source__bits_bad;
-  wire        randomStall0_stall_rightBuffer0_sink_ready =
+  wire        sink__ready;
+  assign source__ready =
     source__valid & ~source__bits_stallForever
     & ((|transducer0_state) | source__bits_bad | sink__ready);
+  wire        sink__valid =
+    source__valid & ~source__bits_stallForever & ~(|transducer0_state)
+    & ~source__bits_bad;
   wire [3:0]  transducer0_cond =
     {_transducer0_cond_WIRE_3,
      _transducer0_cond_WIRE_2,
@@ -144,22 +180,22 @@ module Transducer_Tbtop(
       if ((`PRINTF_COND_) & transducer0_errorAtLeastTwoActions & _transducer0_cond_WIRE_0
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[/home/janberq/Desktop/chext/src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
+                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
       if ((`PRINTF_COND_) & transducer0_errorAtLeastTwoActions & _transducer0_cond_WIRE_1
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'consume' @[/home/janberq/Desktop/chext/src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
+                "elastic.Transducer: action 'consume' @[src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
       if ((`PRINTF_COND_) & transducer0_errorAtLeastTwoActions & _transducer0_cond_WIRE_2
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'consume' @[/home/janberq/Desktop/chext/src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
+                "elastic.Transducer: action 'consume' @[src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
       if ((`PRINTF_COND_) & transducer0_errorAtLeastTwoActions & _transducer0_cond_WIRE_3
           & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'consume' @[/home/janberq/Desktop/chext/src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
+                "elastic.Transducer: action 'consume' @[src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
       if ((`PRINTF_COND_) & transducer0_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[/home/janberq/Desktop/chext/src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
+                "elastic.Transducer: no action was taken! @[src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
   wire        _randomStall1_stall_interface_valid_T =
@@ -168,51 +204,52 @@ module Transducer_Tbtop(
      _randomStall1_rand_prng_io_out_1,
      _randomStall1_rand_prng_io_out_0} < 4'h9;
   assign sink__ready =
-    _randomStall1_stall_interface_valid_T & randomStall1_stall_rightBuffer0_source_ready;
-  assign randomStall1_stall_rightBuffer0_source_valid =
-    _randomStall1_stall_interface_valid_T & source__valid & ~source__bits_stallForever
-    & ~(|transducer0_state) & ~source__bits_bad;
+    _randomStall1_stall_interface_valid_T
+    & randomStall1_stall_sinkBuffer0_interface_ready;
+  assign randomStall1_stall_sinkBuffer0_interface_valid =
+    _randomStall1_stall_interface_valid_T & sink__valid;
   wire        _randomStall0_stall_interface_valid_T =
     {_randomStall0_rand_prng_io_out_3,
      _randomStall0_rand_prng_io_out_2,
      _randomStall0_rand_prng_io_out_1,
      _randomStall0_rand_prng_io_out_0} < 4'h9;
-  assign randomStall0_stall_rightBuffer0_source_valid =
+  assign randomStall0_stall_sinkBuffer0_interface_valid =
     _randomStall0_stall_interface_valid_T & source_valid;
   always @(posedge clock) begin
     if (reset) begin
-      randomStall0_stall_rightBuffer0_enq_ptr_value <= 1'h0;
-      randomStall0_stall_rightBuffer0_deq_ptr_value <= 1'h0;
-      randomStall0_stall_rightBuffer0_maybe_full <= 1'h0;
-      randomStall1_stall_rightBuffer0_enq_ptr_value <= 1'h0;
-      randomStall1_stall_rightBuffer0_deq_ptr_value <= 1'h0;
-      randomStall1_stall_rightBuffer0_maybe_full <= 1'h0;
+      randomStall0_stall_sinkBuffer0_enq_ptr_value <= 1'h0;
+      randomStall0_stall_sinkBuffer0_deq_ptr_value <= 1'h0;
+      randomStall0_stall_sinkBuffer0_maybe_full <= 1'h0;
+      randomStall1_stall_sinkBuffer0_enq_ptr_value <= 1'h0;
+      randomStall1_stall_sinkBuffer0_deq_ptr_value <= 1'h0;
+      randomStall1_stall_sinkBuffer0_maybe_full <= 1'h0;
       transducer0_state <= 8'h0;
     end
     else begin
-      automatic logic randomStall0_stall_rightBuffer0_do_deq =
-        randomStall0_stall_rightBuffer0_sink_ready & source__valid;
-      automatic logic randomStall1_stall_rightBuffer0_do_deq =
-        randomStall1_stall_rightBuffer0_sink_ready
-        & randomStall1_stall_rightBuffer0_sink_valid;
-      if (randomStall0_stall_rightBuffer0_do_enq)
-        randomStall0_stall_rightBuffer0_enq_ptr_value <=
-          randomStall0_stall_rightBuffer0_enq_ptr_value - 1'h1;
-      if (randomStall0_stall_rightBuffer0_do_deq)
-        randomStall0_stall_rightBuffer0_deq_ptr_value <=
-          randomStall0_stall_rightBuffer0_deq_ptr_value - 1'h1;
-      if (randomStall0_stall_rightBuffer0_do_enq != randomStall0_stall_rightBuffer0_do_deq)
-        randomStall0_stall_rightBuffer0_maybe_full <=
-          randomStall0_stall_rightBuffer0_do_enq;
-      if (randomStall1_stall_rightBuffer0_do_enq)
-        randomStall1_stall_rightBuffer0_enq_ptr_value <=
-          randomStall1_stall_rightBuffer0_enq_ptr_value - 1'h1;
-      if (randomStall1_stall_rightBuffer0_do_deq)
-        randomStall1_stall_rightBuffer0_deq_ptr_value <=
-          randomStall1_stall_rightBuffer0_deq_ptr_value - 1'h1;
-      if (randomStall1_stall_rightBuffer0_do_enq != randomStall1_stall_rightBuffer0_do_deq)
-        randomStall1_stall_rightBuffer0_maybe_full <=
-          randomStall1_stall_rightBuffer0_do_enq;
+      automatic logic randomStall0_stall_sinkBuffer0_do_deq =
+        randomStall0_stall_sinkBuffer0_sink_ready
+        & randomStall0_stall_sinkBuffer0_sink_valid;
+      automatic logic randomStall1_stall_sinkBuffer0_do_deq =
+        randomStall1_stall_sinkBuffer0_sink_ready
+        & randomStall1_stall_sinkBuffer0_sink_valid;
+      if (randomStall0_stall_sinkBuffer0_do_enq)
+        randomStall0_stall_sinkBuffer0_enq_ptr_value <=
+          randomStall0_stall_sinkBuffer0_enq_ptr_value - 1'h1;
+      if (randomStall0_stall_sinkBuffer0_do_deq)
+        randomStall0_stall_sinkBuffer0_deq_ptr_value <=
+          randomStall0_stall_sinkBuffer0_deq_ptr_value - 1'h1;
+      if (randomStall0_stall_sinkBuffer0_do_enq != randomStall0_stall_sinkBuffer0_do_deq)
+        randomStall0_stall_sinkBuffer0_maybe_full <=
+          randomStall0_stall_sinkBuffer0_do_enq;
+      if (randomStall1_stall_sinkBuffer0_do_enq)
+        randomStall1_stall_sinkBuffer0_enq_ptr_value <=
+          randomStall1_stall_sinkBuffer0_enq_ptr_value - 1'h1;
+      if (randomStall1_stall_sinkBuffer0_do_deq)
+        randomStall1_stall_sinkBuffer0_deq_ptr_value <=
+          randomStall1_stall_sinkBuffer0_deq_ptr_value - 1'h1;
+      if (randomStall1_stall_sinkBuffer0_do_enq != randomStall1_stall_sinkBuffer0_do_deq)
+        randomStall1_stall_sinkBuffer0_maybe_full <=
+          randomStall1_stall_sinkBuffer0_do_enq;
       if (~source__valid | source__bits_stallForever) begin
       end
       else if (source__bits_bad)
@@ -236,17 +273,17 @@ module Transducer_Tbtop(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(42)
-  ) randomStall0_stall_rightBuffer0_ram (
+  ) randomStall0_stall_sinkBuffer0_ram (
     .clock    (clock),
-    .addrA    (randomStall0_stall_rightBuffer0_enq_ptr_value),
-    .writeEnA (randomStall0_stall_rightBuffer0_do_enq),
+    .addrA    (randomStall0_stall_sinkBuffer0_enq_ptr_value),
+    .writeEnA (randomStall0_stall_sinkBuffer0_do_enq),
     .dataInA
-      ({randomStall0_stall_rightBuffer0_source_bits_skip,
-        randomStall0_stall_rightBuffer0_source_bits_data,
-        randomStall0_stall_rightBuffer0_source_bits_bad,
-        randomStall0_stall_rightBuffer0_source_bits_stallForever}),
-    .addrB    (randomStall0_stall_rightBuffer0_deq_ptr_value),
-    .dataOutB (_randomStall0_stall_rightBuffer0_ram_dataOutB)
+      ({randomStall0_stall_sinkBuffer0_source_bits_skip,
+        randomStall0_stall_sinkBuffer0_source_bits_data,
+        randomStall0_stall_sinkBuffer0_source_bits_bad,
+        randomStall0_stall_sinkBuffer0_source_bits_stallForever}),
+    .addrB    (randomStall0_stall_sinkBuffer0_deq_ptr_value),
+    .dataOutB (_randomStall0_stall_sinkBuffer0_ram_dataOutB)
   );
   MaxPeriodFibonacciLFSR randomStall1_rand_prng (
     .clock    (clock),
@@ -260,17 +297,18 @@ module Transducer_Tbtop(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(32)
-  ) randomStall1_stall_rightBuffer0_ram (
+  ) randomStall1_stall_sinkBuffer0_ram (
     .clock    (clock),
-    .addrA    (randomStall1_stall_rightBuffer0_enq_ptr_value),
-    .writeEnA (randomStall1_stall_rightBuffer0_do_enq),
-    .dataInA  (randomStall1_stall_rightBuffer0_source_bits),
-    .addrB    (randomStall1_stall_rightBuffer0_deq_ptr_value),
-    .dataOutB (randomStall1_stall_rightBuffer0_sink_bits)
+    .addrA    (randomStall1_stall_sinkBuffer0_enq_ptr_value),
+    .writeEnA (randomStall1_stall_sinkBuffer0_do_enq),
+    .dataInA  (randomStall1_stall_sinkBuffer0_source_bits),
+    .addrB    (randomStall1_stall_sinkBuffer0_deq_ptr_value),
+    .dataOutB (randomStall1_stall_sinkBuffer0_sink_bits)
   );
   assign source_ready =
-    _randomStall0_stall_interface_valid_T & randomStall0_stall_rightBuffer0_source_ready;
-  assign sink_bits = randomStall1_stall_rightBuffer0_sink_bits;
-  assign sink_valid = randomStall1_stall_rightBuffer0_sink_valid;
+    _randomStall0_stall_interface_valid_T
+    & randomStall0_stall_sinkBuffer0_interface_ready;
+  assign sink_bits = randomStall1_stall_sinkBuffer0_sink_bits;
+  assign sink_valid = randomStall1_stall_sinkBuffer0_sink_valid;
 endmodule
 

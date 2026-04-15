@@ -48,8 +48,8 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      val demuxInput = Wire(elastic.Interface(axi4.full.ReadAddressChannel(axiMasterCfg)))
-      val demuxSelect = Wire(elastic.Interface(genSelect))
+      val demuxInput = elastic.EWire(axi4.full.ReadAddressChannel(axiMasterCfg))
+      val demuxSelect = elastic.EWire(genSelect)
 
       new elastic.Fork(s_axi_.ar) {
         val sel = in.id.lsbN(wIdSel)
@@ -102,8 +102,8 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module {
     )
 
     def awLogic: Unit = {
-      val demuxInput = Wire(elastic.Interface(axi4.full.WriteAddressChannel(axiMasterCfg)))
-      val demuxSelect = Wire(elastic.Interface(genSelect))
+      val demuxInput = elastic.EWire(axi4.full.WriteAddressChannel(axiMasterCfg))
+      val demuxSelect = elastic.EWire(genSelect)
 
       new elastic.Fork(s_axi_.aw) {
         val sel = in.id.lsbN(wIdSel)

@@ -208,10 +208,10 @@ class Switch_Tbtop extends Module with chext.TestBenchTop {
     val data = UInt(32.W)
   }))
 
-  private val wire0 = Wire(new elastic.Interface(new Bundle {
+  private val wire0 = EWire(new Bundle {
     val data = UInt(32.W)
     val last = Bool()
-  }))
+  })
 
   private val switch0 = new Switch(source, wire0) {
     last { _.last }

@@ -62,9 +62,9 @@ abstract class Fold[Tin <: Data, Tout <: Data](
 
   protected final val gen = chiselTypeOf(sink.$bits)
 
-  protected final val sinkA = Wire(Interface(gen)) // newest input
-  protected final val sinkB = Wire(Interface(gen)) // accumulator
-  protected final val sourceResult = Wire(Interface(gen)) // fold result
+  protected final val sinkA = EWire(gen) // newest input
+  protected final val sinkB = EWire(gen) // accumulator
+  protected final val sourceResult = EWire(gen) // fold result
 
   type OperandFn = (Tin) => Tout
   type OperandExplicitFn = (Tin, Tout) => Unit
@@ -175,13 +175,13 @@ abstract class Fold[Tin <: Data, Tout <: Data](
         val zero = zeroFn_.map(_ => Bool())
       }
 
-      val stage0 = Wire(Interface(genStage0))
-      val stage0_init = Wire(Interface(gen))
-      val stage0_result = Wire(Interface(gen))
+      val stage0 = EWire(genStage0)
+      val stage0_init = EWire(gen)
+      val stage0_result = EWire(gen)
 
-      val stage1_opA = Wire(Interface(gen))
-      val stage1_opB = Wire(Interface(genStage1))
-      val stage1_result = Wire(Interface(gen))
+      val stage1_opA = EWire(gen)
+      val stage1_opB = EWire(genStage1)
+      val stage1_result = EWire(gen)
 
       prefix("stage0") {
         if (firstFn_.isEmpty) {
@@ -243,7 +243,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
               out.zero.get := in.zero.get
           }
 
-          val temp = Wire(Interface(gen))
+          val temp = EWire(gen)
 
           val mux0 = EMux(
             Seq(temp, stage0_init),
@@ -267,8 +267,8 @@ abstract class Fold[Tin <: Data, Tout <: Data](
 
         if (zeroFn_.nonEmpty) {
           val fork0 = new Fork(stage1_opB) {
-            val disposed = Wire(Interface(gen))
-            val temp = Wire(Interface(gen))
+            val disposed = EWire(gen)
+            val temp = EWire(gen)
 
             val demux0 = Demux(
               fork { in.operand },

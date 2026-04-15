@@ -63,27 +63,6 @@
   ],
   "wires" : [
     {
-      "path" : "/fork0_leftBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork0_leftBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork0_leftBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/fork0_result",
       "tpe" : "chext.elastic.Interface[fpe8m23]",
       "args" : {
@@ -98,21 +77,21 @@
       }
     },
     {
-      "path" : "/fork1_leftBuffer0_interface",
+      "path" : "/fork0_sourceBuffer0_interface",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fork1_leftBuffer0_sink",
+      "path" : "/fork0_sourceBuffer0_sink",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fork1_leftBuffer0_source",
+      "path" : "/fork0_sourceBuffer0_source",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
@@ -133,22 +112,22 @@
       }
     },
     {
-      "path" : "/fork2_leftBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
+      "path" : "/fork1_sourceBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fork2_leftBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
+      "path" : "/fork1_sourceBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fork2_leftBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
+      "path" : "/fork1_sourceBuffer0_source",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
@@ -168,21 +147,21 @@
       }
     },
     {
-      "path" : "/fork3_leftBuffer0_interface",
+      "path" : "/fork2_sourceBuffer0_interface",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fork3_leftBuffer0_sink",
+      "path" : "/fork2_sourceBuffer0_sink",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fork3_leftBuffer0_source",
+      "path" : "/fork2_sourceBuffer0_source",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
@@ -203,84 +182,105 @@
       }
     },
     {
-      "path" : "/transform0_rightBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform0_rightBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform0_rightBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform1_rightBuffer0_interface",
+      "path" : "/fork3_sourceBuffer0_interface",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform1_rightBuffer0_sink",
+      "path" : "/fork3_sourceBuffer0_sink",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform1_rightBuffer0_source",
+      "path" : "/fork3_sourceBuffer0_source",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform2_rightBuffer0_interface",
+      "path" : "/transform0_sinkBuffer0_interface",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform2_rightBuffer0_sink",
+      "path" : "/transform0_sinkBuffer0_sink",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform2_rightBuffer0_source",
+      "path" : "/transform0_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform3_rightBuffer0_interface",
+      "path" : "/transform1_sinkBuffer0_interface",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform3_rightBuffer0_sink",
+      "path" : "/transform1_sinkBuffer0_sink",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform3_rightBuffer0_source",
+      "path" : "/transform1_sinkBuffer0_source",
+      "tpe" : "chext.elastic.Interface[UInt<64>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/transform2_sinkBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/transform2_sinkBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/transform2_sinkBuffer0_source",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/transform3_sinkBuffer0_interface",
+      "tpe" : "chext.elastic.Interface[UInt<64>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/transform3_sinkBuffer0_sink",
+      "tpe" : "chext.elastic.Interface[UInt<64>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/transform3_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
@@ -485,13 +485,13 @@
   ],
   "components" : [
     {
-      "path" : "/transform0_rightBuffer0",
+      "path" : "/transform0_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform0_rightBuffer0_source",
+            "path" : "/transform0_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -500,7 +500,7 @@
         [
           "sink",
           {
-            "path" : "/transform0_rightBuffer0_sink",
+            "path" : "/transform0_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -511,13 +511,13 @@
       }
     },
     {
-      "path" : "/transform0_rightBuffer0_Unnamed0",
+      "path" : "/transform0_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform0_rightBuffer0_interface",
+            "path" : "/transform0_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -526,7 +526,7 @@
         [
           "sink",
           {
-            "path" : "/transform0_rightBuffer0_source",
+            "path" : "/transform0_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -537,13 +537,13 @@
       }
     },
     {
-      "path" : "/transform0_rightBuffer0_Unnamed1",
+      "path" : "/transform0_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform0_rightBuffer0_sink",
+            "path" : "/transform0_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -578,7 +578,7 @@
         [
           "sink",
           {
-            "path" : "/transform0_rightBuffer0_interface",
+            "path" : "/transform0_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -589,13 +589,13 @@
       }
     },
     {
-      "path" : "/transform1_rightBuffer0",
+      "path" : "/transform1_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform1_rightBuffer0_source",
+            "path" : "/transform1_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -604,7 +604,7 @@
         [
           "sink",
           {
-            "path" : "/transform1_rightBuffer0_sink",
+            "path" : "/transform1_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -615,13 +615,13 @@
       }
     },
     {
-      "path" : "/transform1_rightBuffer0_Unnamed0",
+      "path" : "/transform1_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform1_rightBuffer0_interface",
+            "path" : "/transform1_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -630,7 +630,7 @@
         [
           "sink",
           {
-            "path" : "/transform1_rightBuffer0_source",
+            "path" : "/transform1_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -641,13 +641,13 @@
       }
     },
     {
-      "path" : "/transform1_rightBuffer0_Unnamed1",
+      "path" : "/transform1_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform1_rightBuffer0_sink",
+            "path" : "/transform1_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -682,7 +682,7 @@
         [
           "sink",
           {
-            "path" : "/transform1_rightBuffer0_interface",
+            "path" : "/transform1_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -693,13 +693,13 @@
       }
     },
     {
-      "path" : "/transform2_rightBuffer0",
+      "path" : "/transform2_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform2_rightBuffer0_source",
+            "path" : "/transform2_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -708,7 +708,7 @@
         [
           "sink",
           {
-            "path" : "/transform2_rightBuffer0_sink",
+            "path" : "/transform2_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -719,13 +719,13 @@
       }
     },
     {
-      "path" : "/transform2_rightBuffer0_Unnamed0",
+      "path" : "/transform2_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform2_rightBuffer0_interface",
+            "path" : "/transform2_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -734,7 +734,7 @@
         [
           "sink",
           {
-            "path" : "/transform2_rightBuffer0_source",
+            "path" : "/transform2_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -745,13 +745,13 @@
       }
     },
     {
-      "path" : "/transform2_rightBuffer0_Unnamed1",
+      "path" : "/transform2_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform2_rightBuffer0_sink",
+            "path" : "/transform2_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -786,7 +786,7 @@
         [
           "sink",
           {
-            "path" : "/transform2_rightBuffer0_interface",
+            "path" : "/transform2_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -797,13 +797,13 @@
       }
     },
     {
-      "path" : "/transform3_rightBuffer0",
+      "path" : "/transform3_sinkBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform3_rightBuffer0_source",
+            "path" : "/transform3_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -812,7 +812,7 @@
         [
           "sink",
           {
-            "path" : "/transform3_rightBuffer0_sink",
+            "path" : "/transform3_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -823,13 +823,13 @@
       }
     },
     {
-      "path" : "/transform3_rightBuffer0_Unnamed0",
+      "path" : "/transform3_sinkBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform3_rightBuffer0_interface",
+            "path" : "/transform3_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -838,7 +838,7 @@
         [
           "sink",
           {
-            "path" : "/transform3_rightBuffer0_source",
+            "path" : "/transform3_sinkBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -849,13 +849,13 @@
       }
     },
     {
-      "path" : "/transform3_rightBuffer0_Unnamed1",
+      "path" : "/transform3_sinkBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform3_rightBuffer0_sink",
+            "path" : "/transform3_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -890,7 +890,7 @@
         [
           "sink",
           {
-            "path" : "/transform3_rightBuffer0_interface",
+            "path" : "/transform3_sinkBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -901,13 +901,13 @@
       }
     },
     {
-      "path" : "/fork0_leftBuffer0",
+      "path" : "/fork0_sourceBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fork0_leftBuffer0_source",
+            "path" : "/fork0_sourceBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -916,7 +916,7 @@
         [
           "sink",
           {
-            "path" : "/fork0_leftBuffer0_sink",
+            "path" : "/fork0_sourceBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -927,7 +927,7 @@
       }
     },
     {
-      "path" : "/fork0_leftBuffer0_Unnamed0",
+      "path" : "/fork0_sourceBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -942,7 +942,7 @@
         [
           "sink",
           {
-            "path" : "/fork0_leftBuffer0_source",
+            "path" : "/fork0_sourceBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -953,13 +953,13 @@
       }
     },
     {
-      "path" : "/fork0_leftBuffer0_Unnamed1",
+      "path" : "/fork0_sourceBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fork0_leftBuffer0_sink",
+            "path" : "/fork0_sourceBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -968,7 +968,7 @@
         [
           "sink",
           {
-            "path" : "/fork0_leftBuffer0_interface",
+            "path" : "/fork0_sourceBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -985,7 +985,7 @@
         [
           "source",
           {
-            "path" : "/fork0_leftBuffer0_interface",
+            "path" : "/fork0_sourceBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -1064,13 +1064,13 @@
       }
     },
     {
-      "path" : "/fork1_leftBuffer0",
+      "path" : "/fork1_sourceBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fork1_leftBuffer0_source",
+            "path" : "/fork1_sourceBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -1079,7 +1079,7 @@
         [
           "sink",
           {
-            "path" : "/fork1_leftBuffer0_sink",
+            "path" : "/fork1_sourceBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -1090,7 +1090,7 @@
       }
     },
     {
-      "path" : "/fork1_leftBuffer0_Unnamed0",
+      "path" : "/fork1_sourceBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1105,7 +1105,7 @@
         [
           "sink",
           {
-            "path" : "/fork1_leftBuffer0_source",
+            "path" : "/fork1_sourceBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -1116,13 +1116,13 @@
       }
     },
     {
-      "path" : "/fork1_leftBuffer0_Unnamed1",
+      "path" : "/fork1_sourceBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fork1_leftBuffer0_sink",
+            "path" : "/fork1_sourceBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -1131,7 +1131,7 @@
         [
           "sink",
           {
-            "path" : "/fork1_leftBuffer0_interface",
+            "path" : "/fork1_sourceBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -1148,7 +1148,7 @@
         [
           "source",
           {
-            "path" : "/fork1_leftBuffer0_interface",
+            "path" : "/fork1_sourceBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -1227,13 +1227,13 @@
       }
     },
     {
-      "path" : "/fork2_leftBuffer0",
+      "path" : "/fork2_sourceBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fork2_leftBuffer0_source",
+            "path" : "/fork2_sourceBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -1242,7 +1242,7 @@
         [
           "sink",
           {
-            "path" : "/fork2_leftBuffer0_sink",
+            "path" : "/fork2_sourceBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -1253,7 +1253,7 @@
       }
     },
     {
-      "path" : "/fork2_leftBuffer0_Unnamed0",
+      "path" : "/fork2_sourceBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1268,7 +1268,7 @@
         [
           "sink",
           {
-            "path" : "/fork2_leftBuffer0_source",
+            "path" : "/fork2_sourceBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -1279,13 +1279,13 @@
       }
     },
     {
-      "path" : "/fork2_leftBuffer0_Unnamed1",
+      "path" : "/fork2_sourceBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fork2_leftBuffer0_sink",
+            "path" : "/fork2_sourceBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -1294,7 +1294,7 @@
         [
           "sink",
           {
-            "path" : "/fork2_leftBuffer0_interface",
+            "path" : "/fork2_sourceBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -1311,7 +1311,7 @@
         [
           "source",
           {
-            "path" : "/fork2_leftBuffer0_interface",
+            "path" : "/fork2_sourceBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -1390,13 +1390,13 @@
       }
     },
     {
-      "path" : "/fork3_leftBuffer0",
+      "path" : "/fork3_sourceBuffer0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fork3_leftBuffer0_source",
+            "path" : "/fork3_sourceBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -1405,7 +1405,7 @@
         [
           "sink",
           {
-            "path" : "/fork3_leftBuffer0_sink",
+            "path" : "/fork3_sourceBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -1416,7 +1416,7 @@
       }
     },
     {
-      "path" : "/fork3_leftBuffer0_Unnamed0",
+      "path" : "/fork3_sourceBuffer0_Unnamed0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1431,7 +1431,7 @@
         [
           "sink",
           {
-            "path" : "/fork3_leftBuffer0_source",
+            "path" : "/fork3_sourceBuffer0_source",
             "desc" : "Wire"
           }
         ]
@@ -1442,13 +1442,13 @@
       }
     },
     {
-      "path" : "/fork3_leftBuffer0_Unnamed1",
+      "path" : "/fork3_sourceBuffer0_Unnamed1",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fork3_leftBuffer0_sink",
+            "path" : "/fork3_sourceBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -1457,7 +1457,7 @@
         [
           "sink",
           {
-            "path" : "/fork3_leftBuffer0_interface",
+            "path" : "/fork3_sourceBuffer0_interface",
             "desc" : "Wire"
           }
         ]
@@ -1474,7 +1474,7 @@
         [
           "source",
           {
-            "path" : "/fork3_leftBuffer0_interface",
+            "path" : "/fork3_sourceBuffer0_interface",
             "desc" : "Wire"
           }
         ]

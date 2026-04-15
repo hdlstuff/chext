@@ -2900,208 +2900,284 @@ module Elastic_Tbtop(
   input         fp64_multiplyOut_ready
 );
 
-  wire [63:0] transform3_rightBuffer0_sink_bits;
-  wire [31:0] transform2_rightBuffer0_sink_bits;
-  wire [63:0] transform1_rightBuffer0_sink_bits;
-  wire [31:0] transform0_rightBuffer0_sink_bits;
-  wire        _fp64_multiply_sourceInA_ready;
-  wire        _fp64_multiply_sourceInB_ready;
+  wire [63:0] transform3_sinkBuffer0_sink_bits;
+  wire [31:0] transform2_sinkBuffer0_sink_bits;
+  wire [63:0] transform1_sinkBuffer0_sink_bits;
+  wire [31:0] transform0_sinkBuffer0_sink_bits;
+  wire [63:0] fork3_sourceBuffer0_sink_bits;
+  wire        fork3_sourceBuffer0_sink_valid;
+  wire        fork3_sourceBuffer0_interface_ready;
+  wire [63:0] fork2_sourceBuffer0_sink_bits;
+  wire        fork2_sourceBuffer0_sink_valid;
+  wire        fork2_sourceBuffer0_interface_ready;
+  wire [31:0] fork1_sourceBuffer0_sink_bits;
+  wire        fork1_sourceBuffer0_sink_valid;
+  wire        fork1_sourceBuffer0_interface_ready;
+  wire [31:0] fork0_sourceBuffer0_sink_bits;
+  wire        fork0_sourceBuffer0_sink_valid;
+  wire        fork0_sourceBuffer0_interface_ready;
+  wire        transform3_sinkBuffer0_source_ready;
+  wire        transform3_sinkBuffer0_interface_valid;
+  wire [63:0] transform3_sinkBuffer0_interface_bits;
+  wire        transform2_sinkBuffer0_source_ready;
+  wire        transform2_sinkBuffer0_interface_valid;
+  wire [31:0] transform2_sinkBuffer0_interface_bits;
+  wire        transform1_sinkBuffer0_source_ready;
+  wire        transform1_sinkBuffer0_interface_valid;
+  wire [63:0] transform1_sinkBuffer0_interface_bits;
+  wire        transform0_sinkBuffer0_source_ready;
+  wire        transform0_sinkBuffer0_interface_valid;
+  wire [31:0] transform0_sinkBuffer0_interface_bits;
   wire        _fp64_multiply_sinkOut_bits_sign;
   wire [10:0] _fp64_multiply_sinkOut_bits_exponent;
   wire [51:0] _fp64_multiply_sinkOut_bits_mantissa;
-  wire        _fp32_multiply_sourceInA_ready;
-  wire        _fp32_multiply_sourceInB_ready;
   wire        _fp32_multiply_sinkOut_bits_sign;
   wire [7:0]  _fp32_multiply_sinkOut_bits_exponent;
   wire [22:0] _fp32_multiply_sinkOut_bits_mantissa;
-  wire        _fp64_add_sourceInA_ready;
-  wire        _fp64_add_sourceInB_ready;
   wire        _fp64_add_sinkOut_bits_sign;
   wire [10:0] _fp64_add_sinkOut_bits_exponent;
   wire [51:0] _fp64_add_sinkOut_bits_mantissa;
-  wire        _fp32_add_sourceInA_ready;
-  wire        _fp32_add_sourceInB_ready;
   wire        _fp32_add_sinkOut_bits_sign;
   wire [7:0]  _fp32_add_sinkOut_bits_exponent;
   wire [22:0] _fp32_add_sinkOut_bits_mantissa;
-  wire        transform0_rightBuffer0_sink_ready = fp32_addOut_ready;
-  wire        transform1_rightBuffer0_sink_ready = fp64_addOut_ready;
-  wire        transform2_rightBuffer0_sink_ready = fp32_multiplyOut_ready;
-  wire        transform3_rightBuffer0_sink_ready = fp64_multiplyOut_ready;
-  wire [31:0] fork0_leftBuffer0_source_bits = fp32_inA_bits;
-  wire        fork0_leftBuffer0_source_valid = fp32_inA_valid;
-  wire [31:0] fork1_leftBuffer0_source_bits = fp32_inB_bits;
-  wire        fork1_leftBuffer0_source_valid = fp32_inB_valid;
-  wire [63:0] fork2_leftBuffer0_source_bits = fp64_inA_bits;
-  wire        fork2_leftBuffer0_source_valid = fp64_inA_valid;
-  wire [63:0] fork3_leftBuffer0_source_bits = fp64_inB_bits;
-  wire        fork3_leftBuffer0_source_valid = fp64_inB_valid;
-  reg  [4:0]  transform0_rightBuffer0_enq_ptr_value;
-  reg  [4:0]  transform0_rightBuffer0_deq_ptr_value;
-  reg         transform0_rightBuffer0_maybe_full;
-  wire        transform0_rightBuffer0_ptr_match =
-    transform0_rightBuffer0_enq_ptr_value == transform0_rightBuffer0_deq_ptr_value;
-  wire        transform0_rightBuffer0_source_valid;
-  wire        transform0_rightBuffer0_source_ready;
-  wire        transform0_rightBuffer0_do_enq =
-    transform0_rightBuffer0_source_ready & transform0_rightBuffer0_source_valid;
-  wire        transform0_rightBuffer0_sink_valid =
-    ~(transform0_rightBuffer0_ptr_match & ~transform0_rightBuffer0_maybe_full);
-  assign transform0_rightBuffer0_source_ready =
-    ~(transform0_rightBuffer0_ptr_match & transform0_rightBuffer0_maybe_full);
-  wire [31:0] transform0_rightBuffer0_source_bits =
+  wire        transform0_sinkBuffer0_sink_ready = fp32_addOut_ready;
+  wire        transform1_sinkBuffer0_sink_ready = fp64_addOut_ready;
+  wire        transform2_sinkBuffer0_sink_ready = fp32_multiplyOut_ready;
+  wire        transform3_sinkBuffer0_sink_ready = fp64_multiplyOut_ready;
+  wire [31:0] fork0_sourceBuffer0_source_bits = fp32_inA_bits;
+  wire        fork0_sourceBuffer0_source_valid = fp32_inA_valid;
+  wire [31:0] fork1_sourceBuffer0_source_bits = fp32_inB_bits;
+  wire        fork1_sourceBuffer0_source_valid = fp32_inB_valid;
+  wire [63:0] fork2_sourceBuffer0_source_bits = fp64_inA_bits;
+  wire        fork2_sourceBuffer0_source_valid = fp64_inA_valid;
+  wire [63:0] fork3_sourceBuffer0_source_bits = fp64_inB_bits;
+  wire        fork3_sourceBuffer0_source_valid = fp64_inB_valid;
+  wire [31:0] transform0_sinkBuffer0_source_bits = transform0_sinkBuffer0_interface_bits;
+  wire        transform0_sinkBuffer0_source_valid =
+    transform0_sinkBuffer0_interface_valid;
+  wire        transform0_sinkBuffer0_interface_ready =
+    transform0_sinkBuffer0_source_ready;
+  reg  [4:0]  transform0_sinkBuffer0_enq_ptr_value;
+  reg  [4:0]  transform0_sinkBuffer0_deq_ptr_value;
+  reg         transform0_sinkBuffer0_maybe_full;
+  wire        transform0_sinkBuffer0_ptr_match =
+    transform0_sinkBuffer0_enq_ptr_value == transform0_sinkBuffer0_deq_ptr_value;
+  wire        transform0_sinkBuffer0_do_enq =
+    transform0_sinkBuffer0_source_ready & transform0_sinkBuffer0_source_valid;
+  wire        transform0_sinkBuffer0_sink_valid =
+    ~(transform0_sinkBuffer0_ptr_match & ~transform0_sinkBuffer0_maybe_full);
+  assign transform0_sinkBuffer0_source_ready =
+    ~(transform0_sinkBuffer0_ptr_match & transform0_sinkBuffer0_maybe_full);
+  assign transform0_sinkBuffer0_interface_bits =
     {_fp32_add_sinkOut_bits_sign,
      _fp32_add_sinkOut_bits_exponent,
      _fp32_add_sinkOut_bits_mantissa};
-  reg  [4:0]  transform1_rightBuffer0_enq_ptr_value;
-  reg  [4:0]  transform1_rightBuffer0_deq_ptr_value;
-  reg         transform1_rightBuffer0_maybe_full;
-  wire        transform1_rightBuffer0_ptr_match =
-    transform1_rightBuffer0_enq_ptr_value == transform1_rightBuffer0_deq_ptr_value;
-  wire        transform1_rightBuffer0_source_valid;
-  wire        transform1_rightBuffer0_source_ready;
-  wire        transform1_rightBuffer0_do_enq =
-    transform1_rightBuffer0_source_ready & transform1_rightBuffer0_source_valid;
-  wire        transform1_rightBuffer0_sink_valid =
-    ~(transform1_rightBuffer0_ptr_match & ~transform1_rightBuffer0_maybe_full);
-  assign transform1_rightBuffer0_source_ready =
-    ~(transform1_rightBuffer0_ptr_match & transform1_rightBuffer0_maybe_full);
-  wire [63:0] transform1_rightBuffer0_source_bits =
+  wire [63:0] transform1_sinkBuffer0_source_bits = transform1_sinkBuffer0_interface_bits;
+  wire        transform1_sinkBuffer0_source_valid =
+    transform1_sinkBuffer0_interface_valid;
+  wire        transform1_sinkBuffer0_interface_ready =
+    transform1_sinkBuffer0_source_ready;
+  reg  [4:0]  transform1_sinkBuffer0_enq_ptr_value;
+  reg  [4:0]  transform1_sinkBuffer0_deq_ptr_value;
+  reg         transform1_sinkBuffer0_maybe_full;
+  wire        transform1_sinkBuffer0_ptr_match =
+    transform1_sinkBuffer0_enq_ptr_value == transform1_sinkBuffer0_deq_ptr_value;
+  wire        transform1_sinkBuffer0_do_enq =
+    transform1_sinkBuffer0_source_ready & transform1_sinkBuffer0_source_valid;
+  wire        transform1_sinkBuffer0_sink_valid =
+    ~(transform1_sinkBuffer0_ptr_match & ~transform1_sinkBuffer0_maybe_full);
+  assign transform1_sinkBuffer0_source_ready =
+    ~(transform1_sinkBuffer0_ptr_match & transform1_sinkBuffer0_maybe_full);
+  assign transform1_sinkBuffer0_interface_bits =
     {_fp64_add_sinkOut_bits_sign,
      _fp64_add_sinkOut_bits_exponent,
      _fp64_add_sinkOut_bits_mantissa};
-  reg  [4:0]  transform2_rightBuffer0_enq_ptr_value;
-  reg  [4:0]  transform2_rightBuffer0_deq_ptr_value;
-  reg         transform2_rightBuffer0_maybe_full;
-  wire        transform2_rightBuffer0_ptr_match =
-    transform2_rightBuffer0_enq_ptr_value == transform2_rightBuffer0_deq_ptr_value;
-  wire        transform2_rightBuffer0_source_valid;
-  wire        transform2_rightBuffer0_source_ready;
-  wire        transform2_rightBuffer0_do_enq =
-    transform2_rightBuffer0_source_ready & transform2_rightBuffer0_source_valid;
-  wire        transform2_rightBuffer0_sink_valid =
-    ~(transform2_rightBuffer0_ptr_match & ~transform2_rightBuffer0_maybe_full);
-  assign transform2_rightBuffer0_source_ready =
-    ~(transform2_rightBuffer0_ptr_match & transform2_rightBuffer0_maybe_full);
-  wire [31:0] transform2_rightBuffer0_source_bits =
+  wire [31:0] transform2_sinkBuffer0_source_bits = transform2_sinkBuffer0_interface_bits;
+  wire        transform2_sinkBuffer0_source_valid =
+    transform2_sinkBuffer0_interface_valid;
+  wire        transform2_sinkBuffer0_interface_ready =
+    transform2_sinkBuffer0_source_ready;
+  reg  [4:0]  transform2_sinkBuffer0_enq_ptr_value;
+  reg  [4:0]  transform2_sinkBuffer0_deq_ptr_value;
+  reg         transform2_sinkBuffer0_maybe_full;
+  wire        transform2_sinkBuffer0_ptr_match =
+    transform2_sinkBuffer0_enq_ptr_value == transform2_sinkBuffer0_deq_ptr_value;
+  wire        transform2_sinkBuffer0_do_enq =
+    transform2_sinkBuffer0_source_ready & transform2_sinkBuffer0_source_valid;
+  wire        transform2_sinkBuffer0_sink_valid =
+    ~(transform2_sinkBuffer0_ptr_match & ~transform2_sinkBuffer0_maybe_full);
+  assign transform2_sinkBuffer0_source_ready =
+    ~(transform2_sinkBuffer0_ptr_match & transform2_sinkBuffer0_maybe_full);
+  assign transform2_sinkBuffer0_interface_bits =
     {_fp32_multiply_sinkOut_bits_sign,
      _fp32_multiply_sinkOut_bits_exponent,
      _fp32_multiply_sinkOut_bits_mantissa};
-  reg  [4:0]  transform3_rightBuffer0_enq_ptr_value;
-  reg  [4:0]  transform3_rightBuffer0_deq_ptr_value;
-  reg         transform3_rightBuffer0_maybe_full;
-  wire        transform3_rightBuffer0_ptr_match =
-    transform3_rightBuffer0_enq_ptr_value == transform3_rightBuffer0_deq_ptr_value;
-  wire        transform3_rightBuffer0_source_valid;
-  wire        transform3_rightBuffer0_source_ready;
-  wire        transform3_rightBuffer0_do_enq =
-    transform3_rightBuffer0_source_ready & transform3_rightBuffer0_source_valid;
-  wire        transform3_rightBuffer0_sink_valid =
-    ~(transform3_rightBuffer0_ptr_match & ~transform3_rightBuffer0_maybe_full);
-  assign transform3_rightBuffer0_source_ready =
-    ~(transform3_rightBuffer0_ptr_match & transform3_rightBuffer0_maybe_full);
-  wire [63:0] transform3_rightBuffer0_source_bits =
+  wire [63:0] transform3_sinkBuffer0_source_bits = transform3_sinkBuffer0_interface_bits;
+  wire        transform3_sinkBuffer0_source_valid =
+    transform3_sinkBuffer0_interface_valid;
+  wire        transform3_sinkBuffer0_interface_ready =
+    transform3_sinkBuffer0_source_ready;
+  reg  [4:0]  transform3_sinkBuffer0_enq_ptr_value;
+  reg  [4:0]  transform3_sinkBuffer0_deq_ptr_value;
+  reg         transform3_sinkBuffer0_maybe_full;
+  wire        transform3_sinkBuffer0_ptr_match =
+    transform3_sinkBuffer0_enq_ptr_value == transform3_sinkBuffer0_deq_ptr_value;
+  wire        transform3_sinkBuffer0_do_enq =
+    transform3_sinkBuffer0_source_ready & transform3_sinkBuffer0_source_valid;
+  wire        transform3_sinkBuffer0_sink_valid =
+    ~(transform3_sinkBuffer0_ptr_match & ~transform3_sinkBuffer0_maybe_full);
+  assign transform3_sinkBuffer0_source_ready =
+    ~(transform3_sinkBuffer0_ptr_match & transform3_sinkBuffer0_maybe_full);
+  assign transform3_sinkBuffer0_interface_bits =
     {_fp64_multiply_sinkOut_bits_sign,
      _fp64_multiply_sinkOut_bits_exponent,
      _fp64_multiply_sinkOut_bits_mantissa};
-  reg  [4:0]  fork0_leftBuffer0_enq_ptr_value;
-  reg  [4:0]  fork0_leftBuffer0_deq_ptr_value;
-  reg         fork0_leftBuffer0_maybe_full;
-  wire        fork0_leftBuffer0_ptr_match =
-    fork0_leftBuffer0_enq_ptr_value == fork0_leftBuffer0_deq_ptr_value;
-  wire        fork0_leftBuffer0_source_ready;
-  wire        fork0_leftBuffer0_do_enq =
-    fork0_leftBuffer0_source_ready & fork0_leftBuffer0_source_valid;
-  wire        fork0_leftBuffer0_sink_valid =
-    ~(fork0_leftBuffer0_ptr_match & ~fork0_leftBuffer0_maybe_full);
-  assign fork0_leftBuffer0_source_ready =
-    ~(fork0_leftBuffer0_ptr_match & fork0_leftBuffer0_maybe_full);
-  wire [31:0] fork0_leftBuffer0_sink_bits;
-  reg  [4:0]  fork1_leftBuffer0_enq_ptr_value;
-  reg  [4:0]  fork1_leftBuffer0_deq_ptr_value;
-  reg         fork1_leftBuffer0_maybe_full;
-  wire        fork1_leftBuffer0_ptr_match =
-    fork1_leftBuffer0_enq_ptr_value == fork1_leftBuffer0_deq_ptr_value;
-  wire        fork1_leftBuffer0_source_ready;
-  wire        fork1_leftBuffer0_do_enq =
-    fork1_leftBuffer0_source_ready & fork1_leftBuffer0_source_valid;
-  wire        fork1_leftBuffer0_sink_valid =
-    ~(fork1_leftBuffer0_ptr_match & ~fork1_leftBuffer0_maybe_full);
-  assign fork1_leftBuffer0_source_ready =
-    ~(fork1_leftBuffer0_ptr_match & fork1_leftBuffer0_maybe_full);
-  wire [31:0] fork1_leftBuffer0_sink_bits;
-  reg  [4:0]  fork2_leftBuffer0_enq_ptr_value;
-  reg  [4:0]  fork2_leftBuffer0_deq_ptr_value;
-  reg         fork2_leftBuffer0_maybe_full;
-  wire        fork2_leftBuffer0_ptr_match =
-    fork2_leftBuffer0_enq_ptr_value == fork2_leftBuffer0_deq_ptr_value;
-  wire        fork2_leftBuffer0_source_ready;
-  wire        fork2_leftBuffer0_do_enq =
-    fork2_leftBuffer0_source_ready & fork2_leftBuffer0_source_valid;
-  wire        fork2_leftBuffer0_sink_valid =
-    ~(fork2_leftBuffer0_ptr_match & ~fork2_leftBuffer0_maybe_full);
-  assign fork2_leftBuffer0_source_ready =
-    ~(fork2_leftBuffer0_ptr_match & fork2_leftBuffer0_maybe_full);
-  wire [63:0] fork2_leftBuffer0_sink_bits;
-  reg  [4:0]  fork3_leftBuffer0_enq_ptr_value;
-  reg  [4:0]  fork3_leftBuffer0_deq_ptr_value;
-  reg         fork3_leftBuffer0_maybe_full;
-  wire        fork3_leftBuffer0_ptr_match =
-    fork3_leftBuffer0_enq_ptr_value == fork3_leftBuffer0_deq_ptr_value;
-  wire        fork3_leftBuffer0_source_ready;
-  wire        fork3_leftBuffer0_do_enq =
-    fork3_leftBuffer0_source_ready & fork3_leftBuffer0_source_valid;
-  wire        fork3_leftBuffer0_sink_valid =
-    ~(fork3_leftBuffer0_ptr_match & ~fork3_leftBuffer0_maybe_full);
-  assign fork3_leftBuffer0_source_ready =
-    ~(fork3_leftBuffer0_ptr_match & fork3_leftBuffer0_maybe_full);
-  wire [63:0] fork3_leftBuffer0_sink_bits;
+  wire        fork0_sourceBuffer0_sink_ready = fork0_sourceBuffer0_interface_ready;
+  wire        fork0_sourceBuffer0_interface_valid = fork0_sourceBuffer0_sink_valid;
+  reg  [4:0]  fork0_sourceBuffer0_enq_ptr_value;
+  reg  [4:0]  fork0_sourceBuffer0_deq_ptr_value;
+  reg         fork0_sourceBuffer0_maybe_full;
+  wire        fork0_sourceBuffer0_ptr_match =
+    fork0_sourceBuffer0_enq_ptr_value == fork0_sourceBuffer0_deq_ptr_value;
+  wire        fork0_sourceBuffer0_source_ready;
+  wire        fork0_sourceBuffer0_do_enq =
+    fork0_sourceBuffer0_source_ready & fork0_sourceBuffer0_source_valid;
+  assign fork0_sourceBuffer0_sink_valid =
+    ~(fork0_sourceBuffer0_ptr_match & ~fork0_sourceBuffer0_maybe_full);
+  assign fork0_sourceBuffer0_source_ready =
+    ~(fork0_sourceBuffer0_ptr_match & fork0_sourceBuffer0_maybe_full);
+  wire [31:0] fork0_sourceBuffer0_interface_bits = fork0_sourceBuffer0_sink_bits;
+  wire [22:0] fork0_result_bits_mantissa = fork0_sourceBuffer0_interface_bits[22:0];
+  wire [22:0] fork0_result_1_bits_mantissa = fork0_sourceBuffer0_interface_bits[22:0];
+  wire [7:0]  fork0_result_bits_exponent = fork0_sourceBuffer0_interface_bits[30:23];
+  wire [7:0]  fork0_result_1_bits_exponent = fork0_sourceBuffer0_interface_bits[30:23];
+  wire        fork0_result_bits_sign = fork0_sourceBuffer0_interface_bits[31];
+  wire        fork0_result_1_bits_sign = fork0_sourceBuffer0_interface_bits[31];
+  wire        fork1_sourceBuffer0_sink_ready = fork1_sourceBuffer0_interface_ready;
+  wire        fork1_sourceBuffer0_interface_valid = fork1_sourceBuffer0_sink_valid;
+  reg  [4:0]  fork1_sourceBuffer0_enq_ptr_value;
+  reg  [4:0]  fork1_sourceBuffer0_deq_ptr_value;
+  reg         fork1_sourceBuffer0_maybe_full;
+  wire        fork1_sourceBuffer0_ptr_match =
+    fork1_sourceBuffer0_enq_ptr_value == fork1_sourceBuffer0_deq_ptr_value;
+  wire        fork1_sourceBuffer0_source_ready;
+  wire        fork1_sourceBuffer0_do_enq =
+    fork1_sourceBuffer0_source_ready & fork1_sourceBuffer0_source_valid;
+  assign fork1_sourceBuffer0_sink_valid =
+    ~(fork1_sourceBuffer0_ptr_match & ~fork1_sourceBuffer0_maybe_full);
+  assign fork1_sourceBuffer0_source_ready =
+    ~(fork1_sourceBuffer0_ptr_match & fork1_sourceBuffer0_maybe_full);
+  wire [31:0] fork1_sourceBuffer0_interface_bits = fork1_sourceBuffer0_sink_bits;
+  wire [22:0] fork1_result_bits_mantissa = fork1_sourceBuffer0_interface_bits[22:0];
+  wire [22:0] fork1_result_1_bits_mantissa = fork1_sourceBuffer0_interface_bits[22:0];
+  wire [7:0]  fork1_result_bits_exponent = fork1_sourceBuffer0_interface_bits[30:23];
+  wire [7:0]  fork1_result_1_bits_exponent = fork1_sourceBuffer0_interface_bits[30:23];
+  wire        fork1_result_bits_sign = fork1_sourceBuffer0_interface_bits[31];
+  wire        fork1_result_1_bits_sign = fork1_sourceBuffer0_interface_bits[31];
+  wire        fork2_sourceBuffer0_sink_ready = fork2_sourceBuffer0_interface_ready;
+  wire        fork2_sourceBuffer0_interface_valid = fork2_sourceBuffer0_sink_valid;
+  reg  [4:0]  fork2_sourceBuffer0_enq_ptr_value;
+  reg  [4:0]  fork2_sourceBuffer0_deq_ptr_value;
+  reg         fork2_sourceBuffer0_maybe_full;
+  wire        fork2_sourceBuffer0_ptr_match =
+    fork2_sourceBuffer0_enq_ptr_value == fork2_sourceBuffer0_deq_ptr_value;
+  wire        fork2_sourceBuffer0_source_ready;
+  wire        fork2_sourceBuffer0_do_enq =
+    fork2_sourceBuffer0_source_ready & fork2_sourceBuffer0_source_valid;
+  assign fork2_sourceBuffer0_sink_valid =
+    ~(fork2_sourceBuffer0_ptr_match & ~fork2_sourceBuffer0_maybe_full);
+  assign fork2_sourceBuffer0_source_ready =
+    ~(fork2_sourceBuffer0_ptr_match & fork2_sourceBuffer0_maybe_full);
+  wire [63:0] fork2_sourceBuffer0_interface_bits = fork2_sourceBuffer0_sink_bits;
+  wire [51:0] fork2_result_bits_mantissa = fork2_sourceBuffer0_interface_bits[51:0];
+  wire [51:0] fork2_result_1_bits_mantissa = fork2_sourceBuffer0_interface_bits[51:0];
+  wire [10:0] fork2_result_bits_exponent = fork2_sourceBuffer0_interface_bits[62:52];
+  wire [10:0] fork2_result_1_bits_exponent = fork2_sourceBuffer0_interface_bits[62:52];
+  wire        fork2_result_bits_sign = fork2_sourceBuffer0_interface_bits[63];
+  wire        fork2_result_1_bits_sign = fork2_sourceBuffer0_interface_bits[63];
+  wire        fork3_sourceBuffer0_sink_ready = fork3_sourceBuffer0_interface_ready;
+  wire        fork3_sourceBuffer0_interface_valid = fork3_sourceBuffer0_sink_valid;
+  reg  [4:0]  fork3_sourceBuffer0_enq_ptr_value;
+  reg  [4:0]  fork3_sourceBuffer0_deq_ptr_value;
+  reg         fork3_sourceBuffer0_maybe_full;
+  wire        fork3_sourceBuffer0_ptr_match =
+    fork3_sourceBuffer0_enq_ptr_value == fork3_sourceBuffer0_deq_ptr_value;
+  wire        fork3_sourceBuffer0_source_ready;
+  wire        fork3_sourceBuffer0_do_enq =
+    fork3_sourceBuffer0_source_ready & fork3_sourceBuffer0_source_valid;
+  assign fork3_sourceBuffer0_sink_valid =
+    ~(fork3_sourceBuffer0_ptr_match & ~fork3_sourceBuffer0_maybe_full);
+  assign fork3_sourceBuffer0_source_ready =
+    ~(fork3_sourceBuffer0_ptr_match & fork3_sourceBuffer0_maybe_full);
+  wire [63:0] fork3_sourceBuffer0_interface_bits = fork3_sourceBuffer0_sink_bits;
+  wire [51:0] fork3_result_bits_mantissa = fork3_sourceBuffer0_interface_bits[51:0];
+  wire [51:0] fork3_result_1_bits_mantissa = fork3_sourceBuffer0_interface_bits[51:0];
+  wire [10:0] fork3_result_bits_exponent = fork3_sourceBuffer0_interface_bits[62:52];
+  wire [10:0] fork3_result_1_bits_exponent = fork3_sourceBuffer0_interface_bits[62:52];
+  wire        fork3_result_bits_sign = fork3_sourceBuffer0_interface_bits[63];
+  wire        fork3_result_1_bits_sign = fork3_sourceBuffer0_interface_bits[63];
   reg         fork3_regs_0;
   reg         fork3_regs_1;
-  wire        fork3_ready_qual1_0 = _fp64_add_sourceInB_ready | fork3_regs_0;
-  wire        fork3_ready_qual1_1 = _fp64_multiply_sourceInB_ready | fork3_regs_1;
-  wire        fork3_leftBuffer0_sink_ready = fork3_ready_qual1_0 & fork3_ready_qual1_1;
+  wire        fork3_result_ready;
+  wire        fork3_ready_qual1_0 = fork3_result_ready | fork3_regs_0;
+  wire        fork3_result_1_ready;
+  wire        fork3_ready_qual1_1 = fork3_result_1_ready | fork3_regs_1;
+  assign fork3_sourceBuffer0_interface_ready = fork3_ready_qual1_0 & fork3_ready_qual1_1;
+  wire        fork3_result_valid = fork3_sourceBuffer0_interface_valid & ~fork3_regs_0;
+  wire        fork3_result_1_valid = fork3_sourceBuffer0_interface_valid & ~fork3_regs_1;
   reg         fork1_regs_0;
   reg         fork1_regs_1;
-  wire        fork1_ready_qual1_0 = _fp32_add_sourceInB_ready | fork1_regs_0;
-  wire        fork1_ready_qual1_1 = _fp32_multiply_sourceInB_ready | fork1_regs_1;
-  wire        fork1_leftBuffer0_sink_ready = fork1_ready_qual1_0 & fork1_ready_qual1_1;
+  wire        fork1_result_ready;
+  wire        fork1_ready_qual1_0 = fork1_result_ready | fork1_regs_0;
+  wire        fork1_result_1_ready;
+  wire        fork1_ready_qual1_1 = fork1_result_1_ready | fork1_regs_1;
+  assign fork1_sourceBuffer0_interface_ready = fork1_ready_qual1_0 & fork1_ready_qual1_1;
+  wire        fork1_result_valid = fork1_sourceBuffer0_interface_valid & ~fork1_regs_0;
+  wire        fork1_result_1_valid = fork1_sourceBuffer0_interface_valid & ~fork1_regs_1;
   reg         fork0_regs_0;
   reg         fork0_regs_1;
-  wire        fork0_ready_qual1_0 = _fp32_add_sourceInA_ready | fork0_regs_0;
-  wire        fork0_ready_qual1_1 = _fp32_multiply_sourceInA_ready | fork0_regs_1;
-  wire        fork0_leftBuffer0_sink_ready = fork0_ready_qual1_0 & fork0_ready_qual1_1;
+  wire        fork0_result_ready;
+  wire        fork0_ready_qual1_0 = fork0_result_ready | fork0_regs_0;
+  wire        fork0_result_1_ready;
+  wire        fork0_ready_qual1_1 = fork0_result_1_ready | fork0_regs_1;
+  assign fork0_sourceBuffer0_interface_ready = fork0_ready_qual1_0 & fork0_ready_qual1_1;
+  wire        fork0_result_valid = fork0_sourceBuffer0_interface_valid & ~fork0_regs_0;
+  wire        fork0_result_1_valid = fork0_sourceBuffer0_interface_valid & ~fork0_regs_1;
   reg         fork2_regs_0;
   reg         fork2_regs_1;
-  wire        fork2_ready_qual1_0 = _fp64_add_sourceInA_ready | fork2_regs_0;
-  wire        fork2_ready_qual1_1 = _fp64_multiply_sourceInA_ready | fork2_regs_1;
-  wire        fork2_leftBuffer0_sink_ready = fork2_ready_qual1_0 & fork2_ready_qual1_1;
+  wire        fork2_result_ready;
+  wire        fork2_ready_qual1_0 = fork2_result_ready | fork2_regs_0;
+  wire        fork2_result_1_ready;
+  wire        fork2_ready_qual1_1 = fork2_result_1_ready | fork2_regs_1;
+  assign fork2_sourceBuffer0_interface_ready = fork2_ready_qual1_0 & fork2_ready_qual1_1;
+  wire        fork2_result_valid = fork2_sourceBuffer0_interface_valid & ~fork2_regs_0;
+  wire        fork2_result_1_valid = fork2_sourceBuffer0_interface_valid & ~fork2_regs_1;
   always @(posedge clock) begin
     if (reset) begin
-      transform0_rightBuffer0_enq_ptr_value <= 5'h0;
-      transform0_rightBuffer0_deq_ptr_value <= 5'h0;
-      transform0_rightBuffer0_maybe_full <= 1'h0;
-      transform1_rightBuffer0_enq_ptr_value <= 5'h0;
-      transform1_rightBuffer0_deq_ptr_value <= 5'h0;
-      transform1_rightBuffer0_maybe_full <= 1'h0;
-      transform2_rightBuffer0_enq_ptr_value <= 5'h0;
-      transform2_rightBuffer0_deq_ptr_value <= 5'h0;
-      transform2_rightBuffer0_maybe_full <= 1'h0;
-      transform3_rightBuffer0_enq_ptr_value <= 5'h0;
-      transform3_rightBuffer0_deq_ptr_value <= 5'h0;
-      transform3_rightBuffer0_maybe_full <= 1'h0;
-      fork0_leftBuffer0_enq_ptr_value <= 5'h0;
-      fork0_leftBuffer0_deq_ptr_value <= 5'h0;
-      fork0_leftBuffer0_maybe_full <= 1'h0;
-      fork1_leftBuffer0_enq_ptr_value <= 5'h0;
-      fork1_leftBuffer0_deq_ptr_value <= 5'h0;
-      fork1_leftBuffer0_maybe_full <= 1'h0;
-      fork2_leftBuffer0_enq_ptr_value <= 5'h0;
-      fork2_leftBuffer0_deq_ptr_value <= 5'h0;
-      fork2_leftBuffer0_maybe_full <= 1'h0;
-      fork3_leftBuffer0_enq_ptr_value <= 5'h0;
-      fork3_leftBuffer0_deq_ptr_value <= 5'h0;
-      fork3_leftBuffer0_maybe_full <= 1'h0;
+      transform0_sinkBuffer0_enq_ptr_value <= 5'h0;
+      transform0_sinkBuffer0_deq_ptr_value <= 5'h0;
+      transform0_sinkBuffer0_maybe_full <= 1'h0;
+      transform1_sinkBuffer0_enq_ptr_value <= 5'h0;
+      transform1_sinkBuffer0_deq_ptr_value <= 5'h0;
+      transform1_sinkBuffer0_maybe_full <= 1'h0;
+      transform2_sinkBuffer0_enq_ptr_value <= 5'h0;
+      transform2_sinkBuffer0_deq_ptr_value <= 5'h0;
+      transform2_sinkBuffer0_maybe_full <= 1'h0;
+      transform3_sinkBuffer0_enq_ptr_value <= 5'h0;
+      transform3_sinkBuffer0_deq_ptr_value <= 5'h0;
+      transform3_sinkBuffer0_maybe_full <= 1'h0;
+      fork0_sourceBuffer0_enq_ptr_value <= 5'h0;
+      fork0_sourceBuffer0_deq_ptr_value <= 5'h0;
+      fork0_sourceBuffer0_maybe_full <= 1'h0;
+      fork1_sourceBuffer0_enq_ptr_value <= 5'h0;
+      fork1_sourceBuffer0_deq_ptr_value <= 5'h0;
+      fork1_sourceBuffer0_maybe_full <= 1'h0;
+      fork2_sourceBuffer0_enq_ptr_value <= 5'h0;
+      fork2_sourceBuffer0_deq_ptr_value <= 5'h0;
+      fork2_sourceBuffer0_maybe_full <= 1'h0;
+      fork3_sourceBuffer0_enq_ptr_value <= 5'h0;
+      fork3_sourceBuffer0_deq_ptr_value <= 5'h0;
+      fork3_sourceBuffer0_maybe_full <= 1'h0;
       fork3_regs_0 <= 1'h0;
       fork3_regs_1 <= 1'h0;
       fork1_regs_0 <= 1'h0;
@@ -3112,287 +3188,287 @@ module Elastic_Tbtop(
       fork2_regs_1 <= 1'h0;
     end
     else begin
-      automatic logic transform0_rightBuffer0_do_deq =
-        transform0_rightBuffer0_sink_ready & transform0_rightBuffer0_sink_valid;
-      automatic logic transform1_rightBuffer0_do_deq =
-        transform1_rightBuffer0_sink_ready & transform1_rightBuffer0_sink_valid;
-      automatic logic transform2_rightBuffer0_do_deq =
-        transform2_rightBuffer0_sink_ready & transform2_rightBuffer0_sink_valid;
-      automatic logic transform3_rightBuffer0_do_deq =
-        transform3_rightBuffer0_sink_ready & transform3_rightBuffer0_sink_valid;
-      automatic logic fork0_leftBuffer0_do_deq =
-        fork0_leftBuffer0_sink_ready & fork0_leftBuffer0_sink_valid;
-      automatic logic fork1_leftBuffer0_do_deq =
-        fork1_leftBuffer0_sink_ready & fork1_leftBuffer0_sink_valid;
-      automatic logic fork2_leftBuffer0_do_deq =
-        fork2_leftBuffer0_sink_ready & fork2_leftBuffer0_sink_valid;
-      automatic logic fork3_leftBuffer0_do_deq =
-        fork3_leftBuffer0_sink_ready & fork3_leftBuffer0_sink_valid;
-      if (transform0_rightBuffer0_do_enq)
-        transform0_rightBuffer0_enq_ptr_value <=
-          transform0_rightBuffer0_enq_ptr_value + 5'h1;
-      if (transform0_rightBuffer0_do_deq)
-        transform0_rightBuffer0_deq_ptr_value <=
-          transform0_rightBuffer0_deq_ptr_value + 5'h1;
-      if (transform0_rightBuffer0_do_enq != transform0_rightBuffer0_do_deq)
-        transform0_rightBuffer0_maybe_full <= transform0_rightBuffer0_do_enq;
-      if (transform1_rightBuffer0_do_enq)
-        transform1_rightBuffer0_enq_ptr_value <=
-          transform1_rightBuffer0_enq_ptr_value + 5'h1;
-      if (transform1_rightBuffer0_do_deq)
-        transform1_rightBuffer0_deq_ptr_value <=
-          transform1_rightBuffer0_deq_ptr_value + 5'h1;
-      if (transform1_rightBuffer0_do_enq != transform1_rightBuffer0_do_deq)
-        transform1_rightBuffer0_maybe_full <= transform1_rightBuffer0_do_enq;
-      if (transform2_rightBuffer0_do_enq)
-        transform2_rightBuffer0_enq_ptr_value <=
-          transform2_rightBuffer0_enq_ptr_value + 5'h1;
-      if (transform2_rightBuffer0_do_deq)
-        transform2_rightBuffer0_deq_ptr_value <=
-          transform2_rightBuffer0_deq_ptr_value + 5'h1;
-      if (transform2_rightBuffer0_do_enq != transform2_rightBuffer0_do_deq)
-        transform2_rightBuffer0_maybe_full <= transform2_rightBuffer0_do_enq;
-      if (transform3_rightBuffer0_do_enq)
-        transform3_rightBuffer0_enq_ptr_value <=
-          transform3_rightBuffer0_enq_ptr_value + 5'h1;
-      if (transform3_rightBuffer0_do_deq)
-        transform3_rightBuffer0_deq_ptr_value <=
-          transform3_rightBuffer0_deq_ptr_value + 5'h1;
-      if (transform3_rightBuffer0_do_enq != transform3_rightBuffer0_do_deq)
-        transform3_rightBuffer0_maybe_full <= transform3_rightBuffer0_do_enq;
-      if (fork0_leftBuffer0_do_enq)
-        fork0_leftBuffer0_enq_ptr_value <= fork0_leftBuffer0_enq_ptr_value + 5'h1;
-      if (fork0_leftBuffer0_do_deq)
-        fork0_leftBuffer0_deq_ptr_value <= fork0_leftBuffer0_deq_ptr_value + 5'h1;
-      if (fork0_leftBuffer0_do_enq != fork0_leftBuffer0_do_deq)
-        fork0_leftBuffer0_maybe_full <= fork0_leftBuffer0_do_enq;
-      if (fork1_leftBuffer0_do_enq)
-        fork1_leftBuffer0_enq_ptr_value <= fork1_leftBuffer0_enq_ptr_value + 5'h1;
-      if (fork1_leftBuffer0_do_deq)
-        fork1_leftBuffer0_deq_ptr_value <= fork1_leftBuffer0_deq_ptr_value + 5'h1;
-      if (fork1_leftBuffer0_do_enq != fork1_leftBuffer0_do_deq)
-        fork1_leftBuffer0_maybe_full <= fork1_leftBuffer0_do_enq;
-      if (fork2_leftBuffer0_do_enq)
-        fork2_leftBuffer0_enq_ptr_value <= fork2_leftBuffer0_enq_ptr_value + 5'h1;
-      if (fork2_leftBuffer0_do_deq)
-        fork2_leftBuffer0_deq_ptr_value <= fork2_leftBuffer0_deq_ptr_value + 5'h1;
-      if (fork2_leftBuffer0_do_enq != fork2_leftBuffer0_do_deq)
-        fork2_leftBuffer0_maybe_full <= fork2_leftBuffer0_do_enq;
-      if (fork3_leftBuffer0_do_enq)
-        fork3_leftBuffer0_enq_ptr_value <= fork3_leftBuffer0_enq_ptr_value + 5'h1;
-      if (fork3_leftBuffer0_do_deq)
-        fork3_leftBuffer0_deq_ptr_value <= fork3_leftBuffer0_deq_ptr_value + 5'h1;
-      if (fork3_leftBuffer0_do_enq != fork3_leftBuffer0_do_deq)
-        fork3_leftBuffer0_maybe_full <= fork3_leftBuffer0_do_enq;
+      automatic logic transform0_sinkBuffer0_do_deq =
+        transform0_sinkBuffer0_sink_ready & transform0_sinkBuffer0_sink_valid;
+      automatic logic transform1_sinkBuffer0_do_deq =
+        transform1_sinkBuffer0_sink_ready & transform1_sinkBuffer0_sink_valid;
+      automatic logic transform2_sinkBuffer0_do_deq =
+        transform2_sinkBuffer0_sink_ready & transform2_sinkBuffer0_sink_valid;
+      automatic logic transform3_sinkBuffer0_do_deq =
+        transform3_sinkBuffer0_sink_ready & transform3_sinkBuffer0_sink_valid;
+      automatic logic fork0_sourceBuffer0_do_deq =
+        fork0_sourceBuffer0_sink_ready & fork0_sourceBuffer0_sink_valid;
+      automatic logic fork1_sourceBuffer0_do_deq =
+        fork1_sourceBuffer0_sink_ready & fork1_sourceBuffer0_sink_valid;
+      automatic logic fork2_sourceBuffer0_do_deq =
+        fork2_sourceBuffer0_sink_ready & fork2_sourceBuffer0_sink_valid;
+      automatic logic fork3_sourceBuffer0_do_deq =
+        fork3_sourceBuffer0_sink_ready & fork3_sourceBuffer0_sink_valid;
+      if (transform0_sinkBuffer0_do_enq)
+        transform0_sinkBuffer0_enq_ptr_value <=
+          transform0_sinkBuffer0_enq_ptr_value + 5'h1;
+      if (transform0_sinkBuffer0_do_deq)
+        transform0_sinkBuffer0_deq_ptr_value <=
+          transform0_sinkBuffer0_deq_ptr_value + 5'h1;
+      if (transform0_sinkBuffer0_do_enq != transform0_sinkBuffer0_do_deq)
+        transform0_sinkBuffer0_maybe_full <= transform0_sinkBuffer0_do_enq;
+      if (transform1_sinkBuffer0_do_enq)
+        transform1_sinkBuffer0_enq_ptr_value <=
+          transform1_sinkBuffer0_enq_ptr_value + 5'h1;
+      if (transform1_sinkBuffer0_do_deq)
+        transform1_sinkBuffer0_deq_ptr_value <=
+          transform1_sinkBuffer0_deq_ptr_value + 5'h1;
+      if (transform1_sinkBuffer0_do_enq != transform1_sinkBuffer0_do_deq)
+        transform1_sinkBuffer0_maybe_full <= transform1_sinkBuffer0_do_enq;
+      if (transform2_sinkBuffer0_do_enq)
+        transform2_sinkBuffer0_enq_ptr_value <=
+          transform2_sinkBuffer0_enq_ptr_value + 5'h1;
+      if (transform2_sinkBuffer0_do_deq)
+        transform2_sinkBuffer0_deq_ptr_value <=
+          transform2_sinkBuffer0_deq_ptr_value + 5'h1;
+      if (transform2_sinkBuffer0_do_enq != transform2_sinkBuffer0_do_deq)
+        transform2_sinkBuffer0_maybe_full <= transform2_sinkBuffer0_do_enq;
+      if (transform3_sinkBuffer0_do_enq)
+        transform3_sinkBuffer0_enq_ptr_value <=
+          transform3_sinkBuffer0_enq_ptr_value + 5'h1;
+      if (transform3_sinkBuffer0_do_deq)
+        transform3_sinkBuffer0_deq_ptr_value <=
+          transform3_sinkBuffer0_deq_ptr_value + 5'h1;
+      if (transform3_sinkBuffer0_do_enq != transform3_sinkBuffer0_do_deq)
+        transform3_sinkBuffer0_maybe_full <= transform3_sinkBuffer0_do_enq;
+      if (fork0_sourceBuffer0_do_enq)
+        fork0_sourceBuffer0_enq_ptr_value <= fork0_sourceBuffer0_enq_ptr_value + 5'h1;
+      if (fork0_sourceBuffer0_do_deq)
+        fork0_sourceBuffer0_deq_ptr_value <= fork0_sourceBuffer0_deq_ptr_value + 5'h1;
+      if (fork0_sourceBuffer0_do_enq != fork0_sourceBuffer0_do_deq)
+        fork0_sourceBuffer0_maybe_full <= fork0_sourceBuffer0_do_enq;
+      if (fork1_sourceBuffer0_do_enq)
+        fork1_sourceBuffer0_enq_ptr_value <= fork1_sourceBuffer0_enq_ptr_value + 5'h1;
+      if (fork1_sourceBuffer0_do_deq)
+        fork1_sourceBuffer0_deq_ptr_value <= fork1_sourceBuffer0_deq_ptr_value + 5'h1;
+      if (fork1_sourceBuffer0_do_enq != fork1_sourceBuffer0_do_deq)
+        fork1_sourceBuffer0_maybe_full <= fork1_sourceBuffer0_do_enq;
+      if (fork2_sourceBuffer0_do_enq)
+        fork2_sourceBuffer0_enq_ptr_value <= fork2_sourceBuffer0_enq_ptr_value + 5'h1;
+      if (fork2_sourceBuffer0_do_deq)
+        fork2_sourceBuffer0_deq_ptr_value <= fork2_sourceBuffer0_deq_ptr_value + 5'h1;
+      if (fork2_sourceBuffer0_do_enq != fork2_sourceBuffer0_do_deq)
+        fork2_sourceBuffer0_maybe_full <= fork2_sourceBuffer0_do_enq;
+      if (fork3_sourceBuffer0_do_enq)
+        fork3_sourceBuffer0_enq_ptr_value <= fork3_sourceBuffer0_enq_ptr_value + 5'h1;
+      if (fork3_sourceBuffer0_do_deq)
+        fork3_sourceBuffer0_deq_ptr_value <= fork3_sourceBuffer0_deq_ptr_value + 5'h1;
+      if (fork3_sourceBuffer0_do_enq != fork3_sourceBuffer0_do_deq)
+        fork3_sourceBuffer0_maybe_full <= fork3_sourceBuffer0_do_enq;
       fork3_regs_0 <=
-        fork3_ready_qual1_0 & fork3_leftBuffer0_sink_valid
-        & ~fork3_leftBuffer0_sink_ready;
+        fork3_ready_qual1_0 & fork3_sourceBuffer0_interface_valid
+        & ~fork3_sourceBuffer0_interface_ready;
       fork3_regs_1 <=
-        fork3_ready_qual1_1 & fork3_leftBuffer0_sink_valid
-        & ~fork3_leftBuffer0_sink_ready;
+        fork3_ready_qual1_1 & fork3_sourceBuffer0_interface_valid
+        & ~fork3_sourceBuffer0_interface_ready;
       fork1_regs_0 <=
-        fork1_ready_qual1_0 & fork1_leftBuffer0_sink_valid
-        & ~fork1_leftBuffer0_sink_ready;
+        fork1_ready_qual1_0 & fork1_sourceBuffer0_interface_valid
+        & ~fork1_sourceBuffer0_interface_ready;
       fork1_regs_1 <=
-        fork1_ready_qual1_1 & fork1_leftBuffer0_sink_valid
-        & ~fork1_leftBuffer0_sink_ready;
+        fork1_ready_qual1_1 & fork1_sourceBuffer0_interface_valid
+        & ~fork1_sourceBuffer0_interface_ready;
       fork0_regs_0 <=
-        fork0_ready_qual1_0 & fork0_leftBuffer0_sink_valid
-        & ~fork0_leftBuffer0_sink_ready;
+        fork0_ready_qual1_0 & fork0_sourceBuffer0_interface_valid
+        & ~fork0_sourceBuffer0_interface_ready;
       fork0_regs_1 <=
-        fork0_ready_qual1_1 & fork0_leftBuffer0_sink_valid
-        & ~fork0_leftBuffer0_sink_ready;
+        fork0_ready_qual1_1 & fork0_sourceBuffer0_interface_valid
+        & ~fork0_sourceBuffer0_interface_ready;
       fork2_regs_0 <=
-        fork2_ready_qual1_0 & fork2_leftBuffer0_sink_valid
-        & ~fork2_leftBuffer0_sink_ready;
+        fork2_ready_qual1_0 & fork2_sourceBuffer0_interface_valid
+        & ~fork2_sourceBuffer0_interface_ready;
       fork2_regs_1 <=
-        fork2_ready_qual1_1 & fork2_leftBuffer0_sink_valid
-        & ~fork2_leftBuffer0_sink_ready;
+        fork2_ready_qual1_1 & fork2_sourceBuffer0_interface_valid
+        & ~fork2_sourceBuffer0_interface_ready;
     end
   end // always @(posedge)
   ElasticAdd fp32_add (
     .clock                   (clock),
     .reset                   (reset),
-    .sourceInA_bits_sign     (fork0_leftBuffer0_sink_bits[31]),
-    .sourceInA_bits_exponent (fork0_leftBuffer0_sink_bits[30:23]),
-    .sourceInA_bits_mantissa (fork0_leftBuffer0_sink_bits[22:0]),
-    .sourceInA_valid         (fork0_leftBuffer0_sink_valid & ~fork0_regs_0),
-    .sourceInA_ready         (_fp32_add_sourceInA_ready),
-    .sourceInB_bits_sign     (fork1_leftBuffer0_sink_bits[31]),
-    .sourceInB_bits_exponent (fork1_leftBuffer0_sink_bits[30:23]),
-    .sourceInB_bits_mantissa (fork1_leftBuffer0_sink_bits[22:0]),
-    .sourceInB_valid         (fork1_leftBuffer0_sink_valid & ~fork1_regs_0),
-    .sourceInB_ready         (_fp32_add_sourceInB_ready),
+    .sourceInA_bits_sign     (fork0_result_bits_sign),
+    .sourceInA_bits_exponent (fork0_result_bits_exponent),
+    .sourceInA_bits_mantissa (fork0_result_bits_mantissa),
+    .sourceInA_valid         (fork0_result_valid),
+    .sourceInA_ready         (fork0_result_ready),
+    .sourceInB_bits_sign     (fork1_result_bits_sign),
+    .sourceInB_bits_exponent (fork1_result_bits_exponent),
+    .sourceInB_bits_mantissa (fork1_result_bits_mantissa),
+    .sourceInB_valid         (fork1_result_valid),
+    .sourceInB_ready         (fork1_result_ready),
     .sinkOut_bits_sign       (_fp32_add_sinkOut_bits_sign),
     .sinkOut_bits_exponent   (_fp32_add_sinkOut_bits_exponent),
     .sinkOut_bits_mantissa   (_fp32_add_sinkOut_bits_mantissa),
-    .sinkOut_valid           (transform0_rightBuffer0_source_valid),
-    .sinkOut_ready           (transform0_rightBuffer0_source_ready)
+    .sinkOut_valid           (transform0_sinkBuffer0_interface_valid),
+    .sinkOut_ready           (transform0_sinkBuffer0_interface_ready)
   );
   ElasticAdd_1 fp64_add (
     .clock                   (clock),
     .reset                   (reset),
-    .sourceInA_bits_sign     (fork2_leftBuffer0_sink_bits[63]),
-    .sourceInA_bits_exponent (fork2_leftBuffer0_sink_bits[62:52]),
-    .sourceInA_bits_mantissa (fork2_leftBuffer0_sink_bits[51:0]),
-    .sourceInA_valid         (fork2_leftBuffer0_sink_valid & ~fork2_regs_0),
-    .sourceInA_ready         (_fp64_add_sourceInA_ready),
-    .sourceInB_bits_sign     (fork3_leftBuffer0_sink_bits[63]),
-    .sourceInB_bits_exponent (fork3_leftBuffer0_sink_bits[62:52]),
-    .sourceInB_bits_mantissa (fork3_leftBuffer0_sink_bits[51:0]),
-    .sourceInB_valid         (fork3_leftBuffer0_sink_valid & ~fork3_regs_0),
-    .sourceInB_ready         (_fp64_add_sourceInB_ready),
+    .sourceInA_bits_sign     (fork2_result_bits_sign),
+    .sourceInA_bits_exponent (fork2_result_bits_exponent),
+    .sourceInA_bits_mantissa (fork2_result_bits_mantissa),
+    .sourceInA_valid         (fork2_result_valid),
+    .sourceInA_ready         (fork2_result_ready),
+    .sourceInB_bits_sign     (fork3_result_bits_sign),
+    .sourceInB_bits_exponent (fork3_result_bits_exponent),
+    .sourceInB_bits_mantissa (fork3_result_bits_mantissa),
+    .sourceInB_valid         (fork3_result_valid),
+    .sourceInB_ready         (fork3_result_ready),
     .sinkOut_bits_sign       (_fp64_add_sinkOut_bits_sign),
     .sinkOut_bits_exponent   (_fp64_add_sinkOut_bits_exponent),
     .sinkOut_bits_mantissa   (_fp64_add_sinkOut_bits_mantissa),
-    .sinkOut_valid           (transform1_rightBuffer0_source_valid),
-    .sinkOut_ready           (transform1_rightBuffer0_source_ready)
+    .sinkOut_valid           (transform1_sinkBuffer0_interface_valid),
+    .sinkOut_ready           (transform1_sinkBuffer0_interface_ready)
   );
   ElasticMultiply fp32_multiply (
     .clock                   (clock),
     .reset                   (reset),
-    .sourceInA_bits_sign     (fork0_leftBuffer0_sink_bits[31]),
-    .sourceInA_bits_exponent (fork0_leftBuffer0_sink_bits[30:23]),
-    .sourceInA_bits_mantissa (fork0_leftBuffer0_sink_bits[22:0]),
-    .sourceInA_valid         (fork0_leftBuffer0_sink_valid & ~fork0_regs_1),
-    .sourceInA_ready         (_fp32_multiply_sourceInA_ready),
-    .sourceInB_bits_sign     (fork1_leftBuffer0_sink_bits[31]),
-    .sourceInB_bits_exponent (fork1_leftBuffer0_sink_bits[30:23]),
-    .sourceInB_bits_mantissa (fork1_leftBuffer0_sink_bits[22:0]),
-    .sourceInB_valid         (fork1_leftBuffer0_sink_valid & ~fork1_regs_1),
-    .sourceInB_ready         (_fp32_multiply_sourceInB_ready),
+    .sourceInA_bits_sign     (fork0_result_1_bits_sign),
+    .sourceInA_bits_exponent (fork0_result_1_bits_exponent),
+    .sourceInA_bits_mantissa (fork0_result_1_bits_mantissa),
+    .sourceInA_valid         (fork0_result_1_valid),
+    .sourceInA_ready         (fork0_result_1_ready),
+    .sourceInB_bits_sign     (fork1_result_1_bits_sign),
+    .sourceInB_bits_exponent (fork1_result_1_bits_exponent),
+    .sourceInB_bits_mantissa (fork1_result_1_bits_mantissa),
+    .sourceInB_valid         (fork1_result_1_valid),
+    .sourceInB_ready         (fork1_result_1_ready),
     .sinkOut_bits_sign       (_fp32_multiply_sinkOut_bits_sign),
     .sinkOut_bits_exponent   (_fp32_multiply_sinkOut_bits_exponent),
     .sinkOut_bits_mantissa   (_fp32_multiply_sinkOut_bits_mantissa),
-    .sinkOut_valid           (transform2_rightBuffer0_source_valid),
-    .sinkOut_ready           (transform2_rightBuffer0_source_ready)
+    .sinkOut_valid           (transform2_sinkBuffer0_interface_valid),
+    .sinkOut_ready           (transform2_sinkBuffer0_interface_ready)
   );
   ElasticMultiply_1 fp64_multiply (
     .clock                   (clock),
     .reset                   (reset),
-    .sourceInA_bits_sign     (fork2_leftBuffer0_sink_bits[63]),
-    .sourceInA_bits_exponent (fork2_leftBuffer0_sink_bits[62:52]),
-    .sourceInA_bits_mantissa (fork2_leftBuffer0_sink_bits[51:0]),
-    .sourceInA_valid         (fork2_leftBuffer0_sink_valid & ~fork2_regs_1),
-    .sourceInA_ready         (_fp64_multiply_sourceInA_ready),
-    .sourceInB_bits_sign     (fork3_leftBuffer0_sink_bits[63]),
-    .sourceInB_bits_exponent (fork3_leftBuffer0_sink_bits[62:52]),
-    .sourceInB_bits_mantissa (fork3_leftBuffer0_sink_bits[51:0]),
-    .sourceInB_valid         (fork3_leftBuffer0_sink_valid & ~fork3_regs_1),
-    .sourceInB_ready         (_fp64_multiply_sourceInB_ready),
+    .sourceInA_bits_sign     (fork2_result_1_bits_sign),
+    .sourceInA_bits_exponent (fork2_result_1_bits_exponent),
+    .sourceInA_bits_mantissa (fork2_result_1_bits_mantissa),
+    .sourceInA_valid         (fork2_result_1_valid),
+    .sourceInA_ready         (fork2_result_1_ready),
+    .sourceInB_bits_sign     (fork3_result_1_bits_sign),
+    .sourceInB_bits_exponent (fork3_result_1_bits_exponent),
+    .sourceInB_bits_mantissa (fork3_result_1_bits_mantissa),
+    .sourceInB_valid         (fork3_result_1_valid),
+    .sourceInB_ready         (fork3_result_1_ready),
     .sinkOut_bits_sign       (_fp64_multiply_sinkOut_bits_sign),
     .sinkOut_bits_exponent   (_fp64_multiply_sinkOut_bits_exponent),
     .sinkOut_bits_mantissa   (_fp64_multiply_sinkOut_bits_mantissa),
-    .sinkOut_valid           (transform3_rightBuffer0_source_valid),
-    .sinkOut_ready           (transform3_rightBuffer0_source_ready)
+    .sinkOut_valid           (transform3_sinkBuffer0_interface_valid),
+    .sinkOut_ready           (transform3_sinkBuffer0_interface_ready)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(32)
-  ) transform0_rightBuffer0_ram (
+  ) transform0_sinkBuffer0_ram (
     .clock    (clock),
-    .addrA    (transform0_rightBuffer0_enq_ptr_value),
-    .writeEnA (transform0_rightBuffer0_do_enq),
-    .dataInA  (transform0_rightBuffer0_source_bits),
-    .addrB    (transform0_rightBuffer0_deq_ptr_value),
-    .dataOutB (transform0_rightBuffer0_sink_bits)
+    .addrA    (transform0_sinkBuffer0_enq_ptr_value),
+    .writeEnA (transform0_sinkBuffer0_do_enq),
+    .dataInA  (transform0_sinkBuffer0_source_bits),
+    .addrB    (transform0_sinkBuffer0_deq_ptr_value),
+    .dataOutB (transform0_sinkBuffer0_sink_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(64)
-  ) transform1_rightBuffer0_ram (
+  ) transform1_sinkBuffer0_ram (
     .clock    (clock),
-    .addrA    (transform1_rightBuffer0_enq_ptr_value),
-    .writeEnA (transform1_rightBuffer0_do_enq),
-    .dataInA  (transform1_rightBuffer0_source_bits),
-    .addrB    (transform1_rightBuffer0_deq_ptr_value),
-    .dataOutB (transform1_rightBuffer0_sink_bits)
+    .addrA    (transform1_sinkBuffer0_enq_ptr_value),
+    .writeEnA (transform1_sinkBuffer0_do_enq),
+    .dataInA  (transform1_sinkBuffer0_source_bits),
+    .addrB    (transform1_sinkBuffer0_deq_ptr_value),
+    .dataOutB (transform1_sinkBuffer0_sink_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(32)
-  ) transform2_rightBuffer0_ram (
+  ) transform2_sinkBuffer0_ram (
     .clock    (clock),
-    .addrA    (transform2_rightBuffer0_enq_ptr_value),
-    .writeEnA (transform2_rightBuffer0_do_enq),
-    .dataInA  (transform2_rightBuffer0_source_bits),
-    .addrB    (transform2_rightBuffer0_deq_ptr_value),
-    .dataOutB (transform2_rightBuffer0_sink_bits)
+    .addrA    (transform2_sinkBuffer0_enq_ptr_value),
+    .writeEnA (transform2_sinkBuffer0_do_enq),
+    .dataInA  (transform2_sinkBuffer0_source_bits),
+    .addrB    (transform2_sinkBuffer0_deq_ptr_value),
+    .dataOutB (transform2_sinkBuffer0_sink_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(64)
-  ) transform3_rightBuffer0_ram (
+  ) transform3_sinkBuffer0_ram (
     .clock    (clock),
-    .addrA    (transform3_rightBuffer0_enq_ptr_value),
-    .writeEnA (transform3_rightBuffer0_do_enq),
-    .dataInA  (transform3_rightBuffer0_source_bits),
-    .addrB    (transform3_rightBuffer0_deq_ptr_value),
-    .dataOutB (transform3_rightBuffer0_sink_bits)
+    .addrA    (transform3_sinkBuffer0_enq_ptr_value),
+    .writeEnA (transform3_sinkBuffer0_do_enq),
+    .dataInA  (transform3_sinkBuffer0_source_bits),
+    .addrB    (transform3_sinkBuffer0_deq_ptr_value),
+    .dataOutB (transform3_sinkBuffer0_sink_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(32)
-  ) fork0_leftBuffer0_ram (
+  ) fork0_sourceBuffer0_ram (
     .clock    (clock),
-    .addrA    (fork0_leftBuffer0_enq_ptr_value),
-    .writeEnA (fork0_leftBuffer0_do_enq),
-    .dataInA  (fork0_leftBuffer0_source_bits),
-    .addrB    (fork0_leftBuffer0_deq_ptr_value),
-    .dataOutB (fork0_leftBuffer0_sink_bits)
+    .addrA    (fork0_sourceBuffer0_enq_ptr_value),
+    .writeEnA (fork0_sourceBuffer0_do_enq),
+    .dataInA  (fork0_sourceBuffer0_source_bits),
+    .addrB    (fork0_sourceBuffer0_deq_ptr_value),
+    .dataOutB (fork0_sourceBuffer0_sink_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(32)
-  ) fork1_leftBuffer0_ram (
+  ) fork1_sourceBuffer0_ram (
     .clock    (clock),
-    .addrA    (fork1_leftBuffer0_enq_ptr_value),
-    .writeEnA (fork1_leftBuffer0_do_enq),
-    .dataInA  (fork1_leftBuffer0_source_bits),
-    .addrB    (fork1_leftBuffer0_deq_ptr_value),
-    .dataOutB (fork1_leftBuffer0_sink_bits)
+    .addrA    (fork1_sourceBuffer0_enq_ptr_value),
+    .writeEnA (fork1_sourceBuffer0_do_enq),
+    .dataInA  (fork1_sourceBuffer0_source_bits),
+    .addrB    (fork1_sourceBuffer0_deq_ptr_value),
+    .dataOutB (fork1_sourceBuffer0_sink_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(64)
-  ) fork2_leftBuffer0_ram (
+  ) fork2_sourceBuffer0_ram (
     .clock    (clock),
-    .addrA    (fork2_leftBuffer0_enq_ptr_value),
-    .writeEnA (fork2_leftBuffer0_do_enq),
-    .dataInA  (fork2_leftBuffer0_source_bits),
-    .addrB    (fork2_leftBuffer0_deq_ptr_value),
-    .dataOutB (fork2_leftBuffer0_sink_bits)
+    .addrA    (fork2_sourceBuffer0_enq_ptr_value),
+    .writeEnA (fork2_sourceBuffer0_do_enq),
+    .dataInA  (fork2_sourceBuffer0_source_bits),
+    .addrB    (fork2_sourceBuffer0_deq_ptr_value),
+    .dataOutB (fork2_sourceBuffer0_sink_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(64)
-  ) fork3_leftBuffer0_ram (
+  ) fork3_sourceBuffer0_ram (
     .clock    (clock),
-    .addrA    (fork3_leftBuffer0_enq_ptr_value),
-    .writeEnA (fork3_leftBuffer0_do_enq),
-    .dataInA  (fork3_leftBuffer0_source_bits),
-    .addrB    (fork3_leftBuffer0_deq_ptr_value),
-    .dataOutB (fork3_leftBuffer0_sink_bits)
+    .addrA    (fork3_sourceBuffer0_enq_ptr_value),
+    .writeEnA (fork3_sourceBuffer0_do_enq),
+    .dataInA  (fork3_sourceBuffer0_source_bits),
+    .addrB    (fork3_sourceBuffer0_deq_ptr_value),
+    .dataOutB (fork3_sourceBuffer0_sink_bits)
   );
-  assign fp32_inA_ready = fork0_leftBuffer0_source_ready;
-  assign fp32_inB_ready = fork1_leftBuffer0_source_ready;
-  assign fp32_addOut_bits = transform0_rightBuffer0_sink_bits;
-  assign fp32_addOut_valid = transform0_rightBuffer0_sink_valid;
-  assign fp32_multiplyOut_bits = transform2_rightBuffer0_sink_bits;
-  assign fp32_multiplyOut_valid = transform2_rightBuffer0_sink_valid;
-  assign fp64_inA_ready = fork2_leftBuffer0_source_ready;
-  assign fp64_inB_ready = fork3_leftBuffer0_source_ready;
-  assign fp64_addOut_bits = transform1_rightBuffer0_sink_bits;
-  assign fp64_addOut_valid = transform1_rightBuffer0_sink_valid;
-  assign fp64_multiplyOut_bits = transform3_rightBuffer0_sink_bits;
-  assign fp64_multiplyOut_valid = transform3_rightBuffer0_sink_valid;
+  assign fp32_inA_ready = fork0_sourceBuffer0_source_ready;
+  assign fp32_inB_ready = fork1_sourceBuffer0_source_ready;
+  assign fp32_addOut_bits = transform0_sinkBuffer0_sink_bits;
+  assign fp32_addOut_valid = transform0_sinkBuffer0_sink_valid;
+  assign fp32_multiplyOut_bits = transform2_sinkBuffer0_sink_bits;
+  assign fp32_multiplyOut_valid = transform2_sinkBuffer0_sink_valid;
+  assign fp64_inA_ready = fork2_sourceBuffer0_source_ready;
+  assign fp64_inB_ready = fork3_sourceBuffer0_source_ready;
+  assign fp64_addOut_bits = transform1_sinkBuffer0_sink_bits;
+  assign fp64_addOut_valid = transform1_sinkBuffer0_sink_valid;
+  assign fp64_multiplyOut_bits = transform3_sinkBuffer0_sink_bits;
+  assign fp64_multiplyOut_valid = transform3_sinkBuffer0_sink_valid;
 endmodule
 

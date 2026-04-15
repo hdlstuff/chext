@@ -51,8 +51,8 @@ class IdMux(val cfg: IdMuxConfig) extends Module {
     }
 
     def rLogic: Unit = {
-      val demuxInput = Wire(elastic.Interface(m_axi_.r.$bits.cloneType))
-      val demuxSelect = Wire(elastic.Interface(genSelect))
+      val demuxInput = elastic.EWire(m_axi_.r.$bits.cloneType)
+      val demuxSelect = elastic.EWire(genSelect)
 
       new elastic.Fork(m_axi_.r) {
         fork { in } :=> demuxInput
@@ -91,8 +91,8 @@ class IdMux(val cfg: IdMuxConfig) extends Module {
     }
 
     def bLogic: Unit = {
-      val demuxInput = Wire(elastic.Interface(m_axi_.b.$bits.cloneType))
-      val demuxSelect = Wire(elastic.Interface(genSelect))
+      val demuxInput = elastic.EWire(m_axi_.b.$bits.cloneType)
+      val demuxSelect = elastic.EWire(genSelect)
 
       new elastic.Fork(m_axi_.b) {
         fork { in } :=> demuxInput
