@@ -7,10 +7,10 @@ import chisel3.util.log2Ceil
 
 import chext.tracking.Component
 
-/** Elastic arbiter that selects one valid source and forwards it to the sink.
+/** Elastic arbiter with no explicit select interface. One valid source is
+  * chosen by the `chooser` function and forwarded to the sink.
   *
-  * The arbitration decision is delegated to `chooser`, which receives the
-  * vector of source valid signals and a readiness hint.
+  * The `Ns` suffix reflects that this is the no-select variant.
   *
   * @tparam T
   *   payload type
@@ -18,15 +18,12 @@ import chext.tracking.Component
   *   input source interfaces
   * @param sink
   *   output sink interface
-  * @param select
-  *   output interface carrying the chosen source index
   * @param chooser
   *   arbitration function
   */
-final class Arbiter[Tin <: Data, Tout <: Data](
+final class ArbiterNs[Tin <: Data, Tout <: Data](
     val sources: Seq[Interface[Tin]],
     val sink: Interface[Tout],
-    val sinkSelect: Interface[UInt],
     val chooser: Chooser
 )(implicit si_ : SourceInfo)
     extends Component {
@@ -35,23 +32,15 @@ final class Arbiter[Tin <: Data, Tout <: Data](
 
   private var outFn_ = Option.empty[OutFn]
 
-  override def tpe: String = "Arbiter"
+  override def tpe: String = "ArbiterNs"
   override def namePrefix: String = "arbiter"
   override val sourceInfo: SourceInfo = si_
 
   private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage((x) => s"Arbiter: $msg $x"))
+    require(cond, sourceInfo.makeMessage((x) => s"ArbiterNs: $msg $x"))
   }
 
   require_(sources.nonEmpty, "requires at least one source interface")
-  require_(
-    sinkSelect.$bits.widthKnown,
-    "`sinkSelect.$bits` width must be statically known"
-  )
-  require_(
-    sinkSelect.$bits.getWidth >= log2Ceil(sources.length),
-    "`sinkSelect.$bits` width is too small for the number of sources"
-  )
 
   private val genIn = chiselTypeOf(sources.head.$bits)
   private val genOut = chiselTypeOf(sink.$bits)
@@ -60,7 +49,6 @@ final class Arbiter[Tin <: Data, Tout <: Data](
     case (source, i) => addSourcePort(s"source_$i", source)
   }
   addSinkPort("sink", sink)
-  addSinkPort("sinkSelect", sinkSelect)
 
   /** Sets a pure functional transformation for the value driven on the sink.
     * The function takes the arbitrated input data and returns the transformed
@@ -98,57 +86,21 @@ final class Arbiter[Tin <: Data, Tout <: Data](
     val bitsVector = VecInit(sources.map { _.$bits })
     val validVector = VecInit(sources.map { _.$valid })
 
-    val regSink = RegInit(false.B)
-    val regSelect = RegInit(false.B)
-
-    val ready = (sink.$ready || regSink) && (sinkSelect.$ready || regSelect)
+    val ready = sink.$ready
     val choice = chooser(validVector, ready)
 
     sources.zipWithIndex.foreach { //
       case (x, i) => x.$ready := ready && (i.U === choice)
     }
 
-    sink.$valid := validVector(choice) && !regSink
-    sinkSelect.$valid := validVector(choice) && !regSelect
-
-    regSink := (sink.$ready || regSink) && validVector(choice) && !ready
-    regSelect := (sinkSelect.$ready || regSelect) &&
-      validVector(choice) && !ready
-
+    sink.$valid := validVector(choice)
     sink.$bits := outFn(bitsVector(choice))
-    sinkSelect.$bits := choice
 
     new chext.deadlock.DeadlockMonitor(this) {
       sources.zipWithIndex.foreach { //
         case (x, i) =>
-          // if none of the sources are valid, we waitValid on them all
           x.waitValid := VecInit(sources.map { !_.$valid }).asUInt.andR
       }
-    }
-  }
-}
-
-object Arbiter {
-  def apply[T <: Data](
-      sources: Seq[Interface[T]],
-      sink: Interface[T],
-      chooserFn: Chooser,
-      select: Option[Interface[UInt]] = None
-  )(implicit si: SourceInfo): Component = {
-
-    if (select.nonEmpty) {
-      new Arbiter(
-        sources,
-        sink,
-        select.get,
-        chooserFn
-      )
-    } else {
-      new ArbiterNs(
-        sources,
-        sink,
-        chooserFn
-      )
     }
   }
 }

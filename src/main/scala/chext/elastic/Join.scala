@@ -47,6 +47,12 @@ abstract class Join[T <: Data](
 
     joinImpl.join(sourceList.toSeq, sink, false)
 
+    new chext.deadlock.DeadlockMonitor(this) {
+      sourceList.zipWithIndex.foreach { //
+        case (source, i) =>
+          source.waitValid := true.B
+      }
+    }
   }
 
 }

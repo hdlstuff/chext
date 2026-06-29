@@ -53,6 +53,9 @@ abstract class Fork[T <: Data](
     else
       forkImpl.lazyFork(source, sinkList.toSeq, false)
 
+    new chext.deadlock.DeadlockMonitor(this) {
+      source.waitValid := true.B
+    }
   }
 
 }

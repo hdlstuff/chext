@@ -259,5 +259,9 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
     }
 
     assert(actionIndex_ == actions_.length)
+
+    new chext.deadlock.DeadlockMonitor(this) {
+      source.waitValid := true.B
+    }
   }
 }
