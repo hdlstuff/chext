@@ -51,8 +51,9 @@ abstract class ShareD[Tin <: Data, Tout <: Data](
     val sourceResource = EWire(genIn)
     val sinkResource = EWire(genOut)
 
-    val mux0 = EMux(source_N, sourceResource, Counter(1 << (log2n - log2k)))
-    val demux0 = Demux(sinkResource, sink_N, Counter(1 << (log2n - log2k)))
+    val mux0 = new EMux(source_N, sourceResource, Counter(1 << (log2n - log2k)))
+    val demux0 =
+      new Demux(sinkResource, sink_N, Counter(1 << (log2n - log2k)))
 
     instantiate(index, sourceResource, sinkResource)
   }
@@ -96,10 +97,10 @@ abstract class ShareNd[Tin <: Data, Tout <: Data](
     val ewireSelect = EWire(UInt((log2n - log2k).W))
 
     val arbiter0 =
-      Arbiter(source_N, sourceResource, Chooser.rr, Some(ewireSelect))
+      new Arbiter(source_N, sourceResource, ewireSelect, Chooser.rr)
 
     val demux0 =
-      Demux(sinkResource, sink_N, SourceBuffer(ewireSelect, selQueueLength))
+      new Demux(sinkResource, sink_N, SourceBuffer(ewireSelect, selQueueLength))
 
     instantiate(index, sourceResource, sinkResource)
   }

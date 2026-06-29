@@ -1,11 +1,13 @@
 package chext.elastic
 
+
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 import chisel3.util.log2Ceil
 
 import chext.tracking.Component
+import chext.deadlock
 
 /** Elastic arbiter with no explicit select interface. One valid source is
   * chosen by the `chooser` function and forwarded to the sink.
@@ -96,7 +98,7 @@ final class ArbiterNs[Tin <: Data, Tout <: Data](
     sink.$valid := validVector(choice)
     sink.$bits := outFn(bitsVector(choice))
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       sources.zipWithIndex.foreach { //
         case (x, i) =>
           x.waitValid := VecInit(sources.map { !_.$valid }).asUInt.andR

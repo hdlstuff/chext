@@ -1,5 +1,6 @@
 package chext.elastic
 
+
 import chisel3._
 
 import chisel3.experimental.SourceInfo
@@ -10,6 +11,7 @@ import scala.collection.mutable.ArrayBuffer
 
 import chext.tracking
 import tracking.Component
+import chext.deadlock
 
 /** `Transducer` creates a finite-state transducer between a source and a sink.
   *
@@ -260,7 +262,7 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
 
     assert(actionIndex_ == actions_.length)
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       source.waitValid := true.B
     }
   }

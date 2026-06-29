@@ -234,17 +234,17 @@ class Widen(val cfg: WidenConfig) extends Module {
     val ewireDemuxSource = elastic.EWire(genData)
     val ewireDemuxSink = elastic.EWire(genData)
 
-    val buffer = elastic.Queue(genData, 2)
+    val queue0 = elastic.Queue(genData, 2)
 
-    val mux0 = elastic.Mux(
-      Seq(buffer.sink, m_axi.r),
+    val mux0 = new elastic.Mux(
+      Seq(queue0.sink, m_axi.r),
       ewireMuxSink,
       ewireBeatFirst
     )
 
-    val demux0 = elastic.Demux(
+    val demux0 = new elastic.Demux(
       ewireDemuxSource,
-      Seq(buffer.source, ewireDemuxSink),
+      Seq(queue0.source, ewireDemuxSink),
       ewireBeatLast
     )
 
@@ -299,7 +299,7 @@ class Widen(val cfg: WidenConfig) extends Module {
     val ewireMuxSink = elastic.EWire(genData)
     val ewireDemuxSource = elastic.EWire(genData)
 
-    val buffer = elastic.Queue(genData, 2)
+    val queue0 = elastic.Queue(genData, 2)
 
     val const0 = new elastic.Const(ewireW0) {
       out.data := 0.U
@@ -308,15 +308,15 @@ class Widen(val cfg: WidenConfig) extends Module {
       out.user := 0.U
     }
 
-    val mux0 = elastic.Mux(
-      Seq(buffer.sink, ewireW0),
+    val mux0 = new elastic.Mux(
+      Seq(queue0.sink, ewireW0),
       ewireMuxSink,
       ewireBeatFirst
     )
 
-    val demux0 = elastic.Demux(
+    val demux0 = new elastic.Demux(
       ewireDemuxSource,
-      Seq(buffer.source, m_axi.w),
+      Seq(queue0.source, m_axi.w),
       ewireBeatLast
     )
 

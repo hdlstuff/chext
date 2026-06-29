@@ -1,10 +1,12 @@
 package chext.elastic
 
+
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
 import chext.tracking.Component
+import chext.deadlock
 
 abstract class Transform[Tin <: Data, Tout <: Data](
     source: Interface[Tin],
@@ -28,7 +30,7 @@ abstract class Transform[Tin <: Data, Tout <: Data](
     sink.$valid := source.$valid
     source.$ready := sink.$ready
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       source.waitValid := true.B
     }
   }

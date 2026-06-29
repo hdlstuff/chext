@@ -32,7 +32,17 @@ private class chext_deadlock_monitor(
   })
 }
 
-class DeadlockMonitor(val component: Component) {
+object Monitor {
+  private var enabled_ = false
+
+  def enable(enabled: Boolean): Unit = {
+    enabled_ = enabled
+  }
+
+  def enabled: Boolean = enabled_
+}
+
+class Monitor(val component: Component) {
   private val sourceInterfaces = component.getSourceInterfaces()
   private val sinkInterfaces = component.getSinkInterfaces()
 
@@ -70,49 +80,51 @@ class DeadlockMonitor(val component: Component) {
   }
 
   deferred {
-    val chext_dlm = Module(
-      new chext_deadlock_monitor(
-        Math.max(sourceInterfaces.length, 1),
-        Math.max(sinkInterfaces.length, 1)
+    if (Monitor.enabled) {
+      val chext_dlm = Module(
+        new chext_deadlock_monitor(
+          Math.max(sourceInterfaces.length, 1),
+          Math.max(sinkInterfaces.length, 1)
+        )
       )
-    )
 
-    if (sourceInterfaces.nonEmpty) {
-      chext_dlm.io.source_valid := VecInit(
-        sourceInterfaces.map { //
-          case (name, interface) => interface.$valid
-        }
-      ).asUInt
+      if (sourceInterfaces.nonEmpty) {
+        chext_dlm.io.source_valid := VecInit(
+          sourceInterfaces.map { //
+            case (name, interface) => interface.$valid
+          }
+        ).asUInt
 
-      chext_dlm.io.source_waitValid := VecInit(
-        sourceInterfaces.map {
-          // if not specified, always wait for a valid
-          case (name, interface) =>
-            waitForValid_.getOrElse(interface, true.B)
-        }
-      ).asUInt
-    } else {
-      chext_dlm.io.source_valid := 0.U
-      chext_dlm.io.source_waitValid := 0.U
-    }
+        chext_dlm.io.source_waitValid := VecInit(
+          sourceInterfaces.map {
+            // if not specified, always wait for a valid
+            case (name, interface) =>
+              waitForValid_.getOrElse(interface, true.B)
+          }
+        ).asUInt
+      } else {
+        chext_dlm.io.source_valid := 0.U
+        chext_dlm.io.source_waitValid := 0.U
+      }
 
-    if (sinkInterfaces.nonEmpty) {
-      chext_dlm.io.sink_ready := VecInit(
-        sinkInterfaces.map { //
-          case (name, interface) => interface.$ready
-        }
-      ).asUInt
+      if (sinkInterfaces.nonEmpty) {
+        chext_dlm.io.sink_ready := VecInit(
+          sinkInterfaces.map { //
+            case (name, interface) => interface.$ready
+          }
+        ).asUInt
 
-      chext_dlm.io.sink_waitReady := VecInit(
-        sinkInterfaces.map {
-          // if not specified, wait for a ready only if valid
-          case (name, interface) =>
-            waitForReady_.getOrElse(interface, interface.$valid)
-        }
-      ).asUInt
-    } else {
-      chext_dlm.io.sink_ready := 0.U
-      chext_dlm.io.sink_waitReady := 0.U
+        chext_dlm.io.sink_waitReady := VecInit(
+          sinkInterfaces.map {
+            // if not specified, wait for a ready only if valid
+            case (name, interface) =>
+              waitForReady_.getOrElse(interface, interface.$valid)
+          }
+        ).asUInt
+      } else {
+        chext_dlm.io.sink_ready := 0.U
+        chext_dlm.io.sink_waitReady := 0.U
+      }
     }
   }
 }

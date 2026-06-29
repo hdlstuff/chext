@@ -245,7 +245,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
 
           val temp = EWire(gen)
 
-          val mux0 = EMux(
+          val mux0 = new EMux(
             Seq(temp, stage0_init),
             stage1_opA,
             SourceBuffer(fork { in.first }, flow = true)
@@ -253,7 +253,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
           suggestInstanceName(mux0, "mux0")
 
           val demux0 =
-            Demux(
+            new Demux(
               stage1_result,
               Seq(SinkBuffer(temp), stage0_result),
               SourceBuffer(fork { in.last }, flow = true)
@@ -270,21 +270,21 @@ abstract class Fold[Tin <: Data, Tout <: Data](
             val disposed = EWire(gen)
             val temp = EWire(gen)
 
-            val demux0 = Demux(
+            val demux0 = new Demux(
               fork { in.operand },
               Seq(sinkA, disposed),
               fork { in.zero.get }
             )
             suggestInstanceName(demux0, "demux0")
 
-            val demux1 = Demux(
+            val demux1 = new Demux(
               stage1_opA,
               Seq(sinkB, temp),
               fork { in.zero.get }
             )
             suggestInstanceName(demux1, "demux1")
 
-            val mux0 = EMux(
+            val mux0 = new EMux(
               Seq(sourceResult, temp),
               stage1_result,
               fork { in.zero.get }

@@ -44,15 +44,15 @@ class Wrapper[
     ctr.noInc()
     ctr.noDec()
 
-    val qOutput = elastic.Queue(genOutput, queueLength)
+    val queueOutput = elastic.Queue(genOutput, queueLength)
 
-    qOutput.source.noenq()
+    queueOutput.source.noenq()
     source.nodeq()
 
-    qOutput.source.markSink()
+    queueOutput.source.markSink()
 
     moduleIn := source.$bits
-    qOutput.source.$bits := moduleOut
+    queueOutput.source.$bits := moduleOut
 
     source.$ready := ctr.notFull && source.$valid
 
@@ -60,10 +60,10 @@ class Wrapper[
       ctr.inc()
     }
 
-    qOutput.source.$valid := ShiftRegister(source.fire, moduleDelay)
-    qOutput.sink :=> sink
+    queueOutput.source.$valid := ShiftRegister(source.fire, moduleDelay)
+    queueOutput.sink :=> sink
 
-    when(qOutput.sink.fire) {
+    when(queueOutput.sink.fire) {
       ctr.dec()
     }
   }

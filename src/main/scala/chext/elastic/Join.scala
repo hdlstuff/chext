@@ -1,5 +1,6 @@
 package chext.elastic
 
+
 import chisel3._
 import chisel3.experimental.SourceInfo
 
@@ -9,6 +10,7 @@ import scala.collection.mutable.ListBuffer
 
 import chext.tracking
 import tracking.Component
+import chext.deadlock
 
 abstract class Join[T <: Data](
     val sink: Interface[T]
@@ -47,7 +49,7 @@ abstract class Join[T <: Data](
 
     joinImpl.join(sourceList.toSeq, sink, false)
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       sourceList.zipWithIndex.foreach { //
         case (source, i) =>
           source.waitValid := true.B

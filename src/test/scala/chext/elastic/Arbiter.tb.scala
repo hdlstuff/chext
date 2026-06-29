@@ -1,7 +1,6 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.util._
 
 import chext.elastic
 
@@ -17,8 +16,9 @@ class Arbiter_Tbtop extends Module with chext.TestBenchTop {
   val priority_select = IO(Sink(UInt(4.W)))
 
   {
-    val arbiter0 = Arbiter(rr_sources.toSeq, rr_sink, Chooser.rr, Some(rr_select))
-    val arbiter1 = Arbiter(priority_sources.toSeq, priority_sink, Chooser.rr, Some(priority_select))
+    val arbiter0 = new Arbiter(rr_sources.toSeq, rr_sink, rr_select, Chooser.rr)
+    val arbiter1 =
+      new Arbiter(priority_sources.toSeq, priority_sink, priority_select, Chooser.rr)
   }
 
   declareClock(clock)

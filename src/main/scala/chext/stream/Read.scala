@@ -248,7 +248,7 @@ final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
         out.user := in.user
       }
 
-    val mux0 = elastic.Mux(Seq(wireSource0, wireSource1), sinkResult, wireSelect)
+    val mux0 = new elastic.Mux(Seq(wireSource0, wireSource1), sinkResult, wireSelect)
 
   } else if (resultMode == ReadResultMode.LastSometimesInvalid) {
     val wireLength = elastic.EWire(UInt(wLength.W))
@@ -295,7 +295,7 @@ final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
         out.user := in.user
       }
 
-    val mux0 = elastic.Mux(Seq(wireSource0, wireSource1), sinkResult, wireSelect)
+    val mux0 = new elastic.Mux(Seq(wireSource0, wireSource1), sinkResult, wireSelect)
 
   } else
     throw new IllegalArgumentException(

@@ -1,10 +1,12 @@
 package chext.elastic
 
+
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
 import chext.tracking.Component
+import chext.deadlock
 
 /** Elastic demultiplexer with no explicit select interface. The destination
   * sink is computed directly from the current input token by the `select`
@@ -126,7 +128,7 @@ class DemuxNs[Tin <: Data, Tout <: Data](
       sink => sink.$bits := outFn(source.$bits)
     }
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       source.waitValid := true.B
     }
   }

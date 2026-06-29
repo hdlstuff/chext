@@ -1,9 +1,11 @@
 package chext.elastic
 
+
 import chisel3._
 import util.log2Ceil
 
 import chext.tracking.Component
+import chext.deadlock
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
@@ -57,7 +59,7 @@ final class Counter(
       }
     }
 
-    new chext.deadlock.DeadlockMonitor(this)
+    val monitor0 = new deadlock.Monitor(this)
   }
 }
 

@@ -1,11 +1,13 @@
 package chext.elastic
 
+
 import chisel3._
 import chisel3.util._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
 import chext.tracking.Component
+import chext.deadlock
 
 /** Merges multiple elastic streams into one. It **must** be guaranteed that at
   * any given time at most a single `source` is active.
@@ -54,7 +56,7 @@ final class Merger[T <: Data](
       "Merger: more than one source is active (multiple $valid asserted)"
     )
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       sources.zipWithIndex.foreach { //
         case (x, i) =>
           x.waitValid := VecInit(sources.map { !_.$valid }).asUInt.andR

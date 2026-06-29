@@ -1,11 +1,13 @@
 package chext.elastic
 
+
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 import chisel3.util.log2Ceil
 
 import chext.tracking.Component
+import chext.deadlock
 
 /** Elastic multiplexer with an optional `last` predicate.
   *
@@ -138,7 +140,7 @@ class Mux[Tin <: Data, Tout <: Data](
 
     sink.$bits := outFn(bitsVector(sourceSelect.$bits))
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       sources.zipWithIndex.foreach { //
         case (x, i) =>
           x.waitValid := sourceSelect.$valid && (i.U === sourceSelect.$bits)

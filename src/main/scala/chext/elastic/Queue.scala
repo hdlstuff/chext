@@ -1,5 +1,6 @@
 package chext.elastic
 
+
 import chisel3._
 
 import chisel3.experimental.SourceInfo
@@ -12,6 +13,7 @@ import chisel3.util.log2Ceil
 
 import chext.tracking
 import tracking.Component
+import chext.deadlock
 
 import ConnectOp._
 import chisel3.hacks.deferred
@@ -384,7 +386,7 @@ class Queue[Tin <: Data, Tout <: Data](
       source.$ready := sink.$ready
       sink.$bits := outFn(source.$bits)
 
-      new chext.deadlock.DeadlockMonitor(this) {
+      val monitor0 = new deadlock.Monitor(this) {
         source.waitValid := true.B
       }
     } else {
@@ -479,7 +481,7 @@ class Queue[Tin <: Data, Tout <: Data](
         }
       }
 
-      new chext.deadlock.DeadlockMonitor(this) {
+      val monitor0 = new deadlock.Monitor(this) {
         source.waitValid := empty
         sink.waitReady := full
       }

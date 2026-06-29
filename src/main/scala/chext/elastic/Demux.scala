@@ -1,11 +1,13 @@
 package chext.elastic
 
+
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 import chisel3.util.log2Ceil
 
 import chext.tracking.Component
+import chext.deadlock
 
 /** Elastic demultiplexer with an optional `last` predicate.
   *
@@ -138,7 +140,7 @@ class Demux[Tin <: Data, Tout <: Data](
       sink => sink.$bits := outFn(source.$bits)
     }
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       source.waitValid := sourceSelect.$valid
       sourceSelect.waitValid := true.B
     }

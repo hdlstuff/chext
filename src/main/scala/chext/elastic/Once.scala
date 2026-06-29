@@ -1,11 +1,13 @@
 package chext.elastic
 
+
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.experimental.requireIsHardware
 import chisel3.hacks.deferred
 
 import chext.tracking.Component
+import chext.deadlock
 
 /** Sends an elastic packet only once.
   *
@@ -37,7 +39,7 @@ class Once[T <: Data](val sink: Interface[T])(implicit si_ : SourceInfo)
       sent := true.B
     }
 
-    new chext.deadlock.DeadlockMonitor(this)
+    val monitor0 = new deadlock.Monitor(this)
   }
 
 }

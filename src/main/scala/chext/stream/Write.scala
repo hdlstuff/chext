@@ -248,7 +248,8 @@ final class Write[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
       out.user := in.user
     }
 
-    val mux0 = elastic.Mux(Seq(write0.sinkResult, wireSource1), sinkResult, wireSelect)
+    val mux0 =
+      new elastic.Mux(Seq(write0.sinkResult, wireSource1), sinkResult, wireSelect)
 
   } else
     throw new IllegalArgumentException(

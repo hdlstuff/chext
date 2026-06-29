@@ -169,17 +169,17 @@ class RegisterBlock(
 
   // We need to place a queue of length 1 to be fully AXI-compliant
   // Otherwise, valid signal waits for the ready signal
-  private val rdRespQueue_ = elastic.Queue(chiselTypeOf(s_axil_.r.$bits), 1)
-  private val rdResp_ = rdRespQueue_.source
-  rdRespQueue_.sink :=> s_axil_.r
+  private val queueRdResp_ = elastic.Queue(chiselTypeOf(s_axil_.r.$bits), 1)
+  private val rdResp_ = queueRdResp_.source
+  queueRdResp_.sink :=> s_axil_.r
 
   private val wrReq_ = elastic.SourceBuffer(s_axil_.aw, 1)
   private val wrReqData_ = elastic.SourceBuffer(s_axil_.w, 1)
 
   // Same as before
-  private val wrRespQueue_ = elastic.Queue(chiselTypeOf(s_axil_.b.$bits), 1)
-  private val wrResp_ = wrRespQueue_.source
-  wrRespQueue_.sink :=> s_axil_.b
+  private val queueWrResp_ = elastic.Queue(chiselTypeOf(s_axil_.b.$bits), 1)
+  private val wrResp_ = queueWrResp_.source
+  queueWrResp_.sink :=> s_axil_.b
 
   rdReq_.nodeq()
   rdResp_.noenq()

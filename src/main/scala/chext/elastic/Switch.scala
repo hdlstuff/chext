@@ -175,7 +175,7 @@ abstract class Switch[Tin <: Data, Tout <: Data](
 
       val fork0 = new elastic.Fork(source) {
         val select = PriorityEncoder(branches.map(_.condFn(in)))
-        val demux0 = elastic.Demux(fork(), wireRvDemuxN, fork { select })
+        val demux0 = new elastic.Demux(fork(), wireRvDemuxN, fork { select })
         fork { select } :=> queueIndex.source
       }
 
@@ -187,12 +187,9 @@ abstract class Switch[Tin <: Data, Tout <: Data](
         }
       }
 
-      val mux0 = elastic.Mux(
-        wireRvMuxN,
-        sink,
-        queueIndex.sink,
-        lastFn_.getOrElse((x: Tout) => true.B)
-      )
+      val mux0 = new elastic.Mux(wireRvMuxN, sink, queueIndex.sink) {
+        this.last { lastFn_.getOrElse((x: Tout) => true.B) }
+      }
     }
   }
 }

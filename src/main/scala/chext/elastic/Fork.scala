@@ -1,5 +1,6 @@
 package chext.elastic
 
+
 import chisel3._
 
 import chisel3.experimental.SourceInfo
@@ -10,6 +11,7 @@ import scala.collection.mutable.ListBuffer
 
 import chext.tracking
 import tracking.Component
+import chext.deadlock
 
 abstract class Fork[T <: Data](
     source: Interface[T],
@@ -53,7 +55,7 @@ abstract class Fork[T <: Data](
     else
       forkImpl.lazyFork(source, sinkList.toSeq, false)
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       source.waitValid := true.B
     }
   }

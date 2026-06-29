@@ -1,11 +1,13 @@
 package chext.elastic
 
+
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 import chisel3.util.log2Ceil
 
 import chext.tracking.Component
+import chext.deadlock
 
 /** Elastic arbiter that selects one valid source and forwards it to the sink.
   *
@@ -118,7 +120,7 @@ final class Arbiter[Tin <: Data, Tout <: Data](
     sink.$bits := outFn(bitsVector(choice))
     sinkSelect.$bits := choice
 
-    new chext.deadlock.DeadlockMonitor(this) {
+    val monitor0 = new deadlock.Monitor(this) {
       sources.zipWithIndex.foreach { //
         case (x, i) =>
           // if none of the sources are valid, we waitValid on them all

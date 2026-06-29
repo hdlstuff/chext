@@ -53,7 +53,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
   }
 
   private def implRead(): Unit = prefix("read") {
-    val portQueue = elastic.Queue(
+    val queuePort = elastic.Queue(
       genPort,
       capacityPortQueueR,
       flow = true,
@@ -75,14 +75,14 @@ class Demux(val cfg: DemuxConfig) extends Module {
       new elastic.Fork(arPort) {
         fork(in._1) :=> demuxInput
         fork(in._2) :=> demuxSelect
-        fork(in._2) :=> portQueue.source
+        fork(in._2) :=> queuePort.source
       }
 
-      elastic.Demux(demuxInput, m_axil_.map(_.ar), demuxSelect)
+      val demux0 = new elastic.Demux(demuxInput, m_axil_.map(_.ar), demuxSelect)
     }
 
     def rLogic: Unit = {
-      elastic.Mux(m_axil_.map { _.r }, s_axil_.r, portQueue.sink)
+      val mux0 = new elastic.Mux(m_axil_.map { _.r }, s_axil_.r, queuePort.sink)
     }
 
     arLogic
@@ -90,14 +90,14 @@ class Demux(val cfg: DemuxConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val portQueueW = elastic.Queue(
+    val queuePortW = elastic.Queue(
       genPort,
       capacityPortQueueW,
       flow = true,
       pipe = true
     )
 
-    val portQueueB = elastic.Queue(
+    val queuePortB = elastic.Queue(
       genPort,
       capacityPortQueueB,
       flow = true,
@@ -120,19 +120,19 @@ class Demux(val cfg: DemuxConfig) extends Module {
         fork(in._1) :=> demuxAwInput
 
         fork(in._2) :=> demuxAwSelect
-        fork(in._2) :=> portQueueW.source
-        fork(in._2) :=> portQueueB.source
+        fork(in._2) :=> queuePortW.source
+        fork(in._2) :=> queuePortB.source
       }
 
-      elastic.Demux(demuxAwInput, m_axil_.map { _.aw }, demuxAwSelect)
+      val demux0 = new elastic.Demux(demuxAwInput, m_axil_.map { _.aw }, demuxAwSelect)
     }
 
     def wLogic: Unit = {
-      elastic.Demux(s_axil_.w, m_axil_.map { _.w }, portQueueW.sink)
+      val demux1 = new elastic.Demux(s_axil_.w, m_axil_.map { _.w }, queuePortW.sink)
     }
 
     def bLogic: Unit = {
-      elastic.Mux(m_axil_.map { _.b }, s_axil_.b, portQueueB.sink)
+      val mux0 = new elastic.Mux(m_axil_.map { _.b }, s_axil_.b, queuePortB.sink)
     }
 
     awLogic

@@ -45,13 +45,13 @@ abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interfa
       ctr.noInc()
       ctr.noDec()
 
-      val qOutput = Queue(chiselTypeOf(sink.$bits), queueLength)
+      val queueOutput = Queue(chiselTypeOf(sink.$bits), queueLength)
 
-      qOutput.source.noenq()
+      queueOutput.source.noenq()
       source.nodeq()
 
       in := source.$bits
-      qOutput.source.$bits := out
+      queueOutput.source.$bits := out
 
       source.$ready := ctr.notFull && source.$valid
 
@@ -59,10 +59,10 @@ abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interfa
         ctr.inc()
       }
 
-      qOutput.source.$valid := ShiftRegister(source.fire, delay)
-      qOutput.sink :=> sink
+      queueOutput.source.$valid := ShiftRegister(source.fire, delay)
+      queueOutput.sink :=> sink
 
-      when(qOutput.sink.fire) {
+      when(queueOutput.sink.fire) {
         ctr.dec()
       }
     }

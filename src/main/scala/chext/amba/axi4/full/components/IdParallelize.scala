@@ -72,12 +72,12 @@ private class SyncWriteElasticReadMemory[T <: Data](
     rdCounter.noInc()
     rdCounter.noDec()
 
-    val rdQueue = elastic.Queue(gen, numOutstandingRead)
-    rdQueue.source.noenq()
-    rdQueue.source.markSink()
+    val queueRd = elastic.Queue(gen, numOutstandingRead)
+    queueRd.source.noenq()
+    queueRd.source.markSink()
 
     io.rdReq.$ready := rdCounter.notFull
-    rdQueue.sink :=> io.rdResp
+    queueRd.sink :=> io.rdResp
 
     sram.readPorts(0).address := DontCare
     sram.readPorts(0).enable := true.B // TODO check this
@@ -88,7 +88,7 @@ private class SyncWriteElasticReadMemory[T <: Data](
     }
 
     when(ShiftRegister(io.rdReq.fire, rdLatency)) {
-      rdQueue.source.enq(sram.readPorts(0).data)
+      queueRd.source.enq(sram.readPorts(0).data)
     }
 
     when(io.rdResp.fire) {

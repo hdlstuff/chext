@@ -81,7 +81,7 @@ class Loop[Tstate <: Data](
       val ewire3 = EWire(genState)
 
       val fork0 = new Fork(sourceInit_) {
-        val demux0 = Demux(
+        val demux0 = new Demux(
           fork(),
           Seq(ewire0, ewire1),
           fork { endFn(in).asUInt }
@@ -89,7 +89,7 @@ class Loop[Tstate <: Data](
       }
 
       val fork1 = new Fork(sourceNext) {
-        val demux1 = Demux(
+        val demux1 = new Demux(
           fork(),
           Seq(SinkBuffer(ewire2), ewire3),
           fork { endFn(in).asUInt }

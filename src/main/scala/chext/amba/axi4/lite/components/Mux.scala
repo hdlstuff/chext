@@ -50,7 +50,7 @@ class Mux(val cfg: MuxConfig) extends Module {
   private val m_axil_ = MasterBuffer(m_axil, masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
-    val portQueue = elastic.Queue(
+    val queuePort = elastic.Queue(
       genPort,
       capacityPortQueueR,
       flow = true,
@@ -58,16 +58,16 @@ class Mux(val cfg: MuxConfig) extends Module {
     )
 
     def arLogic: Unit = {
-      elastic.Arbiter(
+      val arbiter0 = new elastic.Arbiter(
         s_axil_.map { _.ar },
         m_axil_.ar,
-        arbiterPolicy,
-        Some(portQueue.source)
+        queuePort.source,
+        arbiterPolicy
       )
     }
 
     def rLogic: Unit = {
-      elastic.Demux(m_axil_.r, s_axil_.map { _.r }, portQueue.sink)
+      val demux0 = new elastic.Demux(m_axil_.r, s_axil_.map { _.r }, queuePort.sink)
     }
 
     arLogic
@@ -75,14 +75,14 @@ class Mux(val cfg: MuxConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val portQueueW = elastic.Queue(
+    val queuePortW = elastic.Queue(
       genPort,
       capacityPortQueueW,
       flow = true,
       pipe = true
     )
 
-    val portQueueB = elastic.Queue(
+    val queuePortB = elastic.Queue(
       genPort,
       capacityPortQueueB,
       flow = true,
@@ -92,25 +92,25 @@ class Mux(val cfg: MuxConfig) extends Module {
     def awLogic: Unit = {
       val arbiterSelect = elastic.EWire(genPort)
 
-      elastic.Arbiter(
+      val arbiter0 = new elastic.Arbiter(
         s_axil_.map { _.aw },
         m_axil_.aw,
-        arbiterPolicy,
-        Some(arbiterSelect)
+        arbiterSelect,
+        arbiterPolicy
       )
 
       new elastic.Fork(arbiterSelect) {
-        fork() :=> portQueueW.source
-        fork() :=> portQueueB.source
+        fork() :=> queuePortW.source
+        fork() :=> queuePortB.source
       }
     }
 
     def wLogic: Unit = {
-      elastic.Mux(s_axil_.map { _.w }, m_axil_.w, portQueueW.sink)
+      val mux0 = new elastic.Mux(s_axil_.map { _.w }, m_axil_.w, queuePortW.sink)
     }
 
     def bLogic: Unit = {
-      elastic.Demux(m_axil_.b, s_axil_.map { _.b }, portQueueB.sink)
+      val demux0 = new elastic.Demux(m_axil_.b, s_axil_.map { _.b }, queuePortB.sink)
     }
 
     awLogic

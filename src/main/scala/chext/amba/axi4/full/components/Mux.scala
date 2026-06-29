@@ -53,7 +53,7 @@ class Mux(val cfg: MuxConfig) extends Module {
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {
-      val arbiterAR = elastic.Arbiter(
+      val arbiterAR = new elastic.ArbiterNs(
         s_axi_.map { _.ar },
         m_axi_.ar,
         arbiterPolicy
@@ -70,7 +70,7 @@ class Mux(val cfg: MuxConfig) extends Module {
       }
 
       // R channel supports burst interleaving, so no isLastFn
-      val demuxR = elastic.Demux(
+      val demuxR = new elastic.Demux(
         demuxInput,
         s_axi_.map { _.r },
         demuxSelect
@@ -82,26 +82,23 @@ class Mux(val cfg: MuxConfig) extends Module {
   }
 
   private def implWrite(): Unit = prefix("write") {
-    val portQueue = elastic.Queue(genPort, 32, flow = true, pipe = true)
+    val queuePort = elastic.Queue(genPort, 32, flow = true, pipe = true)
 
     def awLogic: Unit = {
-      val arbiterAW = elastic.Arbiter(
+      val arbiterAW = new elastic.Arbiter(
         s_axi_.map { _.aw },
         m_axi_.aw,
-        arbiterPolicy,
-        Some(portQueue.source)
+        queuePort.source,
+        arbiterPolicy
       )
     }
 
     def wLogic: Unit = {
       // W channel does not support burst interleaving due to the selection logic
       // so isLastFn
-      val muxW = elastic.Mux(
-        s_axi_.map { _.w },
-        m_axi_.w,
-        portQueue.sink,
-        isLastFn = (x: WriteDataChannel) => x.last
-      )
+      val muxW = new elastic.Mux(s_axi_.map { _.w }, m_axi_.w, queuePort.sink) {
+        last { (x: WriteDataChannel) => x.last }
+      }
     }
 
     def bLogic: Unit = {
@@ -113,7 +110,7 @@ class Mux(val cfg: MuxConfig) extends Module {
         fork { in.id >> axiSlaveCfg.wId } :=> demuxSelect
       }
 
-      val demuxB = elastic.Demux(
+      val demuxB = new elastic.Demux(
         demuxInput,
         s_axi_.map { _.b },
         demuxSelect

@@ -100,7 +100,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
         fork(in._2) :=> demuxSelect
       }
 
-      elastic.Demux(
+      val demux0 = new elastic.Demux(
         demuxInput,
         m_axi_.map { _.ar },
         demuxSelect
@@ -109,7 +109,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
 
     def rLogic: Unit = {
       // R channel supports burst interleaving, so no isLastFn
-      elastic.Arbiter(
+      val arbiter0 = new elastic.ArbiterNs(
         m_axi_.map { _.r },
         s_axi_.r,
         arbiterPolicy
@@ -137,7 +137,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
     transactionTracker.noComplete()
     transactionTracker.noInitiate()
 
-    val portQueue = elastic.Queue(
+    val queuePort = elastic.Queue(
       genPort,
       capacityPortQueueW,
       flow = true,
@@ -166,25 +166,22 @@ class Demux(val cfg: DemuxConfig) extends Module {
       val fork0 = new elastic.Fork(awPort) {
         fork(in._1) :=> demuxInput
         fork(in._2) :=> demuxSelect
-        fork(in._2) :=> portQueue.source
+        fork(in._2) :=> queuePort.source
       }
 
-      elastic.Demux(demuxInput, m_axi_.map { _.aw }, demuxSelect)
+      val demux0 = new elastic.Demux(demuxInput, m_axi_.map { _.aw }, demuxSelect)
     }
 
     def wLogic: Unit = {
       // W channel does not support burst interleaving due to the selection logic
       // so isLastFn
-      elastic.Demux(
-        s_axi_.w,
-        m_axi_.map { _.w },
-        portQueue.sink,
-        isLastFn = (x: WriteDataChannel) => x.last
-      )
+      val demux1 = new elastic.Demux(s_axi_.w, m_axi_.map { _.w }, queuePort.sink) {
+        last { (x: WriteDataChannel) => x.last }
+      }
     }
 
     def bLogic: Unit = {
-      elastic.Arbiter(
+      val arbiter0 = new elastic.ArbiterNs(
         m_axi_.map { _.b },
         s_axi_.b,
         arbiterPolicy
