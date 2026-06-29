@@ -84,11 +84,8 @@ class Store[Tuser <: Data](val cfg: StoreConfig[Tuser]) extends Module {
     }
 
     if (axiCfg.read) {
-      m_axi.ar.noenq()
-      m_axi.r.nodeq()
-
-      m_axi.ar.markSink()
-      m_axi.r.markSource()
+      val nullSourceAr = new elastic.NullSource(m_axi.ar)
+      val nullSinkR = new elastic.NullSink(m_axi.r)
     }
   }
 }

@@ -42,41 +42,6 @@
   ],
   "wires" : [
     {
-      "path" : "/axiBridge2/s_axi.w",
-      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/s_axi.aw",
-      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/s_axi.ar",
-      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read.resp",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write.resp",
-      "tpe" : "chext.elastic.Interface[UInt<0>]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/axiBridge1/s_axi.w",
       "tpe" : "chext.elastic.Interface[WriteDataChannel]",
       "args" : {
@@ -106,6 +71,41 @@
     },
     {
       "path" : "/axiBridge1/write.resp",
+      "tpe" : "chext.elastic.Interface[UInt<0>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/s_axi.w",
+      "tpe" : "chext.elastic.Interface[WriteDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/s_axi.aw",
+      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/s_axi.ar",
+      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read.resp",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write.resp",
       "tpe" : "chext.elastic.Interface[UInt<0>]",
       "args" : {
         
@@ -189,34 +189,6 @@
       }
     },
     {
-      "path" : "/axiBridge2/s_axi.b",
-      "tpe" : "chext.elastic.Interface[WriteResponseChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/s_axi.r",
-      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read.req",
-      "tpe" : "chext.elastic.Interface[UInt<18>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write.req",
-      "tpe" : "chext.elastic.Interface[WriteRequest]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/axiBridge1/s_axi.b",
       "tpe" : "chext.elastic.Interface[WriteResponseChannel]",
       "args" : {
@@ -239,6 +211,34 @@
     },
     {
       "path" : "/axiBridge1/write.req",
+      "tpe" : "chext.elastic.Interface[WriteRequest]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/s_axi.b",
+      "tpe" : "chext.elastic.Interface[WriteResponseChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/s_axi.r",
+      "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read.req",
+      "tpe" : "chext.elastic.Interface[UInt<18>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write.req",
       "tpe" : "chext.elastic.Interface[WriteRequest]",
       "args" : {
         
@@ -324,125 +324,6 @@
     {
       "path" : "/write/m_axi.ar",
       "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_repeat0_result",
-      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queueSink",
-      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_transform0_result",
-      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_idLast",
-      "tpe" : "chext.elastic.Interface[IdLastBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_repeat0_result",
-      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queueSink",
-      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_transform0_result",
-      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_idLast",
-      "tpe" : "chext.elastic.Interface[IdLastBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_idLastJoined",
-      "tpe" : "chext.elastic.Interface[IdLastBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_addressGenerator/source",
-      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/source",
-      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_addressGenerator/sink",
-      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/sink",
-      "tpe" : "chext.elastic.Interface[AddrSizeStrobeLastBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/source",
-      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/source",
-      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/sink",
-      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/sink",
-      "tpe" : "chext.elastic.Interface[AddrSizeStrobeLastBundle]",
       "args" : {
         
       }
@@ -567,15 +448,120 @@
       }
     },
     {
-      "path" : "/mem/bridge2/read.req",
-      "tpe" : "chext.elastic.Interface[UInt<18>]",
+      "path" : "/axiBridge2/read_fork0_repeat0_result",
+      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
       "args" : {
         
       }
     },
     {
-      "path" : "/mem/bridge2/write.req",
-      "tpe" : "chext.elastic.Interface[WriteRequest]",
+      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queueSink",
+      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_fork0_transform0_result",
+      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_idLast",
+      "tpe" : "chext.elastic.Interface[IdLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_fork1_repeat0_result",
+      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queueSink",
+      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_fork1_transform0_result",
+      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_idLast",
+      "tpe" : "chext.elastic.Interface[IdLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_idLastJoined",
+      "tpe" : "chext.elastic.Interface[IdLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_addressGenerator/source",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/source",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_addressGenerator/sink",
+      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/sink",
+      "tpe" : "chext.elastic.Interface[AddrSizeStrobeLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/source",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/source",
+      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/sink",
+      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/sink",
+      "tpe" : "chext.elastic.Interface[AddrSizeStrobeLastBundle]",
       "args" : {
         
       }
@@ -595,15 +581,15 @@
       }
     },
     {
-      "path" : "/mem/bridge2/read.resp",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "path" : "/mem/bridge2/read.req",
+      "tpe" : "chext.elastic.Interface[UInt<18>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/mem/bridge2/write.resp",
-      "tpe" : "chext.elastic.Interface[UInt<0>]",
+      "path" : "/mem/bridge2/write.req",
+      "tpe" : "chext.elastic.Interface[WriteRequest]",
       "args" : {
         
       }
@@ -623,14 +609,14 @@
       }
     },
     {
-      "path" : "/mem/bridge2/rdResp",
+      "path" : "/mem/bridge2/read.resp",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/mem/bridge2/wrResp",
+      "path" : "/mem/bridge2/write.resp",
       "tpe" : "chext.elastic.Interface[UInt<0>]",
       "args" : {
         
@@ -645,6 +631,20 @@
     },
     {
       "path" : "/mem/bridge1/wrResp",
+      "tpe" : "chext.elastic.Interface[UInt<0>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/mem/bridge2/rdResp",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/mem/bridge2/wrResp",
       "tpe" : "chext.elastic.Interface[UInt<0>]",
       "args" : {
         
@@ -917,7 +917,7 @@
       }
     },
     {
-      "path" : "/write/write0/w_chunk0/source",
+      "path" : "/write/write0/b_chunk0/source",
       "tpe" : "chext.elastic.Interface[ChunkTask]",
       "args" : {
         
@@ -931,14 +931,14 @@
       }
     },
     {
-      "path" : "/write/write0/b_chunk0/source",
+      "path" : "/write/write0/w_chunk0/source",
       "tpe" : "chext.elastic.Interface[ChunkTask]",
       "args" : {
         
       }
     },
     {
-      "path" : "/write/write0/w_chunk0/sink",
+      "path" : "/write/write0/b_chunk0/sink",
       "tpe" : "chext.elastic.Interface[ChunkResult]",
       "args" : {
         
@@ -952,7 +952,7 @@
       }
     },
     {
-      "path" : "/write/write0/b_chunk0/sink",
+      "path" : "/write/write0/w_chunk0/sink",
       "tpe" : "chext.elastic.Interface[ChunkResult]",
       "args" : {
         
@@ -1559,535 +1559,6 @@
       }
     },
     {
-      "path" : "/axiBridge2/read_fork0",
-      "tpe" : "Fork",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/s_axi.ar",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink_0",
-          {
-            "path" : "/axiBridge2/read_fork0_repeat0_result",
-            "desc" : "Wire"
-          }
-        ],
-        [
-          "sink_1",
-          {
-            "path" : "/axiBridge2/read_fork0_transform0_result",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queue0",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/read_fork0_repeat0_result",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queueSink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_transform0",
-      "tpe" : "Transform",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/read_fork0_transform0_result",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/read_addressGenerator/source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_transform0",
-      "tpe" : "Transform",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/read_addressGenerator/sink",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/read.req",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_join0",
-      "tpe" : "Join",
-      "sources" : [
-        [
-          "source_0",
-          {
-            "path" : "/axiBridge2/read.resp",
-            "desc" : "IO"
-          }
-        ],
-        [
-          "source_1",
-          {
-            "path" : "/axiBridge2/read_idLast",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/s_axi.r",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1",
-      "tpe" : "Fork",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/s_axi.aw",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink_0",
-          {
-            "path" : "/axiBridge2/write_fork1_repeat0_result",
-            "desc" : "Wire"
-          }
-        ],
-        [
-          "sink_1",
-          {
-            "path" : "/axiBridge2/write_fork1_transform0_result",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queue0",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_fork1_repeat0_result",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queueSink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_transform0",
-      "tpe" : "Transform",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_fork1_transform0_result",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_join0",
-      "tpe" : "Join",
-      "sources" : [
-        [
-          "source_0",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/sink",
-            "desc" : "ChildIO"
-          }
-        ],
-        [
-          "source_1",
-          {
-            "path" : "/axiBridge2/s_axi.w",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write.req",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_join1",
-      "tpe" : "Join",
-      "sources" : [
-        [
-          "source_0",
-          {
-            "path" : "/axiBridge2/write_idLast",
-            "desc" : "Wire"
-          }
-        ],
-        [
-          "source_1",
-          {
-            "path" : "/axiBridge2/write.resp",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_idLastJoined",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_drop0",
-      "tpe" : "Drop",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_idLastJoined",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/s_axi.b",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_repeat0_count",
-      "tpe" : "Count",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queueSink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_idLast",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/axiBridge2/write_fork1_repeat0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_repeat0_count",
-      "tpe" : "Count",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queueSink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/read_idLast",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/axiBridge2/read_fork0_repeat0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_addressGenerator/transducer",
-      "tpe" : "Transducer",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/read_addressGenerator/source",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/read_addressGenerator/sink",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/elastic0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/source",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/elastic1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/sink",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/elastic2",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/sink",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/sink",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/transducer",
-      "tpe" : "Transducer",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/source",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/sink",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/transform0",
-      "tpe" : "Transform",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/source",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/sink",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/axiBridge1/read_fork0",
       "tpe" : "Fork",
       "sources" : [
@@ -2617,6 +2088,535 @@
       }
     },
     {
+      "path" : "/axiBridge2/read_fork0",
+      "tpe" : "Fork",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/s_axi.ar",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink_0",
+          {
+            "path" : "/axiBridge2/read_fork0_repeat0_result",
+            "desc" : "Wire"
+          }
+        ],
+        [
+          "sink_1",
+          {
+            "path" : "/axiBridge2/read_fork0_transform0_result",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queue0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/read_fork0_repeat0_result",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queueSink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_fork0_transform0",
+      "tpe" : "Transform",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/read_fork0_transform0_result",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/read_addressGenerator/source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_transform0",
+      "tpe" : "Transform",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/read_addressGenerator/sink",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/read.req",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_join0",
+      "tpe" : "Join",
+      "sources" : [
+        [
+          "source_0",
+          {
+            "path" : "/axiBridge2/read.resp",
+            "desc" : "IO"
+          }
+        ],
+        [
+          "source_1",
+          {
+            "path" : "/axiBridge2/read_idLast",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/s_axi.r",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_fork1",
+      "tpe" : "Fork",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/s_axi.aw",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink_0",
+          {
+            "path" : "/axiBridge2/write_fork1_repeat0_result",
+            "desc" : "Wire"
+          }
+        ],
+        [
+          "sink_1",
+          {
+            "path" : "/axiBridge2/write_fork1_transform0_result",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queue0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/write_fork1_repeat0_result",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queueSink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_fork1_transform0",
+      "tpe" : "Transform",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/write_fork1_transform0_result",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_join0",
+      "tpe" : "Join",
+      "sources" : [
+        [
+          "source_0",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/sink",
+            "desc" : "ChildIO"
+          }
+        ],
+        [
+          "source_1",
+          {
+            "path" : "/axiBridge2/s_axi.w",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write.req",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_join1",
+      "tpe" : "Join",
+      "sources" : [
+        [
+          "source_0",
+          {
+            "path" : "/axiBridge2/write_idLast",
+            "desc" : "Wire"
+          }
+        ],
+        [
+          "source_1",
+          {
+            "path" : "/axiBridge2/write.resp",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write_idLastJoined",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_drop0",
+      "tpe" : "Drop",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/write_idLastJoined",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/s_axi.b",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_fork1_repeat0_count",
+      "tpe" : "Count",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queueSink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write_idLast",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "/axiBridge2/write_fork1_repeat0",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_fork0_repeat0_count",
+      "tpe" : "Count",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queueSink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/read_idLast",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "/axiBridge2/read_fork0_repeat0",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_addressGenerator/transducer",
+      "tpe" : "Transducer",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/read_addressGenerator/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/read_addressGenerator/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/elastic0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/elastic1",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/sink",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/elastic2",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/sink",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/transducer",
+      "tpe" : "Transducer",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/addressGenerator/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/transform0",
+      "tpe" : "Transform",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiBridge2/write_addressStrobeGenerator/strobeGenerator/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/mem/elastic0",
       "tpe" : "Connect",
       "sources" : [
@@ -2825,58 +2825,6 @@
       }
     },
     {
-      "path" : "/mem/bridge2/rdResp_sinkBuffer0_queue0",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/mem/bridge2/rdResp",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge2/read.resp",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge2/wrResp_sinkBuffer0_queue0",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/mem/bridge2/wrResp",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge2/write.resp",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/mem/bridge1/rdResp_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
@@ -2919,6 +2867,58 @@
           "sink",
           {
             "path" : "/mem/bridge1/write.resp",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/mem/bridge2/rdResp_sinkBuffer0_queue0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/mem/bridge2/rdResp",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/mem/bridge2/read.resp",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/mem/bridge2/wrResp_sinkBuffer0_queue0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/mem/bridge2/wrResp",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/mem/bridge2/write.resp",
             "desc" : "IO"
           }
         ]
@@ -3378,6 +3378,63 @@
             "desc" : "IO"
           }
         ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/read/read0/nullSourceAw",
+      "tpe" : "NullSource",
+      "sources" : [
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/read/read0/m_axi.aw",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/read/read0/nullSourceW",
+      "tpe" : "NullSource",
+      "sources" : [
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/read/read0/m_axi.w",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/read/read0/nullSinkB",
+      "tpe" : "NullSink",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/read/read0/m_axi.b",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
       ],
       "parent" : "",
       "args" : {
@@ -4063,6 +4120,44 @@
       }
     },
     {
+      "path" : "/write/write0/nullSourceAr",
+      "tpe" : "NullSource",
+      "sources" : [
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/write/write0/m_axi.ar",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/write/write0/nullSinkR",
+      "tpe" : "NullSink",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/write/write0/m_axi.r",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/write/write0/w_repeat0_count",
       "tpe" : "Count",
       "sources" : [
@@ -4089,13 +4184,13 @@
       }
     },
     {
-      "path" : "/write/write0/w_chunk0/count0",
+      "path" : "/write/write0/b_chunk0/count0",
       "tpe" : "Count",
       "sources" : [
         [
           "source",
           {
-            "path" : "/write/write0/w_chunk0/source",
+            "path" : "/write/write0/b_chunk0/source",
             "desc" : "IO"
           }
         ]
@@ -4104,7 +4199,7 @@
         [
           "sink",
           {
-            "path" : "/write/write0/w_chunk0/sink",
+            "path" : "/write/write0/b_chunk0/sink",
             "desc" : "IO"
           }
         ]
@@ -4141,13 +4236,13 @@
       }
     },
     {
-      "path" : "/write/write0/b_chunk0/count0",
+      "path" : "/write/write0/w_chunk0/count0",
       "tpe" : "Count",
       "sources" : [
         [
           "source",
           {
-            "path" : "/write/write0/b_chunk0/source",
+            "path" : "/write/write0/w_chunk0/source",
             "desc" : "IO"
           }
         ]
@@ -4156,7 +4251,7 @@
         [
           "sink",
           {
-            "path" : "/write/write0/b_chunk0/sink",
+            "path" : "/write/write0/w_chunk0/sink",
             "desc" : "IO"
           }
         ]
@@ -4168,28 +4263,6 @@
     }
   ],
   "containers" : [
-    {
-      "path" : "/axiBridge2/read_fork0_repeat0",
-      "tpe" : "Repeat",
-      "children" : [
-        "/axiBridge2/read_fork0_repeat0_count"
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_repeat0",
-      "tpe" : "Repeat",
-      "children" : [
-        "/axiBridge2/write_fork1_repeat0_count"
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
     {
       "path" : "/axiBridge1/read_fork0_repeat0",
       "tpe" : "Repeat",
@@ -4206,6 +4279,28 @@
       "tpe" : "Repeat",
       "children" : [
         "/axiBridge1/write_fork1_repeat0_count"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/read_fork0_repeat0",
+      "tpe" : "Repeat",
+      "children" : [
+        "/axiBridge2/read_fork0_repeat0_count"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiBridge2/write_fork1_repeat0",
+      "tpe" : "Repeat",
+      "children" : [
+        "/axiBridge2/write_fork1_repeat0_count"
       ],
       "parent" : "",
       "args" : {

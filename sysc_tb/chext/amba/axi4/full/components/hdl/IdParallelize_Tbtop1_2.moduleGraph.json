@@ -105,13 +105,6 @@
       }
     },
     {
-      "path" : "/dut/write_bufferPayload/io.rdReq",
-      "tpe" : "chext.elastic.Interface[UInt<3>]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/dut/read_bufferPayload/io.rdReq",
       "tpe" : "chext.elastic.Interface[UInt<5>]",
       "args" : {
@@ -119,8 +112,8 @@
       }
     },
     {
-      "path" : "/dut/write_bufferPayload/io.rdResp",
-      "tpe" : "chext.elastic.Interface[WriteResponseChannel]",
+      "path" : "/dut/write_bufferPayload/io.rdReq",
+      "tpe" : "chext.elastic.Interface[UInt<3>]",
       "args" : {
         
       }
@@ -128,6 +121,13 @@
     {
       "path" : "/dut/read_bufferPayload/io.rdResp",
       "tpe" : "chext.elastic.Interface[ReadDataChannel]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/dut/write_bufferPayload/io.rdResp",
+      "tpe" : "chext.elastic.Interface[WriteResponseChannel]",
       "args" : {
         
       }

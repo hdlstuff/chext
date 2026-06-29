@@ -591,6 +591,63 @@
       }
     },
     {
+      "path" : "/axiTestSlave/nullSinkAw",
+      "tpe" : "NullSink",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiTestSlave/s_axi.aw",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiTestSlave/nullSinkW",
+      "tpe" : "NullSink",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/axiTestSlave/s_axi.w",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axiTestSlave/nullSourceB",
+      "tpe" : "NullSource",
+      "sources" : [
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/axiTestSlave/s_axi.b",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/axiTestSlave/repeat0_count",
       "tpe" : "Count",
       "sources" : [
@@ -1328,6 +1385,63 @@
             "desc" : "IO"
           }
         ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/read/read0/nullSourceAw",
+      "tpe" : "NullSource",
+      "sources" : [
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/read/read0/m_axi.aw",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/read/read0/nullSourceW",
+      "tpe" : "NullSource",
+      "sources" : [
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/read/read0/m_axi.w",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/read/read0/nullSinkB",
+      "tpe" : "NullSink",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/read/read0/m_axi.b",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
       ],
       "parent" : "",
       "args" : {

@@ -35,13 +35,9 @@ private class AxiTestSlave(axiCfg: axi4.Config) extends Module {
   }
 
   if (axiCfg.write) {
-    s_axi.aw.nodeq()
-    s_axi.w.nodeq()
-    s_axi.b.noenq()
-
-    s_axi.aw.markSource()
-    s_axi.w.markSource()
-    s_axi.b.markSink()
+    val nullSinkAw = new elastic.NullSink(s_axi.aw)
+    val nullSinkW = new elastic.NullSink(s_axi.w)
+    val nullSourceB = new elastic.NullSource(s_axi.b)
   }
 }
 

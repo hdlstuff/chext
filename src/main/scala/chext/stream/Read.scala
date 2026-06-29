@@ -182,13 +182,9 @@ private class Read0[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
     }
 
     if (axiCfg.write) {
-      m_axi.aw.noenq()
-      m_axi.w.noenq()
-      m_axi.b.nodeq()
-
-      m_axi.aw.markSink()
-      m_axi.w.markSink()
-      m_axi.b.markSource()
+      val nullSourceAw = new elastic.NullSource(m_axi.aw)
+      val nullSourceW = new elastic.NullSource(m_axi.w)
+      val nullSinkB = new elastic.NullSink(m_axi.b)
     }
   }
 }

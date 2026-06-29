@@ -41,11 +41,8 @@ private object Prefix_Emit extends App {
       }
     }
 
-    wire0.noenq()
-    wire1.nodeq()
-
-    wire0.markSink()
-    wire1.markSource()
+    val nullSource0 = new e.NullSource(wire0)
+    val nullSink0 = new e.NullSink(wire1)
   }
 
   class MyModule extends Module {

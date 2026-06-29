@@ -567,20 +567,6 @@
       }
     },
     {
-      "path" : "/mem/bridge1/read.req",
-      "tpe" : "chext.elastic.Interface[UInt<12>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge1/write.req",
-      "tpe" : "chext.elastic.Interface[WriteRequest]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/mem/bridge2/read.req",
       "tpe" : "chext.elastic.Interface[UInt<12>]",
       "args" : {
@@ -595,15 +581,15 @@
       }
     },
     {
-      "path" : "/mem/bridge1/read.resp",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "path" : "/mem/bridge1/read.req",
+      "tpe" : "chext.elastic.Interface[UInt<12>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/mem/bridge1/write.resp",
-      "tpe" : "chext.elastic.Interface[UInt<0>]",
+      "path" : "/mem/bridge1/write.req",
+      "tpe" : "chext.elastic.Interface[WriteRequest]",
       "args" : {
         
       }
@@ -623,14 +609,14 @@
       }
     },
     {
-      "path" : "/mem/bridge1/rdResp",
+      "path" : "/mem/bridge1/read.resp",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/mem/bridge1/wrResp",
+      "path" : "/mem/bridge1/write.resp",
       "tpe" : "chext.elastic.Interface[UInt<0>]",
       "args" : {
         
@@ -645,6 +631,20 @@
     },
     {
       "path" : "/mem/bridge2/wrResp",
+      "tpe" : "chext.elastic.Interface[UInt<0>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/mem/bridge1/rdResp",
+      "tpe" : "chext.elastic.Interface[UInt<32>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/mem/bridge1/wrResp",
       "tpe" : "chext.elastic.Interface[UInt<0>]",
       "args" : {
         
@@ -2913,58 +2913,6 @@
       }
     },
     {
-      "path" : "/mem/bridge1/rdResp_sinkBuffer0_queue0",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/mem/bridge1/rdResp",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge1/read.resp",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge1/wrResp_sinkBuffer0_queue0",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/mem/bridge1/wrResp",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge1/write.resp",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/mem/bridge2/rdResp_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
@@ -3007,6 +2955,58 @@
           "sink",
           {
             "path" : "/mem/bridge2/write.resp",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/mem/bridge1/rdResp_sinkBuffer0_queue0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/mem/bridge1/rdResp",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/mem/bridge1/read.resp",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/mem/bridge1/wrResp_sinkBuffer0_queue0",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/mem/bridge1/wrResp",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/mem/bridge1/write.resp",
             "desc" : "IO"
           }
         ]
