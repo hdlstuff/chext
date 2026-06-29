@@ -37,7 +37,7 @@
   ],
   "components" : [
     {
-      "path" : "/Unnamed0",
+      "path" : "/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -63,7 +63,7 @@
       }
     },
     {
-      "path" : "/Unnamed1",
+      "path" : "/elastic1",
       "tpe" : "Connect",
       "sources" : [
         [

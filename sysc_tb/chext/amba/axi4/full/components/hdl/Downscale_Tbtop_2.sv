@@ -306,44 +306,12 @@ module ReadWriteToRawBridge(
   output [7:0]  raw_wstrb
 );
 
-  wire [63:0] rdResp_sinkBuffer0_sink_bits;
-  wire        wrResp_sinkBuffer0_source_ready;
-  wire        rdResp_sinkBuffer0_source_ready;
-  wire        rdResp_valid;
   wire [63:0] rdResp_bits;
   wire        _read_dataQueue_io_deq_valid;
   wire        _arbiter_arbiter_chooseRd;
   wire        _ctrWriteResp_io_empty;
   wire        _ctrWrite_io_full;
   wire        _ctrRead_io_full;
-  wire        rdResp_sinkBuffer0_sink_ready = read_resp_ready;
-  wire        wrResp_sinkBuffer0_sink_ready = write_resp_ready;
-  wire [63:0] rdResp_sinkBuffer0_source_bits = rdResp_bits;
-  wire        rdResp_sinkBuffer0_source_valid = rdResp_valid;
-  wire        rdResp_ready = rdResp_sinkBuffer0_source_ready;
-  reg         rdResp_sinkBuffer0_enq_ptr_value;
-  reg         rdResp_sinkBuffer0_deq_ptr_value;
-  reg         rdResp_sinkBuffer0_maybe_full;
-  wire        rdResp_sinkBuffer0_ptr_match =
-    rdResp_sinkBuffer0_enq_ptr_value == rdResp_sinkBuffer0_deq_ptr_value;
-  wire        rdResp_sinkBuffer0_do_enq =
-    rdResp_sinkBuffer0_source_ready & rdResp_sinkBuffer0_source_valid;
-  wire        rdResp_sinkBuffer0_sink_valid =
-    ~(rdResp_sinkBuffer0_ptr_match & ~rdResp_sinkBuffer0_maybe_full);
-  assign rdResp_sinkBuffer0_source_ready =
-    ~(rdResp_sinkBuffer0_ptr_match & rdResp_sinkBuffer0_maybe_full);
-  wire        wrResp_valid;
-  wire        wrResp_sinkBuffer0_source_valid = wrResp_valid;
-  wire        wrResp_ready = wrResp_sinkBuffer0_source_ready;
-  reg         wrResp_sinkBuffer0_enq_ptr_value;
-  reg         wrResp_sinkBuffer0_deq_ptr_value;
-  reg         wrResp_sinkBuffer0_maybe_full;
-  wire        wrResp_sinkBuffer0_ptr_match =
-    wrResp_sinkBuffer0_enq_ptr_value == wrResp_sinkBuffer0_deq_ptr_value;
-  wire        wrResp_sinkBuffer0_sink_valid =
-    ~(wrResp_sinkBuffer0_ptr_match & ~wrResp_sinkBuffer0_maybe_full);
-  assign wrResp_sinkBuffer0_source_ready =
-    ~(wrResp_sinkBuffer0_ptr_match & wrResp_sinkBuffer0_maybe_full);
   wire        read_req_ready_0 = _arbiter_arbiter_chooseRd & ~_ctrRead_io_full;
   wire        write_req_ready_0 = ~_arbiter_arbiter_chooseRd & ~_ctrWrite_io_full;
   wire        ctrRead_io_incEn = read_req_ready_0 & read_req_valid;
@@ -352,42 +320,34 @@ module ReadWriteToRawBridge(
   reg         read_r_1;
   reg         read_r_2;
   reg         read_r_3;
-  assign rdResp_valid = rdResp_ready & _read_dataQueue_io_deq_valid;
+  wire        rdResp_ready;
+  wire        rdResp_valid = rdResp_ready & _read_dataQueue_io_deq_valid;
   reg         write_r;
   reg         write_r_1;
   reg         write_r_2;
   reg         write_r_3;
-  assign wrResp_valid = wrResp_ready & ~_ctrWriteResp_io_empty;
+  wire        wrResp_ready;
+  wire        wrResp_valid = wrResp_ready & ~_ctrWriteResp_io_empty;
+  reg         rdResp_sinkBuffer0_queue0_enqPtr_value;
+  reg         rdResp_sinkBuffer0_queue0_deqPtr_value;
+  reg         rdResp_sinkBuffer0_queue0_maybeFull;
+  wire        rdResp_sinkBuffer0_queue0_ptrMatch =
+    rdResp_sinkBuffer0_queue0_enqPtr_value == rdResp_sinkBuffer0_queue0_deqPtr_value;
+  wire        rdResp_sinkBuffer0_queue0_empty =
+    rdResp_sinkBuffer0_queue0_ptrMatch & ~rdResp_sinkBuffer0_queue0_maybeFull;
+  wire        rdResp_sinkBuffer0_queue0_doEnq = rdResp_ready & rdResp_valid;
+  assign rdResp_ready =
+    ~(rdResp_sinkBuffer0_queue0_ptrMatch & rdResp_sinkBuffer0_queue0_maybeFull);
+  reg         wrResp_sinkBuffer0_queue0_enqPtr_value;
+  reg         wrResp_sinkBuffer0_queue0_deqPtr_value;
+  reg         wrResp_sinkBuffer0_queue0_maybeFull;
+  wire        wrResp_sinkBuffer0_queue0_ptrMatch =
+    wrResp_sinkBuffer0_queue0_enqPtr_value == wrResp_sinkBuffer0_queue0_deqPtr_value;
+  wire        wrResp_sinkBuffer0_queue0_empty =
+    wrResp_sinkBuffer0_queue0_ptrMatch & ~wrResp_sinkBuffer0_queue0_maybeFull;
+  assign wrResp_ready =
+    ~(wrResp_sinkBuffer0_queue0_ptrMatch & wrResp_sinkBuffer0_queue0_maybeFull);
   always @(posedge clock) begin
-    if (reset) begin
-      rdResp_sinkBuffer0_enq_ptr_value <= 1'h0;
-      rdResp_sinkBuffer0_deq_ptr_value <= 1'h0;
-      rdResp_sinkBuffer0_maybe_full <= 1'h0;
-      wrResp_sinkBuffer0_enq_ptr_value <= 1'h0;
-      wrResp_sinkBuffer0_deq_ptr_value <= 1'h0;
-      wrResp_sinkBuffer0_maybe_full <= 1'h0;
-    end
-    else begin
-      automatic logic rdResp_sinkBuffer0_do_deq =
-        rdResp_sinkBuffer0_sink_ready & rdResp_sinkBuffer0_sink_valid;
-      automatic logic wrResp_sinkBuffer0_do_enq;
-      automatic logic wrResp_sinkBuffer0_do_deq =
-        wrResp_sinkBuffer0_sink_ready & wrResp_sinkBuffer0_sink_valid;
-      wrResp_sinkBuffer0_do_enq =
-        wrResp_sinkBuffer0_source_ready & wrResp_sinkBuffer0_source_valid;
-      if (rdResp_sinkBuffer0_do_enq)
-        rdResp_sinkBuffer0_enq_ptr_value <= rdResp_sinkBuffer0_enq_ptr_value - 1'h1;
-      if (rdResp_sinkBuffer0_do_deq)
-        rdResp_sinkBuffer0_deq_ptr_value <= rdResp_sinkBuffer0_deq_ptr_value - 1'h1;
-      if (rdResp_sinkBuffer0_do_enq != rdResp_sinkBuffer0_do_deq)
-        rdResp_sinkBuffer0_maybe_full <= rdResp_sinkBuffer0_do_enq;
-      if (wrResp_sinkBuffer0_do_enq)
-        wrResp_sinkBuffer0_enq_ptr_value <= wrResp_sinkBuffer0_enq_ptr_value - 1'h1;
-      if (wrResp_sinkBuffer0_do_deq)
-        wrResp_sinkBuffer0_deq_ptr_value <= wrResp_sinkBuffer0_deq_ptr_value - 1'h1;
-      if (wrResp_sinkBuffer0_do_enq != wrResp_sinkBuffer0_do_deq)
-        wrResp_sinkBuffer0_maybe_full <= wrResp_sinkBuffer0_do_enq;
-    end
     read_r <= ctrRead_io_incEn;
     read_r_1 <= read_r;
     read_r_2 <= read_r_1;
@@ -396,19 +356,39 @@ module ReadWriteToRawBridge(
     write_r_1 <= write_r;
     write_r_2 <= write_r_1;
     write_r_3 <= write_r_2;
+    if (reset) begin
+      rdResp_sinkBuffer0_queue0_enqPtr_value <= 1'h0;
+      rdResp_sinkBuffer0_queue0_deqPtr_value <= 1'h0;
+      rdResp_sinkBuffer0_queue0_maybeFull <= 1'h0;
+      wrResp_sinkBuffer0_queue0_enqPtr_value <= 1'h0;
+      wrResp_sinkBuffer0_queue0_deqPtr_value <= 1'h0;
+      wrResp_sinkBuffer0_queue0_maybeFull <= 1'h0;
+    end
+    else begin
+      automatic logic rdResp_sinkBuffer0_queue0_doDeq =
+        read_resp_ready & ~rdResp_sinkBuffer0_queue0_empty;
+      automatic logic wrResp_sinkBuffer0_queue0_doEnq;
+      automatic logic wrResp_sinkBuffer0_queue0_doDeq =
+        write_resp_ready & ~wrResp_sinkBuffer0_queue0_empty;
+      wrResp_sinkBuffer0_queue0_doEnq = wrResp_ready & wrResp_valid;
+      if (rdResp_sinkBuffer0_queue0_doEnq)
+        rdResp_sinkBuffer0_queue0_enqPtr_value <=
+          rdResp_sinkBuffer0_queue0_enqPtr_value - 1'h1;
+      if (rdResp_sinkBuffer0_queue0_doDeq)
+        rdResp_sinkBuffer0_queue0_deqPtr_value <=
+          rdResp_sinkBuffer0_queue0_deqPtr_value - 1'h1;
+      if (rdResp_sinkBuffer0_queue0_doEnq != rdResp_sinkBuffer0_queue0_doDeq)
+        rdResp_sinkBuffer0_queue0_maybeFull <= rdResp_sinkBuffer0_queue0_doEnq;
+      if (wrResp_sinkBuffer0_queue0_doEnq)
+        wrResp_sinkBuffer0_queue0_enqPtr_value <=
+          wrResp_sinkBuffer0_queue0_enqPtr_value - 1'h1;
+      if (wrResp_sinkBuffer0_queue0_doDeq)
+        wrResp_sinkBuffer0_queue0_deqPtr_value <=
+          wrResp_sinkBuffer0_queue0_deqPtr_value - 1'h1;
+      if (wrResp_sinkBuffer0_queue0_doEnq != wrResp_sinkBuffer0_queue0_doDeq)
+        wrResp_sinkBuffer0_queue0_maybeFull <= wrResp_sinkBuffer0_queue0_doEnq;
+    end
   end // always @(posedge)
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(1),
-    .COUNT(2),
-    .DATA_WIDTH(64)
-  ) rdResp_sinkBuffer0_ram (
-    .clock    (clock),
-    .addrA    (rdResp_sinkBuffer0_enq_ptr_value),
-    .writeEnA (rdResp_sinkBuffer0_do_enq),
-    .dataInA  (rdResp_sinkBuffer0_source_bits),
-    .addrB    (rdResp_sinkBuffer0_deq_ptr_value),
-    .dataOutB (rdResp_sinkBuffer0_sink_bits)
-  );
   Counter ctrRead (
     .clock    (clock),
     .reset    (reset),
@@ -449,11 +429,22 @@ module ReadWriteToRawBridge(
     .io_deq_valid (_read_dataQueue_io_deq_valid),
     .io_deq_bits  (rdResp_bits)
   );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(1),
+    .COUNT(2),
+    .DATA_WIDTH(64)
+  ) rdResp_sinkBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (rdResp_sinkBuffer0_queue0_enqPtr_value),
+    .writeEnA (rdResp_sinkBuffer0_queue0_doEnq),
+    .dataInA  (rdResp_bits),
+    .addrB    (rdResp_sinkBuffer0_queue0_deqPtr_value),
+    .dataOutB (read_resp_bits)
+  );
   assign read_req_ready = read_req_ready_0;
-  assign read_resp_bits = rdResp_sinkBuffer0_sink_bits;
-  assign read_resp_valid = rdResp_sinkBuffer0_sink_valid;
+  assign read_resp_valid = ~rdResp_sinkBuffer0_queue0_empty;
   assign write_req_ready = write_req_ready_0;
-  assign write_resp_valid = wrResp_sinkBuffer0_sink_valid;
+  assign write_resp_valid = ~wrResp_sinkBuffer0_queue0_empty;
   assign raw_addr = ctrWrite_io_incEn ? write_req_bits_addr : read_req_bits;
   assign raw_dIn = write_req_bits_data;
   assign raw_wstrb = ctrWrite_io_incEn ? write_req_bits_strb : 8'h0;
@@ -797,19 +788,11 @@ module Axi4FullToReadWriteBridge(
 );
 
   wire        write_idLast_bits_last;
-  wire        write_fork1_repeat0_sourceBuffer0_sink_valid;
-  wire        write_fork1_repeat0_sourceBuffer0_source_ready;
-  wire        write_fork1_repeat0_sourceBuffer0_interface_ready;
-  wire        write_fork1_repeat0_result_valid;
-  wire        read_fork0_repeat0_sourceBuffer0_sink_valid;
-  wire        read_fork0_repeat0_sourceBuffer0_source_ready;
-  wire        read_fork0_repeat0_sourceBuffer0_interface_ready;
-  wire        read_fork0_repeat0_result_valid;
-  wire [42:0] _write_fork1_repeat0_sourceBuffer0_ram_dataOutB;
+  wire [42:0] _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB;
+  wire [42:0] _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB;
   wire [13:0] _write_addressStrobeGenerator_sink_bits_addr;
   wire [7:0]  _write_addressStrobeGenerator_sink_bits_strb;
   wire        _write_addressStrobeGenerator_sink_valid;
-  wire [42:0] _read_fork0_repeat0_sourceBuffer0_ram_dataOutB;
   wire [13:0] _read_addressGenerator_sink_bits_addr;
   wire [13:0] read_fork0_repeat0_result_bits_addr = s_axi_ar_bits_addr;
   wire [7:0]  read_fork0_repeat0_result_bits_len = s_axi_ar_bits_len;
@@ -847,168 +830,17 @@ module Axi4FullToReadWriteBridge(
   wire [2:0]  write_fork1_transform0_result_bits_prot = s_axi_aw_bits_prot;
   wire [3:0]  write_fork1_transform0_result_bits_qos = s_axi_aw_bits_qos;
   wire [3:0]  write_fork1_transform0_result_bits_region = s_axi_aw_bits_region;
-  wire        read_fork0_repeat0_sourceBuffer0_source_valid =
-    read_fork0_repeat0_result_valid;
-  wire [13:0] read_fork0_repeat0_sourceBuffer0_source_bits_addr =
-    read_fork0_repeat0_result_bits_addr;
-  wire [7:0]  read_fork0_repeat0_sourceBuffer0_source_bits_len =
-    read_fork0_repeat0_result_bits_len;
-  wire [2:0]  read_fork0_repeat0_sourceBuffer0_source_bits_size =
-    read_fork0_repeat0_result_bits_size;
-  wire [1:0]  read_fork0_repeat0_sourceBuffer0_source_bits_burst =
-    read_fork0_repeat0_result_bits_burst;
-  wire        read_fork0_repeat0_sourceBuffer0_source_bits_lock =
-    read_fork0_repeat0_result_bits_lock;
-  wire [3:0]  read_fork0_repeat0_sourceBuffer0_source_bits_cache =
-    read_fork0_repeat0_result_bits_cache;
-  wire [2:0]  read_fork0_repeat0_sourceBuffer0_source_bits_prot =
-    read_fork0_repeat0_result_bits_prot;
-  wire [3:0]  read_fork0_repeat0_sourceBuffer0_source_bits_qos =
-    read_fork0_repeat0_result_bits_qos;
-  wire [3:0]  read_fork0_repeat0_sourceBuffer0_source_bits_region =
-    read_fork0_repeat0_result_bits_region;
-  wire        read_fork0_repeat0_sourceBuffer0_sink_ready =
-    read_fork0_repeat0_sourceBuffer0_interface_ready;
-  wire        read_fork0_repeat0_result_ready =
-    read_fork0_repeat0_sourceBuffer0_source_ready;
-  wire        read_fork0_repeat0_sourceBuffer0_interface_valid =
-    read_fork0_repeat0_sourceBuffer0_sink_valid;
-  reg  [1:0]  read_fork0_repeat0_sourceBuffer0_enq_ptr_value;
-  reg  [1:0]  read_fork0_repeat0_sourceBuffer0_deq_ptr_value;
-  reg         read_fork0_repeat0_sourceBuffer0_maybe_full;
-  wire        read_fork0_repeat0_sourceBuffer0_ptr_match =
-    read_fork0_repeat0_sourceBuffer0_enq_ptr_value == read_fork0_repeat0_sourceBuffer0_deq_ptr_value;
-  wire        read_fork0_repeat0_sourceBuffer0_do_enq =
-    read_fork0_repeat0_sourceBuffer0_source_ready
-    & read_fork0_repeat0_sourceBuffer0_source_valid;
-  assign read_fork0_repeat0_sourceBuffer0_sink_valid =
-    ~(read_fork0_repeat0_sourceBuffer0_ptr_match
-      & ~read_fork0_repeat0_sourceBuffer0_maybe_full);
-  assign read_fork0_repeat0_sourceBuffer0_source_ready =
-    ~(read_fork0_repeat0_sourceBuffer0_ptr_match
-      & read_fork0_repeat0_sourceBuffer0_maybe_full);
-  wire [3:0]  read_fork0_repeat0_sourceBuffer0_sink_bits_region =
-    _read_fork0_repeat0_sourceBuffer0_ram_dataOutB[3:0];
-  wire [3:0]  read_fork0_repeat0_sourceBuffer0_sink_bits_qos =
-    _read_fork0_repeat0_sourceBuffer0_ram_dataOutB[7:4];
-  wire [2:0]  read_fork0_repeat0_sourceBuffer0_sink_bits_prot =
-    _read_fork0_repeat0_sourceBuffer0_ram_dataOutB[10:8];
-  wire [3:0]  read_fork0_repeat0_sourceBuffer0_sink_bits_cache =
-    _read_fork0_repeat0_sourceBuffer0_ram_dataOutB[14:11];
-  wire        read_fork0_repeat0_sourceBuffer0_sink_bits_lock =
-    _read_fork0_repeat0_sourceBuffer0_ram_dataOutB[15];
-  wire [1:0]  read_fork0_repeat0_sourceBuffer0_sink_bits_burst =
-    _read_fork0_repeat0_sourceBuffer0_ram_dataOutB[17:16];
-  wire [2:0]  read_fork0_repeat0_sourceBuffer0_sink_bits_size =
-    _read_fork0_repeat0_sourceBuffer0_ram_dataOutB[20:18];
-  wire [7:0]  read_fork0_repeat0_sourceBuffer0_sink_bits_len =
-    _read_fork0_repeat0_sourceBuffer0_ram_dataOutB[28:21];
-  wire [13:0] read_fork0_repeat0_sourceBuffer0_sink_bits_addr =
-    _read_fork0_repeat0_sourceBuffer0_ram_dataOutB[42:29];
-  wire [13:0] read_fork0_repeat0_sourceBuffer0_interface_bits_addr =
-    read_fork0_repeat0_sourceBuffer0_sink_bits_addr;
-  wire [7:0]  read_fork0_repeat0_sourceBuffer0_interface_bits_len =
-    read_fork0_repeat0_sourceBuffer0_sink_bits_len;
-  wire [2:0]  read_fork0_repeat0_sourceBuffer0_interface_bits_size =
-    read_fork0_repeat0_sourceBuffer0_sink_bits_size;
-  wire [1:0]  read_fork0_repeat0_sourceBuffer0_interface_bits_burst =
-    read_fork0_repeat0_sourceBuffer0_sink_bits_burst;
-  wire        read_fork0_repeat0_sourceBuffer0_interface_bits_lock =
-    read_fork0_repeat0_sourceBuffer0_sink_bits_lock;
-  wire [3:0]  read_fork0_repeat0_sourceBuffer0_interface_bits_cache =
-    read_fork0_repeat0_sourceBuffer0_sink_bits_cache;
-  wire [2:0]  read_fork0_repeat0_sourceBuffer0_interface_bits_prot =
-    read_fork0_repeat0_sourceBuffer0_sink_bits_prot;
-  wire [3:0]  read_fork0_repeat0_sourceBuffer0_interface_bits_qos =
-    read_fork0_repeat0_sourceBuffer0_sink_bits_qos;
-  wire [3:0]  read_fork0_repeat0_sourceBuffer0_interface_bits_region =
-    read_fork0_repeat0_sourceBuffer0_sink_bits_region;
   wire        write_idLastJoined_bits_last = write_idLast_bits_last;
-  wire        write_fork1_repeat0_sourceBuffer0_source_valid =
-    write_fork1_repeat0_result_valid;
-  wire [13:0] write_fork1_repeat0_sourceBuffer0_source_bits_addr =
-    write_fork1_repeat0_result_bits_addr;
-  wire [7:0]  write_fork1_repeat0_sourceBuffer0_source_bits_len =
-    write_fork1_repeat0_result_bits_len;
-  wire [2:0]  write_fork1_repeat0_sourceBuffer0_source_bits_size =
-    write_fork1_repeat0_result_bits_size;
-  wire [1:0]  write_fork1_repeat0_sourceBuffer0_source_bits_burst =
-    write_fork1_repeat0_result_bits_burst;
-  wire        write_fork1_repeat0_sourceBuffer0_source_bits_lock =
-    write_fork1_repeat0_result_bits_lock;
-  wire [3:0]  write_fork1_repeat0_sourceBuffer0_source_bits_cache =
-    write_fork1_repeat0_result_bits_cache;
-  wire [2:0]  write_fork1_repeat0_sourceBuffer0_source_bits_prot =
-    write_fork1_repeat0_result_bits_prot;
-  wire [3:0]  write_fork1_repeat0_sourceBuffer0_source_bits_qos =
-    write_fork1_repeat0_result_bits_qos;
-  wire [3:0]  write_fork1_repeat0_sourceBuffer0_source_bits_region =
-    write_fork1_repeat0_result_bits_region;
-  wire        write_fork1_repeat0_sourceBuffer0_sink_ready =
-    write_fork1_repeat0_sourceBuffer0_interface_ready;
-  wire        write_fork1_repeat0_result_ready =
-    write_fork1_repeat0_sourceBuffer0_source_ready;
-  wire        write_fork1_repeat0_sourceBuffer0_interface_valid =
-    write_fork1_repeat0_sourceBuffer0_sink_valid;
-  reg  [1:0]  write_fork1_repeat0_sourceBuffer0_enq_ptr_value;
-  reg  [1:0]  write_fork1_repeat0_sourceBuffer0_deq_ptr_value;
-  reg         write_fork1_repeat0_sourceBuffer0_maybe_full;
-  wire        write_fork1_repeat0_sourceBuffer0_ptr_match =
-    write_fork1_repeat0_sourceBuffer0_enq_ptr_value == write_fork1_repeat0_sourceBuffer0_deq_ptr_value;
-  wire        write_fork1_repeat0_sourceBuffer0_do_enq =
-    write_fork1_repeat0_sourceBuffer0_source_ready
-    & write_fork1_repeat0_sourceBuffer0_source_valid;
-  assign write_fork1_repeat0_sourceBuffer0_sink_valid =
-    ~(write_fork1_repeat0_sourceBuffer0_ptr_match
-      & ~write_fork1_repeat0_sourceBuffer0_maybe_full);
-  assign write_fork1_repeat0_sourceBuffer0_source_ready =
-    ~(write_fork1_repeat0_sourceBuffer0_ptr_match
-      & write_fork1_repeat0_sourceBuffer0_maybe_full);
-  wire [3:0]  write_fork1_repeat0_sourceBuffer0_sink_bits_region =
-    _write_fork1_repeat0_sourceBuffer0_ram_dataOutB[3:0];
-  wire [3:0]  write_fork1_repeat0_sourceBuffer0_sink_bits_qos =
-    _write_fork1_repeat0_sourceBuffer0_ram_dataOutB[7:4];
-  wire [2:0]  write_fork1_repeat0_sourceBuffer0_sink_bits_prot =
-    _write_fork1_repeat0_sourceBuffer0_ram_dataOutB[10:8];
-  wire [3:0]  write_fork1_repeat0_sourceBuffer0_sink_bits_cache =
-    _write_fork1_repeat0_sourceBuffer0_ram_dataOutB[14:11];
-  wire        write_fork1_repeat0_sourceBuffer0_sink_bits_lock =
-    _write_fork1_repeat0_sourceBuffer0_ram_dataOutB[15];
-  wire [1:0]  write_fork1_repeat0_sourceBuffer0_sink_bits_burst =
-    _write_fork1_repeat0_sourceBuffer0_ram_dataOutB[17:16];
-  wire [2:0]  write_fork1_repeat0_sourceBuffer0_sink_bits_size =
-    _write_fork1_repeat0_sourceBuffer0_ram_dataOutB[20:18];
-  wire [7:0]  write_fork1_repeat0_sourceBuffer0_sink_bits_len =
-    _write_fork1_repeat0_sourceBuffer0_ram_dataOutB[28:21];
-  wire [13:0] write_fork1_repeat0_sourceBuffer0_sink_bits_addr =
-    _write_fork1_repeat0_sourceBuffer0_ram_dataOutB[42:29];
-  wire [13:0] write_fork1_repeat0_sourceBuffer0_interface_bits_addr =
-    write_fork1_repeat0_sourceBuffer0_sink_bits_addr;
-  wire [7:0]  write_fork1_repeat0_sourceBuffer0_interface_bits_len =
-    write_fork1_repeat0_sourceBuffer0_sink_bits_len;
-  wire [2:0]  write_fork1_repeat0_sourceBuffer0_interface_bits_size =
-    write_fork1_repeat0_sourceBuffer0_sink_bits_size;
-  wire [1:0]  write_fork1_repeat0_sourceBuffer0_interface_bits_burst =
-    write_fork1_repeat0_sourceBuffer0_sink_bits_burst;
-  wire        write_fork1_repeat0_sourceBuffer0_interface_bits_lock =
-    write_fork1_repeat0_sourceBuffer0_sink_bits_lock;
-  wire [3:0]  write_fork1_repeat0_sourceBuffer0_interface_bits_cache =
-    write_fork1_repeat0_sourceBuffer0_sink_bits_cache;
-  wire [2:0]  write_fork1_repeat0_sourceBuffer0_interface_bits_prot =
-    write_fork1_repeat0_sourceBuffer0_sink_bits_prot;
-  wire [3:0]  write_fork1_repeat0_sourceBuffer0_interface_bits_qos =
-    write_fork1_repeat0_sourceBuffer0_sink_bits_qos;
-  wire [3:0]  write_fork1_repeat0_sourceBuffer0_interface_bits_region =
-    write_fork1_repeat0_sourceBuffer0_sink_bits_region;
   reg         read_fork0_regs_0;
   reg         read_fork0_regs_1;
+  wire        read_fork0_repeat0_result_ready;
   wire        read_fork0_ready_qual1_0 =
     read_fork0_repeat0_result_ready | read_fork0_regs_0;
   wire        read_fork0_transform0_result_ready;
   wire        read_fork0_ready_qual1_1 =
     read_fork0_transform0_result_ready | read_fork0_regs_1;
   wire        read_fork0_ready = read_fork0_ready_qual1_0 & read_fork0_ready_qual1_1;
-  assign read_fork0_repeat0_result_valid = s_axi_ar_valid & ~read_fork0_regs_0;
+  wire        read_fork0_repeat0_result_valid = s_axi_ar_valid & ~read_fork0_regs_0;
   wire        read_fork0_transform0_result_valid = s_axi_ar_valid & ~read_fork0_regs_1;
   wire        write_idLastJoined_ready = ~write_idLastJoined_bits_last | s_axi_b_ready;
   wire        write_idLastJoined_valid;
@@ -1022,27 +854,59 @@ module Axi4FullToReadWriteBridge(
   reg         write_fork1_repeat0_count_valid;
   wire [8:0]  _write_fork1_repeat0_count_nextState_T =
     write_fork1_repeat0_count_state + 9'h1;
-  wire [8:0]  _GEN = {1'h0, write_fork1_repeat0_sourceBuffer0_interface_bits_len};
+  wire [7:0]  write_fork1_repeat0_sourceBuffer0_queueSink_bits_len;
+  wire [8:0]  _GEN = {1'h0, write_fork1_repeat0_sourceBuffer0_queueSink_bits_len};
   wire        _write_fork1_repeat0_count_T_2 =
     _write_fork1_repeat0_count_nextState_T == _GEN + 9'h1;
   wire [8:0]  _write_fork1_repeat0_count_T_6 = _GEN + 9'h1;
   wire        _write_fork1_repeat0_count_T_8 = _write_fork1_repeat0_count_T_6 == 9'h1;
-  assign write_fork1_repeat0_sourceBuffer0_interface_ready =
-    write_fork1_repeat0_sourceBuffer0_interface_valid
+  wire        write_fork1_repeat0_sourceBuffer0_queueSink_valid;
+  wire        write_fork1_repeat0_sourceBuffer0_queueSink_ready =
+    write_fork1_repeat0_sourceBuffer0_queueSink_valid
     & (write_fork1_repeat0_count_valid
          ? _write_fork1_repeat0_count_T_2 & write_idLast_ready
          : ~(|_write_fork1_repeat0_count_T_6) | _write_fork1_repeat0_count_T_8
            & write_idLast_ready);
   assign write_idLast_valid =
-    write_fork1_repeat0_sourceBuffer0_interface_valid
+    write_fork1_repeat0_sourceBuffer0_queueSink_valid
     & (write_fork1_repeat0_count_valid | (|_write_fork1_repeat0_count_T_6));
-  wire        read_idLast_valid;
   assign write_idLast_bits_last =
     write_fork1_repeat0_count_valid
       ? _write_fork1_repeat0_count_T_2
       : _write_fork1_repeat0_count_T_8;
-  wire        read_join0_allValid = read_resp_valid & read_idLast_valid;
-  wire        read_idLast_ready = s_axi_r_ready & read_join0_allValid;
+  reg  [1:0]  write_fork1_repeat0_sourceBuffer0_queue0_enqPtr_value;
+  reg  [1:0]  write_fork1_repeat0_sourceBuffer0_queue0_deqPtr_value;
+  reg         write_fork1_repeat0_sourceBuffer0_queue0_maybeFull;
+  wire        write_fork1_repeat0_sourceBuffer0_queue0_ptrMatch =
+    write_fork1_repeat0_sourceBuffer0_queue0_enqPtr_value == write_fork1_repeat0_sourceBuffer0_queue0_deqPtr_value;
+  wire        write_fork1_repeat0_result_valid;
+  wire        write_fork1_repeat0_result_ready;
+  wire        write_fork1_repeat0_sourceBuffer0_queue0_doEnq =
+    write_fork1_repeat0_result_ready & write_fork1_repeat0_result_valid;
+  assign write_fork1_repeat0_sourceBuffer0_queueSink_valid =
+    ~(write_fork1_repeat0_sourceBuffer0_queue0_ptrMatch
+      & ~write_fork1_repeat0_sourceBuffer0_queue0_maybeFull);
+  assign write_fork1_repeat0_result_ready =
+    ~(write_fork1_repeat0_sourceBuffer0_queue0_ptrMatch
+      & write_fork1_repeat0_sourceBuffer0_queue0_maybeFull);
+  wire [3:0]  write_fork1_repeat0_sourceBuffer0_queueSink_bits_region =
+    _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB[3:0];
+  wire [3:0]  write_fork1_repeat0_sourceBuffer0_queueSink_bits_qos =
+    _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB[7:4];
+  wire [2:0]  write_fork1_repeat0_sourceBuffer0_queueSink_bits_prot =
+    _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB[10:8];
+  wire [3:0]  write_fork1_repeat0_sourceBuffer0_queueSink_bits_cache =
+    _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB[14:11];
+  wire        write_fork1_repeat0_sourceBuffer0_queueSink_bits_lock =
+    _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB[15];
+  wire [1:0]  write_fork1_repeat0_sourceBuffer0_queueSink_bits_burst =
+    _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB[17:16];
+  wire [2:0]  write_fork1_repeat0_sourceBuffer0_queueSink_bits_size =
+    _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB[20:18];
+  assign write_fork1_repeat0_sourceBuffer0_queueSink_bits_len =
+    _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB[28:21];
+  wire [13:0] write_fork1_repeat0_sourceBuffer0_queueSink_bits_addr =
+    _write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB[42:29];
   reg         write_fork1_regs_0;
   reg         write_fork1_regs_1;
   wire        write_fork1_ready_qual1_0 =
@@ -1053,94 +917,130 @@ module Axi4FullToReadWriteBridge(
   wire        write_fork1_ready = write_fork1_ready_qual1_0 & write_fork1_ready_qual1_1;
   assign write_fork1_repeat0_result_valid = s_axi_aw_valid & ~write_fork1_regs_0;
   wire        write_fork1_transform0_result_valid = s_axi_aw_valid & ~write_fork1_regs_1;
+  wire        read_idLast_valid;
+  wire        read_join0_allValid = read_resp_valid & read_idLast_valid;
+  wire        read_idLast_ready = s_axi_r_ready & read_join0_allValid;
   reg  [8:0]  read_fork0_repeat0_count_state;
   reg         read_fork0_repeat0_count_valid;
   wire [8:0]  _read_fork0_repeat0_count_nextState_T =
     read_fork0_repeat0_count_state + 9'h1;
-  wire [8:0]  _GEN_0 = {1'h0, read_fork0_repeat0_sourceBuffer0_interface_bits_len};
-  wire        _read_fork0_repeat0_count_T_3 =
+  wire [7:0]  read_fork0_repeat0_sourceBuffer0_queueSink_bits_len;
+  wire [8:0]  _GEN_0 = {1'h0, read_fork0_repeat0_sourceBuffer0_queueSink_bits_len};
+  wire        _read_fork0_repeat0_count_T_2 =
     _read_fork0_repeat0_count_nextState_T == _GEN_0 + 9'h1;
-  wire [8:0]  _read_fork0_repeat0_count_T_7 = _GEN_0 + 9'h1;
-  wire        _read_fork0_repeat0_count_T_9 = _read_fork0_repeat0_count_T_7 == 9'h1;
-  assign read_fork0_repeat0_sourceBuffer0_interface_ready =
-    read_fork0_repeat0_sourceBuffer0_interface_valid
+  wire [8:0]  _read_fork0_repeat0_count_T_6 = _GEN_0 + 9'h1;
+  wire        _read_fork0_repeat0_count_T_8 = _read_fork0_repeat0_count_T_6 == 9'h1;
+  wire        read_fork0_repeat0_sourceBuffer0_queueSink_valid;
+  wire        read_fork0_repeat0_sourceBuffer0_queueSink_ready =
+    read_fork0_repeat0_sourceBuffer0_queueSink_valid
     & (read_fork0_repeat0_count_valid
-         ? _read_fork0_repeat0_count_T_3 & read_idLast_ready
-         : ~(|_read_fork0_repeat0_count_T_7) | _read_fork0_repeat0_count_T_9
+         ? _read_fork0_repeat0_count_T_2 & read_idLast_ready
+         : ~(|_read_fork0_repeat0_count_T_6) | _read_fork0_repeat0_count_T_8
            & read_idLast_ready);
   assign read_idLast_valid =
-    read_fork0_repeat0_sourceBuffer0_interface_valid
-    & (read_fork0_repeat0_count_valid | (|_read_fork0_repeat0_count_T_7));
+    read_fork0_repeat0_sourceBuffer0_queueSink_valid
+    & (read_fork0_repeat0_count_valid | (|_read_fork0_repeat0_count_T_6));
   wire        read_idLast_bits_last =
     read_fork0_repeat0_count_valid
-      ? _read_fork0_repeat0_count_T_3
-      : _read_fork0_repeat0_count_T_9;
+      ? _read_fork0_repeat0_count_T_2
+      : _read_fork0_repeat0_count_T_8;
+  reg  [1:0]  read_fork0_repeat0_sourceBuffer0_queue0_enqPtr_value;
+  reg  [1:0]  read_fork0_repeat0_sourceBuffer0_queue0_deqPtr_value;
+  reg         read_fork0_repeat0_sourceBuffer0_queue0_maybeFull;
+  wire        read_fork0_repeat0_sourceBuffer0_queue0_ptrMatch =
+    read_fork0_repeat0_sourceBuffer0_queue0_enqPtr_value == read_fork0_repeat0_sourceBuffer0_queue0_deqPtr_value;
+  wire        read_fork0_repeat0_sourceBuffer0_queue0_doEnq =
+    read_fork0_repeat0_result_ready & read_fork0_repeat0_result_valid;
+  assign read_fork0_repeat0_sourceBuffer0_queueSink_valid =
+    ~(read_fork0_repeat0_sourceBuffer0_queue0_ptrMatch
+      & ~read_fork0_repeat0_sourceBuffer0_queue0_maybeFull);
+  assign read_fork0_repeat0_result_ready =
+    ~(read_fork0_repeat0_sourceBuffer0_queue0_ptrMatch
+      & read_fork0_repeat0_sourceBuffer0_queue0_maybeFull);
+  wire [3:0]  read_fork0_repeat0_sourceBuffer0_queueSink_bits_region =
+    _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB[3:0];
+  wire [3:0]  read_fork0_repeat0_sourceBuffer0_queueSink_bits_qos =
+    _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB[7:4];
+  wire [2:0]  read_fork0_repeat0_sourceBuffer0_queueSink_bits_prot =
+    _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB[10:8];
+  wire [3:0]  read_fork0_repeat0_sourceBuffer0_queueSink_bits_cache =
+    _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB[14:11];
+  wire        read_fork0_repeat0_sourceBuffer0_queueSink_bits_lock =
+    _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB[15];
+  wire [1:0]  read_fork0_repeat0_sourceBuffer0_queueSink_bits_burst =
+    _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB[17:16];
+  wire [2:0]  read_fork0_repeat0_sourceBuffer0_queueSink_bits_size =
+    _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB[20:18];
+  assign read_fork0_repeat0_sourceBuffer0_queueSink_bits_len =
+    _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB[28:21];
+  wire [13:0] read_fork0_repeat0_sourceBuffer0_queueSink_bits_addr =
+    _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB[42:29];
   always @(posedge clock) begin
     automatic logic _GEN_1;
     automatic logic _GEN_2;
     _GEN_1 = ~(|_write_fork1_repeat0_count_T_6) | _write_fork1_repeat0_count_T_8;
-    _GEN_2 = ~(|_read_fork0_repeat0_count_T_7) | _read_fork0_repeat0_count_T_9;
+    _GEN_2 = ~(|_read_fork0_repeat0_count_T_6) | _read_fork0_repeat0_count_T_8;
     if (reset) begin
-      read_fork0_repeat0_sourceBuffer0_enq_ptr_value <= 2'h0;
-      read_fork0_repeat0_sourceBuffer0_deq_ptr_value <= 2'h0;
-      read_fork0_repeat0_sourceBuffer0_maybe_full <= 1'h0;
-      write_fork1_repeat0_sourceBuffer0_enq_ptr_value <= 2'h0;
-      write_fork1_repeat0_sourceBuffer0_deq_ptr_value <= 2'h0;
-      write_fork1_repeat0_sourceBuffer0_maybe_full <= 1'h0;
       read_fork0_regs_0 <= 1'h0;
       read_fork0_regs_1 <= 1'h0;
       write_fork1_repeat0_count_valid <= 1'h0;
+      write_fork1_repeat0_sourceBuffer0_queue0_enqPtr_value <= 2'h0;
+      write_fork1_repeat0_sourceBuffer0_queue0_deqPtr_value <= 2'h0;
+      write_fork1_repeat0_sourceBuffer0_queue0_maybeFull <= 1'h0;
       write_fork1_regs_0 <= 1'h0;
       write_fork1_regs_1 <= 1'h0;
       read_fork0_repeat0_count_valid <= 1'h0;
+      read_fork0_repeat0_sourceBuffer0_queue0_enqPtr_value <= 2'h0;
+      read_fork0_repeat0_sourceBuffer0_queue0_deqPtr_value <= 2'h0;
+      read_fork0_repeat0_sourceBuffer0_queue0_maybeFull <= 1'h0;
     end
     else begin
-      automatic logic read_fork0_repeat0_sourceBuffer0_do_deq =
-        read_fork0_repeat0_sourceBuffer0_sink_ready
-        & read_fork0_repeat0_sourceBuffer0_sink_valid;
-      automatic logic write_fork1_repeat0_sourceBuffer0_do_deq =
-        write_fork1_repeat0_sourceBuffer0_sink_ready
-        & write_fork1_repeat0_sourceBuffer0_sink_valid;
-      if (read_fork0_repeat0_sourceBuffer0_do_enq)
-        read_fork0_repeat0_sourceBuffer0_enq_ptr_value <=
-          read_fork0_repeat0_sourceBuffer0_enq_ptr_value + 2'h1;
-      if (read_fork0_repeat0_sourceBuffer0_do_deq)
-        read_fork0_repeat0_sourceBuffer0_deq_ptr_value <=
-          read_fork0_repeat0_sourceBuffer0_deq_ptr_value + 2'h1;
-      if (read_fork0_repeat0_sourceBuffer0_do_enq != read_fork0_repeat0_sourceBuffer0_do_deq)
-        read_fork0_repeat0_sourceBuffer0_maybe_full <=
-          read_fork0_repeat0_sourceBuffer0_do_enq;
-      if (write_fork1_repeat0_sourceBuffer0_do_enq)
-        write_fork1_repeat0_sourceBuffer0_enq_ptr_value <=
-          write_fork1_repeat0_sourceBuffer0_enq_ptr_value + 2'h1;
-      if (write_fork1_repeat0_sourceBuffer0_do_deq)
-        write_fork1_repeat0_sourceBuffer0_deq_ptr_value <=
-          write_fork1_repeat0_sourceBuffer0_deq_ptr_value + 2'h1;
-      if (write_fork1_repeat0_sourceBuffer0_do_enq != write_fork1_repeat0_sourceBuffer0_do_deq)
-        write_fork1_repeat0_sourceBuffer0_maybe_full <=
-          write_fork1_repeat0_sourceBuffer0_do_enq;
+      automatic logic write_fork1_repeat0_sourceBuffer0_queue0_doDeq =
+        write_fork1_repeat0_sourceBuffer0_queueSink_ready
+        & write_fork1_repeat0_sourceBuffer0_queueSink_valid;
+      automatic logic read_fork0_repeat0_sourceBuffer0_queue0_doDeq =
+        read_fork0_repeat0_sourceBuffer0_queueSink_ready
+        & read_fork0_repeat0_sourceBuffer0_queueSink_valid;
       read_fork0_regs_0 <= read_fork0_ready_qual1_0 & s_axi_ar_valid & ~read_fork0_ready;
       read_fork0_regs_1 <= read_fork0_ready_qual1_1 & s_axi_ar_valid & ~read_fork0_ready;
-      if (write_fork1_repeat0_sourceBuffer0_interface_valid) begin
+      if (write_fork1_repeat0_sourceBuffer0_queueSink_valid) begin
         if (write_fork1_repeat0_count_valid)
           write_fork1_repeat0_count_valid <=
             ~(_write_fork1_repeat0_count_T_2 & write_idLast_ready);
         else
           write_fork1_repeat0_count_valid <= ~_GEN_1 & write_idLast_ready;
       end
+      if (write_fork1_repeat0_sourceBuffer0_queue0_doEnq)
+        write_fork1_repeat0_sourceBuffer0_queue0_enqPtr_value <=
+          write_fork1_repeat0_sourceBuffer0_queue0_enqPtr_value + 2'h1;
+      if (write_fork1_repeat0_sourceBuffer0_queue0_doDeq)
+        write_fork1_repeat0_sourceBuffer0_queue0_deqPtr_value <=
+          write_fork1_repeat0_sourceBuffer0_queue0_deqPtr_value + 2'h1;
+      if (write_fork1_repeat0_sourceBuffer0_queue0_doEnq != write_fork1_repeat0_sourceBuffer0_queue0_doDeq)
+        write_fork1_repeat0_sourceBuffer0_queue0_maybeFull <=
+          write_fork1_repeat0_sourceBuffer0_queue0_doEnq;
       write_fork1_regs_0 <=
         write_fork1_ready_qual1_0 & s_axi_aw_valid & ~write_fork1_ready;
       write_fork1_regs_1 <=
         write_fork1_ready_qual1_1 & s_axi_aw_valid & ~write_fork1_ready;
-      if (read_fork0_repeat0_sourceBuffer0_interface_valid) begin
+      if (read_fork0_repeat0_sourceBuffer0_queueSink_valid) begin
         if (read_fork0_repeat0_count_valid)
           read_fork0_repeat0_count_valid <=
-            ~(_read_fork0_repeat0_count_T_3 & read_idLast_ready);
+            ~(_read_fork0_repeat0_count_T_2 & read_idLast_ready);
         else
           read_fork0_repeat0_count_valid <= ~_GEN_2 & read_idLast_ready;
       end
+      if (read_fork0_repeat0_sourceBuffer0_queue0_doEnq)
+        read_fork0_repeat0_sourceBuffer0_queue0_enqPtr_value <=
+          read_fork0_repeat0_sourceBuffer0_queue0_enqPtr_value + 2'h1;
+      if (read_fork0_repeat0_sourceBuffer0_queue0_doDeq)
+        read_fork0_repeat0_sourceBuffer0_queue0_deqPtr_value <=
+          read_fork0_repeat0_sourceBuffer0_queue0_deqPtr_value + 2'h1;
+      if (read_fork0_repeat0_sourceBuffer0_queue0_doEnq != read_fork0_repeat0_sourceBuffer0_queue0_doDeq)
+        read_fork0_repeat0_sourceBuffer0_queue0_maybeFull <=
+          read_fork0_repeat0_sourceBuffer0_queue0_doEnq;
     end
-    if (write_fork1_repeat0_sourceBuffer0_interface_valid) begin
+    if (write_fork1_repeat0_sourceBuffer0_queueSink_valid) begin
       if (write_fork1_repeat0_count_valid) begin
         if (write_idLast_ready)
           write_fork1_repeat0_count_state <=
@@ -1153,11 +1053,11 @@ module Axi4FullToReadWriteBridge(
       else
         write_fork1_repeat0_count_state <= 9'h1;
     end
-    if (read_fork0_repeat0_sourceBuffer0_interface_valid) begin
+    if (read_fork0_repeat0_sourceBuffer0_queueSink_valid) begin
       if (read_fork0_repeat0_count_valid) begin
         if (read_idLast_ready)
           read_fork0_repeat0_count_state <=
-            _read_fork0_repeat0_count_T_3 ? 9'h0 : _read_fork0_repeat0_count_nextState_T;
+            _read_fork0_repeat0_count_T_2 ? 9'h0 : _read_fork0_repeat0_count_nextState_T;
       end
       else if (_GEN_2 | ~read_idLast_ready) begin
       end
@@ -1179,27 +1079,6 @@ module Axi4FullToReadWriteBridge(
     .sink_valid        (read_req_valid),
     .sink_ready        (read_req_ready)
   );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(2),
-    .COUNT(4),
-    .DATA_WIDTH(43)
-  ) read_fork0_repeat0_sourceBuffer0_ram (
-    .clock    (clock),
-    .addrA    (read_fork0_repeat0_sourceBuffer0_enq_ptr_value),
-    .writeEnA (read_fork0_repeat0_sourceBuffer0_do_enq),
-    .dataInA
-      ({read_fork0_repeat0_sourceBuffer0_source_bits_addr,
-        read_fork0_repeat0_sourceBuffer0_source_bits_len,
-        read_fork0_repeat0_sourceBuffer0_source_bits_size,
-        read_fork0_repeat0_sourceBuffer0_source_bits_burst,
-        read_fork0_repeat0_sourceBuffer0_source_bits_lock,
-        read_fork0_repeat0_sourceBuffer0_source_bits_cache,
-        read_fork0_repeat0_sourceBuffer0_source_bits_prot,
-        read_fork0_repeat0_sourceBuffer0_source_bits_qos,
-        read_fork0_repeat0_sourceBuffer0_source_bits_region}),
-    .addrB    (read_fork0_repeat0_sourceBuffer0_deq_ptr_value),
-    .dataOutB (_read_fork0_repeat0_sourceBuffer0_ram_dataOutB)
-  );
   AddressStrobeGenerator write_addressStrobeGenerator (
     .clock             (clock),
     .reset             (reset),
@@ -1218,22 +1097,43 @@ module Axi4FullToReadWriteBridge(
     .ADDR_WIDTH(2),
     .COUNT(4),
     .DATA_WIDTH(43)
-  ) write_fork1_repeat0_sourceBuffer0_ram (
+  ) write_fork1_repeat0_sourceBuffer0_queue0_ram (
     .clock    (clock),
-    .addrA    (write_fork1_repeat0_sourceBuffer0_enq_ptr_value),
-    .writeEnA (write_fork1_repeat0_sourceBuffer0_do_enq),
+    .addrA    (write_fork1_repeat0_sourceBuffer0_queue0_enqPtr_value),
+    .writeEnA (write_fork1_repeat0_sourceBuffer0_queue0_doEnq),
     .dataInA
-      ({write_fork1_repeat0_sourceBuffer0_source_bits_addr,
-        write_fork1_repeat0_sourceBuffer0_source_bits_len,
-        write_fork1_repeat0_sourceBuffer0_source_bits_size,
-        write_fork1_repeat0_sourceBuffer0_source_bits_burst,
-        write_fork1_repeat0_sourceBuffer0_source_bits_lock,
-        write_fork1_repeat0_sourceBuffer0_source_bits_cache,
-        write_fork1_repeat0_sourceBuffer0_source_bits_prot,
-        write_fork1_repeat0_sourceBuffer0_source_bits_qos,
-        write_fork1_repeat0_sourceBuffer0_source_bits_region}),
-    .addrB    (write_fork1_repeat0_sourceBuffer0_deq_ptr_value),
-    .dataOutB (_write_fork1_repeat0_sourceBuffer0_ram_dataOutB)
+      ({write_fork1_repeat0_result_bits_addr,
+        write_fork1_repeat0_result_bits_len,
+        write_fork1_repeat0_result_bits_size,
+        write_fork1_repeat0_result_bits_burst,
+        write_fork1_repeat0_result_bits_lock,
+        write_fork1_repeat0_result_bits_cache,
+        write_fork1_repeat0_result_bits_prot,
+        write_fork1_repeat0_result_bits_qos,
+        write_fork1_repeat0_result_bits_region}),
+    .addrB    (write_fork1_repeat0_sourceBuffer0_queue0_deqPtr_value),
+    .dataOutB (_write_fork1_repeat0_sourceBuffer0_queue0_ram_dataOutB)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(2),
+    .COUNT(4),
+    .DATA_WIDTH(43)
+  ) read_fork0_repeat0_sourceBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (read_fork0_repeat0_sourceBuffer0_queue0_enqPtr_value),
+    .writeEnA (read_fork0_repeat0_sourceBuffer0_queue0_doEnq),
+    .dataInA
+      ({read_fork0_repeat0_result_bits_addr,
+        read_fork0_repeat0_result_bits_len,
+        read_fork0_repeat0_result_bits_size,
+        read_fork0_repeat0_result_bits_burst,
+        read_fork0_repeat0_result_bits_lock,
+        read_fork0_repeat0_result_bits_cache,
+        read_fork0_repeat0_result_bits_prot,
+        read_fork0_repeat0_result_bits_qos,
+        read_fork0_repeat0_result_bits_region}),
+    .addrB    (read_fork0_repeat0_sourceBuffer0_queue0_deqPtr_value),
+    .dataOutB (_read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB)
   );
   assign s_axi_ar_ready = read_fork0_ready;
   assign s_axi_r_bits_data = read_resp_bits;
@@ -1566,15 +1466,7 @@ module Unburst(
 );
 
   wire        write_lastRepeated_bits;
-  wire [7:0]  write_fork0_sinkBuffer0_sink_bits;
-  wire        write_fork0_sinkBuffer0_sink_valid;
-  wire        write_fork0_sinkBuffer0_source_ready;
-  wire        write_wire0_ready;
   wire        write_fork0_result_valid;
-  wire [7:0]  read_ar_fork0_sinkBuffer0_sink_bits;
-  wire        read_ar_fork0_sinkBuffer0_sink_valid;
-  wire        read_ar_fork0_sinkBuffer0_source_ready;
-  wire        read_wire0_ready;
   wire        read_ar_fork0_result_valid;
   wire [13:0] read_ar_fork0_transform0_result_bits_addr = s_axi_ar_bits_addr;
   wire [7:0]  read_ar_fork0_transform0_result_bits_len = s_axi_ar_bits_len;
@@ -1597,52 +1489,14 @@ module Unburst(
   wire [3:0]  write_fork0_transform0_result_bits_region = s_axi_aw_bits_region;
   wire [7:0]  write_fork0_result_bits = s_axi_aw_bits_len;
   wire [1:0]  write_joined_bits__1_resp = m_axi_b_bits_resp;
-  wire        read_ar_fork0_sinkBuffer0_sink_ready = read_wire0_ready;
-  wire        read_ar_fork0_sinkBuffer0_interface_valid = read_ar_fork0_result_valid;
-  wire [7:0]  read_ar_fork0_sinkBuffer0_interface_bits = read_ar_fork0_result_bits;
-  wire [7:0]  read_ar_fork0_sinkBuffer0_source_bits =
-    read_ar_fork0_sinkBuffer0_interface_bits;
-  wire        read_ar_fork0_sinkBuffer0_source_valid =
-    read_ar_fork0_sinkBuffer0_interface_valid;
-  wire        read_ar_fork0_sinkBuffer0_interface_ready =
-    read_ar_fork0_sinkBuffer0_source_ready;
-  wire        read_wire0_valid = read_ar_fork0_sinkBuffer0_sink_valid;
-  reg  [2:0]  read_ar_fork0_sinkBuffer0_enq_ptr_value;
-  reg  [2:0]  read_ar_fork0_sinkBuffer0_deq_ptr_value;
-  reg         read_ar_fork0_sinkBuffer0_maybe_full;
-  wire        read_ar_fork0_sinkBuffer0_ptr_match =
-    read_ar_fork0_sinkBuffer0_enq_ptr_value == read_ar_fork0_sinkBuffer0_deq_ptr_value;
-  wire        read_ar_fork0_sinkBuffer0_do_enq =
-    read_ar_fork0_sinkBuffer0_source_ready & read_ar_fork0_sinkBuffer0_source_valid;
-  assign read_ar_fork0_sinkBuffer0_sink_valid =
-    ~(read_ar_fork0_sinkBuffer0_ptr_match & ~read_ar_fork0_sinkBuffer0_maybe_full);
-  assign read_ar_fork0_sinkBuffer0_source_ready =
-    ~(read_ar_fork0_sinkBuffer0_ptr_match & read_ar_fork0_sinkBuffer0_maybe_full);
-  wire [7:0]  read_wire0_bits = read_ar_fork0_sinkBuffer0_sink_bits;
-  wire        read_ar_fork0_result_ready = read_ar_fork0_sinkBuffer0_interface_ready;
-  wire        write_fork0_sinkBuffer0_sink_ready = write_wire0_ready;
-  wire        write_fork0_sinkBuffer0_interface_valid = write_fork0_result_valid;
-  wire [7:0]  write_fork0_sinkBuffer0_interface_bits = write_fork0_result_bits;
-  wire [7:0]  write_fork0_sinkBuffer0_source_bits =
-    write_fork0_sinkBuffer0_interface_bits;
-  wire        write_fork0_sinkBuffer0_source_valid =
-    write_fork0_sinkBuffer0_interface_valid;
-  wire        write_fork0_sinkBuffer0_interface_ready =
-    write_fork0_sinkBuffer0_source_ready;
-  wire        write_wire0_valid = write_fork0_sinkBuffer0_sink_valid;
-  reg  [2:0]  write_fork0_sinkBuffer0_enq_ptr_value;
-  reg  [2:0]  write_fork0_sinkBuffer0_deq_ptr_value;
-  reg         write_fork0_sinkBuffer0_maybe_full;
-  wire        write_fork0_sinkBuffer0_ptr_match =
-    write_fork0_sinkBuffer0_enq_ptr_value == write_fork0_sinkBuffer0_deq_ptr_value;
-  wire        write_fork0_sinkBuffer0_do_enq =
-    write_fork0_sinkBuffer0_source_ready & write_fork0_sinkBuffer0_source_valid;
-  assign write_fork0_sinkBuffer0_sink_valid =
-    ~(write_fork0_sinkBuffer0_ptr_match & ~write_fork0_sinkBuffer0_maybe_full);
-  assign write_fork0_sinkBuffer0_source_ready =
-    ~(write_fork0_sinkBuffer0_ptr_match & write_fork0_sinkBuffer0_maybe_full);
-  wire [7:0]  write_wire0_bits = write_fork0_sinkBuffer0_sink_bits;
-  wire        write_fork0_result_ready = write_fork0_sinkBuffer0_interface_ready;
+  wire        read_ar_fork0_sinkBuffer0_queueSource_valid = read_ar_fork0_result_valid;
+  wire [7:0]  read_ar_fork0_sinkBuffer0_queueSource_bits = read_ar_fork0_result_bits;
+  wire        read_ar_fork0_sinkBuffer0_queueSource_ready;
+  wire        read_ar_fork0_result_ready = read_ar_fork0_sinkBuffer0_queueSource_ready;
+  wire        write_fork0_sinkBuffer0_queueSource_valid = write_fork0_result_valid;
+  wire [7:0]  write_fork0_sinkBuffer0_queueSource_bits = write_fork0_result_bits;
+  wire        write_fork0_sinkBuffer0_queueSource_ready;
+  wire        write_fork0_result_ready = write_fork0_sinkBuffer0_queueSource_ready;
   wire        write_joined_bits__2 = write_lastRepeated_bits;
   wire        write_lastRepeated_valid;
   wire        write_joined_ready;
@@ -1699,11 +1553,13 @@ module Unburst(
   reg  [8:0]  write_repeat0_count_state;
   reg         write_repeat0_count_valid;
   wire [8:0]  _write_repeat0_count_nextState_T = write_repeat0_count_state + 9'h1;
+  wire [7:0]  write_wire0_bits;
   wire [8:0]  _GEN = {1'h0, write_wire0_bits};
   wire        _write_repeat0_count_T_2 = _write_repeat0_count_nextState_T == _GEN + 9'h1;
   wire [8:0]  _write_repeat0_count_T_6 = _GEN + 9'h1;
   wire        _write_repeat0_count_T_8 = _write_repeat0_count_T_6 == 9'h1;
-  assign write_wire0_ready =
+  wire        write_wire0_valid;
+  wire        write_wire0_ready =
     write_wire0_valid
     & (write_repeat0_count_valid
          ? _write_repeat0_count_T_2 & write_lastRepeated_ready
@@ -1711,20 +1567,43 @@ module Unburst(
            & write_lastRepeated_ready);
   assign write_lastRepeated_valid =
     write_wire0_valid & (write_repeat0_count_valid | (|_write_repeat0_count_T_6));
-  wire        read_r_lastRepeated_valid;
   assign write_lastRepeated_bits =
     write_repeat0_count_valid ? _write_repeat0_count_T_2 : _write_repeat0_count_T_8;
+  reg  [2:0]  write_fork0_sinkBuffer0_queue0_enqPtr_value;
+  reg  [2:0]  write_fork0_sinkBuffer0_queue0_deqPtr_value;
+  reg         write_fork0_sinkBuffer0_queue0_maybeFull;
+  wire        write_fork0_sinkBuffer0_queue0_ptrMatch =
+    write_fork0_sinkBuffer0_queue0_enqPtr_value == write_fork0_sinkBuffer0_queue0_deqPtr_value;
+  wire        write_fork0_sinkBuffer0_queue0_doEnq =
+    write_fork0_sinkBuffer0_queueSource_ready & write_fork0_sinkBuffer0_queueSource_valid;
+  assign write_wire0_valid =
+    ~(write_fork0_sinkBuffer0_queue0_ptrMatch
+      & ~write_fork0_sinkBuffer0_queue0_maybeFull);
+  assign write_fork0_sinkBuffer0_queueSource_ready =
+    ~(write_fork0_sinkBuffer0_queue0_ptrMatch & write_fork0_sinkBuffer0_queue0_maybeFull);
+  reg         write_fork0_regs_0;
+  reg         write_fork0_regs_1;
+  wire        write_fork0_transform0_result_ready;
+  wire        write_fork0_ready_qual1_0 =
+    write_fork0_transform0_result_ready | write_fork0_regs_0;
+  wire        write_fork0_ready_qual1_1 = write_fork0_result_ready | write_fork0_regs_1;
+  wire        write_fork0_ready = write_fork0_ready_qual1_0 & write_fork0_ready_qual1_1;
+  wire        write_fork0_transform0_result_valid = s_axi_aw_valid & ~write_fork0_regs_0;
+  wire        read_r_lastRepeated_valid;
+  assign write_fork0_result_valid = s_axi_aw_valid & ~write_fork0_regs_1;
   wire        s_axi_r_valid_0 = m_axi_r_valid & read_r_lastRepeated_valid;
   wire        read_r_lastRepeated_ready = s_axi_r_ready & s_axi_r_valid_0;
   reg  [8:0]  read_r_repeat0_count_state;
   reg         read_r_repeat0_count_valid;
   wire [8:0]  _read_r_repeat0_count_nextState_T = read_r_repeat0_count_state + 9'h1;
+  wire [7:0]  read_wire0_bits;
   wire [8:0]  _GEN_0 = {1'h0, read_wire0_bits};
   wire        _read_r_repeat0_count_T_2 =
     _read_r_repeat0_count_nextState_T == _GEN_0 + 9'h1;
   wire [8:0]  _read_r_repeat0_count_T_6 = _GEN_0 + 9'h1;
   wire        _read_r_repeat0_count_T_8 = _read_r_repeat0_count_T_6 == 9'h1;
-  assign read_wire0_ready =
+  wire        read_wire0_valid;
+  wire        read_wire0_ready =
     read_wire0_valid
     & (read_r_repeat0_count_valid
          ? _read_r_repeat0_count_T_2 & read_r_lastRepeated_ready
@@ -1734,56 +1613,45 @@ module Unburst(
     read_wire0_valid & (read_r_repeat0_count_valid | (|_read_r_repeat0_count_T_6));
   wire        read_r_lastRepeated_bits =
     read_r_repeat0_count_valid ? _read_r_repeat0_count_T_2 : _read_r_repeat0_count_T_8;
-  reg         write_fork0_regs_0;
-  reg         write_fork0_regs_1;
-  wire        write_fork0_transform0_result_ready;
-  wire        write_fork0_ready_qual1_0 =
-    write_fork0_transform0_result_ready | write_fork0_regs_0;
-  wire        write_fork0_ready_qual1_1 = write_fork0_result_ready | write_fork0_regs_1;
-  wire        write_fork0_ready = write_fork0_ready_qual1_0 & write_fork0_ready_qual1_1;
-  wire        write_fork0_transform0_result_valid = s_axi_aw_valid & ~write_fork0_regs_0;
-  assign write_fork0_result_valid = s_axi_aw_valid & ~write_fork0_regs_1;
+  reg  [2:0]  read_ar_fork0_sinkBuffer0_queue0_enqPtr_value;
+  reg  [2:0]  read_ar_fork0_sinkBuffer0_queue0_deqPtr_value;
+  reg         read_ar_fork0_sinkBuffer0_queue0_maybeFull;
+  wire        read_ar_fork0_sinkBuffer0_queue0_ptrMatch =
+    read_ar_fork0_sinkBuffer0_queue0_enqPtr_value == read_ar_fork0_sinkBuffer0_queue0_deqPtr_value;
+  wire        read_ar_fork0_sinkBuffer0_queue0_doEnq =
+    read_ar_fork0_sinkBuffer0_queueSource_ready
+    & read_ar_fork0_sinkBuffer0_queueSource_valid;
+  assign read_wire0_valid =
+    ~(read_ar_fork0_sinkBuffer0_queue0_ptrMatch
+      & ~read_ar_fork0_sinkBuffer0_queue0_maybeFull);
+  assign read_ar_fork0_sinkBuffer0_queueSource_ready =
+    ~(read_ar_fork0_sinkBuffer0_queue0_ptrMatch
+      & read_ar_fork0_sinkBuffer0_queue0_maybeFull);
   always @(posedge clock) begin
     automatic logic _GEN_1;
     automatic logic _GEN_2;
     _GEN_1 = ~(|_write_repeat0_count_T_6) | _write_repeat0_count_T_8;
     _GEN_2 = ~(|_read_r_repeat0_count_T_6) | _read_r_repeat0_count_T_8;
     if (reset) begin
-      read_ar_fork0_sinkBuffer0_enq_ptr_value <= 3'h0;
-      read_ar_fork0_sinkBuffer0_deq_ptr_value <= 3'h0;
-      read_ar_fork0_sinkBuffer0_maybe_full <= 1'h0;
-      write_fork0_sinkBuffer0_enq_ptr_value <= 3'h0;
-      write_fork0_sinkBuffer0_deq_ptr_value <= 3'h0;
-      write_fork0_sinkBuffer0_maybe_full <= 1'h0;
       write_transducerReduceResp_respReg <= 2'h0;
       read_ar_fork0_regs_0 <= 1'h0;
       read_ar_fork0_regs_1 <= 1'h0;
       write_repeat0_count_valid <= 1'h0;
-      read_r_repeat0_count_valid <= 1'h0;
+      write_fork0_sinkBuffer0_queue0_enqPtr_value <= 3'h0;
+      write_fork0_sinkBuffer0_queue0_deqPtr_value <= 3'h0;
+      write_fork0_sinkBuffer0_queue0_maybeFull <= 1'h0;
       write_fork0_regs_0 <= 1'h0;
       write_fork0_regs_1 <= 1'h0;
+      read_r_repeat0_count_valid <= 1'h0;
+      read_ar_fork0_sinkBuffer0_queue0_enqPtr_value <= 3'h0;
+      read_ar_fork0_sinkBuffer0_queue0_deqPtr_value <= 3'h0;
+      read_ar_fork0_sinkBuffer0_queue0_maybeFull <= 1'h0;
     end
     else begin
-      automatic logic read_ar_fork0_sinkBuffer0_do_deq =
-        read_ar_fork0_sinkBuffer0_sink_ready & read_ar_fork0_sinkBuffer0_sink_valid;
-      automatic logic write_fork0_sinkBuffer0_do_deq =
-        write_fork0_sinkBuffer0_sink_ready & write_fork0_sinkBuffer0_sink_valid;
-      if (read_ar_fork0_sinkBuffer0_do_enq)
-        read_ar_fork0_sinkBuffer0_enq_ptr_value <=
-          read_ar_fork0_sinkBuffer0_enq_ptr_value + 3'h1;
-      if (read_ar_fork0_sinkBuffer0_do_deq)
-        read_ar_fork0_sinkBuffer0_deq_ptr_value <=
-          read_ar_fork0_sinkBuffer0_deq_ptr_value + 3'h1;
-      if (read_ar_fork0_sinkBuffer0_do_enq != read_ar_fork0_sinkBuffer0_do_deq)
-        read_ar_fork0_sinkBuffer0_maybe_full <= read_ar_fork0_sinkBuffer0_do_enq;
-      if (write_fork0_sinkBuffer0_do_enq)
-        write_fork0_sinkBuffer0_enq_ptr_value <=
-          write_fork0_sinkBuffer0_enq_ptr_value + 3'h1;
-      if (write_fork0_sinkBuffer0_do_deq)
-        write_fork0_sinkBuffer0_deq_ptr_value <=
-          write_fork0_sinkBuffer0_deq_ptr_value + 3'h1;
-      if (write_fork0_sinkBuffer0_do_enq != write_fork0_sinkBuffer0_do_deq)
-        write_fork0_sinkBuffer0_maybe_full <= write_fork0_sinkBuffer0_do_enq;
+      automatic logic write_fork0_sinkBuffer0_queue0_doDeq =
+        write_wire0_ready & write_wire0_valid;
+      automatic logic read_ar_fork0_sinkBuffer0_queue0_doDeq =
+        read_wire0_ready & read_wire0_valid;
       if (write_joined_valid) begin
         if (write_joined_bits__2) begin
           if (s_axi_b_ready)
@@ -1803,6 +1671,18 @@ module Unburst(
         else
           write_repeat0_count_valid <= ~_GEN_1 & write_lastRepeated_ready;
       end
+      if (write_fork0_sinkBuffer0_queue0_doEnq)
+        write_fork0_sinkBuffer0_queue0_enqPtr_value <=
+          write_fork0_sinkBuffer0_queue0_enqPtr_value + 3'h1;
+      if (write_fork0_sinkBuffer0_queue0_doDeq)
+        write_fork0_sinkBuffer0_queue0_deqPtr_value <=
+          write_fork0_sinkBuffer0_queue0_deqPtr_value + 3'h1;
+      if (write_fork0_sinkBuffer0_queue0_doEnq != write_fork0_sinkBuffer0_queue0_doDeq)
+        write_fork0_sinkBuffer0_queue0_maybeFull <= write_fork0_sinkBuffer0_queue0_doEnq;
+      write_fork0_regs_0 <=
+        write_fork0_ready_qual1_0 & s_axi_aw_valid & ~write_fork0_ready;
+      write_fork0_regs_1 <=
+        write_fork0_ready_qual1_1 & s_axi_aw_valid & ~write_fork0_ready;
       if (read_wire0_valid) begin
         if (read_r_repeat0_count_valid)
           read_r_repeat0_count_valid <=
@@ -1810,10 +1690,15 @@ module Unburst(
         else
           read_r_repeat0_count_valid <= ~_GEN_2 & read_r_lastRepeated_ready;
       end
-      write_fork0_regs_0 <=
-        write_fork0_ready_qual1_0 & s_axi_aw_valid & ~write_fork0_ready;
-      write_fork0_regs_1 <=
-        write_fork0_ready_qual1_1 & s_axi_aw_valid & ~write_fork0_ready;
+      if (read_ar_fork0_sinkBuffer0_queue0_doEnq)
+        read_ar_fork0_sinkBuffer0_queue0_enqPtr_value <=
+          read_ar_fork0_sinkBuffer0_queue0_enqPtr_value + 3'h1;
+      if (read_ar_fork0_sinkBuffer0_queue0_doDeq)
+        read_ar_fork0_sinkBuffer0_queue0_deqPtr_value <=
+          read_ar_fork0_sinkBuffer0_queue0_deqPtr_value + 3'h1;
+      if (read_ar_fork0_sinkBuffer0_queue0_doEnq != read_ar_fork0_sinkBuffer0_queue0_doDeq)
+        read_ar_fork0_sinkBuffer0_queue0_maybeFull <=
+          read_ar_fork0_sinkBuffer0_queue0_doEnq;
     end
     if (write_wire0_valid) begin
       if (write_repeat0_count_valid) begin
@@ -1862,18 +1747,6 @@ module Unburst(
     .sink_valid              (m_axi_ar_valid),
     .sink_ready              (m_axi_ar_ready)
   );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(3),
-    .COUNT(8),
-    .DATA_WIDTH(8)
-  ) read_ar_fork0_sinkBuffer0_ram (
-    .clock    (clock),
-    .addrA    (read_ar_fork0_sinkBuffer0_enq_ptr_value),
-    .writeEnA (read_ar_fork0_sinkBuffer0_do_enq),
-    .dataInA  (read_ar_fork0_sinkBuffer0_source_bits),
-    .addrB    (read_ar_fork0_sinkBuffer0_deq_ptr_value),
-    .dataOutB (read_ar_fork0_sinkBuffer0_sink_bits)
-  );
   AddressStrobeGenerator_2 write_addressStrobeGenerator (
     .clock                   (clock),
     .reset                   (reset),
@@ -1902,13 +1775,25 @@ module Unburst(
     .ADDR_WIDTH(3),
     .COUNT(8),
     .DATA_WIDTH(8)
-  ) write_fork0_sinkBuffer0_ram (
+  ) write_fork0_sinkBuffer0_queue0_ram (
     .clock    (clock),
-    .addrA    (write_fork0_sinkBuffer0_enq_ptr_value),
-    .writeEnA (write_fork0_sinkBuffer0_do_enq),
-    .dataInA  (write_fork0_sinkBuffer0_source_bits),
-    .addrB    (write_fork0_sinkBuffer0_deq_ptr_value),
-    .dataOutB (write_fork0_sinkBuffer0_sink_bits)
+    .addrA    (write_fork0_sinkBuffer0_queue0_enqPtr_value),
+    .writeEnA (write_fork0_sinkBuffer0_queue0_doEnq),
+    .dataInA  (write_fork0_sinkBuffer0_queueSource_bits),
+    .addrB    (write_fork0_sinkBuffer0_queue0_deqPtr_value),
+    .dataOutB (write_wire0_bits)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(3),
+    .COUNT(8),
+    .DATA_WIDTH(8)
+  ) read_ar_fork0_sinkBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (read_ar_fork0_sinkBuffer0_queue0_enqPtr_value),
+    .writeEnA (read_ar_fork0_sinkBuffer0_queue0_doEnq),
+    .dataInA  (read_ar_fork0_sinkBuffer0_queueSource_bits),
+    .addrB    (read_ar_fork0_sinkBuffer0_queue0_deqPtr_value),
+    .dataOutB (read_wire0_bits)
   );
   assign s_axi_ar_ready = s_axi_ar_ready_0;
   assign s_axi_r_bits_data = m_axi_r_bits_data;
@@ -2137,17 +2022,17 @@ module Downscale(
   output         m_axi_b_ready
 );
 
-  wire         write_aw_fork0_transform0_sinkBuffer0_source_ready;
-  wire [3:0]   write_aw_fork0_transform0_sinkBuffer0_interface_bits_addr;
+  wire         read_ar_fork0_transform0_sinkBuffer0_queue0_empty;
+  wire         write_aw_fork0_transform0_sinkBuffer0_queue0_empty;
+  wire         write_aw_fork0_transform0_sinkBuffer0_queueSource_ready;
   wire         write_aw_fork0_transform0_result_valid;
   wire         read_ewireOffsetLastQueue_bits__2;
-  wire         read_ar_fork0_transform0_sinkBuffer0_source_ready;
-  wire [3:0]   read_ar_fork0_transform0_sinkBuffer0_interface_bits_addr;
-  wire         read_ar_fork0_transform0_result_valid;
-  wire [16:0]  _write_aw_fork0_transform0_sinkBuffer0_ram_dataOutB;
+  wire [16:0]  _read_ar_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB;
+  wire [16:0]  _write_aw_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB;
+  wire         _write_addressGenerator_source_ready;
   wire [3:0]   _write_addressGenerator_sink_bits_addr;
   wire [127:0] _read_r_transducerReduceResp_steerLeft_dataOut;
-  wire [16:0]  _read_ar_fork0_transform0_sinkBuffer0_ram_dataOutB;
+  wire         _read_addressGenerator_source_ready;
   wire [3:0]   _read_addressGenerator_sink_bits_addr;
   wire         read_ar_arTransformed_valid = s_axi_ar_valid;
   wire [13:0]  read_ar_arTransformed_bits_addr = s_axi_ar_bits_addr;
@@ -2169,9 +2054,9 @@ module Downscale(
   wire         write_aw_fork0_result_ready = m_axi_aw_ready;
   wire [1:0]   read_r_zipped_bits__1_resp = 2'h0;
   wire [1:0]   read_ar_arTransformed_bits_burst = 2'h1;
-  wire [1:0]   read_ar_fork0_transform0_sinkBuffer0_interface_bits_burst = 2'h1;
+  wire [1:0]   read_ar_fork0_transform0_sinkBuffer0_queueSource_bits_burst = 2'h1;
   wire [1:0]   write_aw_awTransformed_bits_burst = 2'h1;
-  wire [1:0]   write_aw_fork0_transform0_sinkBuffer0_interface_bits_burst = 2'h1;
+  wire [1:0]   write_aw_fork0_transform0_sinkBuffer0_queueSource_bits_burst = 2'h1;
   wire [13:0]  read_ar_fork0_transform0_result_bits_addr =
     read_ar_arTransformed_bits_addr;
   wire [13:0]  read_ar_fork0_result_bits_addr = read_ar_arTransformed_bits_addr;
@@ -2200,50 +2085,15 @@ module Downscale(
   wire [7:0]   read_ar_arTransformed_bits_len =
     s_axi_ar_bits_size[2] ? (8'h1 << s_axi_ar_bits_size - 3'h3) - 8'h1 : 8'h0;
   wire [7:0]   read_ar_fork0_transform0_result_bits_len = read_ar_arTransformed_bits_len;
+  wire         read_ar_fork0_transform0_sinkBuffer0_queueSource_ready;
   wire [7:0]   read_ar_fork0_result_bits_len = read_ar_arTransformed_bits_len;
-  wire         read_ar_fork0_transform0_sinkBuffer0_interface_valid =
-    read_ar_fork0_transform0_result_valid;
-  wire [7:0]   read_ar_fork0_transform0_sinkBuffer0_interface_bits_len =
+  wire [7:0]   read_ar_fork0_transform0_sinkBuffer0_queueSource_bits_len =
     read_ar_fork0_transform0_result_bits_len;
-  wire [2:0]   read_ar_fork0_transform0_sinkBuffer0_interface_bits_size =
+  wire [2:0]   read_ar_fork0_transform0_sinkBuffer0_queueSource_bits_size =
     read_ar_fork0_transform0_result_bits_size;
-  wire [3:0]   read_ar_fork0_transform0_sinkBuffer0_source_bits_addr =
-    read_ar_fork0_transform0_sinkBuffer0_interface_bits_addr;
-  wire [7:0]   read_ar_fork0_transform0_sinkBuffer0_source_bits_len =
-    read_ar_fork0_transform0_sinkBuffer0_interface_bits_len;
-  wire [2:0]   read_ar_fork0_transform0_sinkBuffer0_source_bits_size =
-    read_ar_fork0_transform0_sinkBuffer0_interface_bits_size;
-  wire [1:0]   read_ar_fork0_transform0_sinkBuffer0_source_bits_burst =
-    read_ar_fork0_transform0_sinkBuffer0_interface_bits_burst;
-  wire         read_ar_fork0_transform0_sinkBuffer0_source_valid =
-    read_ar_fork0_transform0_sinkBuffer0_interface_valid;
-  wire         read_ar_fork0_transform0_sinkBuffer0_interface_ready =
-    read_ar_fork0_transform0_sinkBuffer0_source_ready;
-  reg  [4:0]   read_ar_fork0_transform0_sinkBuffer0_enq_ptr_value;
-  reg  [4:0]   read_ar_fork0_transform0_sinkBuffer0_deq_ptr_value;
-  reg          read_ar_fork0_transform0_sinkBuffer0_maybe_full;
-  wire         read_ar_fork0_transform0_sinkBuffer0_ptr_match =
-    read_ar_fork0_transform0_sinkBuffer0_enq_ptr_value == read_ar_fork0_transform0_sinkBuffer0_deq_ptr_value;
-  wire         read_ar_fork0_transform0_sinkBuffer0_do_enq =
-    read_ar_fork0_transform0_sinkBuffer0_source_ready
-    & read_ar_fork0_transform0_sinkBuffer0_source_valid;
-  wire         read_ar_fork0_transform0_sinkBuffer0_sink_valid =
-    ~(read_ar_fork0_transform0_sinkBuffer0_ptr_match
-      & ~read_ar_fork0_transform0_sinkBuffer0_maybe_full);
-  assign read_ar_fork0_transform0_sinkBuffer0_source_ready =
-    ~(read_ar_fork0_transform0_sinkBuffer0_ptr_match
-      & read_ar_fork0_transform0_sinkBuffer0_maybe_full);
-  wire [1:0]   read_ar_fork0_transform0_sinkBuffer0_sink_bits_burst =
-    _read_ar_fork0_transform0_sinkBuffer0_ram_dataOutB[1:0];
-  wire [2:0]   read_ar_fork0_transform0_sinkBuffer0_sink_bits_size =
-    _read_ar_fork0_transform0_sinkBuffer0_ram_dataOutB[4:2];
-  wire [7:0]   read_ar_fork0_transform0_sinkBuffer0_sink_bits_len =
-    _read_ar_fork0_transform0_sinkBuffer0_ram_dataOutB[12:5];
-  wire [3:0]   read_ar_fork0_transform0_sinkBuffer0_sink_bits_addr =
-    _read_ar_fork0_transform0_sinkBuffer0_ram_dataOutB[16:13];
   wire         read_ar_fork0_transform0_result_ready =
-    read_ar_fork0_transform0_sinkBuffer0_interface_ready;
-  assign read_ar_fork0_transform0_sinkBuffer0_interface_bits_addr =
+    read_ar_fork0_transform0_sinkBuffer0_queueSource_ready;
+  wire [3:0]   read_ar_fork0_transform0_sinkBuffer0_queueSource_bits_addr =
     read_ar_fork0_transform0_result_bits_addr[3:0];
   wire         read_ewireOffsetLastQueue_bits__1 =
     _read_addressGenerator_sink_bits_addr[3];
@@ -2291,49 +2141,15 @@ module Downscale(
   wire [7:0]   write_aw_fork0_transform0_result_bits_len =
     write_aw_awTransformed_bits_len;
   wire [7:0]   write_aw_fork0_result_bits_len = write_aw_awTransformed_bits_len;
-  wire         write_aw_fork0_transform0_sinkBuffer0_interface_valid =
+  wire         write_aw_fork0_transform0_sinkBuffer0_queueSource_valid =
     write_aw_fork0_transform0_result_valid;
-  wire [7:0]   write_aw_fork0_transform0_sinkBuffer0_interface_bits_len =
+  wire [7:0]   write_aw_fork0_transform0_sinkBuffer0_queueSource_bits_len =
     write_aw_fork0_transform0_result_bits_len;
-  wire [2:0]   write_aw_fork0_transform0_sinkBuffer0_interface_bits_size =
+  wire [2:0]   write_aw_fork0_transform0_sinkBuffer0_queueSource_bits_size =
     write_aw_fork0_transform0_result_bits_size;
-  wire [3:0]   write_aw_fork0_transform0_sinkBuffer0_source_bits_addr =
-    write_aw_fork0_transform0_sinkBuffer0_interface_bits_addr;
-  wire [7:0]   write_aw_fork0_transform0_sinkBuffer0_source_bits_len =
-    write_aw_fork0_transform0_sinkBuffer0_interface_bits_len;
-  wire [2:0]   write_aw_fork0_transform0_sinkBuffer0_source_bits_size =
-    write_aw_fork0_transform0_sinkBuffer0_interface_bits_size;
-  wire [1:0]   write_aw_fork0_transform0_sinkBuffer0_source_bits_burst =
-    write_aw_fork0_transform0_sinkBuffer0_interface_bits_burst;
-  wire         write_aw_fork0_transform0_sinkBuffer0_source_valid =
-    write_aw_fork0_transform0_sinkBuffer0_interface_valid;
-  wire         write_aw_fork0_transform0_sinkBuffer0_interface_ready =
-    write_aw_fork0_transform0_sinkBuffer0_source_ready;
-  reg  [4:0]   write_aw_fork0_transform0_sinkBuffer0_enq_ptr_value;
-  reg  [4:0]   write_aw_fork0_transform0_sinkBuffer0_deq_ptr_value;
-  reg          write_aw_fork0_transform0_sinkBuffer0_maybe_full;
-  wire         write_aw_fork0_transform0_sinkBuffer0_ptr_match =
-    write_aw_fork0_transform0_sinkBuffer0_enq_ptr_value == write_aw_fork0_transform0_sinkBuffer0_deq_ptr_value;
-  wire         write_aw_fork0_transform0_sinkBuffer0_do_enq =
-    write_aw_fork0_transform0_sinkBuffer0_source_ready
-    & write_aw_fork0_transform0_sinkBuffer0_source_valid;
-  wire         write_aw_fork0_transform0_sinkBuffer0_sink_valid =
-    ~(write_aw_fork0_transform0_sinkBuffer0_ptr_match
-      & ~write_aw_fork0_transform0_sinkBuffer0_maybe_full);
-  assign write_aw_fork0_transform0_sinkBuffer0_source_ready =
-    ~(write_aw_fork0_transform0_sinkBuffer0_ptr_match
-      & write_aw_fork0_transform0_sinkBuffer0_maybe_full);
-  wire [1:0]   write_aw_fork0_transform0_sinkBuffer0_sink_bits_burst =
-    _write_aw_fork0_transform0_sinkBuffer0_ram_dataOutB[1:0];
-  wire [2:0]   write_aw_fork0_transform0_sinkBuffer0_sink_bits_size =
-    _write_aw_fork0_transform0_sinkBuffer0_ram_dataOutB[4:2];
-  wire [7:0]   write_aw_fork0_transform0_sinkBuffer0_sink_bits_len =
-    _write_aw_fork0_transform0_sinkBuffer0_ram_dataOutB[12:5];
-  wire [3:0]   write_aw_fork0_transform0_sinkBuffer0_sink_bits_addr =
-    _write_aw_fork0_transform0_sinkBuffer0_ram_dataOutB[16:13];
   wire         write_aw_fork0_transform0_result_ready =
-    write_aw_fork0_transform0_sinkBuffer0_interface_ready;
-  assign write_aw_fork0_transform0_sinkBuffer0_interface_bits_addr =
+    write_aw_fork0_transform0_sinkBuffer0_queueSource_ready;
+  wire [3:0]   write_aw_fork0_transform0_sinkBuffer0_queueSource_bits_addr =
     write_aw_fork0_transform0_result_bits_addr[3:0];
   wire         write_ewireOffsetLast_bits__1 = _write_addressGenerator_sink_bits_addr[3];
   wire         write_ewireOffsetLast_valid;
@@ -2358,6 +2174,34 @@ module Downscale(
             _write_w_transducerRepeatData_cond_WIRE_0} - 3'h1));
   wire         write_w_transducerRepeatData_errorNoAction =
     s_axi_w_valid & write_w_transducerRepeatData_cond == 3'h0;
+  reg          read_ar_fork0_regs_0;
+  reg          read_ar_fork0_regs_1;
+  wire         read_ar_fork0_ready_qual1_0 =
+    read_ar_fork0_transform0_result_ready | read_ar_fork0_regs_0;
+  wire         read_ar_fork0_ready_qual1_1 =
+    read_ar_fork0_result_ready | read_ar_fork0_regs_1;
+  wire         read_ar_arTransformed_ready =
+    read_ar_fork0_ready_qual1_0 & read_ar_fork0_ready_qual1_1;
+  wire         read_ar_fork0_transform0_result_valid =
+    read_ar_arTransformed_valid & ~read_ar_fork0_regs_0;
+  wire         read_ar_fork0_transform0_sinkBuffer0_queueSource_valid =
+    read_ar_fork0_transform0_result_valid;
+  wire         read_ar_fork0_result_valid =
+    read_ar_arTransformed_valid & ~read_ar_fork0_regs_1;
+  wire         write_aw_fork0_transform0_sinkBuffer0_queue0_doEnq =
+    write_aw_fork0_transform0_sinkBuffer0_queueSource_ready
+    & write_aw_fork0_transform0_sinkBuffer0_queueSource_valid;
+  reg  [4:0]   write_aw_fork0_transform0_sinkBuffer0_queue0_enqPtr_value;
+  reg  [4:0]   write_aw_fork0_transform0_sinkBuffer0_queue0_deqPtr_value;
+  reg          write_aw_fork0_transform0_sinkBuffer0_queue0_maybeFull;
+  wire         write_aw_fork0_transform0_sinkBuffer0_queue0_ptrMatch =
+    write_aw_fork0_transform0_sinkBuffer0_queue0_enqPtr_value == write_aw_fork0_transform0_sinkBuffer0_queue0_deqPtr_value;
+  assign write_aw_fork0_transform0_sinkBuffer0_queue0_empty =
+    write_aw_fork0_transform0_sinkBuffer0_queue0_ptrMatch
+    & ~write_aw_fork0_transform0_sinkBuffer0_queue0_maybeFull;
+  assign write_aw_fork0_transform0_sinkBuffer0_queueSource_ready =
+    ~(write_aw_fork0_transform0_sinkBuffer0_queue0_ptrMatch
+      & write_aw_fork0_transform0_sinkBuffer0_queue0_maybeFull);
   reg          write_aw_fork0_regs_0;
   reg          write_aw_fork0_regs_1;
   wire         write_aw_fork0_ready_qual1_0 =
@@ -2421,51 +2265,42 @@ module Downscale(
                 "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:99:46]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
-  reg          read_ar_fork0_regs_0;
-  reg          read_ar_fork0_regs_1;
-  wire         read_ar_fork0_ready_qual1_0 =
-    read_ar_fork0_transform0_result_ready | read_ar_fork0_regs_0;
-  wire         read_ar_fork0_ready_qual1_1 =
-    read_ar_fork0_result_ready | read_ar_fork0_regs_1;
-  wire         read_ar_arTransformed_ready =
-    read_ar_fork0_ready_qual1_0 & read_ar_fork0_ready_qual1_1;
-  assign read_ar_fork0_transform0_result_valid =
-    read_ar_arTransformed_valid & ~read_ar_fork0_regs_0;
-  wire         read_ar_fork0_transform0_sinkBuffer0_sink_ready;
-  wire         read_ar_fork0_result_valid =
-    read_ar_arTransformed_valid & ~read_ar_fork0_regs_1;
-  wire         write_aw_fork0_transform0_sinkBuffer0_sink_ready;
+  wire         read_ar_fork0_transform0_sinkBuffer0_queue0_doEnq =
+    read_ar_fork0_transform0_sinkBuffer0_queueSource_ready
+    & read_ar_fork0_transform0_sinkBuffer0_queueSource_valid;
+  reg  [4:0]   read_ar_fork0_transform0_sinkBuffer0_queue0_enqPtr_value;
+  reg  [4:0]   read_ar_fork0_transform0_sinkBuffer0_queue0_deqPtr_value;
+  reg          read_ar_fork0_transform0_sinkBuffer0_queue0_maybeFull;
+  wire         read_ar_fork0_transform0_sinkBuffer0_queue0_ptrMatch =
+    read_ar_fork0_transform0_sinkBuffer0_queue0_enqPtr_value == read_ar_fork0_transform0_sinkBuffer0_queue0_deqPtr_value;
+  assign read_ar_fork0_transform0_sinkBuffer0_queue0_empty =
+    read_ar_fork0_transform0_sinkBuffer0_queue0_ptrMatch
+    & ~read_ar_fork0_transform0_sinkBuffer0_queue0_maybeFull;
+  assign read_ar_fork0_transform0_sinkBuffer0_queueSource_ready =
+    ~(read_ar_fork0_transform0_sinkBuffer0_queue0_ptrMatch
+      & read_ar_fork0_transform0_sinkBuffer0_queue0_maybeFull);
   always @(posedge clock) begin
     if (reset) begin
-      read_ar_fork0_transform0_sinkBuffer0_enq_ptr_value <= 5'h0;
-      read_ar_fork0_transform0_sinkBuffer0_deq_ptr_value <= 5'h0;
-      read_ar_fork0_transform0_sinkBuffer0_maybe_full <= 1'h0;
       read_r_transducerReduceResp_dataReg <= 128'h0;
       read_r_transducerReduceResp_respReg <= 2'h0;
-      write_aw_fork0_transform0_sinkBuffer0_enq_ptr_value <= 5'h0;
-      write_aw_fork0_transform0_sinkBuffer0_deq_ptr_value <= 5'h0;
-      write_aw_fork0_transform0_sinkBuffer0_maybe_full <= 1'h0;
-      write_aw_fork0_regs_0 <= 1'h0;
-      write_aw_fork0_regs_1 <= 1'h0;
       read_ar_fork0_regs_0 <= 1'h0;
       read_ar_fork0_regs_1 <= 1'h0;
+      write_aw_fork0_transform0_sinkBuffer0_queue0_enqPtr_value <= 5'h0;
+      write_aw_fork0_transform0_sinkBuffer0_queue0_deqPtr_value <= 5'h0;
+      write_aw_fork0_transform0_sinkBuffer0_queue0_maybeFull <= 1'h0;
+      write_aw_fork0_regs_0 <= 1'h0;
+      write_aw_fork0_regs_1 <= 1'h0;
+      read_ar_fork0_transform0_sinkBuffer0_queue0_enqPtr_value <= 5'h0;
+      read_ar_fork0_transform0_sinkBuffer0_queue0_deqPtr_value <= 5'h0;
+      read_ar_fork0_transform0_sinkBuffer0_queue0_maybeFull <= 1'h0;
     end
     else begin
-      automatic logic read_ar_fork0_transform0_sinkBuffer0_do_deq =
-        read_ar_fork0_transform0_sinkBuffer0_sink_ready
-        & read_ar_fork0_transform0_sinkBuffer0_sink_valid;
-      automatic logic write_aw_fork0_transform0_sinkBuffer0_do_deq =
-        write_aw_fork0_transform0_sinkBuffer0_sink_ready
-        & write_aw_fork0_transform0_sinkBuffer0_sink_valid;
-      if (read_ar_fork0_transform0_sinkBuffer0_do_enq)
-        read_ar_fork0_transform0_sinkBuffer0_enq_ptr_value <=
-          read_ar_fork0_transform0_sinkBuffer0_enq_ptr_value + 5'h1;
-      if (read_ar_fork0_transform0_sinkBuffer0_do_deq)
-        read_ar_fork0_transform0_sinkBuffer0_deq_ptr_value <=
-          read_ar_fork0_transform0_sinkBuffer0_deq_ptr_value + 5'h1;
-      if (read_ar_fork0_transform0_sinkBuffer0_do_enq != read_ar_fork0_transform0_sinkBuffer0_do_deq)
-        read_ar_fork0_transform0_sinkBuffer0_maybe_full <=
-          read_ar_fork0_transform0_sinkBuffer0_do_enq;
+      automatic logic write_aw_fork0_transform0_sinkBuffer0_queue0_doDeq =
+        _write_addressGenerator_source_ready
+        & ~write_aw_fork0_transform0_sinkBuffer0_queue0_empty;
+      automatic logic read_ar_fork0_transform0_sinkBuffer0_queue0_doDeq =
+        _read_addressGenerator_source_ready
+        & ~read_ar_fork0_transform0_sinkBuffer0_queue0_empty;
       if (read_r_zipped_valid) begin
         if (read_r_zipped_bits__1_last) begin
           if (s_axi_r_ready) begin
@@ -2479,58 +2314,51 @@ module Downscale(
             read_r_transducerReduceResp_respReg <= read_r_zipped_bits__1_resp;
         end
       end
-      if (write_aw_fork0_transform0_sinkBuffer0_do_enq)
-        write_aw_fork0_transform0_sinkBuffer0_enq_ptr_value <=
-          write_aw_fork0_transform0_sinkBuffer0_enq_ptr_value + 5'h1;
-      if (write_aw_fork0_transform0_sinkBuffer0_do_deq)
-        write_aw_fork0_transform0_sinkBuffer0_deq_ptr_value <=
-          write_aw_fork0_transform0_sinkBuffer0_deq_ptr_value + 5'h1;
-      if (write_aw_fork0_transform0_sinkBuffer0_do_enq != write_aw_fork0_transform0_sinkBuffer0_do_deq)
-        write_aw_fork0_transform0_sinkBuffer0_maybe_full <=
-          write_aw_fork0_transform0_sinkBuffer0_do_enq;
-      write_aw_fork0_regs_0 <=
-        write_aw_fork0_ready_qual1_0 & write_aw_awTransformed_valid
-        & ~write_aw_awTransformed_ready;
-      write_aw_fork0_regs_1 <=
-        write_aw_fork0_ready_qual1_1 & write_aw_awTransformed_valid
-        & ~write_aw_awTransformed_ready;
       read_ar_fork0_regs_0 <=
         read_ar_fork0_ready_qual1_0 & read_ar_arTransformed_valid
         & ~read_ar_arTransformed_ready;
       read_ar_fork0_regs_1 <=
         read_ar_fork0_ready_qual1_1 & read_ar_arTransformed_valid
         & ~read_ar_arTransformed_ready;
+      if (write_aw_fork0_transform0_sinkBuffer0_queue0_doEnq)
+        write_aw_fork0_transform0_sinkBuffer0_queue0_enqPtr_value <=
+          write_aw_fork0_transform0_sinkBuffer0_queue0_enqPtr_value + 5'h1;
+      if (write_aw_fork0_transform0_sinkBuffer0_queue0_doDeq)
+        write_aw_fork0_transform0_sinkBuffer0_queue0_deqPtr_value <=
+          write_aw_fork0_transform0_sinkBuffer0_queue0_deqPtr_value + 5'h1;
+      if (write_aw_fork0_transform0_sinkBuffer0_queue0_doEnq != write_aw_fork0_transform0_sinkBuffer0_queue0_doDeq)
+        write_aw_fork0_transform0_sinkBuffer0_queue0_maybeFull <=
+          write_aw_fork0_transform0_sinkBuffer0_queue0_doEnq;
+      write_aw_fork0_regs_0 <=
+        write_aw_fork0_ready_qual1_0 & write_aw_awTransformed_valid
+        & ~write_aw_awTransformed_ready;
+      write_aw_fork0_regs_1 <=
+        write_aw_fork0_ready_qual1_1 & write_aw_awTransformed_valid
+        & ~write_aw_awTransformed_ready;
+      if (read_ar_fork0_transform0_sinkBuffer0_queue0_doEnq)
+        read_ar_fork0_transform0_sinkBuffer0_queue0_enqPtr_value <=
+          read_ar_fork0_transform0_sinkBuffer0_queue0_enqPtr_value + 5'h1;
+      if (read_ar_fork0_transform0_sinkBuffer0_queue0_doDeq)
+        read_ar_fork0_transform0_sinkBuffer0_queue0_deqPtr_value <=
+          read_ar_fork0_transform0_sinkBuffer0_queue0_deqPtr_value + 5'h1;
+      if (read_ar_fork0_transform0_sinkBuffer0_queue0_doEnq != read_ar_fork0_transform0_sinkBuffer0_queue0_doDeq)
+        read_ar_fork0_transform0_sinkBuffer0_queue0_maybeFull <=
+          read_ar_fork0_transform0_sinkBuffer0_queue0_doEnq;
     end
   end // always @(posedge)
   AddressGenerator_6 read_addressGenerator (
     .clock             (clock),
     .reset             (reset),
-    .source_bits_addr  (read_ar_fork0_transform0_sinkBuffer0_sink_bits_addr),
-    .source_bits_len   (read_ar_fork0_transform0_sinkBuffer0_sink_bits_len),
-    .source_bits_size  (read_ar_fork0_transform0_sinkBuffer0_sink_bits_size),
-    .source_bits_burst (read_ar_fork0_transform0_sinkBuffer0_sink_bits_burst),
-    .source_valid      (read_ar_fork0_transform0_sinkBuffer0_sink_valid),
-    .source_ready      (read_ar_fork0_transform0_sinkBuffer0_sink_ready),
+    .source_bits_addr  (_read_ar_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB[16:13]),
+    .source_bits_len   (_read_ar_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB[12:5]),
+    .source_bits_size  (_read_ar_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB[4:2]),
+    .source_bits_burst (_read_ar_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB[1:0]),
+    .source_valid      (~read_ar_fork0_transform0_sinkBuffer0_queue0_empty),
+    .source_ready      (_read_addressGenerator_source_ready),
     .sink_bits_addr    (_read_addressGenerator_sink_bits_addr),
     .sink_bits_last    (read_ewireOffsetLastQueue_bits__2),
     .sink_valid        (read_ewireOffsetLastQueue_valid),
     .sink_ready        (read_ewireOffsetLastQueue_ready)
-  );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(5),
-    .COUNT(32),
-    .DATA_WIDTH(17)
-  ) read_ar_fork0_transform0_sinkBuffer0_ram (
-    .clock    (clock),
-    .addrA    (read_ar_fork0_transform0_sinkBuffer0_enq_ptr_value),
-    .writeEnA (read_ar_fork0_transform0_sinkBuffer0_do_enq),
-    .dataInA
-      ({read_ar_fork0_transform0_sinkBuffer0_source_bits_addr,
-        read_ar_fork0_transform0_sinkBuffer0_source_bits_len,
-        read_ar_fork0_transform0_sinkBuffer0_source_bits_size,
-        read_ar_fork0_transform0_sinkBuffer0_source_bits_burst}),
-    .addrB    (read_ar_fork0_transform0_sinkBuffer0_deq_ptr_value),
-    .dataOutB (_read_ar_fork0_transform0_sinkBuffer0_ram_dataOutB)
   );
   SteerLeft read_r_transducerReduceResp_steerLeft (
     .dataIn   (read_r_zipped_bits__1_data),
@@ -2540,32 +2368,17 @@ module Downscale(
   AddressGenerator_6 write_addressGenerator (
     .clock             (clock),
     .reset             (reset),
-    .source_bits_addr  (write_aw_fork0_transform0_sinkBuffer0_sink_bits_addr),
-    .source_bits_len   (write_aw_fork0_transform0_sinkBuffer0_sink_bits_len),
-    .source_bits_size  (write_aw_fork0_transform0_sinkBuffer0_sink_bits_size),
-    .source_bits_burst (write_aw_fork0_transform0_sinkBuffer0_sink_bits_burst),
-    .source_valid      (write_aw_fork0_transform0_sinkBuffer0_sink_valid),
-    .source_ready      (write_aw_fork0_transform0_sinkBuffer0_sink_ready),
+    .source_bits_addr
+      (_write_aw_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB[16:13]),
+    .source_bits_len   (_write_aw_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB[12:5]),
+    .source_bits_size  (_write_aw_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB[4:2]),
+    .source_bits_burst (_write_aw_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB[1:0]),
+    .source_valid      (~write_aw_fork0_transform0_sinkBuffer0_queue0_empty),
+    .source_ready      (_write_addressGenerator_source_ready),
     .sink_bits_addr    (_write_addressGenerator_sink_bits_addr),
     .sink_bits_last    (write_ewireOffsetLast_bits__2),
     .sink_valid        (write_ewireOffsetLast_valid),
     .sink_ready        (write_ewireOffsetLast_ready)
-  );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(5),
-    .COUNT(32),
-    .DATA_WIDTH(17)
-  ) write_aw_fork0_transform0_sinkBuffer0_ram (
-    .clock    (clock),
-    .addrA    (write_aw_fork0_transform0_sinkBuffer0_enq_ptr_value),
-    .writeEnA (write_aw_fork0_transform0_sinkBuffer0_do_enq),
-    .dataInA
-      ({write_aw_fork0_transform0_sinkBuffer0_source_bits_addr,
-        write_aw_fork0_transform0_sinkBuffer0_source_bits_len,
-        write_aw_fork0_transform0_sinkBuffer0_source_bits_size,
-        write_aw_fork0_transform0_sinkBuffer0_source_bits_burst}),
-    .addrB    (write_aw_fork0_transform0_sinkBuffer0_deq_ptr_value),
-    .dataOutB (_write_aw_fork0_transform0_sinkBuffer0_ram_dataOutB)
   );
   SteerRight write_w_transducerRepeatData_steerRight (
     .dataIn   (s_axi_w_bits_data),
@@ -2576,6 +2389,38 @@ module Downscale(
     .dataIn   (s_axi_w_bits_strb),
     .offsetIn (write_ewireOffsetLast_bits__1),
     .dataOut  (m_axi_w_bits_strb)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(5),
+    .COUNT(32),
+    .DATA_WIDTH(17)
+  ) write_aw_fork0_transform0_sinkBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (write_aw_fork0_transform0_sinkBuffer0_queue0_enqPtr_value),
+    .writeEnA (write_aw_fork0_transform0_sinkBuffer0_queue0_doEnq),
+    .dataInA
+      ({write_aw_fork0_transform0_sinkBuffer0_queueSource_bits_addr,
+        write_aw_fork0_transform0_sinkBuffer0_queueSource_bits_len,
+        write_aw_fork0_transform0_sinkBuffer0_queueSource_bits_size,
+        write_aw_fork0_transform0_sinkBuffer0_queueSource_bits_burst}),
+    .addrB    (write_aw_fork0_transform0_sinkBuffer0_queue0_deqPtr_value),
+    .dataOutB (_write_aw_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(5),
+    .COUNT(32),
+    .DATA_WIDTH(17)
+  ) read_ar_fork0_transform0_sinkBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (read_ar_fork0_transform0_sinkBuffer0_queue0_enqPtr_value),
+    .writeEnA (read_ar_fork0_transform0_sinkBuffer0_queue0_doEnq),
+    .dataInA
+      ({read_ar_fork0_transform0_sinkBuffer0_queueSource_bits_addr,
+        read_ar_fork0_transform0_sinkBuffer0_queueSource_bits_len,
+        read_ar_fork0_transform0_sinkBuffer0_queueSource_bits_size,
+        read_ar_fork0_transform0_sinkBuffer0_queueSource_bits_burst}),
+    .addrB    (read_ar_fork0_transform0_sinkBuffer0_queue0_deqPtr_value),
+    .dataOutB (_read_ar_fork0_transform0_sinkBuffer0_queue0_ram_dataOutB)
   );
   assign s_axi_ar_ready = read_ar_arTransformed_ready;
   assign s_axi_r_bits_data = s_axi_r_bits_data_0;

@@ -343,21 +343,27 @@ private:
 
 int sc_main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
+#if defined(VERILATED_TRACE_ENABLED)
     Verilated::traceEverOn(true);
+#endif
 
-    MyTestBench testBench { true };
+    MyTestBench testBench { false };
 
     sc_start(SC_ZERO_TIME);
 
+#if defined(VERILATED_TRACE_ENABLED)
     std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
     testBench.tester1.dut.traceVerilated(trace_file.get(), 99);
     testBench.tester2.dut.traceVerilated(trace_file.get(), 99);
     testBench.tester3.dut.traceVerilated(trace_file.get(), 99);
     trace_file->open("MyTestBench.vcd");
+#endif
 
     testBench.start();
 
+#if defined(VERILATED_TRACE_ENABLED)
     trace_file->close();
+#endif
 
     return 0;
 }

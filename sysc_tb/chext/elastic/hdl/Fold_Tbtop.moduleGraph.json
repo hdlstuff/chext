@@ -70,63 +70,35 @@
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_sinkBuffer0_interface",
+      "path" : "/fold0_stage1_fork0_demux0_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[SInt<64>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_sinkBuffer0_source",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_sourceBuffer0_interface",
+      "path" : "/fold0_stage1_fork0_demux0_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[Bool]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_sourceBuffer0_sink",
+      "path" : "/fold0_stage1_fork0_demux0_x$16",
       "tpe" : "chext.elastic.Interface[Bool]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_sourceBuffer0_source",
+      "path" : "/fold0_stage1_fork0_mux0_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[Bool]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_sourceBuffer1_interface",
-      "tpe" : "chext.elastic.Interface[Bool]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_sourceBuffer1_sink",
-      "tpe" : "chext.elastic.Interface[Bool]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_sourceBuffer1_source",
+      "path" : "/fold0_stage1_fork0_mux0_x$11",
       "tpe" : "chext.elastic.Interface[Bool]",
       "args" : {
         
@@ -140,21 +112,7 @@
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_source",
+      "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[AnonymousBundle]",
       "args" : {
         
@@ -163,20 +121,6 @@
     {
       "path" : "/fold0_stage1_fork0_transform0_x$1",
       "tpe" : "chext.elastic.Interface[AnonymousBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_x$11",
-      "tpe" : "chext.elastic.Interface[Bool]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_x$16",
-      "tpe" : "chext.elastic.Interface[Bool]",
       "args" : {
         
       }
@@ -203,6 +147,27 @@
       }
     },
     {
+      "path" : "/fold0_stage2_fork0_demux0_result",
+      "tpe" : "chext.elastic.Interface[SInt<64>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fold0_stage2_fork0_demux0_result",
+      "tpe" : "chext.elastic.Interface[Bool]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fold0_stage2_fork0_demux1_result",
+      "tpe" : "chext.elastic.Interface[Bool]",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/fold0_stage2_fork0_disposed",
       "tpe" : "chext.elastic.Interface[SInt<64>]",
       "args" : {
@@ -210,28 +175,7 @@
       }
     },
     {
-      "path" : "/fold0_stage2_fork0_result",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_result",
-      "tpe" : "chext.elastic.Interface[Bool]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_result",
-      "tpe" : "chext.elastic.Interface[Bool]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_result",
+      "path" : "/fold0_stage2_fork0_mux0_result",
       "tpe" : "chext.elastic.Interface[Bool]",
       "args" : {
         
@@ -246,146 +190,6 @@
     },
     {
       "path" : "/wire0",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_demux0/io.select",
-      "tpe" : "chext.elastic.Interface[UInt<1>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_demux0/io.source",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_demux0/io.select",
-      "tpe" : "chext.elastic.Interface[UInt<1>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_demux0/io.source",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_demux1/io.select",
-      "tpe" : "chext.elastic.Interface[UInt<1>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_demux1/io.source",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_mux0/io.select",
-      "tpe" : "chext.elastic.Interface[UInt<1>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_mux0/io.sources[0]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_mux0/io.sources[1]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_mux0/io.select",
-      "tpe" : "chext.elastic.Interface[UInt<1>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_mux0/io.sources[0]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_mux0/io.sources[1]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_demux0/io.sinks[0]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_demux0/io.sinks[1]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_demux0/io.sinks[0]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_demux0/io.sinks[1]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_demux1/io.sinks[0]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_demux1/io.sinks[1]",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_mux0/io.sink",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_mux0/io.sink",
       "tpe" : "chext.elastic.Interface[SInt<64>]",
       "args" : {
         
@@ -498,7 +302,7 @@
       }
     },
     {
-      "path" : "/fold0_stage0_Unnamed0",
+      "path" : "/fold0_stage0_elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -524,7 +328,7 @@
       }
     },
     {
-      "path" : "/fold0_stage0_Unnamed1",
+      "path" : "/fold0_stage0_elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -572,14 +376,14 @@
         [
           "sink_1",
           {
-            "path" : "/fold0_stage1_fork0_x$11",
+            "path" : "/fold0_stage1_fork0_mux0_x$11",
             "desc" : "Wire"
           }
         ],
         [
           "sink_2",
           {
-            "path" : "/fold0_stage1_fork0_x$16",
+            "path" : "/fold0_stage1_fork0_demux0_x$16",
             "desc" : "Wire"
           }
         ]
@@ -590,34 +394,8 @@
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0",
+      "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_queue0",
       "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
       "sources" : [
         [
           "source",
@@ -631,33 +409,7 @@
         [
           "sink",
           {
-            "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_interface",
+            "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -674,7 +426,7 @@
         [
           "source",
           {
-            "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_interface",
+            "path" : "/fold0_stage1_fork0_transform0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -694,13 +446,13 @@
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_sourceBuffer0",
+      "path" : "/fold0_stage1_fork0_mux0_sourceBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fold0_stage1_fork0_sourceBuffer0_source",
+            "path" : "/fold0_stage1_fork0_mux0_x$11",
             "desc" : "Wire"
           }
         ]
@@ -709,7 +461,7 @@
         [
           "sink",
           {
-            "path" : "/fold0_stage1_fork0_sourceBuffer0_sink",
+            "path" : "/fold0_stage1_fork0_mux0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -720,118 +472,28 @@
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
+      "path" : "/fold0_stage1_fork0_mux0",
+      "tpe" : "Mux",
       "sources" : [
         [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_x$11",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_sourceBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
+          "source_0",
           {
             "path" : "/fold0_stage1_fork0_temp",
             "desc" : "Wire"
           }
-        ]
-      ],
-      "sinks" : [
+        ],
         [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_mux0/io.sources[0]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
+          "source_1",
           {
             "path" : "/fold0_stage0_init",
             "desc" : "Wire"
           }
-        ]
-      ],
-      "sinks" : [
+        ],
         [
-          "sink",
+          "sourceSelect",
           {
-            "path" : "/fold0_stage1_fork0_mux0/io.sources[1]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_Unnamed2",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_mux0/io.sink",
-            "desc" : "ChildIO"
+            "path" : "/fold0_stage1_fork0_mux0_sourceBuffer0_queueSink",
+            "desc" : "Wire"
           }
         ]
       ],
@@ -850,91 +512,13 @@
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_Unnamed3",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_sourceBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_mux0/io.select",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_sinkBuffer0",
+      "path" : "/fold0_stage1_fork0_demux0_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fold0_stage1_fork0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_sinkBuffer0_sink",
+            "path" : "/fold0_stage1_fork0_demux0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -954,13 +538,13 @@
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_sourceBuffer1",
+      "path" : "/fold0_stage1_fork0_demux0_sourceBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fold0_stage1_fork0_sourceBuffer1_source",
+            "path" : "/fold0_stage1_fork0_demux0_x$16",
             "desc" : "Wire"
           }
         ]
@@ -969,7 +553,7 @@
         [
           "sink",
           {
-            "path" : "/fold0_stage1_fork0_sourceBuffer1_sink",
+            "path" : "/fold0_stage1_fork0_demux0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -980,60 +564,8 @@
       }
     },
     {
-      "path" : "/fold0_stage1_fork0_sourceBuffer1_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_x$16",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_sourceBuffer1_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_sourceBuffer1_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_sourceBuffer1_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_sourceBuffer1_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_Unnamed4",
-      "tpe" : "Connect",
+      "path" : "/fold0_stage1_fork0_demux0",
+      "tpe" : "Demux",
       "sources" : [
         [
           "source",
@@ -1041,92 +573,28 @@
             "path" : "/fold0_stage1_result",
             "desc" : "Wire"
           }
-        ]
-      ],
-      "sinks" : [
+        ],
         [
-          "sink",
+          "sourceSelect",
           {
-            "path" : "/fold0_stage1_fork0_demux0/io.source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_Unnamed5",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_demux0/io.sinks[0]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_sinkBuffer0_interface",
+            "path" : "/fold0_stage1_fork0_demux0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
       ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_Unnamed6",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_demux0/io.sinks[1]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
       "sinks" : [
         [
-          "sink",
+          "sink_0",
+          {
+            "path" : "/fold0_stage1_fork0_demux0_sinkBuffer0_queueSource",
+            "desc" : "Wire"
+          }
+        ],
+        [
+          "sink_1",
           {
             "path" : "/fold0_stage0_result",
             "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage1_fork0_Unnamed7",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage1_fork0_sourceBuffer1_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage1_fork0_demux0/io.select",
-            "desc" : "ChildIO"
           }
         ]
       ],
@@ -1151,28 +619,28 @@
         [
           "sink_0",
           {
-            "path" : "/fold0_stage2_fork0_result",
+            "path" : "/fold0_stage2_fork0_demux0_result",
             "desc" : "Wire"
           }
         ],
         [
           "sink_1",
           {
-            "path" : "/fold0_stage2_fork0_result",
+            "path" : "/fold0_stage2_fork0_demux0_result",
             "desc" : "Wire"
           }
         ],
         [
           "sink_2",
           {
-            "path" : "/fold0_stage2_fork0_result",
+            "path" : "/fold0_stage2_fork0_demux1_result",
             "desc" : "Wire"
           }
         ],
         [
           "sink_3",
           {
-            "path" : "/fold0_stage2_fork0_result",
+            "path" : "/fold0_stage2_fork0_mux0_result",
             "desc" : "Wire"
           }
         ]
@@ -1183,72 +651,34 @@
       }
     },
     {
-      "path" : "/fold0_stage2_fork0_Unnamed0",
-      "tpe" : "Connect",
+      "path" : "/fold0_stage2_fork0_demux0",
+      "tpe" : "Demux",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fold0_stage2_fork0_result",
+            "path" : "/fold0_stage2_fork0_demux0_result",
+            "desc" : "Wire"
+          }
+        ],
+        [
+          "sourceSelect",
+          {
+            "path" : "/fold0_stage2_fork0_demux0_result",
             "desc" : "Wire"
           }
         ]
       ],
       "sinks" : [
         [
-          "sink",
-          {
-            "path" : "/fold0_stage2_fork0_demux0/io.source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage2_fork0_demux0/io.sinks[0]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
+          "sink_0",
           {
             "path" : "/fold0_sinkA",
             "desc" : "Wire"
           }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_Unnamed2",
-      "tpe" : "Connect",
-      "sources" : [
+        ],
         [
-          "source",
-          {
-            "path" : "/fold0_stage2_fork0_demux0/io.sinks[1]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
+          "sink_1",
           {
             "path" : "/fold0_stage2_fork0_disposed",
             "desc" : "Wire"
@@ -1261,34 +691,8 @@
       }
     },
     {
-      "path" : "/fold0_stage2_fork0_Unnamed3",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage2_fork0_result",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage2_fork0_demux0/io.select",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_Unnamed4",
-      "tpe" : "Connect",
+      "path" : "/fold0_stage2_fork0_demux1",
+      "tpe" : "Demux",
       "sources" : [
         [
           "source",
@@ -1296,63 +700,25 @@
             "path" : "/fold0_stage1_opA",
             "desc" : "Wire"
           }
-        ]
-      ],
-      "sinks" : [
+        ],
         [
-          "sink",
+          "sourceSelect",
           {
-            "path" : "/fold0_stage2_fork0_demux1/io.source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_Unnamed5",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage2_fork0_demux1/io.sinks[0]",
-            "desc" : "ChildIO"
+            "path" : "/fold0_stage2_fork0_demux1_result",
+            "desc" : "Wire"
           }
         ]
       ],
       "sinks" : [
         [
-          "sink",
+          "sink_0",
           {
             "path" : "/fold0_sinkB",
             "desc" : "Wire"
           }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_Unnamed6",
-      "tpe" : "Connect",
-      "sources" : [
+        ],
         [
-          "source",
-          {
-            "path" : "/fold0_stage2_fork0_demux1/io.sinks[1]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
+          "sink_1",
           {
             "path" : "/fold0_stage2_fork0_temp",
             "desc" : "Wire"
@@ -1365,92 +731,28 @@
       }
     },
     {
-      "path" : "/fold0_stage2_fork0_Unnamed7",
-      "tpe" : "Connect",
+      "path" : "/fold0_stage2_fork0_mux0",
+      "tpe" : "Mux",
       "sources" : [
         [
-          "source",
-          {
-            "path" : "/fold0_stage2_fork0_result",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage2_fork0_demux1/io.select",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_Unnamed8",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
+          "source_0",
           {
             "path" : "/fold0_sourceResult",
             "desc" : "Wire"
           }
-        ]
-      ],
-      "sinks" : [
+        ],
         [
-          "sink",
-          {
-            "path" : "/fold0_stage2_fork0_mux0/io.sources[0]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_Unnamed9",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
+          "source_1",
           {
             "path" : "/fold0_stage2_fork0_temp",
             "desc" : "Wire"
           }
-        ]
-      ],
-      "sinks" : [
+        ],
         [
-          "sink",
+          "sourceSelect",
           {
-            "path" : "/fold0_stage2_fork0_mux0/io.sources[1]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_Unnamed10",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage2_fork0_mux0/io.sink",
-            "desc" : "ChildIO"
+            "path" : "/fold0_stage2_fork0_mux0_result",
+            "desc" : "Wire"
           }
         ]
       ],
@@ -1467,32 +769,6 @@
       "args" : {
         
       }
-    },
-    {
-      "path" : "/fold0_stage2_fork0_Unnamed11",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fold0_stage2_fork0_result",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fold0_stage2_fork0_mux0/io.select",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "/fold0",
-      "args" : {
-        
-      }
     }
   ],
   "containers" : [
@@ -1501,43 +777,20 @@
       "tpe" : "Fold",
       "children" : [
         "/fold0_stage0_transducerFirstLogic",
-        "/fold0_stage0_Unnamed0",
-        "/fold0_stage0_Unnamed1",
+        "/fold0_stage0_elastic0",
+        "/fold0_stage0_elastic1",
         "/fold0_stage1_fork0",
-        "/fold0_stage1_fork0_transform0_sourceBuffer0",
-        "/fold0_stage1_fork0_transform0_sourceBuffer0_Unnamed0",
-        "/fold0_stage1_fork0_transform0_sourceBuffer0_Unnamed1",
+        "/fold0_stage1_fork0_transform0_sourceBuffer0_queue0",
         "/fold0_stage1_fork0_transform0",
-        "/fold0_stage1_fork0_sourceBuffer0",
-        "/fold0_stage1_fork0_sourceBuffer0_Unnamed0",
-        "/fold0_stage1_fork0_sourceBuffer0_Unnamed1",
-        "/fold0_stage1_fork0_Unnamed0",
-        "/fold0_stage1_fork0_Unnamed1",
-        "/fold0_stage1_fork0_Unnamed2",
-        "/fold0_stage1_fork0_Unnamed3",
-        "/fold0_stage1_fork0_sinkBuffer0",
-        "/fold0_stage1_fork0_sinkBuffer0_Unnamed0",
-        "/fold0_stage1_fork0_sinkBuffer0_Unnamed1",
-        "/fold0_stage1_fork0_sourceBuffer1",
-        "/fold0_stage1_fork0_sourceBuffer1_Unnamed0",
-        "/fold0_stage1_fork0_sourceBuffer1_Unnamed1",
-        "/fold0_stage1_fork0_Unnamed4",
-        "/fold0_stage1_fork0_Unnamed5",
-        "/fold0_stage1_fork0_Unnamed6",
-        "/fold0_stage1_fork0_Unnamed7",
+        "/fold0_stage1_fork0_mux0_sourceBuffer0_queue0",
+        "/fold0_stage1_fork0_mux0",
+        "/fold0_stage1_fork0_demux0_sinkBuffer0_queue0",
+        "/fold0_stage1_fork0_demux0_sourceBuffer0_queue0",
+        "/fold0_stage1_fork0_demux0",
         "/fold0_stage2_fork0",
-        "/fold0_stage2_fork0_Unnamed0",
-        "/fold0_stage2_fork0_Unnamed1",
-        "/fold0_stage2_fork0_Unnamed2",
-        "/fold0_stage2_fork0_Unnamed3",
-        "/fold0_stage2_fork0_Unnamed4",
-        "/fold0_stage2_fork0_Unnamed5",
-        "/fold0_stage2_fork0_Unnamed6",
-        "/fold0_stage2_fork0_Unnamed7",
-        "/fold0_stage2_fork0_Unnamed8",
-        "/fold0_stage2_fork0_Unnamed9",
-        "/fold0_stage2_fork0_Unnamed10",
-        "/fold0_stage2_fork0_Unnamed11"
+        "/fold0_stage2_fork0_demux0",
+        "/fold0_stage2_fork0_demux1",
+        "/fold0_stage2_fork0_mux0"
       ],
       "parent" : "",
       "args" : {

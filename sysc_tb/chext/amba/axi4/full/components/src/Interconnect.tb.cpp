@@ -517,21 +517,27 @@ private:
 int sc_main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
 
+#if defined(VERILATED_TRACE_ENABLED)
     if (settings.trace)
         Verilated::traceEverOn(true);
+#endif
 
     InterconnectTestbench testBench;
 
     sc_start(SC_ZERO_TIME);
 
     if (settings.trace) {
+#if defined(VERILATED_TRACE_ENABLED)
         std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
         testBench.dut.traceVerilated(trace_file.get(), 99);
         trace_file->open("Interconnect.vcd");
+#endif
 
         testBench.start();
 
+#if defined(VERILATED_TRACE_ENABLED)
         trace_file->close();
+#endif
     } else {
         testBench.start();
     }

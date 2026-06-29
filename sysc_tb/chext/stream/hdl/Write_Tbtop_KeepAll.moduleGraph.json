@@ -336,21 +336,7 @@
       }
     },
     {
-      "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_source",
+      "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
       "args" : {
         
@@ -378,21 +364,7 @@
       }
     },
     {
-      "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_source",
+      "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
       "args" : {
         
@@ -483,21 +455,7 @@
       }
     },
     {
-      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_source",
+      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[ReadAddressChannel]",
       "args" : {
         
@@ -525,21 +483,7 @@
       }
     },
     {
-      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_source",
+      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[WriteAddressChannel]",
       "args" : {
         
@@ -686,35 +630,7 @@
       }
     },
     {
-      "path" : "/mem/bridge1/rdResp_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge1/rdResp_sinkBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/mem/bridge1/wrResp",
-      "tpe" : "chext.elastic.Interface[UInt<0>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge1/wrResp_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<0>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge1/wrResp_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[UInt<0>]",
       "args" : {
         
@@ -728,35 +644,7 @@
       }
     },
     {
-      "path" : "/mem/bridge2/rdResp_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge2/rdResp_sinkBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/mem/bridge2/wrResp",
-      "tpe" : "chext.elastic.Interface[UInt<0>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge2/wrResp_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<0>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge2/wrResp_sinkBuffer0_source",
       "tpe" : "chext.elastic.Interface[UInt<0>]",
       "args" : {
         
@@ -812,21 +700,7 @@
       }
     },
     {
-      "path" : "/read/read0/ar_transform0_sinkBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[ChunkTask]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/read/read0/ar_transform0_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[ChunkTask]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/read/read0/ar_transform0_sinkBuffer0_source",
+      "path" : "/read/read0/ar_transform0_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[ChunkTask]",
       "args" : {
         
@@ -847,21 +721,7 @@
       }
     },
     {
-      "path" : "/read/read0/r_transform0_sinkBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/read/read0/r_transform0_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[AnonymousBundle]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/read/read0/r_transform0_sinkBuffer0_source",
+      "path" : "/read/read0/r_transform0_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[AnonymousBundle]",
       "args" : {
         
@@ -917,21 +777,7 @@
       }
     },
     {
-      "path" : "/write/drop0_sinkBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[WriteResult]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/drop0_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[WriteResult]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/drop0_sinkBuffer0_source",
+      "path" : "/write/drop0_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[WriteResult]",
       "args" : {
         
@@ -959,21 +805,7 @@
       }
     },
     {
-      "path" : "/write/transform0_sinkBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[UInt<1>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/transform0_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<1>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/transform0_sinkBuffer0_source",
+      "path" : "/write/transform0_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[UInt<1>]",
       "args" : {
         
@@ -1036,27 +868,6 @@
       }
     },
     {
-      "path" : "/write/mux0/io.select",
-      "tpe" : "chext.elastic.Interface[UInt<1>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/mux0/io.sources[0]",
-      "tpe" : "chext.elastic.Interface[WriteResult]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/mux0/io.sources[1]",
-      "tpe" : "chext.elastic.Interface[WriteResult]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/write/write0/sinkResult",
       "tpe" : "chext.elastic.Interface[WriteResult]",
       "args" : {
@@ -1085,49 +896,14 @@
       }
     },
     {
-      "path" : "/write/mux0/io.sink",
-      "tpe" : "chext.elastic.Interface[WriteResult]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/aw_transform0_sinkBuffer0_interface",
+      "path" : "/write/write0/aw_transform0_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[ChunkTask]",
       "args" : {
         
       }
     },
     {
-      "path" : "/write/write0/aw_transform0_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[ChunkTask]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/aw_transform0_sinkBuffer0_source",
-      "tpe" : "chext.elastic.Interface[ChunkTask]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/b_transform0_sinkBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[ChunkTask]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/b_transform0_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[ChunkTask]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/b_transform0_sinkBuffer0_source",
+      "path" : "/write/write0/b_transform0_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[ChunkTask]",
       "args" : {
         
@@ -1190,21 +966,7 @@
       }
     },
     {
-      "path" : "/write/write0/w_transform0_sinkBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[ChunkTask]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/w_transform0_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[ChunkTask]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/w_transform0_sinkBuffer0_source",
+      "path" : "/write/write0/w_transform0_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[ChunkTask]",
       "args" : {
         
@@ -1213,6 +975,13 @@
     {
       "path" : "/write/write0/w_wireLast",
       "tpe" : "chext.elastic.Interface[Bool]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/write/write0/b_chunk0/source",
+      "tpe" : "chext.elastic.Interface[ChunkTask]",
       "args" : {
         
       }
@@ -1232,8 +1001,8 @@
       }
     },
     {
-      "path" : "/write/write0/b_chunk0/source",
-      "tpe" : "chext.elastic.Interface[ChunkTask]",
+      "path" : "/write/write0/b_chunk0/sink",
+      "tpe" : "chext.elastic.Interface[ChunkResult]",
       "args" : {
         
       }
@@ -1251,18 +1020,11 @@
       "args" : {
         
       }
-    },
-    {
-      "path" : "/write/write0/b_chunk0/sink",
-      "tpe" : "chext.elastic.Interface[ChunkResult]",
-      "args" : {
-        
-      }
     }
   ],
   "components" : [
     {
-      "path" : "/Unnamed0",
+      "path" : "/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1288,7 +1050,7 @@
       }
     },
     {
-      "path" : "/Unnamed1",
+      "path" : "/elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1314,7 +1076,7 @@
       }
     },
     {
-      "path" : "/Unnamed2",
+      "path" : "/elastic2",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1340,7 +1102,7 @@
       }
     },
     {
-      "path" : "/Unnamed3",
+      "path" : "/elastic3",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1366,7 +1128,7 @@
       }
     },
     {
-      "path" : "/Unnamed4",
+      "path" : "/elastic4",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1392,7 +1154,7 @@
       }
     },
     {
-      "path" : "/Unnamed5",
+      "path" : "/elastic5",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1418,7 +1180,7 @@
       }
     },
     {
-      "path" : "/Unnamed6",
+      "path" : "/elastic6",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1444,7 +1206,7 @@
       }
     },
     {
-      "path" : "/Unnamed7",
+      "path" : "/elastic7",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1470,7 +1232,7 @@
       }
     },
     {
-      "path" : "/Unnamed8",
+      "path" : "/elastic8",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1496,7 +1258,7 @@
       }
     },
     {
-      "path" : "/Unnamed9",
+      "path" : "/elastic9",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1522,7 +1284,7 @@
       }
     },
     {
-      "path" : "/Unnamed10",
+      "path" : "/elastic10",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1548,7 +1310,7 @@
       }
     },
     {
-      "path" : "/Unnamed11",
+      "path" : "/elastic11",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1574,7 +1336,7 @@
       }
     },
     {
-      "path" : "/Unnamed12",
+      "path" : "/elastic12",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1600,7 +1362,7 @@
       }
     },
     {
-      "path" : "/Unnamed13",
+      "path" : "/elastic13",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1626,7 +1388,7 @@
       }
     },
     {
-      "path" : "/Unnamed14",
+      "path" : "/elastic14",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1652,7 +1414,7 @@
       }
     },
     {
-      "path" : "/Unnamed15",
+      "path" : "/elastic15",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1678,7 +1440,7 @@
       }
     },
     {
-      "path" : "/Unnamed16",
+      "path" : "/elastic16",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1704,7 +1466,7 @@
       }
     },
     {
-      "path" : "/Unnamed17",
+      "path" : "/elastic17",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1730,7 +1492,7 @@
       }
     },
     {
-      "path" : "/Unnamed18",
+      "path" : "/elastic18",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1756,7 +1518,7 @@
       }
     },
     {
-      "path" : "/Unnamed19",
+      "path" : "/elastic19",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1782,7 +1544,7 @@
       }
     },
     {
-      "path" : "/Unnamed20",
+      "path" : "/elastic20",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1808,7 +1570,7 @@
       }
     },
     {
-      "path" : "/Unnamed21",
+      "path" : "/elastic21",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1834,7 +1596,7 @@
       }
     },
     {
-      "path" : "/Unnamed22",
+      "path" : "/elastic22",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1893,34 +1655,8 @@
       }
     },
     {
-      "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0",
+      "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_queue0",
       "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
       "sources" : [
         [
           "source",
@@ -1934,33 +1670,7 @@
         [
           "sink",
           {
-            "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_interface",
+            "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -2089,34 +1799,8 @@
       }
     },
     {
-      "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0",
+      "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_queue0",
       "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
       "sources" : [
         [
           "source",
@@ -2130,33 +1814,7 @@
         [
           "sink",
           {
-            "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_interface",
+            "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -2291,7 +1949,7 @@
         [
           "source",
           {
-            "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_interface",
+            "path" : "/axiBridge1/write_fork1_repeat0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -2317,7 +1975,7 @@
         [
           "source",
           {
-            "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_interface",
+            "path" : "/axiBridge1/read_fork0_repeat0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -2363,7 +2021,7 @@
       }
     },
     {
-      "path" : "/axiBridge1/write_addressStrobeGenerator/Unnamed0",
+      "path" : "/axiBridge1/write_addressStrobeGenerator/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -2389,7 +2047,7 @@
       }
     },
     {
-      "path" : "/axiBridge1/write_addressStrobeGenerator/Unnamed1",
+      "path" : "/axiBridge1/write_addressStrobeGenerator/elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -2415,7 +2073,7 @@
       }
     },
     {
-      "path" : "/axiBridge1/write_addressStrobeGenerator/Unnamed2",
+      "path" : "/axiBridge1/write_addressStrobeGenerator/elastic2",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -2526,34 +2184,8 @@
       }
     },
     {
-      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0",
+      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queue0",
       "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
       "sources" : [
         [
           "source",
@@ -2567,33 +2199,7 @@
         [
           "sink",
           {
-            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_interface",
+            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -2722,34 +2328,8 @@
       }
     },
     {
-      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0",
+      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queue0",
       "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
       "sources" : [
         [
           "source",
@@ -2763,33 +2343,7 @@
         [
           "sink",
           {
-            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_interface",
+            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -2924,7 +2478,7 @@
         [
           "source",
           {
-            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_interface",
+            "path" : "/axiBridge2/write_fork1_repeat0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -2950,7 +2504,7 @@
         [
           "source",
           {
-            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_interface",
+            "path" : "/axiBridge2/read_fork0_repeat0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -2996,7 +2550,7 @@
       }
     },
     {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/Unnamed0",
+      "path" : "/axiBridge2/write_addressStrobeGenerator/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3022,7 +2576,7 @@
       }
     },
     {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/Unnamed1",
+      "path" : "/axiBridge2/write_addressStrobeGenerator/elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3048,7 +2602,7 @@
       }
     },
     {
-      "path" : "/axiBridge2/write_addressStrobeGenerator/Unnamed2",
+      "path" : "/axiBridge2/write_addressStrobeGenerator/elastic2",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3126,7 +2680,7 @@
       }
     },
     {
-      "path" : "/mem/Unnamed0",
+      "path" : "/mem/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3152,7 +2706,7 @@
       }
     },
     {
-      "path" : "/mem/Unnamed1",
+      "path" : "/mem/elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3178,7 +2732,7 @@
       }
     },
     {
-      "path" : "/mem/Unnamed2",
+      "path" : "/mem/elastic2",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3204,7 +2758,7 @@
       }
     },
     {
-      "path" : "/mem/Unnamed3",
+      "path" : "/mem/elastic3",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3230,7 +2784,7 @@
       }
     },
     {
-      "path" : "/mem/Unnamed4",
+      "path" : "/mem/elastic4",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3256,7 +2810,7 @@
       }
     },
     {
-      "path" : "/mem/Unnamed5",
+      "path" : "/mem/elastic5",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3282,7 +2836,7 @@
       }
     },
     {
-      "path" : "/mem/Unnamed6",
+      "path" : "/mem/elastic6",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3308,7 +2862,7 @@
       }
     },
     {
-      "path" : "/mem/Unnamed7",
+      "path" : "/mem/elastic7",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3334,65 +2888,13 @@
       }
     },
     {
-      "path" : "/mem/bridge1/rdResp_sinkBuffer0",
+      "path" : "/mem/bridge1/rdResp_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/mem/bridge1/rdResp_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge1/rdResp_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge1/rdResp_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
             "path" : "/mem/bridge1/rdResp",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge1/rdResp_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge1/rdResp_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/mem/bridge1/rdResp_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -3412,65 +2914,13 @@
       }
     },
     {
-      "path" : "/mem/bridge1/wrResp_sinkBuffer0",
+      "path" : "/mem/bridge1/wrResp_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/mem/bridge1/wrResp_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge1/wrResp_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge1/wrResp_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
             "path" : "/mem/bridge1/wrResp",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge1/wrResp_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge1/wrResp_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/mem/bridge1/wrResp_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -3490,65 +2940,13 @@
       }
     },
     {
-      "path" : "/mem/bridge2/rdResp_sinkBuffer0",
+      "path" : "/mem/bridge2/rdResp_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/mem/bridge2/rdResp_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge2/rdResp_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge2/rdResp_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
             "path" : "/mem/bridge2/rdResp",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge2/rdResp_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge2/rdResp_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/mem/bridge2/rdResp_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -3568,65 +2966,13 @@
       }
     },
     {
-      "path" : "/mem/bridge2/wrResp_sinkBuffer0",
+      "path" : "/mem/bridge2/wrResp_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/mem/bridge2/wrResp_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge2/wrResp_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge2/wrResp_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
             "path" : "/mem/bridge2/wrResp",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/mem/bridge2/wrResp_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/mem/bridge2/wrResp_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/mem/bridge2/wrResp_sinkBuffer0_sink",
             "desc" : "Wire"
           }
         ]
@@ -3646,7 +2992,7 @@
       }
     },
     {
-      "path" : "/read/Unnamed0",
+      "path" : "/read/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3672,7 +3018,7 @@
       }
     },
     {
-      "path" : "/read/Unnamed1",
+      "path" : "/read/elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3698,7 +3044,7 @@
       }
     },
     {
-      "path" : "/read/Unnamed2",
+      "path" : "/read/elastic2",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3724,7 +3070,7 @@
       }
     },
     {
-      "path" : "/read/Unnamed3",
+      "path" : "/read/elastic3",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3750,7 +3096,7 @@
       }
     },
     {
-      "path" : "/read/Unnamed4",
+      "path" : "/read/elastic4",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3776,7 +3122,7 @@
       }
     },
     {
-      "path" : "/read/Unnamed5",
+      "path" : "/read/elastic5",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3802,7 +3148,7 @@
       }
     },
     {
-      "path" : "/read/Unnamed6",
+      "path" : "/read/elastic6",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3887,7 +3233,7 @@
       }
     },
     {
-      "path" : "/read/read0/fork0_Unnamed0",
+      "path" : "/read/read0/fork0_elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3913,7 +3259,7 @@
       }
     },
     {
-      "path" : "/read/read0/fork0_Unnamed1",
+      "path" : "/read/read0/fork0_elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -3939,65 +3285,13 @@
       }
     },
     {
-      "path" : "/read/read0/ar_transform0_sinkBuffer0",
+      "path" : "/read/read0/ar_transform0_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/read/read0/ar_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/read/read0/ar_transform0_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/read/read0/ar_transform0_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/read/read0/ar_transform0_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/read/read0/ar_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/read/read0/ar_transform0_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/read/read0/ar_transform0_sinkBuffer0_sink",
+            "path" : "/read/read0/ar_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -4032,7 +3326,7 @@
         [
           "sink",
           {
-            "path" : "/read/read0/ar_transform0_sinkBuffer0_interface",
+            "path" : "/read/read0/ar_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -4069,65 +3363,13 @@
       }
     },
     {
-      "path" : "/read/read0/r_transform0_sinkBuffer0",
+      "path" : "/read/read0/r_transform0_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/read/read0/r_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/read/read0/r_transform0_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/read/read0/r_transform0_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/read/read0/r_transform0_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/read/read0/r_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/read/read0/r_transform0_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/read/read0/r_transform0_sinkBuffer0_sink",
+            "path" : "/read/read0/r_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -4162,7 +3404,7 @@
         [
           "sink",
           {
-            "path" : "/read/read0/r_transform0_sinkBuffer0_interface",
+            "path" : "/read/read0/r_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -4258,7 +3500,7 @@
       }
     },
     {
-      "path" : "/write/Unnamed0",
+      "path" : "/write/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4284,7 +3526,7 @@
       }
     },
     {
-      "path" : "/write/Unnamed1",
+      "path" : "/write/elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4310,7 +3552,7 @@
       }
     },
     {
-      "path" : "/write/Unnamed2",
+      "path" : "/write/elastic2",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4336,7 +3578,7 @@
       }
     },
     {
-      "path" : "/write/Unnamed3",
+      "path" : "/write/elastic3",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4362,7 +3604,7 @@
       }
     },
     {
-      "path" : "/write/Unnamed4",
+      "path" : "/write/elastic4",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4388,7 +3630,7 @@
       }
     },
     {
-      "path" : "/write/Unnamed5",
+      "path" : "/write/elastic5",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4454,7 +3696,7 @@
       }
     },
     {
-      "path" : "/write/fork0_Unnamed0",
+      "path" : "/write/fork0_elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4480,7 +3722,7 @@
       }
     },
     {
-      "path" : "/write/fork0_Unnamed1",
+      "path" : "/write/fork0_elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4506,7 +3748,7 @@
       }
     },
     {
-      "path" : "/write/fork0_Unnamed2",
+      "path" : "/write/fork0_elastic2",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4532,65 +3774,13 @@
       }
     },
     {
-      "path" : "/write/transform0_sinkBuffer0",
+      "path" : "/write/transform0_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/write/transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/transform0_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/transform0_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/transform0_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/transform0_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/transform0_sinkBuffer0_sink",
+            "path" : "/write/transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -4625,7 +3815,7 @@
         [
           "sink",
           {
-            "path" : "/write/transform0_sinkBuffer0_interface",
+            "path" : "/write/transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -4636,65 +3826,13 @@
       }
     },
     {
-      "path" : "/write/drop0_sinkBuffer0",
+      "path" : "/write/drop0_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/write/drop0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/drop0_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/drop0_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/drop0_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/drop0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/drop0_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/drop0_sinkBuffer0_sink",
+            "path" : "/write/drop0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -4729,7 +3867,7 @@
         [
           "sink",
           {
-            "path" : "/write/drop0_sinkBuffer0_interface",
+            "path" : "/write/drop0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -4740,89 +3878,25 @@
       }
     },
     {
-      "path" : "/write/Unnamed6",
-      "tpe" : "Connect",
+      "path" : "/write/mux0",
+      "tpe" : "Mux",
       "sources" : [
         [
-          "source",
+          "source_0",
           {
             "path" : "/write/write0/sinkResult",
             "desc" : "ChildIO"
           }
-        ]
-      ],
-      "sinks" : [
+        ],
         [
-          "sink",
-          {
-            "path" : "/write/mux0/io.sources[0]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/Unnamed7",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
+          "source_1",
           {
             "path" : "/write/wireSource1",
             "desc" : "Wire"
           }
-        ]
-      ],
-      "sinks" : [
+        ],
         [
-          "sink",
-          {
-            "path" : "/write/mux0/io.sources[1]",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/Unnamed8",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/mux0/io.sink",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/sinkResult",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/Unnamed9",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
+          "sourceSelect",
           {
             "path" : "/write/wireSelect",
             "desc" : "Wire"
@@ -4833,8 +3907,8 @@
         [
           "sink",
           {
-            "path" : "/write/mux0/io.select",
-            "desc" : "ChildIO"
+            "path" : "/write/sinkResult",
+            "desc" : "IO"
           }
         ]
       ],
@@ -4910,7 +3984,7 @@
       }
     },
     {
-      "path" : "/write/write0/fork0_Unnamed0",
+      "path" : "/write/write0/fork0_elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4936,7 +4010,7 @@
       }
     },
     {
-      "path" : "/write/write0/fork0_Unnamed1",
+      "path" : "/write/write0/fork0_elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4962,7 +4036,7 @@
       }
     },
     {
-      "path" : "/write/write0/fork0_Unnamed2",
+      "path" : "/write/write0/fork0_elastic2",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -4988,65 +4062,13 @@
       }
     },
     {
-      "path" : "/write/write0/aw_transform0_sinkBuffer0",
+      "path" : "/write/write0/aw_transform0_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/write/write0/aw_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/write0/aw_transform0_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/aw_transform0_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/write0/aw_transform0_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/write0/aw_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/aw_transform0_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/write0/aw_transform0_sinkBuffer0_sink",
+            "path" : "/write/write0/aw_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -5081,7 +4103,7 @@
         [
           "sink",
           {
-            "path" : "/write/write0/aw_transform0_sinkBuffer0_interface",
+            "path" : "/write/write0/aw_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -5118,65 +4140,13 @@
       }
     },
     {
-      "path" : "/write/write0/b_transform0_sinkBuffer0",
+      "path" : "/write/write0/b_transform0_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/write/write0/b_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/write0/b_transform0_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/b_transform0_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/write0/b_transform0_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/write0/b_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/b_transform0_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/write0/b_transform0_sinkBuffer0_sink",
+            "path" : "/write/write0/b_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -5211,7 +4181,7 @@
         [
           "sink",
           {
-            "path" : "/write/write0/b_transform0_sinkBuffer0_interface",
+            "path" : "/write/write0/b_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -5281,65 +4251,13 @@
       }
     },
     {
-      "path" : "/write/write0/w_transform0_sinkBuffer0",
+      "path" : "/write/write0/w_transform0_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/write/write0/w_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/write0/w_transform0_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/w_transform0_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/write0/w_transform0_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/write0/w_transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/w_transform0_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/write0/w_transform0_sinkBuffer0_sink",
+            "path" : "/write/write0/w_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -5374,7 +4292,7 @@
         [
           "sink",
           {
-            "path" : "/write/write0/w_transform0_sinkBuffer0_interface",
+            "path" : "/write/write0/w_transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -5444,6 +4362,32 @@
       }
     },
     {
+      "path" : "/write/write0/b_chunk0/count0",
+      "tpe" : "Count",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/write/write0/b_chunk0/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/write/write0/b_chunk0/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
       "path" : "/write/write0/w_chunk0/count0",
       "tpe" : "Count",
       "sources" : [
@@ -5486,32 +4430,6 @@
           "sink",
           {
             "path" : "/write/write0/aw_chunk0/sink",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/write/write0/b_chunk0/count0",
-      "tpe" : "Count",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/write/write0/b_chunk0/source",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/write/write0/b_chunk0/sink",
             "desc" : "IO"
           }
         ]

@@ -77,21 +77,7 @@
       }
     },
     {
-      "path" : "/fork0_sourceBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork0_sourceBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork0_sourceBuffer0_source",
+      "path" : "/fork0_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
@@ -112,21 +98,7 @@
       }
     },
     {
-      "path" : "/fork1_sourceBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork1_sourceBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork1_sourceBuffer0_source",
+      "path" : "/fork1_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
@@ -147,21 +119,7 @@
       }
     },
     {
-      "path" : "/fork2_sourceBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork2_sourceBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork2_sourceBuffer0_source",
+      "path" : "/fork2_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
@@ -182,120 +140,36 @@
       }
     },
     {
-      "path" : "/fork3_sourceBuffer0_interface",
+      "path" : "/fork3_sourceBuffer0_queueSink",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fork3_sourceBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork3_sourceBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform0_sinkBuffer0_interface",
+      "path" : "/transform0_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform0_sinkBuffer0_sink",
+      "path" : "/transform1_sinkBuffer0_queueSource",
+      "tpe" : "chext.elastic.Interface[UInt<64>]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/transform2_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[UInt<32>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/transform0_sinkBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform1_sinkBuffer0_interface",
+      "path" : "/transform3_sinkBuffer0_queueSource",
       "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform1_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform1_sinkBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform2_sinkBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform2_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform2_sinkBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<32>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform3_sinkBuffer0_interface",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform3_sinkBuffer0_sink",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform3_sinkBuffer0_source",
-      "tpe" : "chext.elastic.Interface[UInt<64>]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fp64_add/sourceInA",
-      "tpe" : "chext.elastic.Interface[fpe11m52]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fp64_add/sourceInB",
-      "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
       }
@@ -315,14 +189,14 @@
       }
     },
     {
-      "path" : "/fp64_multiply/sourceInA",
+      "path" : "/fp64_add/sourceInA",
       "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fp64_multiply/sourceInB",
+      "path" : "/fp64_add/sourceInB",
       "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
@@ -343,7 +217,14 @@
       }
     },
     {
-      "path" : "/fp64_add/sinkOut",
+      "path" : "/fp64_multiply/sourceInA",
+      "tpe" : "chext.elastic.Interface[fpe11m52]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fp64_multiply/sourceInB",
       "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
@@ -357,7 +238,7 @@
       }
     },
     {
-      "path" : "/fp64_multiply/sinkOut",
+      "path" : "/fp64_add/sinkOut",
       "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
@@ -371,28 +252,7 @@
       }
     },
     {
-      "path" : "/fp64_add/wrapper/source",
-      "tpe" : "chext.elastic.Interface[Bundle2]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fp64_add/wrapper/sink",
-      "tpe" : "chext.elastic.Interface[fpe11m52]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fp64_add/wrapper/qOutput_sink",
-      "tpe" : "chext.elastic.Interface[fpe11m52]",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fp64_add/wrapper/qOutput_source",
+      "path" : "/fp64_multiply/sinkOut",
       "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
@@ -413,42 +273,42 @@
       }
     },
     {
-      "path" : "/fp32_add/wrapper/qOutput_sink",
+      "path" : "/fp32_add/wrapper/queueOutput_sink",
       "tpe" : "chext.elastic.Interface[fpe8m23]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fp32_add/wrapper/qOutput_source",
+      "path" : "/fp32_add/wrapper/queueOutput_source",
       "tpe" : "chext.elastic.Interface[fpe8m23]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fp64_multiply/wrapper/source",
+      "path" : "/fp64_add/wrapper/source",
       "tpe" : "chext.elastic.Interface[Bundle2]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fp64_multiply/wrapper/sink",
+      "path" : "/fp64_add/wrapper/sink",
       "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fp64_multiply/wrapper/qOutput_sink",
+      "path" : "/fp64_add/wrapper/queueOutput_sink",
       "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fp64_multiply/wrapper/qOutput_source",
+      "path" : "/fp64_add/wrapper/queueOutput_source",
       "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
@@ -469,15 +329,43 @@
       }
     },
     {
-      "path" : "/fp32_multiply/wrapper/qOutput_sink",
+      "path" : "/fp32_multiply/wrapper/queueOutput_sink",
       "tpe" : "chext.elastic.Interface[fpe8m23]",
       "args" : {
         
       }
     },
     {
-      "path" : "/fp32_multiply/wrapper/qOutput_source",
+      "path" : "/fp32_multiply/wrapper/queueOutput_source",
       "tpe" : "chext.elastic.Interface[fpe8m23]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fp64_multiply/wrapper/source",
+      "tpe" : "chext.elastic.Interface[Bundle2]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fp64_multiply/wrapper/sink",
+      "tpe" : "chext.elastic.Interface[fpe11m52]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fp64_multiply/wrapper/queueOutput_sink",
+      "tpe" : "chext.elastic.Interface[fpe11m52]",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fp64_multiply/wrapper/queueOutput_source",
+      "tpe" : "chext.elastic.Interface[fpe11m52]",
       "args" : {
         
       }
@@ -485,65 +373,13 @@
   ],
   "components" : [
     {
-      "path" : "/transform0_sinkBuffer0",
+      "path" : "/transform0_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/transform0_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform0_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/transform0_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/transform0_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform0_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/transform0_sinkBuffer0_sink",
+            "path" : "/transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -578,7 +414,7 @@
         [
           "sink",
           {
-            "path" : "/transform0_sinkBuffer0_interface",
+            "path" : "/transform0_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -589,65 +425,13 @@
       }
     },
     {
-      "path" : "/transform1_sinkBuffer0",
+      "path" : "/transform1_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform1_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/transform1_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform1_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/transform1_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/transform1_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform1_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/transform1_sinkBuffer0_sink",
+            "path" : "/transform1_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -682,7 +466,7 @@
         [
           "sink",
           {
-            "path" : "/transform1_sinkBuffer0_interface",
+            "path" : "/transform1_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -693,65 +477,13 @@
       }
     },
     {
-      "path" : "/transform2_sinkBuffer0",
+      "path" : "/transform2_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform2_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/transform2_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform2_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/transform2_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/transform2_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform2_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/transform2_sinkBuffer0_sink",
+            "path" : "/transform2_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -786,7 +518,7 @@
         [
           "sink",
           {
-            "path" : "/transform2_sinkBuffer0_interface",
+            "path" : "/transform2_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -797,65 +529,13 @@
       }
     },
     {
-      "path" : "/transform3_sinkBuffer0",
+      "path" : "/transform3_sinkBuffer0_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/transform3_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/transform3_sinkBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform3_sinkBuffer0_Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/transform3_sinkBuffer0_interface",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/transform3_sinkBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/transform3_sinkBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/transform3_sinkBuffer0_sink",
+            "path" : "/transform3_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -890,7 +570,7 @@
         [
           "sink",
           {
-            "path" : "/transform3_sinkBuffer0_interface",
+            "path" : "/transform3_sinkBuffer0_queueSource",
             "desc" : "Wire"
           }
         ]
@@ -901,34 +581,8 @@
       }
     },
     {
-      "path" : "/fork0_sourceBuffer0",
+      "path" : "/fork0_sourceBuffer0_queue0",
       "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fork0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fork0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork0_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
       "sources" : [
         [
           "source",
@@ -942,33 +596,7 @@
         [
           "sink",
           {
-            "path" : "/fork0_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork0_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fork0_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fork0_sourceBuffer0_interface",
+            "path" : "/fork0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -985,7 +613,7 @@
         [
           "source",
           {
-            "path" : "/fork0_sourceBuffer0_interface",
+            "path" : "/fork0_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -1012,7 +640,7 @@
       }
     },
     {
-      "path" : "/fork0_Unnamed0",
+      "path" : "/fork0_elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1038,7 +666,7 @@
       }
     },
     {
-      "path" : "/fork0_Unnamed1",
+      "path" : "/fork0_elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1064,34 +692,8 @@
       }
     },
     {
-      "path" : "/fork1_sourceBuffer0",
+      "path" : "/fork1_sourceBuffer0_queue0",
       "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fork1_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fork1_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork1_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
       "sources" : [
         [
           "source",
@@ -1105,33 +707,7 @@
         [
           "sink",
           {
-            "path" : "/fork1_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork1_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fork1_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fork1_sourceBuffer0_interface",
+            "path" : "/fork1_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -1148,7 +724,7 @@
         [
           "source",
           {
-            "path" : "/fork1_sourceBuffer0_interface",
+            "path" : "/fork1_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -1175,7 +751,7 @@
       }
     },
     {
-      "path" : "/fork1_Unnamed0",
+      "path" : "/fork1_elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1201,7 +777,7 @@
       }
     },
     {
-      "path" : "/fork1_Unnamed1",
+      "path" : "/fork1_elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1227,34 +803,8 @@
       }
     },
     {
-      "path" : "/fork2_sourceBuffer0",
+      "path" : "/fork2_sourceBuffer0_queue0",
       "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fork2_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fork2_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork2_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
       "sources" : [
         [
           "source",
@@ -1268,33 +818,7 @@
         [
           "sink",
           {
-            "path" : "/fork2_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork2_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fork2_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fork2_sourceBuffer0_interface",
+            "path" : "/fork2_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -1311,7 +835,7 @@
         [
           "source",
           {
-            "path" : "/fork2_sourceBuffer0_interface",
+            "path" : "/fork2_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -1338,7 +862,7 @@
       }
     },
     {
-      "path" : "/fork2_Unnamed0",
+      "path" : "/fork2_elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1364,7 +888,7 @@
       }
     },
     {
-      "path" : "/fork2_Unnamed1",
+      "path" : "/fork2_elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1390,34 +914,8 @@
       }
     },
     {
-      "path" : "/fork3_sourceBuffer0",
+      "path" : "/fork3_sourceBuffer0_queue0",
       "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fork3_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fork3_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork3_sourceBuffer0_Unnamed0",
-      "tpe" : "Connect",
       "sources" : [
         [
           "source",
@@ -1431,33 +929,7 @@
         [
           "sink",
           {
-            "path" : "/fork3_sourceBuffer0_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fork3_sourceBuffer0_Unnamed1",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fork3_sourceBuffer0_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fork3_sourceBuffer0_interface",
+            "path" : "/fork3_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -1474,7 +946,7 @@
         [
           "source",
           {
-            "path" : "/fork3_sourceBuffer0_interface",
+            "path" : "/fork3_sourceBuffer0_queueSink",
             "desc" : "Wire"
           }
         ]
@@ -1501,7 +973,7 @@
       }
     },
     {
-      "path" : "/fork3_Unnamed0",
+      "path" : "/fork3_elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1527,7 +999,7 @@
       }
     },
     {
-      "path" : "/fork3_Unnamed1",
+      "path" : "/fork3_elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1544,117 +1016,6 @@
           {
             "path" : "/fp64_multiply/sourceInB",
             "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fp64_add/join0",
-      "tpe" : "Join",
-      "sources" : [
-        [
-          "source_0",
-          {
-            "path" : "/fp64_add/sourceInA",
-            "desc" : "IO"
-          }
-        ],
-        [
-          "source_1",
-          {
-            "path" : "/fp64_add/sourceInB",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fp64_add/wrapper/source",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fp64_add/Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fp64_add/wrapper/sink",
-            "desc" : "ChildIO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fp64_add/sinkOut",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fp64_add/wrapper/qOutput",
-      "tpe" : "Queue",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fp64_add/wrapper/qOutput_source",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fp64_add/wrapper/qOutput_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
-      "path" : "/fp64_add/wrapper/Unnamed0",
-      "tpe" : "Connect",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/fp64_add/wrapper/qOutput_sink",
-            "desc" : "Wire"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/fp64_add/wrapper/sink",
-            "desc" : "IO"
           }
         ]
       ],
@@ -1697,7 +1058,7 @@
       }
     },
     {
-      "path" : "/fp32_add/Unnamed0",
+      "path" : "/fp32_add/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1723,13 +1084,13 @@
       }
     },
     {
-      "path" : "/fp32_add/wrapper/qOutput",
+      "path" : "/fp32_add/wrapper/queueOutput",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fp32_add/wrapper/qOutput_source",
+            "path" : "/fp32_add/wrapper/queueOutput_source",
             "desc" : "Wire"
           }
         ]
@@ -1738,7 +1099,7 @@
         [
           "sink",
           {
-            "path" : "/fp32_add/wrapper/qOutput_sink",
+            "path" : "/fp32_add/wrapper/queueOutput_sink",
             "desc" : "Wire"
           }
         ]
@@ -1749,13 +1110,13 @@
       }
     },
     {
-      "path" : "/fp32_add/wrapper/Unnamed0",
+      "path" : "/fp32_add/wrapper/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fp32_add/wrapper/qOutput_sink",
+            "path" : "/fp32_add/wrapper/queueOutput_sink",
             "desc" : "Wire"
           }
         ]
@@ -1775,20 +1136,20 @@
       }
     },
     {
-      "path" : "/fp64_multiply/join0",
+      "path" : "/fp64_add/join0",
       "tpe" : "Join",
       "sources" : [
         [
           "source_0",
           {
-            "path" : "/fp64_multiply/sourceInA",
+            "path" : "/fp64_add/sourceInA",
             "desc" : "IO"
           }
         ],
         [
           "source_1",
           {
-            "path" : "/fp64_multiply/sourceInB",
+            "path" : "/fp64_add/sourceInB",
             "desc" : "IO"
           }
         ]
@@ -1797,7 +1158,7 @@
         [
           "sink",
           {
-            "path" : "/fp64_multiply/wrapper/source",
+            "path" : "/fp64_add/wrapper/source",
             "desc" : "ChildIO"
           }
         ]
@@ -1808,13 +1169,13 @@
       }
     },
     {
-      "path" : "/fp64_multiply/Unnamed0",
+      "path" : "/fp64_add/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fp64_multiply/wrapper/sink",
+            "path" : "/fp64_add/wrapper/sink",
             "desc" : "ChildIO"
           }
         ]
@@ -1823,7 +1184,7 @@
         [
           "sink",
           {
-            "path" : "/fp64_multiply/sinkOut",
+            "path" : "/fp64_add/sinkOut",
             "desc" : "IO"
           }
         ]
@@ -1834,13 +1195,13 @@
       }
     },
     {
-      "path" : "/fp64_multiply/wrapper/qOutput",
+      "path" : "/fp64_add/wrapper/queueOutput",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fp64_multiply/wrapper/qOutput_source",
+            "path" : "/fp64_add/wrapper/queueOutput_source",
             "desc" : "Wire"
           }
         ]
@@ -1849,7 +1210,7 @@
         [
           "sink",
           {
-            "path" : "/fp64_multiply/wrapper/qOutput_sink",
+            "path" : "/fp64_add/wrapper/queueOutput_sink",
             "desc" : "Wire"
           }
         ]
@@ -1860,13 +1221,13 @@
       }
     },
     {
-      "path" : "/fp64_multiply/wrapper/Unnamed0",
+      "path" : "/fp64_add/wrapper/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fp64_multiply/wrapper/qOutput_sink",
+            "path" : "/fp64_add/wrapper/queueOutput_sink",
             "desc" : "Wire"
           }
         ]
@@ -1875,7 +1236,7 @@
         [
           "sink",
           {
-            "path" : "/fp64_multiply/wrapper/sink",
+            "path" : "/fp64_add/wrapper/sink",
             "desc" : "IO"
           }
         ]
@@ -1919,7 +1280,7 @@
       }
     },
     {
-      "path" : "/fp32_multiply/Unnamed0",
+      "path" : "/fp32_multiply/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1945,13 +1306,13 @@
       }
     },
     {
-      "path" : "/fp32_multiply/wrapper/qOutput",
+      "path" : "/fp32_multiply/wrapper/queueOutput",
       "tpe" : "Queue",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fp32_multiply/wrapper/qOutput_source",
+            "path" : "/fp32_multiply/wrapper/queueOutput_source",
             "desc" : "Wire"
           }
         ]
@@ -1960,7 +1321,7 @@
         [
           "sink",
           {
-            "path" : "/fp32_multiply/wrapper/qOutput_sink",
+            "path" : "/fp32_multiply/wrapper/queueOutput_sink",
             "desc" : "Wire"
           }
         ]
@@ -1971,13 +1332,13 @@
       }
     },
     {
-      "path" : "/fp32_multiply/wrapper/Unnamed0",
+      "path" : "/fp32_multiply/wrapper/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
           "source",
           {
-            "path" : "/fp32_multiply/wrapper/qOutput_sink",
+            "path" : "/fp32_multiply/wrapper/queueOutput_sink",
             "desc" : "Wire"
           }
         ]
@@ -1987,6 +1348,117 @@
           "sink",
           {
             "path" : "/fp32_multiply/wrapper/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fp64_multiply/join0",
+      "tpe" : "Join",
+      "sources" : [
+        [
+          "source_0",
+          {
+            "path" : "/fp64_multiply/sourceInA",
+            "desc" : "IO"
+          }
+        ],
+        [
+          "source_1",
+          {
+            "path" : "/fp64_multiply/sourceInB",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/fp64_multiply/wrapper/source",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fp64_multiply/elastic0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/fp64_multiply/wrapper/sink",
+            "desc" : "ChildIO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/fp64_multiply/sinkOut",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fp64_multiply/wrapper/queueOutput",
+      "tpe" : "Queue",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/fp64_multiply/wrapper/queueOutput_source",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/fp64_multiply/wrapper/queueOutput_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/fp64_multiply/wrapper/elastic0",
+      "tpe" : "Connect",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/fp64_multiply/wrapper/queueOutput_sink",
+            "desc" : "Wire"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/fp64_multiply/wrapper/sink",
             "desc" : "IO"
           }
         ]

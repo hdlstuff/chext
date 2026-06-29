@@ -247,19 +247,25 @@ private:
 
 int sc_main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
+#if defined(VERILATED_TRACE_ENABLED)
     Verilated::traceEverOn(true);
+#endif
 
     TestBench tb;
 
     sc_start(SC_ZERO_TIME);
 
+#if defined(VERILATED_TRACE_ENABLED)
     std::unique_ptr<VerilatedVcdSc> trace_file = std::make_unique<VerilatedVcdSc>();
     tb.dut.traceVerilated(trace_file.get(), 99);
     trace_file->open(fmt::format("{}.vcd", "ElasticTop").c_str());
+#endif
 
     tb.start();
 
+#if defined(VERILATED_TRACE_ENABLED)
     trace_file->close();
+#endif
 
     return 0;
 }

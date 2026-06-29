@@ -11,6 +11,8 @@ find_package(hdlstuff_hal REQUIRED)
 find_package(chext_test REQUIRED)
 find_package(hdlscw REQUIRED)
 
+option(SYSC_TB_ENABLE_VERILATOR_TRACE "Enable Verilator VCD tracing for SystemC testbenches" OFF)
+
 include(CMakeParseArguments)
 
 function(get_current_ns OUTPUT_VAR)
@@ -35,7 +37,13 @@ function(generate_tb)
 
     add_executable(${GEN_TB_TARGET_NAME})
     set_target_properties(${GEN_TB_TARGET_NAME} PROPERTIES OUTPUT_NAME ${GEN_TB_OUTPUT_NAME})
-    target_compile_definitions(${GEN_TB_TARGET_NAME} PUBLIC VERILATED_TRACE_ENABLED)
+
+    if(SYSC_TB_ENABLE_VERILATOR_TRACE)
+        target_compile_definitions(${GEN_TB_TARGET_NAME} PUBLIC VERILATED_TRACE_ENABLED)
+        set(GEN_TB_VERILATOR_TRACE_ARGS --trace)
+    else()
+        set(GEN_TB_VERILATOR_TRACE_ARGS "")
+    endif()
 
     foreach(SOURCE_FILE IN LISTS GEN_TB_CPP_SOURCES)
         target_sources(
@@ -69,7 +77,7 @@ function(generate_tb)
             SYSTEMC
             SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hdl/${MODULE}.sv
             VERILATOR_ARGS
-                --trace
+                ${GEN_TB_VERILATOR_TRACE_ARGS}
                 -I${CMAKE_SOURCE_DIR}/../verilog
                 -Wno-fatal
         )
