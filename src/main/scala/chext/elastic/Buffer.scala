@@ -20,7 +20,14 @@ package detail {
 
       uniquePrefix(prefixName) {
         val queueSink = EWire.like(source)
-        val queue0 = new Queue(source, queueSink, count, flow, pipe, false)
+        val queue0 = new Queue(
+          source,
+          queueSink,
+          count,
+          pipe = pipe,
+          flow = flow,
+          useSyncReadMem = false
+        )
 
         queueSink
       }
@@ -41,7 +48,14 @@ package detail {
 
       uniquePrefix(prefixName) {
         val queueSource = EWire.like(sink)
-        val queue0 = new Queue(queueSource, sink, count, flow, pipe, false)
+        val queue0 = new Queue(
+          queueSource,
+          sink,
+          count,
+          pipe = pipe,
+          flow = flow,
+          useSyncReadMem = false
+        )
 
         queueSource
       }

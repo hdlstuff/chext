@@ -314,6 +314,8 @@ class Queue[Tin <: Data, Tout <: Data](
     val useSyncReadMem: Boolean = false
 )(implicit si_ : SourceInfo)
     extends Component {
+  require(count >= 0, "Length must be non-negative.")
+
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sink.$bits)
 
@@ -377,100 +379,110 @@ class Queue[Tin <: Data, Tout <: Data](
     dontTouch(source)
     dontTouch(sink)
 
-    val wAddr = log2Ceil(count)
-    val wData = genIn.getWidth
+    if (count == 0) {
+      sink.$valid := source.$valid
+      source.$ready := sink.$ready
+      sink.$bits := outFn(source.$bits)
 
-    val ram =
-      (wData, wAddr, Queue.useVerilogMem_, useSyncReadMem) match {
-        case (0, _, _, _) => new memory_impl.no_data_mem(count, wAddr, wData)
-        case (_, 0, _, _) =>
-          new memory_impl.single_elem_mem(count, wAddr, wData)
-        case (_, _, false, false) =>
-          new memory_impl.chisel_mem_1w1r(count, wAddr, wData)
-        case (_, _, false, true) =>
-          new memory_impl.chisel_syncmem_1w1r(count, wAddr, wData)
+      new chext.deadlock.DeadlockMonitor(this) {
+        source.waitValid := true.B
+      }
+    } else {
+      val wAddr = log2Ceil(count)
+      val wData = genIn.getWidth
 
-        case (_, _, true, false) => {
-          val ram = Module(new memory_impl.chext_mem_1w1r(count, wAddr, wData))
-          ram.io.clock := Module.clock
-          ram
+      val ram =
+        (wData, wAddr, Queue.useVerilogMem_, useSyncReadMem) match {
+          case (0, _, _, _) => new memory_impl.no_data_mem(count, wAddr, wData)
+          case (_, 0, _, _) =>
+            new memory_impl.single_elem_mem(count, wAddr, wData)
+          case (_, _, false, false) =>
+            new memory_impl.chisel_mem_1w1r(count, wAddr, wData)
+          case (_, _, false, true) =>
+            new memory_impl.chisel_syncmem_1w1r(count, wAddr, wData)
+
+          case (_, _, true, false) => {
+            val ram = Module(new memory_impl.chext_mem_1w1r(count, wAddr, wData))
+            ram.io.clock := Module.clock
+            ram
+          }
+
+          case (_, _, true, true) => {
+            val ram = Module(
+              new memory_impl.chext_syncmem_1w1r(count, wAddr, wData)
+            )
+            ram.io.clock := Module.clock
+            ram
+          }
         }
 
-        case (_, _, true, true) => {
-          val ram = Module(
-            new memory_impl.chext_syncmem_1w1r(count, wAddr, wData)
-          )
-          ram.io.clock := Module.clock
-          ram
+      ram.noRead()
+      ram.noWrite()
+
+      val enqPtr = chisel3.util.Counter(count)
+      val deqPtr = chisel3.util.Counter(count)
+      val maybeFull = RegInit(false.B)
+
+      val ptrMatch = enqPtr.value === deqPtr.value
+      val empty = ptrMatch && !maybeFull
+      val full = ptrMatch && maybeFull
+
+      val doEnq = WireDefault(source.fire)
+      val doDeq = WireDefault(sink.fire)
+
+      when(doEnq) {
+        ram.write(enqPtr.value, source.$bits.asUInt)
+        enqPtr.inc()
+      }
+
+      when(doDeq) {
+        deqPtr.inc()
+      }
+
+      when(doEnq =/= doDeq) {
+        maybeFull := doEnq
+      }
+
+      sink.$valid := !empty
+      source.$ready := !full
+
+      val rawOut =
+        if (useSyncReadMem) {
+          val deqPtrNext =
+            Mux(deqPtr.value === (count.U - 1.U), 0.U, deqPtr.value + 1.U)
+          val rAddr = WireDefault(Mux(doDeq, deqPtrNext, deqPtr.value))
+          ram.read(rAddr).asTypeOf(genIn)
+        } else {
+          ram.read(deqPtr.value).asTypeOf(genIn)
+        }
+
+      sink.$bits := outFn(rawOut)
+
+      if (flow) {
+        when(source.$valid) {
+          sink.$valid := true.B
+        }
+
+        when(empty) {
+          sink.$bits := outFn(source.$bits)
+          doDeq := false.B
+
+          when(sink.$ready) {
+            doEnq := false.B
+          }
         }
       }
 
-    ram.noRead()
-    ram.noWrite()
-
-    val enqPtr = chisel3.util.Counter(count)
-    val deqPtr = chisel3.util.Counter(count)
-    val maybeFull = RegInit(false.B)
-
-    val ptrMatch = enqPtr.value === deqPtr.value
-    val empty = ptrMatch && !maybeFull
-    val full = ptrMatch && maybeFull
-
-    val doEnq = WireDefault(source.fire)
-    val doDeq = WireDefault(sink.fire)
-
-    when(doEnq) {
-      ram.write(enqPtr.value, source.$bits.asUInt)
-      enqPtr.inc()
-    }
-
-    when(doDeq) {
-      deqPtr.inc()
-    }
-
-    when(doEnq =/= doDeq) {
-      maybeFull := doEnq
-    }
-
-    sink.$valid := !empty
-    source.$ready := !full
-
-    val rawOut =
-      if (useSyncReadMem) {
-        val deqPtrNext =
-          Mux(deqPtr.value === (count.U - 1.U), 0.U, deqPtr.value + 1.U)
-        val rAddr = WireDefault(Mux(doDeq, deqPtrNext, deqPtr.value))
-        ram.read(rAddr).asTypeOf(genIn)
-      } else {
-        ram.read(deqPtr.value).asTypeOf(genIn)
-      }
-
-    sink.$bits := outFn(rawOut)
-
-    if (flow) {
-      when(source.$valid) {
-        sink.$valid := true.B
-      }
-
-      when(empty) {
-        sink.$bits := outFn(source.$bits)
-        doDeq := false.B
-
+      if (pipe) {
         when(sink.$ready) {
-          doEnq := false.B
+          source.$ready := true.B
         }
       }
-    }
 
-    if (pipe) {
-      when(sink.$ready) {
-        source.$ready := true.B
+      new chext.deadlock.DeadlockMonitor(this) {
+        source.waitValid := empty
+        sink.waitReady := full
       }
-    }
-
-    new chext.deadlock.DeadlockMonitor(this) {
-      source.waitValid := empty
-      sink.waitReady := full
     }
   }
 }
