@@ -110,6 +110,31 @@ case class Config(
   val wQos = _maybeZero(hasQos, 4)
   val wRegion = _maybeZero(hasRegion, 4)
 
+  /** User-readable configuration summary. */
+  def prettyString: String = {
+    val protocol =
+      if (lite) "axi4-lite"
+      else if (axi3Compat) "axi4-full/axi3"
+      else "axi4-full"
+
+    val channels = (read, write) match {
+      case (true, true)   => "read+write"
+      case (true, false)  => "read"
+      case (false, true)  => "write"
+      case (false, false) => "none"
+    }
+
+    Seq(
+      s"protocol=$protocol",
+      s"channels=$channels",
+      s"widths(id=$wId, addr=$wAddr, data=$wData, strobe=$wStrobe)",
+      s"sideband(lock=$wLock, cache=$wCache, prot=$wProt, qos=$wQos, region=$wRegion)",
+      s"user(ar=$wUserAR, r=$wUserR, aw=$wUserAW, w=$wUserW, b=$wUserB)"
+    ).mkString("Axi4Config(", ", ", ")")
+  }
+
+  override def toString: String = prettyString
+
 }
 
 /** AXI4 interface that complies with the standard naming convention.
