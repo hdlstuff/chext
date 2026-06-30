@@ -68,7 +68,7 @@ private class SyncWriteElasticReadMemory[T <: Data](
     sram.writePorts(0).address := io.wrAddr
     sram.writePorts(0).data := io.wrData
 
-    val rdCounter = Module(new chext.util.Counter(numOutstandingRead + 1))
+    val rdCounter = new chext.util.Counter(numOutstandingRead + 1)
     rdCounter.noInc()
     rdCounter.noDec()
 
@@ -152,7 +152,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
 
     val bufferAvailable = RegInit(bufferCapacity)
 
-    val xCount = Module(new chext.util.Counter((1 << wIdMaster) + 1))
+    val xCount = new chext.util.Counter((1 << wIdMaster) + 1)
     xCount.noInc()
     xCount.noDec()
 
@@ -236,7 +236,7 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     val nextIdFill = Reg(UInt((wIdMaster + 1).W))
     val nextIdDrain = Reg(UInt(wIdMaster.W))
 
-    val xCount = Module(new chext.util.Counter((1 << wIdMaster) + 1))
+    val xCount = new chext.util.Counter((1 << wIdMaster) + 1)
     xCount.noInc()
     xCount.noDec()
 

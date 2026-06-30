@@ -2,6 +2,7 @@ package chext.amba.axi4
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.SourceInfo
 import chisel3.reflect.DataMirror
 
 import chext.amba.axi4
@@ -119,7 +120,8 @@ case class Config(
   * @param cfg
   *   configuration
   */
-class RawInterface(val cfg: axi4.Config) extends Bundle {
+class RawInterface(val cfg: axi4.Config)(implicit si: SourceInfo) extends Bundle {
+  def sourceInfo: SourceInfo = si
 
   val ARREADY = if (cfg.read) Some(Input(Bool())) else None
   val ARVALID = if (cfg.read) Some(Output(Bool())) else None
@@ -191,13 +193,13 @@ class RawInterface(val cfg: axi4.Config) extends Bundle {
 }
 
 object Interface {
-  def apply(cfg: axi4.Config) = new RawInterface(cfg)
+  def apply(cfg: axi4.Config)(implicit si: SourceInfo) = new RawInterface(cfg)
 }
 
 object Slave {
-  def apply(cfg: axi4.Config) = Flipped(Interface(cfg))
+  def apply(cfg: axi4.Config)(implicit si: SourceInfo) = Flipped(Interface(cfg))
 }
 
 object Master {
-  def apply(cfg: axi4.Config) = Interface(cfg)
+  def apply(cfg: axi4.Config)(implicit si: SourceInfo) = Interface(cfg)
 }

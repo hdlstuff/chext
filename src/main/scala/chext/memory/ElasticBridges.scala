@@ -20,7 +20,7 @@ class ReadToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Por
   private val rdResp = elastic.SinkBuffer(read.resp)
   rdResp.markSink()
 
-  private val ctr = Module(new chext.util.Counter(portCfg.numOutstandingRead + 1))
+  private val ctr = new chext.util.Counter(portCfg.numOutstandingRead + 1)
   ctr.noInc()
   ctr.noDec()
 
@@ -79,11 +79,11 @@ class WriteToRawBridge(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = Po
   private val wrResp = elastic.SinkBuffer(write.resp)
   wrResp.markSink()
 
-  private val ctr = Module(new chext.util.Counter(portCfg.numOutstandingWrite + 1))
+  private val ctr = new chext.util.Counter(portCfg.numOutstandingWrite + 1)
   ctr.noInc()
   ctr.noDec()
 
-  private val ctrResp = Module(new chext.util.Counter(portCfg.numOutstandingWrite + 1))
+  private val ctrResp = new chext.util.Counter(portCfg.numOutstandingWrite + 1)
   ctrResp.noInc()
   ctrResp.noDec()
 
@@ -137,19 +137,17 @@ class ReadWriteToRawBridge(
   private val wrResp = elastic.SinkBuffer(write.resp)
   wrResp.markSink()
 
-  private val ctrRead = Module(new chext.util.Counter(portCfg.numOutstandingRead + 1))
+  private val ctrRead = new chext.util.Counter(portCfg.numOutstandingRead + 1)
   ctrRead.noInc()
   ctrRead.noDec()
 
   rdResp.noenq()
 
-  private val ctrWrite = Module(new chext.util.Counter(portCfg.numOutstandingWrite + 1))
+  private val ctrWrite = new chext.util.Counter(portCfg.numOutstandingWrite + 1)
   ctrWrite.noInc()
   ctrWrite.noDec()
 
-  private val ctrWriteResp = Module(
-    new chext.util.Counter(portCfg.numOutstandingWrite + 1)
-  )
+  private val ctrWriteResp = new chext.util.Counter(portCfg.numOutstandingWrite + 1)
   ctrWriteResp.noInc()
   ctrWriteResp.noDec()
 

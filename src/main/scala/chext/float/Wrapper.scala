@@ -40,7 +40,7 @@ class Wrapper[
   } else {
     source.markSource()
 
-    val ctr = Module(new chext.util.Counter(queueLength + 1))
+    val ctr = new chext.util.Counter(queueLength + 1)
     ctr.noInc()
     ctr.noDec()
 

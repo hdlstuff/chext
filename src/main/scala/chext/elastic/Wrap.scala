@@ -40,8 +40,7 @@ abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interfa
     } else {
       import ConnectOp._
 
-      // TODO counter maybe should not be a separate module?
-      val ctr = Module(new Counter(queueLength + 1))
+      val ctr = new Counter(queueLength + 1)
       ctr.noInc()
       ctr.noDec()
 

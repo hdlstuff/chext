@@ -145,6 +145,9 @@ abstract class Interface extends Bundle {
   /** Interface configuration. */
   def cfg: axi4.Config
 
+  /** Interface declaration location. */
+  def sourceInfo: SourceInfo
+
   /** read address channel */
   def ar: elastic.Interface[AddressChannel] = throw NotSupported("read")
 
@@ -245,7 +248,7 @@ object Interface {
   implicit val view: DataView[axi4.RawInterface, Interface] =
     PartialDataView.mapping[axi4.RawInterface, Interface](
       (x) => {
-        val interface = Interface(x.cfg)
+        val interface = Interface(x.cfg)(x.sourceInfo)
 
         DataMirror.specifiedDirectionOf(x) match {
           case SpecifiedDirection.Flip => Flipped(interface)
@@ -277,6 +280,8 @@ private class ReadInterface(implicit
 ) extends Interface {
   override val ar = elastic.Sink(new ReadAddressChannel)
   override val r = elastic.Source(new ReadDataChannel)
+
+  def sourceInfo: SourceInfo = si
 }
 
 private class WriteInterface(implicit
@@ -286,6 +291,8 @@ private class WriteInterface(implicit
   override val aw = elastic.Sink(new WriteAddressChannel)
   override val w = elastic.Sink(new WriteDataChannel)
   override val b = elastic.Source(new WriteResponseChannel)
+
+  def sourceInfo: SourceInfo = si
 }
 
 private class ReadWriteInterface(implicit
@@ -297,6 +304,8 @@ private class ReadWriteInterface(implicit
   override val aw = elastic.Sink(new WriteAddressChannel)
   override val w = elastic.Sink(new WriteDataChannel)
   override val b = elastic.Source(new WriteResponseChannel)
+
+  def sourceInfo: SourceInfo = si
 }
 
 private object main extends App {

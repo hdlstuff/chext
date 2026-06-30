@@ -25,7 +25,7 @@ class ResponseBuffer[Req <: Data, Resp <: Data](
   val sourceResp = IO(elastic.Source(genResp))
 
   private def impl(): Unit = {
-    val ctr = Module(new chext.util.Counter(numEntries + 1))
+    val ctr = new chext.util.Counter(numEntries + 1)
 
     ctr.noInc()
     ctr.noDec()
