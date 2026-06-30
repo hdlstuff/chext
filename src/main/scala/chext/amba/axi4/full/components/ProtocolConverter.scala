@@ -142,11 +142,7 @@ private class AxiFullStages {
           f"Interface lengths do not match at stage $currentStage with name ${stage.name}! (${currentMasterInterfaces.length} != ${currentSlaveInterfaces.length})"
         )
 
-        currentMasterInterfaces.zip(currentSlaveInterfaces).foreach {
-          case (master, slave) => {
-            master :=> slave
-          }
-        }
+        currentMasterInterfaces :=> currentSlaveInterfaces
 
         currentMasterInterfaces = stage.masterInterfaces.toSeq
 
@@ -160,11 +156,7 @@ private class AxiFullStages {
       f"Interface lengths do not match on the master-side! (${currentMasterInterfaces.length} != ${currentSlaveInterfaces.length})"
     )
 
-    currentMasterInterfaces.zip(currentSlaveInterfaces).foreach {
-      case (master, slave) => {
-        master :=> slave
-      }
-    }
+    currentMasterInterfaces :=> currentSlaveInterfaces
   }
 }
 

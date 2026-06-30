@@ -34,19 +34,9 @@ class Interconnect_Tbtop(
       }
     }
 
-    S_AXI
-      .map { _.asFull }
-      .zip(demux_N.map { _.s_axi })
-      .foreach { //
-        case (master, slave) => master :=> slave
-      }
+    S_AXI.map { _.asFull } :=> demux_N.map { _.s_axi }
 
-    mux_N
-      .map { _.m_axi }
-      .zip(M_AXI.map { _.asFull })
-      .foreach { //
-        case (master, slave) => master :=> slave
-      }
+    mux_N.map { _.m_axi } :=> M_AXI.map { _.asFull }
 
     for (i <- (0 until 16))
       for (j <- (0 until 16)) {

@@ -331,6 +331,7 @@ module Read(
   output        m_axi_r_ready
 );
 
+  wire [31:0] wireLength_bits;
   wire        fork0_result_1_valid;
   wire        wireTask_ready;
   wire        fork0_result_valid;
@@ -353,18 +354,6 @@ module Read(
   wire [31:0] wireTask_bits_address = fork0_result_1_bits_address;
   wire [31:0] wireTask_bits_length = fork0_result_1_bits_length;
   wire [31:0] drop0_sinkBuffer0_queueSource_bits_index = wireTask_bits_length;
-  reg         fork0_regs_0;
-  reg         fork0_regs_1;
-  reg         fork0_regs_2;
-  wire        fork0_ready_qual1_0 = fork0_result_ready | fork0_regs_0;
-  wire        fork0_ready_qual1_1 = fork0_result_1_ready | fork0_regs_1;
-  wire        fork0_result_2_ready;
-  wire        fork0_ready_qual1_2 = fork0_result_2_ready | fork0_regs_2;
-  wire        fork0_ready =
-    fork0_ready_qual1_0 & fork0_ready_qual1_1 & fork0_ready_qual1_2;
-  assign fork0_result_valid = sourceTask_valid & ~fork0_regs_0;
-  assign fork0_result_1_valid = sourceTask_valid & ~fork0_regs_1;
-  wire        fork0_result_2_valid = sourceTask_valid & ~fork0_regs_2;
   wire        wireSelect_bits;
   wire        wireSource0_valid;
   wire        wireSource1_valid;
@@ -381,10 +370,22 @@ module Read(
   wire        wireSource1_bits_last;
   wire        wireSource0_bits_last;
   wire        wireSource1_bits_valid;
+  reg  [2:0]  fork0_sinkBuffer0_queue0_enqPtr_value;
+  reg  [2:0]  fork0_sinkBuffer0_queue0_deqPtr_value;
+  reg         fork0_sinkBuffer0_queue0_maybeFull;
+  wire        fork0_sinkBuffer0_queue0_ptrMatch =
+    fork0_sinkBuffer0_queue0_enqPtr_value == fork0_sinkBuffer0_queue0_deqPtr_value;
+  wire        fork0_sinkBuffer0_queue0_doEnq =
+    fork0_sinkBuffer0_queueSource_ready & fork0_sinkBuffer0_queueSource_valid;
+  wire        wireLength_valid;
+  wire        wireLength_ready;
+  wire        fork0_sinkBuffer0_queue0_doDeq = wireLength_ready & wireLength_valid;
+  assign wireLength_valid =
+    ~(fork0_sinkBuffer0_queue0_ptrMatch & ~fork0_sinkBuffer0_queue0_maybeFull);
+  assign fork0_sinkBuffer0_queueSource_ready =
+    ~(fork0_sinkBuffer0_queue0_ptrMatch & fork0_sinkBuffer0_queue0_maybeFull);
+  wire        drop0_sinkBuffer0_queueSource_valid;
   wire        drop0_sinkBuffer0_queueSource_ready;
-  assign wireTask_ready = (|wireTask_bits_length) | drop0_sinkBuffer0_queueSource_ready;
-  wire        drop0_sinkBuffer0_queueSource_valid =
-    wireTask_bits_length == 32'h0 & wireTask_valid;
   wire        drop0_sinkBuffer0_queue0_doEnq =
     drop0_sinkBuffer0_queueSource_ready & drop0_sinkBuffer0_queueSource_valid;
   reg  [2:0]  drop0_sinkBuffer0_queue0_enqPtr_value;
@@ -400,18 +401,6 @@ module Read(
   assign wireSource1_bits_last = _drop0_sinkBuffer0_queue0_ram_dataOutB[1];
   assign wireSource1_bits_index = _drop0_sinkBuffer0_queue0_ram_dataOutB[33:2];
   assign wireSource1_bits_data = _drop0_sinkBuffer0_queue0_ram_dataOutB[97:34];
-  reg  [2:0]  repeat0_sourceBuffer0_queue0_enqPtr_value;
-  reg  [2:0]  repeat0_sourceBuffer0_queue0_deqPtr_value;
-  reg         repeat0_sourceBuffer0_queue0_maybeFull;
-  wire        repeat0_sourceBuffer0_queue0_ptrMatch =
-    repeat0_sourceBuffer0_queue0_enqPtr_value == repeat0_sourceBuffer0_queue0_deqPtr_value;
-  wire        wireLength_valid;
-  wire        wireLength_ready;
-  wire        fork0_sinkBuffer0_queue0_doDeq = wireLength_ready & wireLength_valid;
-  wire        repeat0_sourceBuffer0_queueSink_valid =
-    ~(repeat0_sourceBuffer0_queue0_ptrMatch & ~repeat0_sourceBuffer0_queue0_maybeFull);
-  assign wireLength_ready =
-    ~(repeat0_sourceBuffer0_queue0_ptrMatch & repeat0_sourceBuffer0_queue0_maybeFull);
   reg  [31:0] repeat0_count_state;
   reg         repeat0_count_valid;
   wire [31:0] _repeat0_count_nextState_T = repeat0_count_state + 32'h1;
@@ -428,6 +417,7 @@ module Read(
     ((|repeat0_sourceBuffer0_queueSink_bits)
        ? repeat0_sourceBuffer0_queueSink_bits
        : 32'h1) == 32'h1;
+  wire        repeat0_sourceBuffer0_queueSink_valid;
   wire        repeat0_sourceBuffer0_queueSink_ready =
     repeat0_sourceBuffer0_queueSink_valid
     & (repeat0_count_valid
@@ -443,43 +433,64 @@ module Read(
       : _repeat0_count_T_15
           ? repeat0_sourceBuffer0_queueSink_bits == 32'h0
           : repeat0_sourceBuffer0_queueSink_bits == 32'h0;
-  reg  [2:0]  fork0_sinkBuffer0_queue0_enqPtr_value;
-  reg  [2:0]  fork0_sinkBuffer0_queue0_deqPtr_value;
-  reg         fork0_sinkBuffer0_queue0_maybeFull;
-  wire        fork0_sinkBuffer0_queue0_ptrMatch =
-    fork0_sinkBuffer0_queue0_enqPtr_value == fork0_sinkBuffer0_queue0_deqPtr_value;
-  wire        fork0_sinkBuffer0_queue0_doEnq =
-    fork0_sinkBuffer0_queueSource_ready & fork0_sinkBuffer0_queueSource_valid;
-  assign wireLength_valid =
-    ~(fork0_sinkBuffer0_queue0_ptrMatch & ~fork0_sinkBuffer0_queue0_maybeFull);
-  assign fork0_sinkBuffer0_queueSource_ready =
-    ~(fork0_sinkBuffer0_queue0_ptrMatch & fork0_sinkBuffer0_queue0_maybeFull);
+  reg  [2:0]  repeat0_sourceBuffer0_queue0_enqPtr_value;
+  reg  [2:0]  repeat0_sourceBuffer0_queue0_deqPtr_value;
+  reg         repeat0_sourceBuffer0_queue0_maybeFull;
+  wire        repeat0_sourceBuffer0_queue0_ptrMatch =
+    repeat0_sourceBuffer0_queue0_enqPtr_value == repeat0_sourceBuffer0_queue0_deqPtr_value;
+  assign repeat0_sourceBuffer0_queueSink_valid =
+    ~(repeat0_sourceBuffer0_queue0_ptrMatch & ~repeat0_sourceBuffer0_queue0_maybeFull);
+  assign wireLength_ready =
+    ~(repeat0_sourceBuffer0_queue0_ptrMatch & repeat0_sourceBuffer0_queue0_maybeFull);
+  assign wireTask_ready = (|wireTask_bits_length) | drop0_sinkBuffer0_queueSource_ready;
+  assign drop0_sinkBuffer0_queueSource_valid =
+    wireTask_bits_length == 32'h0 & wireTask_valid;
+  reg         fork0_regs_0;
+  reg         fork0_regs_1;
+  reg         fork0_regs_2;
+  wire        fork0_ready_qual1_0 = fork0_result_ready | fork0_regs_0;
+  wire        fork0_ready_qual1_1 = fork0_result_1_ready | fork0_regs_1;
+  wire        fork0_result_2_ready;
+  wire        fork0_ready_qual1_2 = fork0_result_2_ready | fork0_regs_2;
+  wire        fork0_ready =
+    fork0_ready_qual1_0 & fork0_ready_qual1_1 & fork0_ready_qual1_2;
+  assign fork0_result_valid = sourceTask_valid & ~fork0_regs_0;
+  assign fork0_result_1_valid = sourceTask_valid & ~fork0_regs_1;
+  wire        fork0_result_2_valid = sourceTask_valid & ~fork0_regs_2;
   always @(posedge clock) begin
     automatic logic _GEN;
     _GEN = ~(|_repeat0_count_T_9) | _repeat0_count_T_15;
     if (reset) begin
-      fork0_regs_0 <= 1'h0;
-      fork0_regs_1 <= 1'h0;
-      fork0_regs_2 <= 1'h0;
-      drop0_sinkBuffer0_queue0_enqPtr_value <= 3'h0;
-      drop0_sinkBuffer0_queue0_deqPtr_value <= 3'h0;
-      drop0_sinkBuffer0_queue0_maybeFull <= 1'h0;
-      repeat0_sourceBuffer0_queue0_enqPtr_value <= 3'h0;
-      repeat0_sourceBuffer0_queue0_deqPtr_value <= 3'h0;
-      repeat0_sourceBuffer0_queue0_maybeFull <= 1'h0;
-      repeat0_count_valid <= 1'h0;
       fork0_sinkBuffer0_queue0_enqPtr_value <= 3'h0;
       fork0_sinkBuffer0_queue0_deqPtr_value <= 3'h0;
       fork0_sinkBuffer0_queue0_maybeFull <= 1'h0;
+      drop0_sinkBuffer0_queue0_enqPtr_value <= 3'h0;
+      drop0_sinkBuffer0_queue0_deqPtr_value <= 3'h0;
+      drop0_sinkBuffer0_queue0_maybeFull <= 1'h0;
+      repeat0_count_valid <= 1'h0;
+      repeat0_sourceBuffer0_queue0_enqPtr_value <= 3'h0;
+      repeat0_sourceBuffer0_queue0_deqPtr_value <= 3'h0;
+      repeat0_sourceBuffer0_queue0_maybeFull <= 1'h0;
+      fork0_regs_0 <= 1'h0;
+      fork0_regs_1 <= 1'h0;
+      fork0_regs_2 <= 1'h0;
     end
     else begin
       automatic logic drop0_sinkBuffer0_queue0_doDeq =
         wireSource1_ready & wireSource1_valid;
       automatic logic repeat0_sourceBuffer0_queue0_doDeq =
         repeat0_sourceBuffer0_queueSink_ready & repeat0_sourceBuffer0_queueSink_valid;
-      fork0_regs_0 <= fork0_ready_qual1_0 & sourceTask_valid & ~fork0_ready;
-      fork0_regs_1 <= fork0_ready_qual1_1 & sourceTask_valid & ~fork0_ready;
-      fork0_regs_2 <= fork0_ready_qual1_2 & sourceTask_valid & ~fork0_ready;
+      if (fork0_sinkBuffer0_queue0_doEnq)
+        fork0_sinkBuffer0_queue0_enqPtr_value <=
+          fork0_sinkBuffer0_queue0_enqPtr_value + 3'h1;
+      if (fork0_sinkBuffer0_queue0_doDeq) begin
+        fork0_sinkBuffer0_queue0_deqPtr_value <=
+          fork0_sinkBuffer0_queue0_deqPtr_value + 3'h1;
+        repeat0_sourceBuffer0_queue0_enqPtr_value <=
+          repeat0_sourceBuffer0_queue0_enqPtr_value + 3'h1;
+      end
+      if (fork0_sinkBuffer0_queue0_doEnq != fork0_sinkBuffer0_queue0_doDeq)
+        fork0_sinkBuffer0_queue0_maybeFull <= fork0_sinkBuffer0_queue0_doEnq;
       if (drop0_sinkBuffer0_queue0_doEnq)
         drop0_sinkBuffer0_queue0_enqPtr_value <=
           drop0_sinkBuffer0_queue0_enqPtr_value + 3'h1;
@@ -488,28 +499,20 @@ module Read(
           drop0_sinkBuffer0_queue0_deqPtr_value + 3'h1;
       if (drop0_sinkBuffer0_queue0_doEnq != drop0_sinkBuffer0_queue0_doDeq)
         drop0_sinkBuffer0_queue0_maybeFull <= drop0_sinkBuffer0_queue0_doEnq;
-      if (fork0_sinkBuffer0_queue0_doDeq) begin
-        repeat0_sourceBuffer0_queue0_enqPtr_value <=
-          repeat0_sourceBuffer0_queue0_enqPtr_value + 3'h1;
-        fork0_sinkBuffer0_queue0_deqPtr_value <=
-          fork0_sinkBuffer0_queue0_deqPtr_value + 3'h1;
-      end
-      if (repeat0_sourceBuffer0_queue0_doDeq)
-        repeat0_sourceBuffer0_queue0_deqPtr_value <=
-          repeat0_sourceBuffer0_queue0_deqPtr_value + 3'h1;
-      if (fork0_sinkBuffer0_queue0_doDeq != repeat0_sourceBuffer0_queue0_doDeq)
-        repeat0_sourceBuffer0_queue0_maybeFull <= fork0_sinkBuffer0_queue0_doDeq;
       if (repeat0_sourceBuffer0_queueSink_valid) begin
         if (repeat0_count_valid)
           repeat0_count_valid <= ~(_repeat0_count_T_3 & wireSelect_ready);
         else
           repeat0_count_valid <= ~_GEN & wireSelect_ready;
       end
-      if (fork0_sinkBuffer0_queue0_doEnq)
-        fork0_sinkBuffer0_queue0_enqPtr_value <=
-          fork0_sinkBuffer0_queue0_enqPtr_value + 3'h1;
-      if (fork0_sinkBuffer0_queue0_doEnq != fork0_sinkBuffer0_queue0_doDeq)
-        fork0_sinkBuffer0_queue0_maybeFull <= fork0_sinkBuffer0_queue0_doEnq;
+      if (repeat0_sourceBuffer0_queue0_doDeq)
+        repeat0_sourceBuffer0_queue0_deqPtr_value <=
+          repeat0_sourceBuffer0_queue0_deqPtr_value + 3'h1;
+      if (fork0_sinkBuffer0_queue0_doDeq != repeat0_sourceBuffer0_queue0_doDeq)
+        repeat0_sourceBuffer0_queue0_maybeFull <= fork0_sinkBuffer0_queue0_doDeq;
+      fork0_regs_0 <= fork0_ready_qual1_0 & sourceTask_valid & ~fork0_ready;
+      fork0_regs_1 <= fork0_ready_qual1_1 & sourceTask_valid & ~fork0_ready;
+      fork0_regs_2 <= fork0_ready_qual1_2 & sourceTask_valid & ~fork0_ready;
     end
     if (repeat0_sourceBuffer0_queueSink_valid) begin
       if (repeat0_count_valid) begin
@@ -545,6 +548,18 @@ module Read(
   chext_mem_1w1r #(
     .ADDR_WIDTH(3),
     .COUNT(8),
+    .DATA_WIDTH(32)
+  ) fork0_sinkBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (fork0_sinkBuffer0_queue0_enqPtr_value),
+    .writeEnA (fork0_sinkBuffer0_queue0_doEnq),
+    .dataInA  (fork0_sinkBuffer0_queueSource_bits),
+    .addrB    (fork0_sinkBuffer0_queue0_deqPtr_value),
+    .dataOutB (wireLength_bits)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(3),
+    .COUNT(8),
     .DATA_WIDTH(98)
   ) drop0_sinkBuffer0_queue0_ram (
     .clock    (clock),
@@ -558,7 +573,6 @@ module Read(
     .addrB    (drop0_sinkBuffer0_queue0_deqPtr_value),
     .dataOutB (_drop0_sinkBuffer0_queue0_ram_dataOutB)
   );
-  wire [31:0] wireLength_bits;
   chext_mem_1w1r #(
     .ADDR_WIDTH(3),
     .COUNT(8),
@@ -570,18 +584,6 @@ module Read(
     .dataInA  (wireLength_bits),
     .addrB    (repeat0_sourceBuffer0_queue0_deqPtr_value),
     .dataOutB (repeat0_sourceBuffer0_queueSink_bits)
-  );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(3),
-    .COUNT(8),
-    .DATA_WIDTH(32)
-  ) fork0_sinkBuffer0_queue0_ram (
-    .clock    (clock),
-    .addrA    (fork0_sinkBuffer0_queue0_enqPtr_value),
-    .writeEnA (fork0_sinkBuffer0_queue0_doEnq),
-    .dataInA  (fork0_sinkBuffer0_queueSource_bits),
-    .addrB    (fork0_sinkBuffer0_queue0_deqPtr_value),
-    .dataOutB (wireLength_bits)
   );
   assign sourceTask_ready = fork0_ready;
   assign sinkResult_bits_data =

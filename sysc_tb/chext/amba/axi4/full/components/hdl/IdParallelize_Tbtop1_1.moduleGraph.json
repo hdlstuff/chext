@@ -135,7 +135,7 @@
   ],
   "components" : [
     {
-      "path" : "/elastic0",
+      "path" : "/axi4f_connect0_connectAr",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -155,13 +155,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic1",
+      "path" : "/axi4f_connect0_connectR",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -181,13 +181,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic2",
+      "path" : "/axi4f_connect0_connectAw",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -207,13 +207,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic3",
+      "path" : "/axi4f_connect0_connectW",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -233,13 +233,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic4",
+      "path" : "/axi4f_connect0_connectB",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -259,13 +259,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic5",
+      "path" : "/axi4f_connect1_connectAr",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -285,13 +285,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic6",
+      "path" : "/axi4f_connect1_connectR",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -311,13 +311,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic7",
+      "path" : "/axi4f_connect1_connectAw",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -337,13 +337,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic8",
+      "path" : "/axi4f_connect1_connectW",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -363,13 +363,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic9",
+      "path" : "/axi4f_connect1_connectB",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -389,13 +389,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/dut/read_m_ar_sinkBuffer0_queue0",
+      "path" : "/dut/read_m_ar_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
@@ -421,7 +421,7 @@
       }
     },
     {
-      "path" : "/dut/read_s_r_sinkBuffer0_queue0",
+      "path" : "/dut/read_s_r_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
@@ -473,7 +473,7 @@
       }
     },
     {
-      "path" : "/dut/write_m_aw_sinkBuffer0_queue0",
+      "path" : "/dut/write_m_aw_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
@@ -499,7 +499,7 @@
       }
     },
     {
-      "path" : "/dut/write_s_b_sinkBuffer0_queue0",
+      "path" : "/dut/write_s_b_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
@@ -578,6 +578,36 @@
     }
   ],
   "containers" : [
+    {
+      "path" : "/axi4f_connect0",
+      "tpe" : "Axi4f_Connect",
+      "children" : [
+        "/axi4f_connect0_connectAr",
+        "/axi4f_connect0_connectR",
+        "/axi4f_connect0_connectAw",
+        "/axi4f_connect0_connectW",
+        "/axi4f_connect0_connectB"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axi4f_connect1",
+      "tpe" : "Axi4f_Connect",
+      "children" : [
+        "/axi4f_connect1_connectAr",
+        "/axi4f_connect1_connectR",
+        "/axi4f_connect1_connectAw",
+        "/axi4f_connect1_connectW",
+        "/axi4f_connect1_connectB"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    }
   ],
   "children" : [
   ],

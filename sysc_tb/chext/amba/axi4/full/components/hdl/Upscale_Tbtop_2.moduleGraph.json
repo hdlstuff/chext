@@ -637,13 +637,6 @@
       }
     },
     {
-      "path" : "/upscale/read_addressGenerator/source",
-      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/upscale/write_addressGenerator/source",
       "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
       "args" : {
@@ -651,8 +644,8 @@
       }
     },
     {
-      "path" : "/upscale/read_addressGenerator/sink",
-      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
+      "path" : "/upscale/read_addressGenerator/source",
+      "tpe" : "chext.elastic.Interface[AddrLenSizeBurstBundle]",
       "args" : {
         
       }
@@ -663,11 +656,18 @@
       "args" : {
         
       }
+    },
+    {
+      "path" : "/upscale/read_addressGenerator/sink",
+      "tpe" : "chext.elastic.Interface[AddrSizeLastBundle]",
+      "args" : {
+        
+      }
     }
   ],
   "components" : [
     {
-      "path" : "/elastic0",
+      "path" : "/axi4f_connect0_connectAr",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -687,13 +687,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic1",
+      "path" : "/axi4f_connect0_connectR",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -713,13 +713,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic2",
+      "path" : "/axi4f_connect0_connectAw",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -739,13 +739,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic3",
+      "path" : "/axi4f_connect0_connectW",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -765,13 +765,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic4",
+      "path" : "/axi4f_connect0_connectB",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -791,13 +791,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic5",
+      "path" : "/elastic0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -823,7 +823,7 @@
       }
     },
     {
-      "path" : "/elastic6",
+      "path" : "/elastic1",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -849,7 +849,7 @@
       }
     },
     {
-      "path" : "/elastic7",
+      "path" : "/elastic2",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -875,7 +875,7 @@
       }
     },
     {
-      "path" : "/elastic8",
+      "path" : "/elastic3",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -901,7 +901,7 @@
       }
     },
     {
-      "path" : "/elastic9",
+      "path" : "/elastic4",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -927,7 +927,7 @@
       }
     },
     {
-      "path" : "/elastic10",
+      "path" : "/elastic5",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -953,7 +953,7 @@
       }
     },
     {
-      "path" : "/elastic11",
+      "path" : "/elastic6",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -979,7 +979,7 @@
       }
     },
     {
-      "path" : "/elastic12",
+      "path" : "/elastic7",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1005,7 +1005,7 @@
       }
     },
     {
-      "path" : "/elastic13",
+      "path" : "/axi4f_connect1_connectAr",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1025,13 +1025,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic14",
+      "path" : "/axi4f_connect1_connectR",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1051,13 +1051,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic15",
+      "path" : "/axi4f_connect1_connectAw",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1077,13 +1077,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic16",
+      "path" : "/axi4f_connect1_connectW",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1103,13 +1103,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic17",
+      "path" : "/axi4f_connect1_connectB",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1129,13 +1129,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect1",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic18",
+      "path" : "/axi4f_connect2_connectAr",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1155,13 +1155,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect2",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic19",
+      "path" : "/axi4f_connect2_connectR",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1181,13 +1181,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect2",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic20",
+      "path" : "/axi4f_connect2_connectAw",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1207,13 +1207,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect2",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic21",
+      "path" : "/axi4f_connect2_connectW",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1233,13 +1233,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect2",
       "args" : {
         
       }
     },
     {
-      "path" : "/elastic22",
+      "path" : "/axi4f_connect2_connectB",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -1259,7 +1259,7 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/axi4f_connect2",
       "args" : {
         
       }
@@ -2531,7 +2531,7 @@
       }
     },
     {
-      "path" : "/mem/bridge1/rdResp_sinkBuffer0_queue0",
+      "path" : "/mem/bridge1/rdResp_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
@@ -2557,7 +2557,7 @@
       }
     },
     {
-      "path" : "/mem/bridge1/wrResp_sinkBuffer0_queue0",
+      "path" : "/mem/bridge1/wrResp_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
@@ -2583,7 +2583,7 @@
       }
     },
     {
-      "path" : "/mem/bridge2/rdResp_sinkBuffer0_queue0",
+      "path" : "/mem/bridge2/rdResp_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
@@ -2609,7 +2609,7 @@
       }
     },
     {
-      "path" : "/mem/bridge2/wrResp_sinkBuffer0_queue0",
+      "path" : "/mem/bridge2/wrResp_queue0",
       "tpe" : "Queue",
       "sources" : [
         [
@@ -3001,32 +3001,6 @@
       }
     },
     {
-      "path" : "/upscale/read_addressGenerator/transducer",
-      "tpe" : "Transducer",
-      "sources" : [
-        [
-          "source",
-          {
-            "path" : "/upscale/read_addressGenerator/source",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "sinks" : [
-        [
-          "sink",
-          {
-            "path" : "/upscale/read_addressGenerator/sink",
-            "desc" : "IO"
-          }
-        ]
-      ],
-      "parent" : "",
-      "args" : {
-        
-      }
-    },
-    {
       "path" : "/upscale/write_addressGenerator/transducer",
       "tpe" : "Transducer",
       "sources" : [
@@ -3051,9 +3025,80 @@
       "args" : {
         
       }
+    },
+    {
+      "path" : "/upscale/read_addressGenerator/transducer",
+      "tpe" : "Transducer",
+      "sources" : [
+        [
+          "source",
+          {
+            "path" : "/upscale/read_addressGenerator/source",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "sinks" : [
+        [
+          "sink",
+          {
+            "path" : "/upscale/read_addressGenerator/sink",
+            "desc" : "IO"
+          }
+        ]
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
     }
   ],
   "containers" : [
+    {
+      "path" : "/axi4f_connect0",
+      "tpe" : "Axi4f_Connect",
+      "children" : [
+        "/axi4f_connect0_connectAr",
+        "/axi4f_connect0_connectR",
+        "/axi4f_connect0_connectAw",
+        "/axi4f_connect0_connectW",
+        "/axi4f_connect0_connectB"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axi4f_connect1",
+      "tpe" : "Axi4f_Connect",
+      "children" : [
+        "/axi4f_connect1_connectAr",
+        "/axi4f_connect1_connectR",
+        "/axi4f_connect1_connectAw",
+        "/axi4f_connect1_connectW",
+        "/axi4f_connect1_connectB"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/axi4f_connect2",
+      "tpe" : "Axi4f_Connect",
+      "children" : [
+        "/axi4f_connect2_connectAr",
+        "/axi4f_connect2_connectR",
+        "/axi4f_connect2_connectAw",
+        "/axi4f_connect2_connectW",
+        "/axi4f_connect2_connectB"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
     {
       "path" : "/axiBridge1/read_fork0_repeat0",
       "tpe" : "Repeat",

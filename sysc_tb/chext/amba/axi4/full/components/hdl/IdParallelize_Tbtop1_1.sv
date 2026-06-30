@@ -54,28 +54,6 @@ module SyncWriteElasticReadMemory(
   assign io_rdResp_valid = io_rdReq_valid;
 endmodule
 
-module Counter(
-  input  clock,
-         reset,
-         io_incEn,
-         io_decEn,
-  output io_empty
-);
-
-  reg [2:0] rCounter;
-  always @(posedge clock) begin
-    if (reset)
-      rCounter <= 3'h0;
-    else if (~(io_incEn & io_decEn)) begin
-      if (io_incEn)
-        rCounter <= rCounter + 3'h1;
-      else if (io_decEn)
-        rCounter <= rCounter - 3'h1;
-    end
-  end // always @(posedge)
-  assign io_empty = rCounter == 3'h0;
-endmodule
-
 // VCS coverage exclude_file
 module mem_4x34(
   input  [1:0]  R0_addr,
@@ -295,14 +273,12 @@ module IdParallelize(
   input         m_axi_b_valid
 );
 
-  wire [66:0] _read_s_r_sinkBuffer0_queue0_ram_dataOutB;
-  wire [62:0] _write_m_aw_sinkBuffer0_queue0_ram_dataOutB;
-  wire [33:0] _write_s_b_sinkBuffer0_queue0_ram_dataOutB;
-  wire [62:0] _read_m_ar_sinkBuffer0_queue0_ram_dataOutB;
-  wire        _write_xCount_io_empty;
+  wire [66:0] _read_s_r_queue0_ram_dataOutB;
+  wire [62:0] _write_m_aw_queue0_ram_dataOutB;
+  wire [33:0] _write_s_b_queue0_ram_dataOutB;
+  wire [62:0] _read_m_ar_queue0_ram_dataOutB;
   wire        _write_bufferPayload_io_rdReq_ready;
   wire        _write_bufferValid_ext_R0_data;
-  wire        _read_xCount_io_empty;
   wire        _read_bufferPayload_io_rdReq_ready;
   wire        _read_bufferValid_ext_R0_data;
   wire [4:0]  _read_xIndexFill_ext_R0_data;
@@ -330,108 +306,117 @@ module IdParallelize(
   reg  [4:0]  read_nextIndexFill;
   reg  [4:0]  read_nextIndexDrain;
   reg  [5:0]  read_bufferAvailable;
+  reg  [2:0]  read_xCount_rCounter;
+  wire        read_xCount_empty = read_xCount_rCounter == 3'h0;
+  wire        read_xCount_full_ = read_xCount_rCounter == 3'h4;
   wire [7:0]  _read_bufferAvailable_T = s_axi_ar_bits_len + 8'h1;
   wire        read_m_ar_ready;
   wire        s_axi_ar_ready_0 =
     read_m_ar_ready & ~(read_nextIdFill[2])
     & {2'h0, read_bufferAvailable} >= _read_bufferAvailable_T;
   wire [1:0]  read_m_ar_bits_id = read_nextIdFill[1:0];
-  wire        read_m_ar_valid = s_axi_ar_ready_0 & s_axi_ar_valid;
+  wire        _read_T_7 = s_axi_ar_ready_0 & s_axi_ar_valid;
+  wire        read_xCount_incEn;
+  assign read_xCount_incEn = _read_T_7;
+  wire        read_m_ar_valid;
+  assign read_m_ar_valid = _read_T_7;
   wire        _read_T_5 =
     _read_bufferPayload_io_rdReq_ready & _read_bufferValid_ext_R0_data;
   wire        read_s_r_ready;
   wire        read_s_r_valid;
-  wire        read_s_r_sinkBuffer0_queue0_doEnq = read_s_r_ready & read_s_r_valid;
+  wire        read_s_r_queue0_doEnq = read_s_r_ready & read_s_r_valid;
   wire        read_s_r_bits_last;
+  wire        read_xCount_decEn = read_s_r_queue0_doEnq & read_s_r_bits_last;
   reg  [2:0]  write_nextIdFill;
   reg  [1:0]  write_nextIdDrain;
+  reg  [2:0]  write_xCount_rCounter;
+  wire        write_xCount_empty = write_xCount_rCounter == 3'h0;
+  wire        write_xCount_full_ = write_xCount_rCounter == 3'h4;
   wire        write_m_aw_ready;
   wire        s_axi_aw_ready_0 = write_m_aw_ready & ~(write_nextIdFill[2]);
   wire [1:0]  write_m_aw_bits_id = write_nextIdFill[1:0];
-  wire        write_m_aw_valid = s_axi_aw_ready_0 & s_axi_aw_valid;
+  wire        _write_T_4 = s_axi_aw_ready_0 & s_axi_aw_valid;
+  wire        write_xCount_incEn;
+  assign write_xCount_incEn = _write_T_4;
+  wire        write_m_aw_valid;
+  assign write_m_aw_valid = _write_T_4;
   wire        _write_T_2 =
     _write_bufferPayload_io_rdReq_ready & _write_bufferValid_ext_R0_data;
   wire        write_s_b_ready;
   wire        write_s_b_valid;
-  wire        write_xCount_io_decEn = write_s_b_ready & write_s_b_valid;
-  reg         read_m_ar_sinkBuffer0_queue0_enqPtr_value;
-  reg         read_m_ar_sinkBuffer0_queue0_deqPtr_value;
-  reg         read_m_ar_sinkBuffer0_queue0_maybeFull;
-  wire        read_m_ar_sinkBuffer0_queue0_ptrMatch =
-    read_m_ar_sinkBuffer0_queue0_enqPtr_value == read_m_ar_sinkBuffer0_queue0_deqPtr_value;
-  wire        read_m_ar_sinkBuffer0_queue0_empty =
-    read_m_ar_sinkBuffer0_queue0_ptrMatch & ~read_m_ar_sinkBuffer0_queue0_maybeFull;
-  wire        read_m_ar_sinkBuffer0_queue0_doEnq = read_m_ar_ready & read_m_ar_valid;
-  assign read_m_ar_ready =
-    ~(read_m_ar_sinkBuffer0_queue0_ptrMatch & read_m_ar_sinkBuffer0_queue0_maybeFull);
-  reg         write_s_b_sinkBuffer0_queue0_enqPtr_value;
-  reg         write_s_b_sinkBuffer0_queue0_deqPtr_value;
-  reg         write_s_b_sinkBuffer0_queue0_maybeFull;
-  wire        write_s_b_sinkBuffer0_queue0_ptrMatch =
-    write_s_b_sinkBuffer0_queue0_enqPtr_value == write_s_b_sinkBuffer0_queue0_deqPtr_value;
-  wire        write_s_b_sinkBuffer0_queue0_empty =
-    write_s_b_sinkBuffer0_queue0_ptrMatch & ~write_s_b_sinkBuffer0_queue0_maybeFull;
+  wire        write_xCount_decEn = write_s_b_ready & write_s_b_valid;
+  reg         read_m_ar_queue0_enqPtr_value;
+  reg         read_m_ar_queue0_deqPtr_value;
+  reg         read_m_ar_queue0_maybeFull;
+  wire        read_m_ar_queue0_ptrMatch =
+    read_m_ar_queue0_enqPtr_value == read_m_ar_queue0_deqPtr_value;
+  wire        read_m_ar_queue0_empty =
+    read_m_ar_queue0_ptrMatch & ~read_m_ar_queue0_maybeFull;
+  wire        read_m_ar_queue0_doEnq = read_m_ar_ready & read_m_ar_valid;
+  assign read_m_ar_ready = ~(read_m_ar_queue0_ptrMatch & read_m_ar_queue0_maybeFull);
+  reg         write_s_b_queue0_enqPtr_value;
+  reg         write_s_b_queue0_deqPtr_value;
+  reg         write_s_b_queue0_maybeFull;
+  wire        write_s_b_queue0_ptrMatch =
+    write_s_b_queue0_enqPtr_value == write_s_b_queue0_deqPtr_value;
+  wire        write_s_b_queue0_empty =
+    write_s_b_queue0_ptrMatch & ~write_s_b_queue0_maybeFull;
   wire [1:0]  write_s_b_bits_resp;
   wire [31:0] write_s_b_bits_user;
-  assign write_s_b_ready =
-    ~(write_s_b_sinkBuffer0_queue0_ptrMatch & write_s_b_sinkBuffer0_queue0_maybeFull);
-  reg         write_m_aw_sinkBuffer0_queue0_enqPtr_value;
-  reg         write_m_aw_sinkBuffer0_queue0_deqPtr_value;
-  reg         write_m_aw_sinkBuffer0_queue0_maybeFull;
-  wire        write_m_aw_sinkBuffer0_queue0_ptrMatch =
-    write_m_aw_sinkBuffer0_queue0_enqPtr_value == write_m_aw_sinkBuffer0_queue0_deqPtr_value;
-  wire        write_m_aw_sinkBuffer0_queue0_empty =
-    write_m_aw_sinkBuffer0_queue0_ptrMatch & ~write_m_aw_sinkBuffer0_queue0_maybeFull;
-  wire        write_m_aw_sinkBuffer0_queue0_doEnq = write_m_aw_ready & write_m_aw_valid;
-  assign write_m_aw_ready =
-    ~(write_m_aw_sinkBuffer0_queue0_ptrMatch & write_m_aw_sinkBuffer0_queue0_maybeFull);
-  reg         read_s_r_sinkBuffer0_queue0_enqPtr_value;
-  reg         read_s_r_sinkBuffer0_queue0_deqPtr_value;
-  reg         read_s_r_sinkBuffer0_queue0_maybeFull;
-  wire        read_s_r_sinkBuffer0_queue0_ptrMatch =
-    read_s_r_sinkBuffer0_queue0_enqPtr_value == read_s_r_sinkBuffer0_queue0_deqPtr_value;
-  wire        read_s_r_sinkBuffer0_queue0_empty =
-    read_s_r_sinkBuffer0_queue0_ptrMatch & ~read_s_r_sinkBuffer0_queue0_maybeFull;
+  assign write_s_b_ready = ~(write_s_b_queue0_ptrMatch & write_s_b_queue0_maybeFull);
+  reg         write_m_aw_queue0_enqPtr_value;
+  reg         write_m_aw_queue0_deqPtr_value;
+  reg         write_m_aw_queue0_maybeFull;
+  wire        write_m_aw_queue0_ptrMatch =
+    write_m_aw_queue0_enqPtr_value == write_m_aw_queue0_deqPtr_value;
+  wire        write_m_aw_queue0_empty =
+    write_m_aw_queue0_ptrMatch & ~write_m_aw_queue0_maybeFull;
+  wire        write_m_aw_queue0_doEnq = write_m_aw_ready & write_m_aw_valid;
+  assign write_m_aw_ready = ~(write_m_aw_queue0_ptrMatch & write_m_aw_queue0_maybeFull);
+  reg         read_s_r_queue0_enqPtr_value;
+  reg         read_s_r_queue0_deqPtr_value;
+  reg         read_s_r_queue0_maybeFull;
+  wire        read_s_r_queue0_ptrMatch =
+    read_s_r_queue0_enqPtr_value == read_s_r_queue0_deqPtr_value;
+  wire        read_s_r_queue0_empty =
+    read_s_r_queue0_ptrMatch & ~read_s_r_queue0_maybeFull;
   wire [63:0] read_s_r_bits_data;
   wire [1:0]  read_s_r_bits_resp;
-  assign read_s_r_ready =
-    ~(read_s_r_sinkBuffer0_queue0_ptrMatch & read_s_r_sinkBuffer0_queue0_maybeFull);
+  assign read_s_r_ready = ~(read_s_r_queue0_ptrMatch & read_s_r_queue0_maybeFull);
   always @(posedge clock) begin
     if (reset) begin
       read_nextIdFill <= 3'h0;
       read_nextIndexFill <= 5'h0;
       read_nextIndexDrain <= 5'h0;
       read_bufferAvailable <= 6'h20;
-      read_m_ar_sinkBuffer0_queue0_enqPtr_value <= 1'h0;
-      read_m_ar_sinkBuffer0_queue0_deqPtr_value <= 1'h0;
-      read_m_ar_sinkBuffer0_queue0_maybeFull <= 1'h0;
-      write_s_b_sinkBuffer0_queue0_enqPtr_value <= 1'h0;
-      write_s_b_sinkBuffer0_queue0_deqPtr_value <= 1'h0;
-      write_s_b_sinkBuffer0_queue0_maybeFull <= 1'h0;
-      write_m_aw_sinkBuffer0_queue0_enqPtr_value <= 1'h0;
-      write_m_aw_sinkBuffer0_queue0_deqPtr_value <= 1'h0;
-      write_m_aw_sinkBuffer0_queue0_maybeFull <= 1'h0;
-      read_s_r_sinkBuffer0_queue0_enqPtr_value <= 1'h0;
-      read_s_r_sinkBuffer0_queue0_deqPtr_value <= 1'h0;
-      read_s_r_sinkBuffer0_queue0_maybeFull <= 1'h0;
+      read_xCount_rCounter <= 3'h0;
+      write_xCount_rCounter <= 3'h0;
+      read_m_ar_queue0_enqPtr_value <= 1'h0;
+      read_m_ar_queue0_deqPtr_value <= 1'h0;
+      read_m_ar_queue0_maybeFull <= 1'h0;
+      write_s_b_queue0_enqPtr_value <= 1'h0;
+      write_s_b_queue0_deqPtr_value <= 1'h0;
+      write_s_b_queue0_maybeFull <= 1'h0;
+      write_m_aw_queue0_enqPtr_value <= 1'h0;
+      write_m_aw_queue0_deqPtr_value <= 1'h0;
+      write_m_aw_queue0_maybeFull <= 1'h0;
+      read_s_r_queue0_enqPtr_value <= 1'h0;
+      read_s_r_queue0_deqPtr_value <= 1'h0;
+      read_s_r_queue0_maybeFull <= 1'h0;
     end
     else begin
-      automatic logic read_m_ar_sinkBuffer0_queue0_doDeq =
-        m_axi_ar_ready & ~read_m_ar_sinkBuffer0_queue0_empty;
-      automatic logic write_s_b_sinkBuffer0_queue0_doDeq =
-        s_axi_b_ready & ~write_s_b_sinkBuffer0_queue0_empty;
-      automatic logic write_m_aw_sinkBuffer0_queue0_doDeq =
-        m_axi_aw_ready & ~write_m_aw_sinkBuffer0_queue0_empty;
-      automatic logic read_s_r_sinkBuffer0_queue0_doDeq =
-        s_axi_r_ready & ~read_s_r_sinkBuffer0_queue0_empty;
-      if (_read_xCount_io_empty & ~read_m_ar_valid) begin
+      automatic logic read_m_ar_queue0_doDeq = m_axi_ar_ready & ~read_m_ar_queue0_empty;
+      automatic logic write_s_b_queue0_doDeq = s_axi_b_ready & ~write_s_b_queue0_empty;
+      automatic logic write_m_aw_queue0_doDeq = m_axi_aw_ready & ~write_m_aw_queue0_empty;
+      automatic logic read_s_r_queue0_doDeq = s_axi_r_ready & ~read_s_r_queue0_empty;
+      if (read_xCount_empty & ~_read_T_7) begin
         read_nextIdFill <= 3'h0;
         read_nextIndexFill <= 5'h0;
         read_nextIndexDrain <= 5'h0;
         read_bufferAvailable <= 6'h20;
       end
       else begin
-        if (read_m_ar_valid) begin
+        if (_read_T_7) begin
           read_nextIdFill <= read_nextIdFill + 3'h1;
           read_nextIndexFill <= read_nextIndexFill + s_axi_ar_bits_len[4:0] + 5'h1;
           read_bufferAvailable <= read_bufferAvailable - _read_bufferAvailable_T[5:0];
@@ -439,45 +424,49 @@ module IdParallelize(
         if (_read_T_5)
           read_nextIndexDrain <= read_nextIndexDrain + 5'h1;
       end
-      if (read_m_ar_sinkBuffer0_queue0_doEnq)
-        read_m_ar_sinkBuffer0_queue0_enqPtr_value <=
-          read_m_ar_sinkBuffer0_queue0_enqPtr_value - 1'h1;
-      if (read_m_ar_sinkBuffer0_queue0_doDeq)
-        read_m_ar_sinkBuffer0_queue0_deqPtr_value <=
-          read_m_ar_sinkBuffer0_queue0_deqPtr_value - 1'h1;
-      if (read_m_ar_sinkBuffer0_queue0_doEnq != read_m_ar_sinkBuffer0_queue0_doDeq)
-        read_m_ar_sinkBuffer0_queue0_maybeFull <= read_m_ar_sinkBuffer0_queue0_doEnq;
-      if (write_xCount_io_decEn)
-        write_s_b_sinkBuffer0_queue0_enqPtr_value <=
-          write_s_b_sinkBuffer0_queue0_enqPtr_value - 1'h1;
-      if (write_s_b_sinkBuffer0_queue0_doDeq)
-        write_s_b_sinkBuffer0_queue0_deqPtr_value <=
-          write_s_b_sinkBuffer0_queue0_deqPtr_value - 1'h1;
-      if (write_xCount_io_decEn != write_s_b_sinkBuffer0_queue0_doDeq)
-        write_s_b_sinkBuffer0_queue0_maybeFull <= write_xCount_io_decEn;
-      if (write_m_aw_sinkBuffer0_queue0_doEnq)
-        write_m_aw_sinkBuffer0_queue0_enqPtr_value <=
-          write_m_aw_sinkBuffer0_queue0_enqPtr_value - 1'h1;
-      if (write_m_aw_sinkBuffer0_queue0_doDeq)
-        write_m_aw_sinkBuffer0_queue0_deqPtr_value <=
-          write_m_aw_sinkBuffer0_queue0_deqPtr_value - 1'h1;
-      if (write_m_aw_sinkBuffer0_queue0_doEnq != write_m_aw_sinkBuffer0_queue0_doDeq)
-        write_m_aw_sinkBuffer0_queue0_maybeFull <= write_m_aw_sinkBuffer0_queue0_doEnq;
-      if (read_s_r_sinkBuffer0_queue0_doEnq)
-        read_s_r_sinkBuffer0_queue0_enqPtr_value <=
-          read_s_r_sinkBuffer0_queue0_enqPtr_value - 1'h1;
-      if (read_s_r_sinkBuffer0_queue0_doDeq)
-        read_s_r_sinkBuffer0_queue0_deqPtr_value <=
-          read_s_r_sinkBuffer0_queue0_deqPtr_value - 1'h1;
-      if (read_s_r_sinkBuffer0_queue0_doEnq != read_s_r_sinkBuffer0_queue0_doDeq)
-        read_s_r_sinkBuffer0_queue0_maybeFull <= read_s_r_sinkBuffer0_queue0_doEnq;
+      if (~(read_xCount_incEn & read_xCount_decEn)) begin
+        if (read_xCount_incEn)
+          read_xCount_rCounter <= read_xCount_rCounter + 3'h1;
+        else if (read_xCount_decEn)
+          read_xCount_rCounter <= read_xCount_rCounter - 3'h1;
+      end
+      if (~(write_xCount_incEn & write_xCount_decEn)) begin
+        if (write_xCount_incEn)
+          write_xCount_rCounter <= write_xCount_rCounter + 3'h1;
+        else if (write_xCount_decEn)
+          write_xCount_rCounter <= write_xCount_rCounter - 3'h1;
+      end
+      if (read_m_ar_queue0_doEnq)
+        read_m_ar_queue0_enqPtr_value <= read_m_ar_queue0_enqPtr_value - 1'h1;
+      if (read_m_ar_queue0_doDeq)
+        read_m_ar_queue0_deqPtr_value <= read_m_ar_queue0_deqPtr_value - 1'h1;
+      if (read_m_ar_queue0_doEnq != read_m_ar_queue0_doDeq)
+        read_m_ar_queue0_maybeFull <= read_m_ar_queue0_doEnq;
+      if (write_xCount_decEn)
+        write_s_b_queue0_enqPtr_value <= write_s_b_queue0_enqPtr_value - 1'h1;
+      if (write_s_b_queue0_doDeq)
+        write_s_b_queue0_deqPtr_value <= write_s_b_queue0_deqPtr_value - 1'h1;
+      if (write_xCount_decEn != write_s_b_queue0_doDeq)
+        write_s_b_queue0_maybeFull <= write_xCount_decEn;
+      if (write_m_aw_queue0_doEnq)
+        write_m_aw_queue0_enqPtr_value <= write_m_aw_queue0_enqPtr_value - 1'h1;
+      if (write_m_aw_queue0_doDeq)
+        write_m_aw_queue0_deqPtr_value <= write_m_aw_queue0_deqPtr_value - 1'h1;
+      if (write_m_aw_queue0_doEnq != write_m_aw_queue0_doDeq)
+        write_m_aw_queue0_maybeFull <= write_m_aw_queue0_doEnq;
+      if (read_s_r_queue0_doEnq)
+        read_s_r_queue0_enqPtr_value <= read_s_r_queue0_enqPtr_value - 1'h1;
+      if (read_s_r_queue0_doDeq)
+        read_s_r_queue0_deqPtr_value <= read_s_r_queue0_deqPtr_value - 1'h1;
+      if (read_s_r_queue0_doEnq != read_s_r_queue0_doDeq)
+        read_s_r_queue0_maybeFull <= read_s_r_queue0_doEnq;
     end
-    if (_write_xCount_io_empty & ~write_m_aw_valid) begin
+    if (write_xCount_empty & ~_write_T_4) begin
       write_nextIdFill <= 3'h0;
       write_nextIdDrain <= 2'h0;
     end
     else begin
-      if (write_m_aw_valid)
+      if (_write_T_4)
         write_nextIdFill <= write_nextIdFill + 3'h1;
       if (_write_T_2)
         write_nextIdDrain <= write_nextIdDrain + 2'h1;
@@ -501,7 +490,7 @@ module IdParallelize(
     .W0_clk  (clock),
     .W0_data (_read_xIndexFill_ext_R2_data + 5'h1),
     .W1_addr (read_nextIdFill[1:0]),
-    .W1_en   (read_m_ar_valid),
+    .W1_en   (_read_T_7),
     .W1_clk  (clock),
     .W1_data (read_nextIndexFill)
   );
@@ -535,13 +524,6 @@ module IdParallelize(
     .io_rdResp_valid     (read_s_r_valid),
     .io_rdResp_ready     (read_s_r_ready)
   );
-  Counter read_xCount (
-    .clock    (clock),
-    .reset    (reset),
-    .io_incEn (read_m_ar_valid),
-    .io_decEn (read_s_r_sinkBuffer0_queue0_doEnq & read_s_r_bits_last),
-    .io_empty (_read_xCount_io_empty)
-  );
   write_bufferValid_4x1 write_bufferValid_ext (
     .R0_addr (write_nextIdDrain),
     .R0_en   (1'h1),
@@ -570,21 +552,14 @@ module IdParallelize(
     .io_rdResp_valid     (write_s_b_valid),
     .io_rdResp_ready     (write_s_b_ready)
   );
-  Counter write_xCount (
-    .clock    (clock),
-    .reset    (reset),
-    .io_incEn (write_m_aw_valid),
-    .io_decEn (write_xCount_io_decEn),
-    .io_empty (_write_xCount_io_empty)
-  );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(63)
-  ) read_m_ar_sinkBuffer0_queue0_ram (
+  ) read_m_ar_queue0_ram (
     .clock    (clock),
-    .addrA    (read_m_ar_sinkBuffer0_queue0_enqPtr_value),
-    .writeEnA (read_m_ar_sinkBuffer0_queue0_doEnq),
+    .addrA    (read_m_ar_queue0_enqPtr_value),
+    .writeEnA (read_m_ar_queue0_doEnq),
     .dataInA
       ({read_m_ar_bits_id,
         read_m_ar_bits_addr,
@@ -596,29 +571,29 @@ module IdParallelize(
         read_m_ar_bits_prot,
         read_m_ar_bits_qos,
         read_m_ar_bits_region}),
-    .addrB    (read_m_ar_sinkBuffer0_queue0_deqPtr_value),
-    .dataOutB (_read_m_ar_sinkBuffer0_queue0_ram_dataOutB)
+    .addrB    (read_m_ar_queue0_deqPtr_value),
+    .dataOutB (_read_m_ar_queue0_ram_dataOutB)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(34)
-  ) write_s_b_sinkBuffer0_queue0_ram (
+  ) write_s_b_queue0_ram (
     .clock    (clock),
-    .addrA    (write_s_b_sinkBuffer0_queue0_enqPtr_value),
-    .writeEnA (write_xCount_io_decEn),
+    .addrA    (write_s_b_queue0_enqPtr_value),
+    .writeEnA (write_xCount_decEn),
     .dataInA  ({write_s_b_bits_resp, write_s_b_bits_user}),
-    .addrB    (write_s_b_sinkBuffer0_queue0_deqPtr_value),
-    .dataOutB (_write_s_b_sinkBuffer0_queue0_ram_dataOutB)
+    .addrB    (write_s_b_queue0_deqPtr_value),
+    .dataOutB (_write_s_b_queue0_ram_dataOutB)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(63)
-  ) write_m_aw_sinkBuffer0_queue0_ram (
+  ) write_m_aw_queue0_ram (
     .clock    (clock),
-    .addrA    (write_m_aw_sinkBuffer0_queue0_enqPtr_value),
-    .writeEnA (write_m_aw_sinkBuffer0_queue0_doEnq),
+    .addrA    (write_m_aw_queue0_enqPtr_value),
+    .writeEnA (write_m_aw_queue0_doEnq),
     .dataInA
       ({write_m_aw_bits_id,
         write_m_aw_bits_addr,
@@ -630,53 +605,53 @@ module IdParallelize(
         write_m_aw_bits_prot,
         write_m_aw_bits_qos,
         write_m_aw_bits_region}),
-    .addrB    (write_m_aw_sinkBuffer0_queue0_deqPtr_value),
-    .dataOutB (_write_m_aw_sinkBuffer0_queue0_ram_dataOutB)
+    .addrB    (write_m_aw_queue0_deqPtr_value),
+    .dataOutB (_write_m_aw_queue0_ram_dataOutB)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(67)
-  ) read_s_r_sinkBuffer0_queue0_ram (
+  ) read_s_r_queue0_ram (
     .clock    (clock),
-    .addrA    (read_s_r_sinkBuffer0_queue0_enqPtr_value),
-    .writeEnA (read_s_r_sinkBuffer0_queue0_doEnq),
+    .addrA    (read_s_r_queue0_enqPtr_value),
+    .writeEnA (read_s_r_queue0_doEnq),
     .dataInA  ({read_s_r_bits_data, read_s_r_bits_resp, read_s_r_bits_last}),
-    .addrB    (read_s_r_sinkBuffer0_queue0_deqPtr_value),
-    .dataOutB (_read_s_r_sinkBuffer0_queue0_ram_dataOutB)
+    .addrB    (read_s_r_queue0_deqPtr_value),
+    .dataOutB (_read_s_r_queue0_ram_dataOutB)
   );
   assign s_axi_ar_ready = s_axi_ar_ready_0;
-  assign s_axi_r_bits_data = _read_s_r_sinkBuffer0_queue0_ram_dataOutB[66:3];
-  assign s_axi_r_bits_resp = _read_s_r_sinkBuffer0_queue0_ram_dataOutB[2:1];
-  assign s_axi_r_bits_last = _read_s_r_sinkBuffer0_queue0_ram_dataOutB[0];
-  assign s_axi_r_valid = ~read_s_r_sinkBuffer0_queue0_empty;
+  assign s_axi_r_bits_data = _read_s_r_queue0_ram_dataOutB[66:3];
+  assign s_axi_r_bits_resp = _read_s_r_queue0_ram_dataOutB[2:1];
+  assign s_axi_r_bits_last = _read_s_r_queue0_ram_dataOutB[0];
+  assign s_axi_r_valid = ~read_s_r_queue0_empty;
   assign s_axi_aw_ready = s_axi_aw_ready_0;
   assign s_axi_w_ready = m_axi_w_ready;
-  assign s_axi_b_bits_resp = _write_s_b_sinkBuffer0_queue0_ram_dataOutB[33:32];
-  assign s_axi_b_bits_user = _write_s_b_sinkBuffer0_queue0_ram_dataOutB[31:0];
-  assign s_axi_b_valid = ~write_s_b_sinkBuffer0_queue0_empty;
-  assign m_axi_ar_bits_id = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[62:61];
-  assign m_axi_ar_bits_addr = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[60:29];
-  assign m_axi_ar_bits_len = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[28:21];
-  assign m_axi_ar_bits_size = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[20:18];
-  assign m_axi_ar_bits_burst = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[17:16];
-  assign m_axi_ar_bits_lock = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[15];
-  assign m_axi_ar_bits_cache = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[14:11];
-  assign m_axi_ar_bits_prot = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[10:8];
-  assign m_axi_ar_bits_qos = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[7:4];
-  assign m_axi_ar_bits_region = _read_m_ar_sinkBuffer0_queue0_ram_dataOutB[3:0];
-  assign m_axi_ar_valid = ~read_m_ar_sinkBuffer0_queue0_empty;
-  assign m_axi_aw_bits_id = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[62:61];
-  assign m_axi_aw_bits_addr = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[60:29];
-  assign m_axi_aw_bits_len = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[28:21];
-  assign m_axi_aw_bits_size = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[20:18];
-  assign m_axi_aw_bits_burst = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[17:16];
-  assign m_axi_aw_bits_lock = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[15];
-  assign m_axi_aw_bits_cache = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[14:11];
-  assign m_axi_aw_bits_prot = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[10:8];
-  assign m_axi_aw_bits_qos = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[7:4];
-  assign m_axi_aw_bits_region = _write_m_aw_sinkBuffer0_queue0_ram_dataOutB[3:0];
-  assign m_axi_aw_valid = ~write_m_aw_sinkBuffer0_queue0_empty;
+  assign s_axi_b_bits_resp = _write_s_b_queue0_ram_dataOutB[33:32];
+  assign s_axi_b_bits_user = _write_s_b_queue0_ram_dataOutB[31:0];
+  assign s_axi_b_valid = ~write_s_b_queue0_empty;
+  assign m_axi_ar_bits_id = _read_m_ar_queue0_ram_dataOutB[62:61];
+  assign m_axi_ar_bits_addr = _read_m_ar_queue0_ram_dataOutB[60:29];
+  assign m_axi_ar_bits_len = _read_m_ar_queue0_ram_dataOutB[28:21];
+  assign m_axi_ar_bits_size = _read_m_ar_queue0_ram_dataOutB[20:18];
+  assign m_axi_ar_bits_burst = _read_m_ar_queue0_ram_dataOutB[17:16];
+  assign m_axi_ar_bits_lock = _read_m_ar_queue0_ram_dataOutB[15];
+  assign m_axi_ar_bits_cache = _read_m_ar_queue0_ram_dataOutB[14:11];
+  assign m_axi_ar_bits_prot = _read_m_ar_queue0_ram_dataOutB[10:8];
+  assign m_axi_ar_bits_qos = _read_m_ar_queue0_ram_dataOutB[7:4];
+  assign m_axi_ar_bits_region = _read_m_ar_queue0_ram_dataOutB[3:0];
+  assign m_axi_ar_valid = ~read_m_ar_queue0_empty;
+  assign m_axi_aw_bits_id = _write_m_aw_queue0_ram_dataOutB[62:61];
+  assign m_axi_aw_bits_addr = _write_m_aw_queue0_ram_dataOutB[60:29];
+  assign m_axi_aw_bits_len = _write_m_aw_queue0_ram_dataOutB[28:21];
+  assign m_axi_aw_bits_size = _write_m_aw_queue0_ram_dataOutB[20:18];
+  assign m_axi_aw_bits_burst = _write_m_aw_queue0_ram_dataOutB[17:16];
+  assign m_axi_aw_bits_lock = _write_m_aw_queue0_ram_dataOutB[15];
+  assign m_axi_aw_bits_cache = _write_m_aw_queue0_ram_dataOutB[14:11];
+  assign m_axi_aw_bits_prot = _write_m_aw_queue0_ram_dataOutB[10:8];
+  assign m_axi_aw_bits_qos = _write_m_aw_queue0_ram_dataOutB[7:4];
+  assign m_axi_aw_bits_region = _write_m_aw_queue0_ram_dataOutB[3:0];
+  assign m_axi_aw_valid = ~write_m_aw_queue0_empty;
   assign m_axi_w_bits_data = s_axi_w_bits_data;
   assign m_axi_w_bits_strb = s_axi_w_bits_strb;
   assign m_axi_w_bits_last = s_axi_w_bits_last;

@@ -674,7 +674,7 @@
       }
     },
     {
-      "path" : "/read/elastic0",
+      "path" : "/read/axi4f_connect0_connectAr",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -694,13 +694,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/read/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/read/elastic1",
+      "path" : "/read/axi4f_connect0_connectR",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -720,13 +720,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/read/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/read/elastic2",
+      "path" : "/read/axi4f_connect0_connectAw",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -746,13 +746,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/read/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/read/elastic3",
+      "path" : "/read/axi4f_connect0_connectW",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -772,13 +772,13 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/read/axi4f_connect0",
       "args" : {
         
       }
     },
     {
-      "path" : "/read/elastic4",
+      "path" : "/read/axi4f_connect0_connectB",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -798,7 +798,7 @@
           }
         ]
       ],
-      "parent" : "",
+      "parent" : "/read/axi4f_connect0",
       "args" : {
         
       }
@@ -1531,6 +1531,21 @@
       "tpe" : "Repeat",
       "children" : [
         "/axiTestSlave/repeat0_count"
+      ],
+      "parent" : "",
+      "args" : {
+        
+      }
+    },
+    {
+      "path" : "/read/axi4f_connect0",
+      "tpe" : "Axi4f_Connect",
+      "children" : [
+        "/read/axi4f_connect0_connectAr",
+        "/read/axi4f_connect0_connectR",
+        "/read/axi4f_connect0_connectAw",
+        "/read/axi4f_connect0_connectW",
+        "/read/axi4f_connect0_connectB"
       ],
       "parent" : "",
       "args" : {

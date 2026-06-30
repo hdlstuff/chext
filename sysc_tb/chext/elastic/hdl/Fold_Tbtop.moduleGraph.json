@@ -148,14 +148,14 @@
     },
     {
       "path" : "/fold0_stage2_fork0_demux0_result",
-      "tpe" : "chext.elastic.Interface[SInt<64>]",
+      "tpe" : "chext.elastic.Interface[Bool]",
       "args" : {
         
       }
     },
     {
       "path" : "/fold0_stage2_fork0_demux0_result",
-      "tpe" : "chext.elastic.Interface[Bool]",
+      "tpe" : "chext.elastic.Interface[SInt<64>]",
       "args" : {
         
       }

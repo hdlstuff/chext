@@ -553,28 +553,6 @@ module OpAdd(
   assign io_out_mantissa = _module_io_out_mantissa;
 endmodule
 
-module Counter(
-  input  clock,
-         reset,
-         io_incEn,
-         io_decEn,
-  output io_full
-);
-
-  reg [3:0] rCounter;
-  always @(posedge clock) begin
-    if (reset)
-      rCounter <= 4'h0;
-    else if (~(io_incEn & io_decEn)) begin
-      if (io_incEn)
-        rCounter <= rCounter + 4'h1;
-      else if (io_decEn)
-        rCounter <= rCounter - 4'h1;
-    end
-  end // always @(posedge)
-  assign io_full = rCounter == 4'h8;
-endmodule
-
 module Wrapper(
   input         clock,
                 reset,
@@ -603,19 +581,21 @@ module Wrapper(
 );
 
   wire [31:0] _queueOutput_ram_dataOutB;
-  wire        _ctr_io_full;
   wire        queueOutput_source_bits_sign = moduleOut_sign;
   wire [7:0]  queueOutput_source_bits_exponent = moduleOut_exponent;
   wire [22:0] queueOutput_source_bits_mantissa = moduleOut_mantissa;
   wire        queueOutput_sink_ready = sink_ready;
-  wire        source_ready_0 = ~_ctr_io_full & source_valid;
+  reg  [3:0]  ctr_rCounter;
+  wire        ctr_empty = ctr_rCounter == 4'h0;
+  wire        ctr_full_ = ctr_rCounter == 4'h8;
+  wire        ctr_incEn = ~ctr_full_ & source_valid;
   reg         source_valid_r;
   reg         source_valid_r_1;
   reg         source_valid_r_2;
   reg         source_valid_r_3;
   wire        queueOutput_source_valid = source_valid_r_3;
   wire        queueOutput_sink_valid;
-  wire        ctr_io_decEn = queueOutput_sink_ready & queueOutput_sink_valid;
+  wire        ctr_decEn = queueOutput_sink_ready & queueOutput_sink_valid;
   reg  [2:0]  queueOutput_enqPtr_value;
   reg  [2:0]  queueOutput_deqPtr_value;
   reg         queueOutput_maybeFull;
@@ -628,31 +608,31 @@ module Wrapper(
   wire [7:0]  queueOutput_sink_bits_exponent = _queueOutput_ram_dataOutB[30:23];
   wire        queueOutput_sink_bits_sign = _queueOutput_ram_dataOutB[31];
   always @(posedge clock) begin
-    source_valid_r <= source_ready_0;
-    source_valid_r_1 <= source_valid_r;
-    source_valid_r_2 <= source_valid_r_1;
-    source_valid_r_3 <= source_valid_r_2;
     if (reset) begin
+      ctr_rCounter <= 4'h0;
       queueOutput_enqPtr_value <= 3'h0;
       queueOutput_deqPtr_value <= 3'h0;
       queueOutput_maybeFull <= 1'h0;
     end
     else begin
+      if (~(ctr_incEn & ctr_decEn)) begin
+        if (ctr_incEn)
+          ctr_rCounter <= ctr_rCounter + 4'h1;
+        else if (ctr_decEn)
+          ctr_rCounter <= ctr_rCounter - 4'h1;
+      end
       if (queueOutput_doEnq)
         queueOutput_enqPtr_value <= queueOutput_enqPtr_value + 3'h1;
-      if (ctr_io_decEn)
+      if (ctr_decEn)
         queueOutput_deqPtr_value <= queueOutput_deqPtr_value + 3'h1;
-      if (queueOutput_doEnq != ctr_io_decEn)
+      if (queueOutput_doEnq != ctr_decEn)
         queueOutput_maybeFull <= queueOutput_doEnq;
     end
+    source_valid_r <= ctr_incEn;
+    source_valid_r_1 <= source_valid_r;
+    source_valid_r_2 <= source_valid_r_1;
+    source_valid_r_3 <= source_valid_r_2;
   end // always @(posedge)
-  Counter ctr (
-    .clock    (clock),
-    .reset    (reset),
-    .io_incEn (source_ready_0),
-    .io_decEn (ctr_io_decEn),
-    .io_full  (_ctr_io_full)
-  );
   chext_mem_1w1r #(
     .ADDR_WIDTH(3),
     .COUNT(8),
@@ -668,7 +648,7 @@ module Wrapper(
     .addrB    (queueOutput_deqPtr_value),
     .dataOutB (_queueOutput_ram_dataOutB)
   );
-  assign source_ready = source_ready_0;
+  assign source_ready = ctr_incEn;
   assign sink_bits_sign = queueOutput_sink_bits_sign;
   assign sink_bits_exponent = queueOutput_sink_bits_exponent;
   assign sink_bits_mantissa = queueOutput_sink_bits_mantissa;
@@ -1524,19 +1504,21 @@ module Wrapper_1(
 );
 
   wire [63:0] _queueOutput_ram_dataOutB;
-  wire        _ctr_io_full;
   wire        queueOutput_source_bits_sign = moduleOut_sign;
   wire [10:0] queueOutput_source_bits_exponent = moduleOut_exponent;
   wire [51:0] queueOutput_source_bits_mantissa = moduleOut_mantissa;
   wire        queueOutput_sink_ready = sink_ready;
-  wire        source_ready_0 = ~_ctr_io_full & source_valid;
+  reg  [3:0]  ctr_rCounter;
+  wire        ctr_empty = ctr_rCounter == 4'h0;
+  wire        ctr_full_ = ctr_rCounter == 4'h8;
+  wire        ctr_incEn = ~ctr_full_ & source_valid;
   reg         source_valid_r;
   reg         source_valid_r_1;
   reg         source_valid_r_2;
   reg         source_valid_r_3;
   wire        queueOutput_source_valid = source_valid_r_3;
   wire        queueOutput_sink_valid;
-  wire        ctr_io_decEn = queueOutput_sink_ready & queueOutput_sink_valid;
+  wire        ctr_decEn = queueOutput_sink_ready & queueOutput_sink_valid;
   reg  [2:0]  queueOutput_enqPtr_value;
   reg  [2:0]  queueOutput_deqPtr_value;
   reg         queueOutput_maybeFull;
@@ -1549,31 +1531,31 @@ module Wrapper_1(
   wire [10:0] queueOutput_sink_bits_exponent = _queueOutput_ram_dataOutB[62:52];
   wire        queueOutput_sink_bits_sign = _queueOutput_ram_dataOutB[63];
   always @(posedge clock) begin
-    source_valid_r <= source_ready_0;
-    source_valid_r_1 <= source_valid_r;
-    source_valid_r_2 <= source_valid_r_1;
-    source_valid_r_3 <= source_valid_r_2;
     if (reset) begin
+      ctr_rCounter <= 4'h0;
       queueOutput_enqPtr_value <= 3'h0;
       queueOutput_deqPtr_value <= 3'h0;
       queueOutput_maybeFull <= 1'h0;
     end
     else begin
+      if (~(ctr_incEn & ctr_decEn)) begin
+        if (ctr_incEn)
+          ctr_rCounter <= ctr_rCounter + 4'h1;
+        else if (ctr_decEn)
+          ctr_rCounter <= ctr_rCounter - 4'h1;
+      end
       if (queueOutput_doEnq)
         queueOutput_enqPtr_value <= queueOutput_enqPtr_value + 3'h1;
-      if (ctr_io_decEn)
+      if (ctr_decEn)
         queueOutput_deqPtr_value <= queueOutput_deqPtr_value + 3'h1;
-      if (queueOutput_doEnq != ctr_io_decEn)
+      if (queueOutput_doEnq != ctr_decEn)
         queueOutput_maybeFull <= queueOutput_doEnq;
     end
+    source_valid_r <= ctr_incEn;
+    source_valid_r_1 <= source_valid_r;
+    source_valid_r_2 <= source_valid_r_1;
+    source_valid_r_3 <= source_valid_r_2;
   end // always @(posedge)
-  Counter ctr (
-    .clock    (clock),
-    .reset    (reset),
-    .io_incEn (source_ready_0),
-    .io_decEn (ctr_io_decEn),
-    .io_full  (_ctr_io_full)
-  );
   chext_mem_1w1r #(
     .ADDR_WIDTH(3),
     .COUNT(8),
@@ -1589,7 +1571,7 @@ module Wrapper_1(
     .addrB    (queueOutput_deqPtr_value),
     .dataOutB (_queueOutput_ram_dataOutB)
   );
-  assign source_ready = source_ready_0;
+  assign source_ready = ctr_incEn;
   assign sink_bits_sign = queueOutput_sink_bits_sign;
   assign sink_bits_exponent = queueOutput_sink_bits_exponent;
   assign sink_bits_mantissa = queueOutput_sink_bits_mantissa;
@@ -2064,18 +2046,20 @@ module Wrapper_2(
 );
 
   wire [31:0] _queueOutput_ram_dataOutB;
-  wire        _ctr_io_full;
   wire        queueOutput_source_bits_sign = moduleOut_sign;
   wire [7:0]  queueOutput_source_bits_exponent = moduleOut_exponent;
   wire [22:0] queueOutput_source_bits_mantissa = moduleOut_mantissa;
   wire        queueOutput_sink_ready = sink_ready;
-  wire        source_ready_0 = ~_ctr_io_full & source_valid;
+  reg  [3:0]  ctr_rCounter;
+  wire        ctr_empty = ctr_rCounter == 4'h0;
+  wire        ctr_full_ = ctr_rCounter == 4'h8;
+  wire        ctr_incEn = ~ctr_full_ & source_valid;
   reg         source_valid_r;
   reg         source_valid_r_1;
   reg         source_valid_r_2;
   wire        queueOutput_source_valid = source_valid_r_2;
   wire        queueOutput_sink_valid;
-  wire        ctr_io_decEn = queueOutput_sink_ready & queueOutput_sink_valid;
+  wire        ctr_decEn = queueOutput_sink_ready & queueOutput_sink_valid;
   reg  [2:0]  queueOutput_enqPtr_value;
   reg  [2:0]  queueOutput_deqPtr_value;
   reg         queueOutput_maybeFull;
@@ -2088,30 +2072,30 @@ module Wrapper_2(
   wire [7:0]  queueOutput_sink_bits_exponent = _queueOutput_ram_dataOutB[30:23];
   wire        queueOutput_sink_bits_sign = _queueOutput_ram_dataOutB[31];
   always @(posedge clock) begin
-    source_valid_r <= source_ready_0;
-    source_valid_r_1 <= source_valid_r;
-    source_valid_r_2 <= source_valid_r_1;
     if (reset) begin
+      ctr_rCounter <= 4'h0;
       queueOutput_enqPtr_value <= 3'h0;
       queueOutput_deqPtr_value <= 3'h0;
       queueOutput_maybeFull <= 1'h0;
     end
     else begin
+      if (~(ctr_incEn & ctr_decEn)) begin
+        if (ctr_incEn)
+          ctr_rCounter <= ctr_rCounter + 4'h1;
+        else if (ctr_decEn)
+          ctr_rCounter <= ctr_rCounter - 4'h1;
+      end
       if (queueOutput_doEnq)
         queueOutput_enqPtr_value <= queueOutput_enqPtr_value + 3'h1;
-      if (ctr_io_decEn)
+      if (ctr_decEn)
         queueOutput_deqPtr_value <= queueOutput_deqPtr_value + 3'h1;
-      if (queueOutput_doEnq != ctr_io_decEn)
+      if (queueOutput_doEnq != ctr_decEn)
         queueOutput_maybeFull <= queueOutput_doEnq;
     end
+    source_valid_r <= ctr_incEn;
+    source_valid_r_1 <= source_valid_r;
+    source_valid_r_2 <= source_valid_r_1;
   end // always @(posedge)
-  Counter ctr (
-    .clock    (clock),
-    .reset    (reset),
-    .io_incEn (source_ready_0),
-    .io_decEn (ctr_io_decEn),
-    .io_full  (_ctr_io_full)
-  );
   chext_mem_1w1r #(
     .ADDR_WIDTH(3),
     .COUNT(8),
@@ -2127,7 +2111,7 @@ module Wrapper_2(
     .addrB    (queueOutput_deqPtr_value),
     .dataOutB (_queueOutput_ram_dataOutB)
   );
-  assign source_ready = source_ready_0;
+  assign source_ready = ctr_incEn;
   assign sink_bits_sign = queueOutput_sink_bits_sign;
   assign sink_bits_exponent = queueOutput_sink_bits_exponent;
   assign sink_bits_mantissa = queueOutput_sink_bits_mantissa;
@@ -2717,18 +2701,20 @@ module Wrapper_3(
 );
 
   wire [63:0] _queueOutput_ram_dataOutB;
-  wire        _ctr_io_full;
   wire        queueOutput_source_bits_sign = moduleOut_sign;
   wire [10:0] queueOutput_source_bits_exponent = moduleOut_exponent;
   wire [51:0] queueOutput_source_bits_mantissa = moduleOut_mantissa;
   wire        queueOutput_sink_ready = sink_ready;
-  wire        source_ready_0 = ~_ctr_io_full & source_valid;
+  reg  [3:0]  ctr_rCounter;
+  wire        ctr_empty = ctr_rCounter == 4'h0;
+  wire        ctr_full_ = ctr_rCounter == 4'h8;
+  wire        ctr_incEn = ~ctr_full_ & source_valid;
   reg         source_valid_r;
   reg         source_valid_r_1;
   reg         source_valid_r_2;
   wire        queueOutput_source_valid = source_valid_r_2;
   wire        queueOutput_sink_valid;
-  wire        ctr_io_decEn = queueOutput_sink_ready & queueOutput_sink_valid;
+  wire        ctr_decEn = queueOutput_sink_ready & queueOutput_sink_valid;
   reg  [2:0]  queueOutput_enqPtr_value;
   reg  [2:0]  queueOutput_deqPtr_value;
   reg         queueOutput_maybeFull;
@@ -2741,30 +2727,30 @@ module Wrapper_3(
   wire [10:0] queueOutput_sink_bits_exponent = _queueOutput_ram_dataOutB[62:52];
   wire        queueOutput_sink_bits_sign = _queueOutput_ram_dataOutB[63];
   always @(posedge clock) begin
-    source_valid_r <= source_ready_0;
-    source_valid_r_1 <= source_valid_r;
-    source_valid_r_2 <= source_valid_r_1;
     if (reset) begin
+      ctr_rCounter <= 4'h0;
       queueOutput_enqPtr_value <= 3'h0;
       queueOutput_deqPtr_value <= 3'h0;
       queueOutput_maybeFull <= 1'h0;
     end
     else begin
+      if (~(ctr_incEn & ctr_decEn)) begin
+        if (ctr_incEn)
+          ctr_rCounter <= ctr_rCounter + 4'h1;
+        else if (ctr_decEn)
+          ctr_rCounter <= ctr_rCounter - 4'h1;
+      end
       if (queueOutput_doEnq)
         queueOutput_enqPtr_value <= queueOutput_enqPtr_value + 3'h1;
-      if (ctr_io_decEn)
+      if (ctr_decEn)
         queueOutput_deqPtr_value <= queueOutput_deqPtr_value + 3'h1;
-      if (queueOutput_doEnq != ctr_io_decEn)
+      if (queueOutput_doEnq != ctr_decEn)
         queueOutput_maybeFull <= queueOutput_doEnq;
     end
+    source_valid_r <= ctr_incEn;
+    source_valid_r_1 <= source_valid_r;
+    source_valid_r_2 <= source_valid_r_1;
   end // always @(posedge)
-  Counter ctr (
-    .clock    (clock),
-    .reset    (reset),
-    .io_incEn (source_ready_0),
-    .io_decEn (ctr_io_decEn),
-    .io_full  (_ctr_io_full)
-  );
   chext_mem_1w1r #(
     .ADDR_WIDTH(3),
     .COUNT(8),
@@ -2780,7 +2766,7 @@ module Wrapper_3(
     .addrB    (queueOutput_deqPtr_value),
     .dataOutB (_queueOutput_ram_dataOutB)
   );
-  assign source_ready = source_ready_0;
+  assign source_ready = ctr_incEn;
   assign sink_bits_sign = queueOutput_sink_bits_sign;
   assign sink_bits_exponent = queueOutput_sink_bits_exponent;
   assign sink_bits_mantissa = queueOutput_sink_bits_mantissa;
