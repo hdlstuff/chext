@@ -12,7 +12,7 @@ import chext.bundles._
 
 import chext.amba.axi4
 import axi4.Casts._
-import axi4.lite.{SlaveBuffer, MasterBuffer}
+import axi4.lite.{SlaveBuffered, MasterBuffered}
 
 case class DemuxConfig(
     val axiSlaveCfg: axi4.Config,
@@ -47,10 +47,8 @@ class Demux(val cfg: DemuxConfig) extends Module {
 
   private val genPort = UInt(wPort.W)
 
-  private val s_axil_ = SlaveBuffer(s_axil, slaveBuffers)
-  private val m_axil_ = m_axil.map { (x) =>
-    MasterBuffer(x, masterBuffers)
-  }
+  private val s_axil_ = SlaveBuffered(s_axil, slaveBuffers)
+  private val m_axil_ = MasterBuffered(m_axil, masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
     val queuePort = elastic.Queue(

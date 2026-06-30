@@ -1,0 +1,150 @@
+{
+  "name" : "BufferedNamingPrefixed_Tbtop",
+  "ports" : [
+    {
+      "name" : "clock",
+      "direction" : "input",
+      "kind" : "clock",
+      "sensitivity" : "clockRising",
+      "isBus" : false,
+      "busRange" : [
+        0,
+        0
+      ],
+      "frequencyMHz" : 100.0,
+      "associatedClock" : "",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "reset",
+      "direction" : "input",
+      "kind" : "reset",
+      "sensitivity" : "resetActiveHigh",
+      "isBus" : false,
+      "busRange" : [
+        0,
+        0
+      ],
+      "frequencyMHz" : 100.0,
+      "associatedClock" : "clock",
+      "associatedReset" : "",
+      "args" : {
+        
+      }
+    }
+  ],
+  "interfaces" : [
+    {
+      "name" : "sources[0]",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "sources[1]",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "sources[2]",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "sources[3]",
+      "role" : "source",
+      "kind" : "readyValid[In]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "sinks[0]",
+      "role" : "sink",
+      "kind" : "readyValid[Out]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "sinks[1]",
+      "role" : "sink",
+      "kind" : "readyValid[Out]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "sinks[2]",
+      "role" : "sink",
+      "kind" : "readyValid[Out]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    },
+    {
+      "name" : "sinks[3]",
+      "role" : "sink",
+      "kind" : "readyValid[Out]",
+      "associatedClock" : "clock",
+      "associatedReset" : "reset",
+      "args" : {
+        
+      }
+    }
+  ],
+  "args" : {
+    "encodedDataList" : {
+      "typeName" : "chext.util.EncodedDataList",
+      "obj" : {
+        "seq" : [
+          {
+            "name" : "In",
+            "entries" : [
+              {
+                "path" : "",
+                "width" : 16,
+                "tpe" : "UInt<16>"
+              }
+            ]
+          },
+          {
+            "name" : "Out",
+            "entries" : [
+              {
+                "path" : "",
+                "width" : 16,
+                "tpe" : "UInt<16>"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

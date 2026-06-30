@@ -9,7 +9,7 @@ import elastic.ConnectOp._
 
 import chext.amba.axi4
 import axi4.Casts._
-import axi4.lite.{SlaveBuffer, MasterBuffer}
+import axi4.lite.{SlaveBuffered, MasterBuffered}
 
 case class MuxConfig(
     val axiSlaveCfg: axi4.Config,
@@ -44,10 +44,8 @@ class Mux(val cfg: MuxConfig) extends Module {
 
   private val genPort = UInt(wPort.W)
 
-  private val s_axil_ = s_axil.map { (x) =>
-    SlaveBuffer(x, slaveBuffers)
-  }
-  private val m_axil_ = MasterBuffer(m_axil, masterBuffers)
+  private val s_axil_ = SlaveBuffered(s_axil, slaveBuffers)
+  private val m_axil_ = MasterBuffered(m_axil, masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
     val queuePort = elastic.Queue(

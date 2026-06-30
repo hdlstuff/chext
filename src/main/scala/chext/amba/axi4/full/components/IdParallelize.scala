@@ -10,7 +10,7 @@ import chext.bundles.BundleN
 import chext.amba.axi4
 import chext.elastic
 
-import elastic.{Source, Sink, SinkBuffer}
+import elastic.{Source, Sink, SinkBuffered}
 import elastic.ConnectOp._
 
 import chext.memory
@@ -120,10 +120,10 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     val s_ar = s_axi.ar
     s_ar.markSource()
 
-    val m_ar = SinkBuffer(m_axi.ar)
+    val m_ar = SinkBuffered(m_axi.ar)
     m_ar.markSink()
 
-    val s_r = SinkBuffer(s_axi.r)
+    val s_r = SinkBuffered(s_axi.r)
 
     val m_r = m_axi.r
     m_r.markSource()
@@ -215,10 +215,10 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Mo
     val s_aw = s_axi.aw
     s_aw.markSource()
 
-    val m_aw = SinkBuffer(m_axi.aw)
+    val m_aw = SinkBuffered(m_axi.aw)
     m_aw.markSink()
 
-    val s_b = SinkBuffer(s_axi.b)
+    val s_b = SinkBuffered(s_axi.b)
     val m_b = m_axi.b
     m_b.markSource()
 

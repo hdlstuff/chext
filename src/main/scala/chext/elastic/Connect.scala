@@ -1,6 +1,7 @@
 package chext.elastic
 
 import chisel3._
+import chisel3.experimental.prefix
 import chisel3.experimental.SourceInfo
 import chisel3.experimental.skipPrefix
 
@@ -70,6 +71,21 @@ object ConnectOp {
   implicit class elastic_connect_op[T <: Data](source: Interface[T]) {
     def :=>(sink: Interface[T])(implicit sourceInfo: SourceInfo): Unit = {
       connect_(source, sink)
+    }
+  }
+
+  implicit class elastic_connect_seq_op[T <: Data](sources: Seq[Interface[T]]) {
+    def :=>(sinks: Seq[Interface[T]])(implicit sourceInfo: SourceInfo): Unit = {
+      require(
+        sources.length == sinks.length,
+        f"source/sink sequence length mismatch: ${sources.length} != ${sinks.length}"
+      )
+
+      sources.zip(sinks).zipWithIndex.foreach { case ((source, sink), index) =>
+        prefix(index.toString) {
+          connect_(source, sink)
+        }
+      }
     }
   }
 }

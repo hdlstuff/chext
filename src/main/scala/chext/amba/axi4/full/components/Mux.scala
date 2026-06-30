@@ -9,7 +9,7 @@ import elastic.ConnectOp._
 
 import chext.amba.axi4
 import axi4.Casts._
-import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
+import axi4.full.{SlaveBuffered, MasterBuffered, WriteDataChannel}
 
 case class MuxConfig(
     val axiSlaveCfg: axi4.Config,
@@ -37,9 +37,7 @@ class Mux(val cfg: MuxConfig) extends Module {
   private val s_axi_ = {
     val result = Wire(Vec(numSlaves, axi4.full.Interface(axiMasterCfg)))
 
-    val buffered = s_axi.map { (x) =>
-      SlaveBuffer(x, slaveBuffers)
-    }
+    val buffered = SlaveBuffered(s_axi, slaveBuffers)
 
     if (axiSlaveCfg.read)
       helpers.IdExtend.read(buffered, result)
@@ -49,7 +47,7 @@ class Mux(val cfg: MuxConfig) extends Module {
 
     result
   }
-  private val m_axi_ = MasterBuffer(m_axi, masterBuffers)
+  private val m_axi_ = MasterBuffered(m_axi, masterBuffers)
 
   private def implRead(): Unit = prefix("read") {
     def arLogic: Unit = {

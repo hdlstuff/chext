@@ -9,7 +9,7 @@ import chisel3._
 import chisel3.util._
 
 import axi4.Casts._
-import axi4.lite.SlaveBuffer
+import axi4.lite.SlaveBuffered
 
 /** Defines an AXI4-Lite register block.
   *
@@ -61,7 +61,7 @@ class RegisterBlock(
   val s_axil = Wire(axi4.lite.Slave(cfgAxi))
 
   // NOTE: To avoid valid signal waiting for ready down the line.
-  private val s_axil_ = SlaveBuffer(s_axil, axi4.BufferConfig.all(2))
+  private val s_axil_ = SlaveBuffered(s_axil, axi4.BufferConfig.all(2))
 
   /** @note
     *   Use `BigInt` to support masks larger than 31-bits.
@@ -165,7 +165,7 @@ class RegisterBlock(
 
   val mask = (-1).S(wMask.W).asUInt ^ (addrIncr - 1).U
 
-  private val rdReq_ = elastic.SourceBuffer(s_axil_.ar)
+  private val rdReq_ = elastic.SourceBuffered(s_axil_.ar)
 
   // We need to place a queue of length 1 to be fully AXI-compliant
   // Otherwise, valid signal waits for the ready signal
@@ -173,8 +173,8 @@ class RegisterBlock(
   private val rdResp_ = queueRdResp_.source
   queueRdResp_.sink :=> s_axil_.r
 
-  private val wrReq_ = elastic.SourceBuffer(s_axil_.aw, 1)
-  private val wrReqData_ = elastic.SourceBuffer(s_axil_.w, 1)
+  private val wrReq_ = elastic.SourceBuffered(s_axil_.aw, 1)
+  private val wrReqData_ = elastic.SourceBuffered(s_axil_.w, 1)
 
   // Same as before
   private val queueWrResp_ = elastic.Queue(chiselTypeOf(s_axil_.b.$bits), 1)

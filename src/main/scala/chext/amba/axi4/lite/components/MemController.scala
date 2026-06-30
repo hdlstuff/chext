@@ -56,12 +56,12 @@ class MemController(
   private val counter = RegInit(0.U(32.W))
   counter := counter + 1.U
 
-  private val ar = elastic.SourceBuffer(s_axil.ar, 4)
-  private val r = elastic.SinkBuffer(s_axil.r)
+  private val ar = elastic.SourceBuffered(s_axil.ar, 4)
+  private val r = elastic.SinkBuffered(s_axil.r)
 
-  private val aw = elastic.SourceBuffer(s_axil.aw, 4)
-  private val w = elastic.SourceBuffer(s_axil.w, 4)
-  private val b = elastic.SinkBuffer(s_axil.b)
+  private val aw = elastic.SourceBuffered(s_axil.aw, 4)
+  private val w = elastic.SourceBuffered(s_axil.w, 4)
+  private val b = elastic.SinkBuffered(s_axil.b)
 
   val mem = Mem(1 << log2numElements, genData)
 

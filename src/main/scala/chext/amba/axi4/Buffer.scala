@@ -1,6 +1,7 @@
 package chext.amba.axi4
 
 import chisel3._
+import chisel3.experimental.prefix
 import chisel3.experimental.SourceInfo
 
 import chext.amba.axi4
@@ -57,6 +58,54 @@ object SlaveBuffer {
     buffer(interface, result, cfg)
     result
   }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig,
+      name: String
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg, name)
+      }
+    }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, cfg, "slaveBuffer")
+
+  def apply(
+      interfaces: Seq[RawInterface]
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, BufferConfig.all(2), "slaveBuffer")
+}
+
+object SlaveBuffered {
+  def apply(
+      interface: RawInterface,
+      cfg: BufferConfig = BufferConfig.all(2)
+  )(implicit si: SourceInfo): RawInterface = {
+    val result = Wire(Slave(interface.cfg))
+    buffer(interface, result, cfg)
+    result
+  }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg)
+      }
+    }
+
+  def apply(
+      interfaces: Seq[RawInterface]
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, BufferConfig.all(2))
 }
 
 object LeftBuffer {
@@ -69,6 +118,28 @@ object LeftBuffer {
     buffer(interface, result, cfg)
     result
   }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig,
+      name: String
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg, name)
+      }
+    }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, cfg, "leftBuffer")
+
+  def apply(
+      interfaces: Seq[RawInterface]
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, BufferConfig.all(2), "leftBuffer")
 }
 
 object MasterBuffer {
@@ -81,6 +152,54 @@ object MasterBuffer {
     buffer(result, interface, cfg)
     result
   }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig,
+      name: String
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg, name)
+      }
+    }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, cfg, "masterBuffer")
+
+  def apply(
+      interfaces: Seq[RawInterface]
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, BufferConfig.all(2), "masterBuffer")
+}
+
+object MasterBuffered {
+  def apply(
+      interface: RawInterface,
+      cfg: BufferConfig = BufferConfig.all(2)
+  )(implicit si: SourceInfo): RawInterface = {
+    val result = Wire(Master(interface.cfg))
+    buffer(result, interface, cfg)
+    result
+  }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg)
+      }
+    }
+
+  def apply(
+      interfaces: Seq[RawInterface]
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, BufferConfig.all(2))
 }
 
 object RightBuffer {
@@ -93,4 +212,26 @@ object RightBuffer {
     buffer(result, interface, cfg)
     result
   }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig,
+      name: String
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg, name)
+      }
+    }
+
+  def apply(
+      interfaces: Seq[RawInterface],
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, cfg, "rightBuffer")
+
+  def apply(
+      interfaces: Seq[RawInterface]
+  )(implicit si: SourceInfo): Seq[RawInterface] =
+    apply(interfaces, BufferConfig.all(2), "rightBuffer")
 }

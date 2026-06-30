@@ -13,7 +13,7 @@ import chisel3.experimental.prefix
 
 import axi4.Casts._
 import axi4.BufferConfig
-import axi4.full.{SlaveBuffer, MasterBuffer, ReadDataChannel, WriteDataChannel}
+import axi4.full.{SlaveBuffered, MasterBuffered, ReadDataChannel, WriteDataChannel}
 
 import bundles._
 
@@ -56,10 +56,8 @@ class Demux(val cfg: DemuxConfig) extends Module {
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(Vec(numMasters, axi4.full.Master(axiMasterCfg)))
 
-  private val s_axi_ = SlaveBuffer(s_axi, slaveBuffers)
-  private val m_axi_ = m_axi.map { (x) =>
-    MasterBuffer(x, masterBuffers)
-  }
+  private val s_axi_ = SlaveBuffered(s_axi, slaveBuffers)
+  private val m_axi_ = MasterBuffered(m_axi, masterBuffers)
 
   private val genPort = UInt(wPort.W)
 
@@ -213,7 +211,8 @@ private object DemuxEmitter extends App {
         lite = false
       ),
       8,
-      (_ >> 8)
+      (_ >> 8),
+      masterBuffers = axi4.BufferConfig.all(8)
     )
   )
 

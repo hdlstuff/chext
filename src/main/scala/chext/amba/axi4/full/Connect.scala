@@ -2,6 +2,7 @@ package chext.amba.axi4.full
 
 import chisel3._
 import chext.elastic
+import chisel3.experimental.prefix
 import chisel3.experimental.SourceInfo
 
 import chext.amba.axi4
@@ -583,6 +584,37 @@ trait ConnectOp {
         new Connect(master, slave, Some(cfg))(si)
       }
     }
+  }
+
+  implicit class axi4_full_connect_seq_op(masters: Seq[Interface]) {
+    def :=>(slaves: Seq[Interface])(implicit si: SourceInfo): Unit = {
+      require(
+        masters.length == slaves.length,
+        f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
+      )
+
+      masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
+        prefix(index.toString) {
+          master :=> slave
+        }
+      }
+    }
+
+    def connect(slaves: Seq[Interface], cfg: ConnectConfig)(implicit si: SourceInfo): Unit = {
+      require(
+        masters.length == slaves.length,
+        f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
+      )
+
+      masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
+        prefix(index.toString) {
+          master.connect(slave, cfg)
+        }
+      }
+    }
+
+    def connect(slaves: Seq[Interface])(implicit si: SourceInfo): Unit =
+      connect(slaves, ConnectConfig())
   }
 }
 
