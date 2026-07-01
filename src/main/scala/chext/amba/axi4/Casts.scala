@@ -8,6 +8,7 @@ import chisel3.experimental.dataview._
 import chisel3.hacks.DataInternals
 import chisel3.hacks.ModuleInternals
 import chext.tracking
+import chext.tracking.DeclaredRole
 import chext.tracking.Logger
 import chext.tracking.util.sourceInfoToString
 
@@ -52,8 +53,8 @@ private object ViewWarnings {
       }
 
     val call = ViewCall(conversion, si, module)
-    val previous = x.viewCalls.toSeq
-    x.viewCalls.addOne(call)
+    val previous = x.viewCalls_.toSeq
+    x.viewCalls_.addOne(call)
 
     if (!rootModule)
       warn(x, s"bad use of AXI4 view: .$conversion called outside the root module", call)
@@ -74,18 +75,54 @@ private object ViewWarnings {
 }
 
 trait Casts {
+  private def requestRole(source: RawInterface): Option[DeclaredRole] =
+    tracking.Tracked.roleFromCurrentModule(source)
+
+  private def enforceAxi4Roles(
+      source: RawInterface,
+      ar: => tracking.Tracked,
+      r: => tracking.Tracked,
+      aw: => tracking.Tracked,
+      w: => tracking.Tracked,
+      b: => tracking.Tracked
+  ): Unit =
+    requestRole(source) match {
+      case None => ()
+      case Some(requestRole) =>
+        val responseRole = DeclaredRole.invert(requestRole)
+
+        if (source.cfg.read) {
+          tracking.Tracked.enforceRole(ar, requestRole)
+          tracking.Tracked.enforceRole(r, responseRole)
+        }
+
+        if (source.cfg.write) {
+          tracking.Tracked.enforceRole(aw, requestRole)
+          tracking.Tracked.enforceRole(w, requestRole)
+          tracking.Tracked.enforceRole(b, responseRole)
+        }
+    }
+
+  private def enforceFullRoles(view: full.Interface, source: RawInterface): Unit =
+    enforceAxi4Roles(source, view.ar, view.r, view.aw, view.w, view.b)
+
+  private def enforceLiteRoles(view: lite.Interface, source: RawInterface): Unit =
+    enforceAxi4Roles(source, view.ar, view.r, view.aw, view.w, view.b)
+
   implicit class viewAxiInterfaceAs(x: RawInterface) {
     def asFull(implicit si: SourceInfo) = {
       ViewWarnings.record(x, "asFull")
       val view = x.viewAs[full.Interface]
-      tracking.registerView(view, x, sourceInfo = Some(x.sourceInfo))
+      enforceFullRoles(view, x)
+      tracking.registerView(view, x, sourceInfo = Some(si))
       view
     }
 
     def asLite(implicit si: SourceInfo) = {
       ViewWarnings.record(x, "asLite")
       val view = x.viewAs[lite.Interface]
-      tracking.registerView(view, x, sourceInfo = Some(x.sourceInfo))
+      enforceLiteRoles(view, x)
+      tracking.registerView(view, x, sourceInfo = Some(si))
       view
     }
   }

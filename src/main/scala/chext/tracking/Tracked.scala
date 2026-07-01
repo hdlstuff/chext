@@ -1,8 +1,9 @@
 package chext.tracking
 
-import chisel3.{ChiselException, Data, Module, RawModule}
+import chisel3.{ChiselException, Data, Module, RawModule, SpecifiedDirection}
 import chisel3.experimental.{SourceInfo, BaseModule, requireIsHardware}
 import chisel3.hacks.{DataInternals, ModuleInternals}
+import chisel3.reflect.DataMirror
 
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
@@ -15,10 +16,54 @@ object DeclaredRole {
   object Source extends DeclaredRole("Source")
   object Sink extends DeclaredRole("Sink")
   object None extends DeclaredRole("None")
+
+  /** Returns the opposite endpoint role, leaving `None` role-neutral.
+    */
+  private[chext] def invert(role: DeclaredRole): DeclaredRole =
+    role match {
+      case Source => Sink
+      case Sink   => Source
+      case None   => None
+    }
 }
 
-private[tracking] object Tracked {
+object Tracked {
   val logger = new Logger("tracking")
+
+  private def isOwnedByCurrentModule(source: Data): Boolean =
+    Module.currentModule.exists { current =>
+      DataInternals.getOwningModuleOption(source).contains(current)
+    }
+
+  /** Returns the source/sink role of an IO-like Data from the current module's perspective.
+    *
+    * Non-IO data is role-neutral and returns `None`. If the current module is looking at child IO,
+    * the owner-side role is inverted.
+    */
+  private[chext] def roleFromCurrentModule(source: Data): Option[DeclaredRole] =
+    if (DataInternals.isIO(source)) {
+      val roleInOwner =
+        DataMirror.specifiedDirectionOf(source) match {
+          case SpecifiedDirection.Flip => DeclaredRole.Source
+          case _                       => DeclaredRole.Sink
+        }
+
+      Some {
+        if (isOwnedByCurrentModule(source))
+          roleInOwner
+        else
+          DeclaredRole.invert(roleInOwner)
+      }
+    } else
+      None
+
+  /** Overrides the declared source/sink role used by tracking mark checks.
+    *
+    * This is used for DataView-created endpoints whose Scala object is not ordinary IO, but whose
+    * backing raw interface has a protocol role.
+    */
+  private[chext] def enforceRole(tracked: Tracked, role: DeclaredRole): Unit =
+    tracked.enforceRole_(role)
 }
 
 /** This trait brings `markSource()`, `markSink()`, `sanityCheck()` capabilities to `Interface`.
@@ -33,6 +78,12 @@ trait Tracked extends Data {
 
   private val markSource_ = ArrayBuffer.empty[(BaseModule, SourceInfo)]
   private val markSink_ = ArrayBuffer.empty[(BaseModule, SourceInfo)]
+  private var enforcedRole_ = Option.empty[DeclaredRole]
+
+  /** Stores the effective role for endpoints whose `declaredRole` cannot describe the backing IO.
+    */
+  private[tracking] final def enforceRole_(role: DeclaredRole): Unit =
+    enforcedRole_ = Some(role)
 
   private def mark_(role: DeclaredRole, array: ArrayBuffer[(BaseModule, SourceInfo)])(implicit
       sourceInfo: SourceInfo
@@ -53,12 +104,14 @@ trait Tracked extends Data {
     // check 5 below.
     assert(module_.nonEmpty)
 
-    if (currentModule == module_.get) {
-      if (declaredRole != DeclaredRole.None && declaredRole != role) {
+    val effectiveRole = enforcedRole_.getOrElse(declaredRole)
+
+    if (enforcedRole_.nonEmpty || currentModule == module_.get) {
+      if (effectiveRole != DeclaredRole.None && effectiveRole != role) {
         val pos = sourceInfoToString(sourceInfo)
 
         throw new ChiselException(
-          f"chext.tracking.Tracked: Interface '$this' is declared as a ${declaredRole.str}, but marked as ${role.str}. @[$pos]!"
+          f"chext.tracking.Tracked: Interface '$this' is declared as a ${effectiveRole.str}, but marked as ${role.str}. @[$pos]!"
         )
       }
     }

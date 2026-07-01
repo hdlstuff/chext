@@ -247,9 +247,9 @@ private[tracking] class ModuleInfo(
 
   /** Chooses the source location shown in tracking diagnostics.
     *
-    * Registered views carry the raw source interface's SourceInfo so warnings point at the user's
-    * `IO(...)` or `Wire(...)` declaration instead of the DataView mapping code. Ordinary
-    * interfaces keep their own source information.
+    * Registered views carry the `.asLite` or `.asFull` call-site SourceInfo so warnings point at
+    * the code that introduced the viewed endpoint. Ordinary interfaces keep their own source
+    * information.
     */
   private def interfaceDisplaySourceInfo(interface: Tracked): Option[SourceInfo] =
     viewSource(interface).flatMap(_.sourceInfo)

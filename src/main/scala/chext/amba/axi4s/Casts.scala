@@ -54,8 +54,8 @@ private object ViewWarnings {
       }
 
     val call = ViewCall(conversion, si, module)
-    val previous = x.viewCalls.toSeq
-    x.viewCalls.addOne(call)
+    val previous = x.viewCalls_.toSeq
+    x.viewCalls_.addOne(call)
 
     if (!rootModule)
       warn(x, s"bad use of AXI4 Stream view: .$conversion called outside the root module", call)
@@ -89,14 +89,22 @@ object Casts {
     def asLite(implicit si: SourceInfo) = {
       ViewWarnings.record(x, "asLite")
       val view = x.viewAs[elastic.Interface[Bits]]
-      tracking.registerView(view, x, Some("$view"), Some(x.sourceInfo))
+      tracking.Tracked.roleFromCurrentModule(x) match {
+        case Some(role) => tracking.Tracked.enforceRole(view, role)
+        case None       => ()
+      }
+      tracking.registerView(view, x, Some("$view"), Some(si))
       view
     }
 
     def asFull(implicit si: SourceInfo) = {
       ViewWarnings.record(x, "asFull")
       val view = x.viewAs[elastic.Interface[FullChannel]]
-      tracking.registerView(view, x, Some("$view"), Some(x.sourceInfo))
+      tracking.Tracked.roleFromCurrentModule(x) match {
+        case Some(role) => tracking.Tracked.enforceRole(view, role)
+        case None       => ()
+      }
+      tracking.registerView(view, x, Some("$view"), Some(si))
       view
     }
   }

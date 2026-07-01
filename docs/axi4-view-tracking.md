@@ -103,15 +103,16 @@ separate ordinary interface naming from view-backed interface naming:
 - `registerView(view, source, suffix, sourceInfo)` is called by `.asLite` and `.asFull`. It records
   each tracked child of the elastic view, such as `ar` or `r`, and maps that child back to the raw
   source interface. The suffix is optional; AXI4 lets tracking infer the channel suffix, while
-  AXI4 Stream passes `$view` because the whole stream is a single elastic endpoint. The raw source
-  info is also stored so tracking warnings point at the user IO, not the internal view bundle.
+  AXI4 Stream passes `$view` because the whole stream is a single elastic endpoint. The stored
+  source info is the `.asLite` or `.asFull` call site, because that is where the viewed endpoint is
+  introduced.
 - `directInterfaceRef(interface)` handles only real hardware objects. Local wires become
   `/wireName`, root IO becomes `/ioName`, and child IO becomes `/childInstance/ioName`. It
   intentionally returns `None` for a DataView-created interface because the view is not itself a
   wire or IO.
 - `viewSource(interface)` looks up whether a tracked elastic interface came from a registered raw
   view. The returned metadata contains the raw source `Data`, an optional display suffix, and the
-  raw source `SourceInfo`.
+  view-conversion call-site `SourceInfo`.
 - `viewSuffix(interface)` derives the visible view suffix from the viewed channel name when the
   registration did not pass an explicit suffix. AXI4 channels have useful child names, so this
   produces strings such as `$view.ar`, `$view.r`, and `$view.b`. AXI4 Stream registers `$view`
@@ -127,9 +128,9 @@ separate ordinary interface naming from view-backed interface naming:
   recovered views it reports the raw source interface owner, so warnings point back to the user IO
   rather than an internal Chisel view object.
 - `interfaceDisplaySourceInfo(interface)` chooses the source location to print in tracking
-  diagnostics. For recovered views it uses the raw source interface location, so messages point at
-  the user's `IO(...)` or `Wire(...)` declaration instead of the DataView mapping code. Ordinary
-  interfaces keep their own source information.
+  diagnostics. For recovered views it uses the `.asLite` or `.asFull` call site, so messages point
+  at the code that introduced the viewed endpoint. Ordinary interfaces keep their own source
+  information.
 
 The graph construction fallback is still present. If an interface is neither direct hardware nor a
 registered view, Chext keeps the old `/???/...` path and emits the old diagnostic.
@@ -159,6 +160,81 @@ Interface '/s_axi$view.ar' is defined by 'chext.amba.Axi4ViewDuplicatedChannelTo
 
 instead of internal Chisel view names such as `_$$View$$_.s_view_view_1.r` or
 `_$$View$$_.view_view_7`.
+
+## Enforced Roles For Viewed Endpoints
+
+Path recovery alone is not enough for viewed interfaces. A normal `chext.elastic.Interface`
+computes its declared role from actual IO direction:
+
+```scala
+(DataInternals.isIO(this), DataMirror.directionOf(this.$valid)) match {
+  case (true, ActualDirection.Output) => DeclaredRole.Sink
+  case (true, ActualDirection.Input)  => DeclaredRole.Source
+  case _                              => DeclaredRole.None
+}
+```
+
+That works for real elastic IO, but it deliberately returns `None` for wires and other non-IO
+objects. DataView-backed elastic channels fall into the awkward middle: they are not themselves
+ordinary IO objects, but they may represent channels of a raw AXI IO port. If Chext asks only the
+view child for its `declaredRole`, the checker loses the protocol role and wrong-role mistakes can
+fall through to Chisel/FIRRTL direction errors.
+
+Chext handles this by letting `Tracked` carry an optional enforced role:
+
+```text
+Tracked.enforceRole(tracked, role)
+```
+
+Internally the tracked endpoint stores this in `enforcedRole_`. The mark-time role check uses:
+
+```text
+enforcedRole_.getOrElse(declaredRole)
+```
+
+An enforced role is checked even when the viewed object has unusual DataView ownership. Without an
+enforced role, the old behavior remains: ordinary declared-role mismatches are checked only when
+the marking module owns the interface, and interfaces whose declared role is `None` are treated as
+role-neutral.
+
+The enforced role is assigned immediately after `.viewAs`, before the view is registered with
+`ModuleInfo`. This is intentional:
+
+- `Tracked` owns source/sink marking state, so it is the natural place to store the effective role
+  used by marking checks.
+- `ModuleInfo` owns graph and diagnostic path recovery, so it should not also carry role policy.
+- The AXI protocol cast code is the only layer that knows which viewed channels are request
+  channels and which are response channels.
+
+The cast code enforces roles only when the raw source is IO. This mirrors normal
+`elastic.Interface.declaredRole`: if the raw source is a wire or other non-IO object, the view is
+registered for path recovery and sanity coverage, but no source/sink role is forced. Non-IO views
+still participate in "never marked", duplicated source, and duplicated sink sanity checks; they
+just do not gain a declared endpoint role.
+
+For raw AXI4 views, the cast code derives one request role and one response role per view:
+
+- raw slave IO viewed from its owning module:
+  - request channels `ar`, `aw`, and `w` are `Source`;
+  - response channels `r` and `b` are `Sink`.
+- raw master IO viewed from its owning module:
+  - request channels are `Sink`;
+  - response channels are `Source`.
+- child IO is viewed from the parent side, so the role is inverted relative to the child module's
+  owner-side role.
+
+The request role is computed once for a view and the response role is its inverse. Full AXI4 and
+AXI4-Lite then stamp only the channels enabled by the raw configuration. For example, a read-only
+configuration stamps only `ar` and `r`; a write-only configuration stamps only `aw`, `w`, and `b`.
+
+For AXI4 Stream views there is only one elastic endpoint. A raw stream slave IO viewed from its
+owning module is enforced as `Source`, a raw stream master IO is enforced as `Sink`, and child IO
+is inverted when viewed from the parent side.
+
+This changes the failure mode for wrong-role viewed endpoints. For example,
+`axi4_view_wrong_role` now fails during Chext tracking when `m_axi$view.ar` is marked as a source
+even though the viewed master request channel is a sink from the module's perspective. Previously
+that case reached Chisel's lower-level write-direction check.
 
 ## Tests
 
@@ -191,7 +267,7 @@ The view-specific cases include:
 - nested raw AXI4 ports viewed and connected;
 - viewed channels tied off, unused, used twice, or connected multiple times;
 - AXI4 Stream views passed through, tied off, unused, consumed twice, and driven twice;
-- downstream wrong-role errors.
+- wrong-role viewed endpoints caught early through enforced tracking roles.
 
 The driver writes one report per test case:
 
@@ -210,4 +286,6 @@ The tests assert that:
 - recoverable views use `/raw$view.channel` paths;
 - the old `/???/...` fallback does not appear for recoverable views;
 - bad view-call patterns warn through Chext logging;
-- viewed-channel misuse produces tracking diagnostics before relying only on FIRRTL errors.
+- viewed-channel misuse produces tracking diagnostics before relying only on FIRRTL errors;
+- viewed IO endpoints have enforced protocol roles, while viewed non-IO endpoints remain
+  role-neutral.

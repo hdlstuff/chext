@@ -23,7 +23,7 @@ case class Config(
 class Interface(val cfg: Config)(implicit si: SourceInfo) extends Bundle {
   def sourceInfo: SourceInfo = si
 
-  private[axi4s] val viewCalls =
+  private[axi4s] val viewCalls_ =
     scala.collection.mutable.ArrayBuffer.empty[ViewCall]
 
   val TREADY = Input(Bool())

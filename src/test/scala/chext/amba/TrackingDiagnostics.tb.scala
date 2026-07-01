@@ -1009,10 +1009,10 @@ object TrackingDiagnostics_Tb extends App {
     ),
     TestCase(
       name = "axi4_view_wrong_role",
-      description = "A viewed AXI4 endpoint is connected with the wrong channel role; FIRRTL should still catch the direction error.",
+      description = "A viewed AXI4 endpoint is connected with the wrong channel role; tracking should catch the view role mismatch early.",
       shouldPass = false,
       gen = () => new Axi4ViewWrongRoleTop,
-      failureContains = Seq("cannot be written from module Axi4ViewWrongRoleTop")
+      failureContains = Seq("is declared as a Sink, but marked as Source")
     ),
     TestCase(
       name = "axi4s_view_root_once",
