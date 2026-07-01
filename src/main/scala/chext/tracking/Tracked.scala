@@ -85,7 +85,10 @@ trait Tracked extends Data {
   private[tracking] final def sanityCheck(
       logger: Logger,
       isRootIO: Boolean = false,
-      instanceSourceInfo: Option[SourceInfo] = Option.empty
+      instanceSourceInfo: Option[SourceInfo] = Option.empty,
+      displayPath: Option[String] = Option.empty,
+      displayOwner: Option[BaseModule] = Option.empty,
+      displaySourceInfo: Option[SourceInfo] = Option.empty
   ): Unit = {
     val currentModule = Module.currentModule.getOrElse(
       throw new ChiselException(
@@ -96,8 +99,9 @@ trait Tracked extends Data {
     def warn(msg: String): Unit = {
       val lines = ArrayBuffer.empty[String]
 
-      val pos = sourceInfoToString(sourceInfo)
-      val moduleName = module_.map(_.toString()).getOrElse("(null)")
+      val pos = sourceInfoToString(displaySourceInfo.getOrElse(sourceInfo))
+      val moduleName = displayOwner.orElse(module_).map(_.toString()).getOrElse("(null)")
+      val interfaceName = displayPath.getOrElse(this.toString())
 
       lines.addOne(msg)
 
@@ -108,7 +112,7 @@ trait Tracked extends Data {
         )
       }
 
-      lines.addOne(f"Interface '$this' is defined by '$moduleName' @[$pos]")
+      lines.addOne(f"Interface '$interfaceName' is defined by '$moduleName' @[$pos]")
 
       markSource_.foreach {
         case (module, si) => {

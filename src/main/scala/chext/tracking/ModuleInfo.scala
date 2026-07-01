@@ -1,7 +1,7 @@
 package chext.tracking
 
-import chisel3.RawModule
-import chisel3.experimental.BaseModule
+import chisel3.{Data, RawModule}
+import chisel3.experimental.{BaseModule, SourceInfo}
 
 import chisel3.hacks.ModuleInternals
 import chisel3.hacks.DataInternals
@@ -26,6 +26,13 @@ private[tracking] class ModuleInfo(
   private val children_ = HashMap.empty[BaseModule, ModuleInfo]
 
   private val baseComponents_ = ArrayBuffer.empty[BaseComponent]
+  private case class ViewSource(
+      source: Data,
+      suffix: Option[String],
+      sourceInfo: Option[SourceInfo]
+  )
+
+  private val viewSources_ = HashMap.empty[Tracked, ViewSource]
 
   private val containerStack_ = Stack.empty[Container]
 
@@ -108,6 +115,17 @@ private[tracking] class ModuleInfo(
     baseComponents_.addOne(component)
   }
 
+  private[tracking] def registerView(
+      view: Data,
+      source: Data,
+      suffix: Option[String],
+      sourceInfo: Option[SourceInfo]
+  ): Unit = {
+    DataInternals
+      .getChildrenOfType[Tracked](view)
+      .foreach { interface => viewSources_.addOne(interface -> ViewSource(source, suffix, sourceInfo)) }
+  }
+
   def pushContainer(container: Container): Unit = {
     containerStack_.push(container)
   }
@@ -143,6 +161,98 @@ private[tracking] class ModuleInfo(
   def onComplete(f: => Unit) = onComplete_.addOne(() => f)
 
   parent.foreach { _.children_.addOne(module -> this) }
+
+  /** Resolves interfaces that are real hardware objects.
+    *
+    * Wires are local to this module. IO can either belong to this module or to a child module,
+    * where it is displayed under the child instance path. DataView-created interfaces are not
+    * wires or IO and intentionally fall through to `None`; `viewInterfaceRef` handles those using
+    * the explicit `.asLite`/`.asFull` registration.
+    */
+  private def directInterfaceRef(interface: Data): Option[Graph.InterfaceRef] = {
+    val earlyName = DataInternals.earlyName(interface)
+
+    if (DataInternals.isWire(interface))
+      Some(Graph.InterfaceRef(path = f"/$earlyName", desc = "Wire"))
+    else if (DataInternals.isIO(interface)) {
+      val owningModule = DataInternals.getOwningModule(interface)
+
+      if (owningModule == module)
+        Some(Graph.InterfaceRef(path = f"/$earlyName", desc = "IO"))
+      else {
+        val instanceName = childInstanceName(owningModule)
+
+        Some(Graph.InterfaceRef(path = f"/$instanceName/$earlyName", desc = "ChildIO"))
+      }
+    } else
+      None
+  }
+
+  /** Returns the raw interface metadata for a tracked child of a registered view.
+    *
+    * `.asLite`/`.asFull` register every tracked child of their elastic view. This lookup is the
+    * bridge from a Scala-side view object back to the raw AXI/AXIS hardware interface that the
+    * user named.
+    */
+  private def viewSource(interface: Tracked): Option[ViewSource] =
+    viewSources_.get(interface)
+
+  /** Derives a display suffix for view children that did not register one explicitly.
+    *
+    * AXI4 views expose named elastic channel children such as `ar`, `r`, and `b`; their Chisel
+    * early names therefore contain a useful last segment. That segment becomes `$view.<channel>`.
+    * Protocols whose whole raw interface maps to one elastic endpoint, such as AXI4 Stream, pass
+    * an explicit suffix at registration time and do not use this fallback.
+    */
+  private def viewSuffix(interface: Tracked): String =
+    DataInternals
+      .earlyName(interface)
+      .split('.')
+      .lastOption
+      .map { channel => f"$$view.$channel" }
+      .getOrElse("$view")
+
+  /** Resolves a registered view child to the graph/display path of its raw source.
+    *
+    * The raw source is first resolved like ordinary hardware, then the registered or inferred view
+    * suffix is appended. Examples are `/s_axi$view.ar` for AXI4 and `/axis$view` for AXI4 Stream.
+    */
+  private def viewInterfaceRef(interface: Tracked): Option[Graph.InterfaceRef] =
+    viewSource(interface).flatMap { viewSource =>
+      directInterfaceRef(viewSource.source).map { sourceRef =>
+        Graph.InterfaceRef(
+          path = f"${sourceRef.path}${viewSource.suffix.getOrElse(viewSuffix(interface))}",
+          desc = f"View(${sourceRef.desc})"
+        )
+      }
+    }
+
+  /** Resolves the path used by both module graph generation and tracking diagnostics.
+    *
+    * Direct hardware paths are preferred. If the interface is not itself hardware, the registered
+    * view map is used to recover a path from the raw source interface.
+    */
+  private def interfaceRef(interface: Tracked): Option[Graph.InterfaceRef] =
+    directInterfaceRef(interface).orElse(viewInterfaceRef(interface))
+
+  /** Chooses the module shown as the owner in tracking diagnostics.
+    *
+    * For views, the useful owner is the raw source interface's module, not the internal Chisel
+    * view object. Ordinary interfaces fall back to their actual owning module.
+    */
+  private def interfaceDisplayOwner(interface: Tracked): Option[BaseModule] =
+    viewSource(interface)
+      .flatMap(viewSource => DataInternals.getOwningModuleOption(viewSource.source))
+      .orElse(DataInternals.getOwningModuleOption(interface))
+
+  /** Chooses the source location shown in tracking diagnostics.
+    *
+    * Registered views carry the raw source interface's SourceInfo so warnings point at the user's
+    * `IO(...)` or `Wire(...)` declaration instead of the DataView mapping code. Ordinary
+    * interfaces keep their own source information.
+    */
+  private def interfaceDisplaySourceInfo(interface: Tracked): Option[SourceInfo] =
+    viewSource(interface).flatMap(_.sourceInfo)
 
   /** Called when the module body completes.
     */
@@ -202,7 +312,18 @@ private[tracking] class ModuleInfo(
     /** Sanity checks.
       */
     def sanityChecks(): Unit = {
-      wires.foreach { _.sanityCheck(logger) }
+      def sanityCheck(interface: Tracked, isRootIO: Boolean, instanceSourceInfo: Option[SourceInfo]) =
+        interface.sanityCheck(
+          logger,
+          isRootIO,
+          instanceSourceInfo,
+          interfaceRef(interface).map(_.path),
+          interfaceDisplayOwner(interface),
+          interfaceDisplaySourceInfo(interface)
+        )
+
+      wires.foreach { sanityCheck(_, false, None) }
+      viewSources_.keySet.foreach { sanityCheck(_, true, None) }
 
       if (module.isInstanceOf[RawModule]) {
         val sourceInfos = ModuleInternals.getChildrenSourceInfo(module.asInstanceOf[RawModule])
@@ -214,7 +335,7 @@ private[tracking] class ModuleInfo(
           }
           .foreach {
             case (module, io, sourceLocation) => {
-              io.foreach { _.sanityCheck(logger, false, sourceLocation) }
+              io.foreach { sanityCheck(_, false, sourceLocation) }
             }
           }
       }
@@ -222,7 +343,7 @@ private[tracking] class ModuleInfo(
       parent match {
         case None =>
           // this is the root module, we cannot defer checking IO ports later
-          ports.foreach { _._1.sanityCheck(logger, true) }
+          ports.foreach { case (interface, _) => sanityCheck(interface, true, None) }
 
         case Some(value) =>
           // this is a child module, we can perform the checks later
@@ -254,34 +375,19 @@ private[tracking] class ModuleInfo(
         {
           val earlyName = DataInternals.earlyName(interface)
 
-          if (DataInternals.isWire(interface))
-            (interface, Graph.InterfaceRef(path = f"/$earlyName", desc = "Wire"))
-          else if (DataInternals.isIO(interface)) {
-            val owningModule = DataInternals.getOwningModule(interface)
-
-            if (owningModule == module)
-              (interface, Graph.InterfaceRef(path = f"/$earlyName", desc = "IO"))
-            else {
-              val instanceName = childInstanceName(owningModule)
-
-              (
-                interface,
-                Graph.InterfaceRef(path = f"/$instanceName/$earlyName", desc = "ChildIO")
+          val ref = interfaceRef(interface)
+            .getOrElse {
+              logger.error(
+                "constructModuleGraph",
+                "Encountered an interface which is neither an IO or Wire.",
+                "Maybe you used a view? Please do not use views.",
+                f"${interface} @[${sourceInfoToString(interface.sourceInfo)}]"
               )
-            }
-          } else {
-            logger.error(
-              "constructModuleGraph",
-              "Encountered an interface which is neither an IO or Wire.",
-              "Maybe you used a view? Please do not use views.",
-              f"${interface} @[${sourceInfoToString(interface.sourceInfo)}]"
-            )
 
-            (
-              interface,
               Graph.InterfaceRef(path = f"/???/$earlyName", desc = "Unknown")
-            )
-          }
+            }
+
+          (interface, ref)
         }
       }.toMap
 

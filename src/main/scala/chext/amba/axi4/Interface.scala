@@ -149,6 +149,9 @@ case class Config(
 class RawInterface(val cfg: axi4.Config)(implicit si: SourceInfo) extends Bundle {
   def sourceInfo: SourceInfo = si
 
+  private[axi4] val viewCalls =
+    scala.collection.mutable.ArrayBuffer.empty[ViewCall]
+
   val ARREADY = if (cfg.read) Some(Input(Bool())) else None
   val ARVALID = if (cfg.read) Some(Output(Bool())) else None
   val ARID =

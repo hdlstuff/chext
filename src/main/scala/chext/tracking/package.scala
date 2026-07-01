@@ -1,6 +1,7 @@
 package chext
 
-import chisel3.experimental.BaseModule
+import chisel3.Data
+import chisel3.experimental.{BaseModule, SourceInfo}
 import chisel3.experimental.prefix
 
 package object tracking {
@@ -9,6 +10,14 @@ package object tracking {
     */
   def register(): Unit =
     Manager.registerCurrentModule()
+
+  private[chext] def registerView(
+      view: Data,
+      source: Data,
+      suffix: Option[String] = None,
+      sourceInfo: Option[SourceInfo] = None
+  ): Unit =
+    Manager.registerCurrentModule().registerView(view, source, suffix, sourceInfo)
 
   /** Returns the module graph. Must be called **after** tracking is complete. Do consider using
     * this function within `tracking.onComplete(module) { ... }`.

@@ -36,7 +36,6 @@ object ModuleInternals {
   }
 
   def getParent(module: BaseModule): Option[BaseModule] = {
-    classOf[HasId].getDeclaredFields().foreach { println(_) }
     val method = classOf[HasId].getDeclaredMethod("_parent")
     method.setAccessible(true)
     method.invoke(module).asInstanceOf[Option[BaseModule]]

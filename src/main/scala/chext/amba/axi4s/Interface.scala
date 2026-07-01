@@ -1,6 +1,7 @@
 package chext.amba.axi4s
 
 import chisel3._
+import chisel3.experimental.SourceInfo
 import chisel3.experimental.dataview._
 
 import chext.elastic
@@ -19,7 +20,12 @@ case class Config(
   val wKeep = wStrobe
 }
 
-class Interface(val cfg: Config) extends Bundle {
+class Interface(val cfg: Config)(implicit si: SourceInfo) extends Bundle {
+  def sourceInfo: SourceInfo = si
+
+  private[axi4s] val viewCalls =
+    scala.collection.mutable.ArrayBuffer.empty[ViewCall]
+
   val TREADY = Input(Bool())
   val TVALID = Output(Bool())
   val TDATA = Output(UInt(cfg.wData.W))
@@ -37,37 +43,37 @@ class Interface(val cfg: Config) extends Bundle {
 object Master {
 
   /** create an AXI4-stream master interface with the given configuration. */
-  def apply(cfg: Config) = Interface(cfg)
+  def apply(cfg: Config)(implicit si: SourceInfo) = Interface(cfg)
 
   def many(
       n: Int,
       cfg: Config,
       naming: NamedVec.Naming = NamedVec.Plain
-  ): NamedVec[Interface] =
+  )(implicit si: SourceInfo): NamedVec[Interface] =
     NamedVec.many(n, apply(cfg), naming)
 }
 
 object Slave {
 
   /** create an AXI4-stream slave interface with the given configuration. */
-  def apply(cfg: Config) = Flipped(Interface(cfg))
+  def apply(cfg: Config)(implicit si: SourceInfo) = Flipped(Interface(cfg))
 
   def many(
       n: Int,
       cfg: Config,
       naming: NamedVec.Naming = NamedVec.Plain
-  ): NamedVec[Interface] =
+  )(implicit si: SourceInfo): NamedVec[Interface] =
     NamedVec.many(n, apply(cfg), naming)
 }
 
 object Interface {
-  def apply(cfg: Config): Interface = new Interface(cfg)
+  def apply(cfg: Config)(implicit si: SourceInfo): Interface = new Interface(cfg)
 
   def many(
       n: Int,
       cfg: Config,
       naming: NamedVec.Naming = NamedVec.Plain
-  ): NamedVec[Interface] =
+  )(implicit si: SourceInfo): NamedVec[Interface] =
     NamedVec.many(n, apply(cfg), naming)
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
