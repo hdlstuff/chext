@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental.dataview._
 
 import chext.elastic
+import chext.util.NamedVec
 
 case class Config(
     val wData: Int,
@@ -37,16 +38,37 @@ object Master {
 
   /** create an AXI4-stream master interface with the given configuration. */
   def apply(cfg: Config) = Interface(cfg)
+
+  def many(
+      n: Int,
+      cfg: Config,
+      naming: NamedVec.Naming = NamedVec.Plain
+  ): NamedVec[Interface] =
+    NamedVec.many(n, apply(cfg), naming)
 }
 
 object Slave {
 
   /** create an AXI4-stream slave interface with the given configuration. */
   def apply(cfg: Config) = Flipped(Interface(cfg))
+
+  def many(
+      n: Int,
+      cfg: Config,
+      naming: NamedVec.Naming = NamedVec.Plain
+  ): NamedVec[Interface] =
+    NamedVec.many(n, apply(cfg), naming)
 }
 
 object Interface {
   def apply(cfg: Config): Interface = new Interface(cfg)
+
+  def many(
+      n: Int,
+      cfg: Config,
+      naming: NamedVec.Naming = NamedVec.Plain
+  ): NamedVec[Interface] =
+    NamedVec.many(n, apply(cfg), naming)
 
   @annotation.nowarn /* suppress warning: Implicit definition should have explicit type */
   implicit val view = DataView[Interface, elastic.Interface[UInt]](

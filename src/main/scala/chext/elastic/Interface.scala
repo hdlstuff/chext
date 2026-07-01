@@ -14,6 +14,7 @@ import scala.language.experimental.macros
 import scala.collection.immutable.SeqMap
 
 import chext.tracking
+import chext.util.NamedVec
 
 class Interface[+T <: Data](gen: T)(implicit si_ : SourceInfo)
     extends Record
@@ -152,6 +153,13 @@ object Interface {
     )
     new Interface(gen)
   }
+
+  def many[T <: Data](
+      n: Int,
+      gen: T,
+      naming: NamedVec.Naming = NamedVec.Plain
+  )(implicit sourceInfo: SourceInfo): NamedVec[Interface[T]] =
+    NamedVec.many(n, apply(gen), naming)
 }
 
 object Source {
@@ -162,6 +170,13 @@ object Source {
     )
     Flipped(new Interface(gen))
   }
+
+  def many[T <: Data](
+      n: Int,
+      gen: T,
+      naming: NamedVec.Naming = NamedVec.Plain
+  )(implicit sourceInfo: SourceInfo): NamedVec[Interface[T]] =
+    NamedVec.many(n, apply(gen), naming)
 
   def io[T <: Data](gen: T)(implicit sourceInfo: SourceInfo): Interface[T] = IO(apply(gen))
 
@@ -184,6 +199,13 @@ object Sink {
     )
     new Interface(gen)
   }
+
+  def many[T <: Data](
+      n: Int,
+      gen: T,
+      naming: NamedVec.Naming = NamedVec.Plain
+  )(implicit sourceInfo: SourceInfo): NamedVec[Interface[T]] =
+    NamedVec.many(n, apply(gen), naming)
 
   def like[T <: Data](hw: Interface[T])(implicit sourceInfo: SourceInfo) = {
     requireIsHardware(

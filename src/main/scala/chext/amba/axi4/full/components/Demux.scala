@@ -54,7 +54,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
-  val m_axi = IO(Vec(numMasters, axi4.full.Master(axiMasterCfg)))
+  val m_axi = IO(axi4.full.Master.many(numMasters, axiMasterCfg))
 
   private val s_axi_ = SlaveBuffered(s_axi, slaveBuffers)
   private val m_axi_ = MasterBuffered(m_axi, masterBuffers)

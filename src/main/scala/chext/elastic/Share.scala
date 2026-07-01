@@ -34,8 +34,8 @@ abstract class ShareD[Tin <: Data, Tout <: Data](
 ) extends Module {
   import cfg._
 
-  val source_N = IO(Vec(1 << log2n, Source(genIn)))
-  val sink_N = IO(Vec(1 << log2n, Sink(genOut)))
+  val source_N = IO(Source.many(1 << log2n, genIn))
+  val sink_N = IO(Sink.many(1 << log2n, genOut))
 
   protected def instantiate(
       index: Int,
@@ -77,8 +77,8 @@ abstract class ShareNd[Tin <: Data, Tout <: Data](
 ) extends Module {
   import cfg._
 
-  val source_N = IO(Vec(1 << log2n, Source(genIn)))
-  val sink_N = IO(Vec(1 << log2n, Sink(genOut)))
+  val source_N = IO(Source.many(1 << log2n, genIn))
+  val sink_N = IO(Sink.many(1 << log2n, genOut))
 
   protected def instantiate(
       index: Int,

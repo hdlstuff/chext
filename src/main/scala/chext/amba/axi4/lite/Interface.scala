@@ -8,6 +8,7 @@ import chisel3.reflect.DataMirror
 
 import chext.amba.axi4
 import chext.amba.axi4.util._
+import chext.util.NamedVec
 
 import chext.elastic
 
@@ -117,6 +118,13 @@ object Interface {
     }
   }
 
+  def many(
+      n: Int,
+      cfg: axi4.Config,
+      naming: NamedVec.Naming = NamedVec.Plain
+  )(implicit si: SourceInfo): NamedVec[Interface] =
+    NamedVec.many(n, apply(cfg), naming)
+
   /** pairs for DataView */
   def readPairs(
       x: axi4.RawInterface,
@@ -183,10 +191,24 @@ object Interface {
 
 object Slave {
   def apply(cfg: axi4.Config)(implicit si: SourceInfo) = Flipped(Interface(cfg))
+
+  def many(
+      n: Int,
+      cfg: axi4.Config,
+      naming: NamedVec.Naming = NamedVec.Plain
+  )(implicit si: SourceInfo): NamedVec[Interface] =
+    NamedVec.many(n, apply(cfg), naming)
 }
 
 object Master {
   def apply(cfg: axi4.Config)(implicit si: SourceInfo) = Interface(cfg)
+
+  def many(
+      n: Int,
+      cfg: axi4.Config,
+      naming: NamedVec.Naming = NamedVec.Plain
+  )(implicit si: SourceInfo): NamedVec[Interface] =
+    NamedVec.many(n, apply(cfg), naming)
 }
 
 private class ReadInterface(implicit

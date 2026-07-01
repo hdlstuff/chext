@@ -31,7 +31,7 @@ class Mux(val cfg: MuxConfig) extends Module {
 
   private val genPort = UInt(wPort.W)
 
-  val s_axi = IO(Vec(numSlaves, axi4.full.Slave(axiSlaveCfg)))
+  val s_axi = IO(axi4.full.Slave.many(numSlaves, axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
   private val s_axi_ = {

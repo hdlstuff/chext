@@ -8,7 +8,7 @@ import chext.elastic
 import chext.amba.axi4
 import axi4.Ops._
 
-import chext.util.VecCustomNamed
+import chext.util.NamedVec
 
 class Interconnect_Tbtop(
     override val desiredName: String
@@ -16,8 +16,8 @@ class Interconnect_Tbtop(
     with chext.TestBenchTop {
   val axiCfg = axi4.Config(wId = 2, wAddr = 32, wData = 32)
 
-  val S_AXI = IO(VecCustomNamed.zeroExtended(16, axi4.Slave(axiCfg)))
-  val M_AXI = IO(VecCustomNamed.zeroExtended(16, axi4.Master(axiCfg.copy(wId = 6))))
+  val S_AXI = IO(axi4.Slave.many(16, axiCfg, NamedVec.ZeroExtended()))
+  val M_AXI = IO(axi4.Master.many(16, axiCfg.copy(wId = 6), NamedVec.ZeroExtended()))
 
   {
     val demux_N = Seq.tabulate(16) {

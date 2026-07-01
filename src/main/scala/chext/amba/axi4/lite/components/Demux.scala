@@ -43,7 +43,7 @@ class Demux(val cfg: DemuxConfig) extends Module {
   override def desiredName: String = "axi4LiteDemux"
 
   val s_axil = IO(axi4.lite.Slave(axiSlaveCfg))
-  val m_axil = IO(Vec(numMasters, axi4.lite.Master(axiMasterCfg)))
+  val m_axil = IO(axi4.lite.Master.many(numMasters, axiMasterCfg))
 
   private val genPort = UInt(wPort.W)
 

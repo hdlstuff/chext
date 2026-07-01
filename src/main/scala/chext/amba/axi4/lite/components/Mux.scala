@@ -39,7 +39,7 @@ class Mux(val cfg: MuxConfig) extends Module {
 
   override def desiredName: String = "axi4LiteMux"
 
-  val s_axil = IO(Vec(numSlaves, axi4.lite.Slave(axiSlaveCfg)))
+  val s_axil = IO(axi4.lite.Slave.many(numSlaves, axiSlaveCfg))
   val m_axil = IO(axi4.lite.Master(axiMasterCfg))
 
   private val genPort = UInt(wPort.W)

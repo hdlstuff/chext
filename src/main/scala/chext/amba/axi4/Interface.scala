@@ -6,6 +6,7 @@ import chisel3.experimental.SourceInfo
 import chisel3.reflect.DataMirror
 
 import chext.amba.axi4
+import chext.util.NamedVec
 
 // TODO maybe bring in the `cache` flags
 // TODO may support ACE as well?
@@ -219,12 +220,33 @@ class RawInterface(val cfg: axi4.Config)(implicit si: SourceInfo) extends Bundle
 
 object Interface {
   def apply(cfg: axi4.Config)(implicit si: SourceInfo) = new RawInterface(cfg)
+
+  def many(
+      n: Int,
+      cfg: axi4.Config,
+      naming: NamedVec.Naming = NamedVec.Plain
+  )(implicit si: SourceInfo): NamedVec[RawInterface] =
+    NamedVec.many(n, apply(cfg), naming)
 }
 
 object Slave {
   def apply(cfg: axi4.Config)(implicit si: SourceInfo) = Flipped(Interface(cfg))
+
+  def many(
+      n: Int,
+      cfg: axi4.Config,
+      naming: NamedVec.Naming = NamedVec.Plain
+  )(implicit si: SourceInfo): NamedVec[RawInterface] =
+    NamedVec.many(n, apply(cfg), naming)
 }
 
 object Master {
   def apply(cfg: axi4.Config)(implicit si: SourceInfo) = Interface(cfg)
+
+  def many(
+      n: Int,
+      cfg: axi4.Config,
+      naming: NamedVec.Naming = NamedVec.Plain
+  )(implicit si: SourceInfo): NamedVec[RawInterface] =
+    NamedVec.many(n, apply(cfg), naming)
 }

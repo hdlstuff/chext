@@ -4,14 +4,12 @@ import chisel3._
 
 import chext.elastic
 
-import chext.util.VecCustomNamed
-
 class Arbiter_Tbtop extends Module with chext.TestBenchTop {
-  val rr_sources = IO(VecCustomNamed.zeroExtended(16, Source(UInt(32.W))))
+  val rr_sources = IO(Source.many(16, UInt(32.W)))
   val rr_sink = IO(Sink(UInt(32.W)))
   val rr_select = IO(Sink(UInt(4.W)))
 
-  val priority_sources = IO(VecCustomNamed.zeroExtended(16, Source(UInt(32.W))))
+  val priority_sources = IO(Source.many(16, UInt(32.W)))
   val priority_sink = IO(Sink(UInt(32.W)))
   val priority_select = IO(Sink(UInt(4.W)))
 
