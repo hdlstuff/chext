@@ -340,8 +340,8 @@ class Queue[Tin <: Data, Tout <: Data](
   /** Sets a pure functional transformation for the value driven on sink.$bits.
     * The function takes the raw queue output and returns the transformed value.
     */
-  protected final def out(fn: => OutFn): Unit = {
-    require_(
+  protected final def out(fn: => OutFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       outFn_.isEmpty,
       "'out { (in) => ... }' must be called at most once!"
     )
@@ -352,8 +352,8 @@ class Queue[Tin <: Data, Tout <: Data](
   /** Sets an imperative transformation for the value driven on sink.$bits. The
     * function takes the raw queue output and a mutable output wire.
     */
-  protected final def outExplicit(fn: => OutExplicitFn): Unit = {
-    require_(
+  protected final def outExplicit(fn: => OutExplicitFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       outFn_.isEmpty,
       "'outExplicit { (in, out) => ... }' must be called at most once!"
     )

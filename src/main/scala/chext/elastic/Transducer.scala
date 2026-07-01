@@ -95,9 +95,9 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
    * 
    * All actions (`accept`, `stall`, `consume`, `produce`) must appear within this block.
    */
-  protected final def packet(fn: => Unit): Unit = {
+  protected final def packet(fn: => Unit)(implicit si_ : SourceInfo): Unit = {
     if (!deferredContext_)
-      require_(packetFn_.isEmpty, "'packet { ... }' must be defined at most once!")
+      require_.here(packetFn_.isEmpty, "'packet { ... }' must be defined at most once!")
 
     packetFn_ = Some(() => fn)
   }

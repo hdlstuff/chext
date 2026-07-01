@@ -19,15 +19,12 @@ case class Require(
     (first +: rest).mkString(System.lineSeparator())
   }
 
-  private def selectedSourceInfo(si: SourceInfo): SourceInfo =
-    sourceInfo.getOrElse(si)
-
   private def raise(message: String, lines: Seq[String], si: SourceInfo): Nothing =
     throw new IllegalArgumentException(format(message, lines, si))
 
   def apply(cond: Boolean, message: String)(implicit si: SourceInfo = null): Unit = {
     if (!cond)
-      raise(message, Seq.empty, selectedSourceInfo(si))
+      raise(message, Seq.empty, sourceInfo.orNull)
   }
 
   def apply(
@@ -36,7 +33,7 @@ case class Require(
       lines: Seq[String]
   )(implicit si: SourceInfo): Unit = {
     if (!cond)
-      raise(message, lines, selectedSourceInfo(si))
+      raise(message, lines, sourceInfo.orNull)
   }
 
   def here(cond: Boolean, message: String)(implicit si: SourceInfo): Unit =

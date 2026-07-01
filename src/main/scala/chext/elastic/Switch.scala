@@ -94,8 +94,11 @@ abstract class Switch[Tin <: Data, Tout <: Data](
     * @example
    *   last { _.isLast }
     */
-  protected final def last(fn: => LastFn): Unit = {
-    require_(lastFn_.isEmpty, "'last { (out) => ... }' must be called at most once!")
+  protected final def last(fn: => LastFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
+      lastFn_.isEmpty,
+      "'last { (out) => ... }' must be called at most once!"
+    )
     lastFn_ = Some(fn)
   }
 

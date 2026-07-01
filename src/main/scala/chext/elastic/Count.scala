@@ -53,8 +53,8 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
    * init { (in) => 0.U }
    * }}}
    */
-  protected final def init(fn: => InitFn): Unit = {
-    require_(initFn_.isEmpty, "'init { (in) => ... }' must be called at most once!")
+  protected final def init(fn: => InitFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(initFn_.isEmpty, "'init { (in) => ... }' must be called at most once!")
     initFn_ = Some(fn)
   }
 
@@ -68,7 +68,7 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
    * initExplicit { (in, state) => state := in }
    * }}}
    */
-  protected final def initExplicit(fn: => InitExplicitFn): Unit = {
+  protected final def initExplicit(fn: => InitExplicitFn)(implicit si_ : SourceInfo): Unit = {
     init { //
       (in) => { //
         val initResult = Wire(genState)
@@ -88,8 +88,11 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
    * cond { (in, state) => state =/= 0.U }
    * }}}
    */
-  protected final def cond(fn: => CondFn): Unit = {
-    require_(condFn_.isEmpty, "'cond { (in, state) => ... }' must be called at most once!")
+  protected final def cond(fn: => CondFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
+      condFn_.isEmpty,
+      "'cond { (in, state) => ... }' must be called at most once!"
+    )
     condFn_ = Some(fn)
   }
 
@@ -103,8 +106,11 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
    * next { (in, state) => state - 1.U }
    * }}}
    */
-  protected final def next(fn: => NextFn): Unit = {
-    require_(nextFn_.isEmpty, "'next { (in, state) => ... }' must be called at most once!")
+  protected final def next(fn: => NextFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
+      nextFn_.isEmpty,
+      "'next { (in, state) => ... }' must be called at most once!"
+    )
     nextFn_ = Some(fn)
   }
 
@@ -118,7 +124,7 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
    * nextExplicit { (in, state, stateNext) => stateNext := state - 1.U }
    * }}}
    */
-  protected final def nextExplicit(fn: => NextExplicitFn): Unit = {
+  protected final def nextExplicit(fn: => NextExplicitFn)(implicit si_ : SourceInfo): Unit = {
     next {
       (in, state) => {
         val nextResult = Wire(genState)
@@ -138,8 +144,11 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
    * out { (in, state, first, last) => state }
    * }}}
    */
-  protected final def out(fn: => OutFn): Unit = {
-    require_(outFn_.isEmpty, "'out { (in, state, first, last) => ... }' must be called at most once!")
+  protected final def out(fn: => OutFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
+      outFn_.isEmpty,
+      "'out { (in, state, first, last) => ... }' must be called at most once!"
+    )
     outFn_ = Some(fn)
   }
 
@@ -153,7 +162,7 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
    * outExplicit { (in, state, first, last, out) => out := ... }
    * }}}
    */
-  protected final def outExplicit(fn: => OutExplicitFn): Unit = {
+  protected final def outExplicit(fn: => OutExplicitFn)(implicit si_ : SourceInfo): Unit = {
     out {
       (in, state, first, last) => {
         val outResult = Wire(chiselTypeOf(sink.$bits))

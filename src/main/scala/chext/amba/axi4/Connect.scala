@@ -18,7 +18,7 @@ object connect {
       master: axi4.RawInterface,
       slave: axi4.full.Interface
   )(implicit si: SourceInfo): Unit = {
-    require_(
+    require_.here(
       !master.cfg.lite,
       "master must be a full axi4 interface",
       Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
@@ -30,7 +30,7 @@ object connect {
       master: axi4.RawInterface,
       slave: axi4.lite.Interface
   )(implicit si: SourceInfo): Unit = {
-    require_(
+    require_.here(
       master.cfg.lite,
       "master must be a lite axi4 interface",
       Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
@@ -42,7 +42,7 @@ object connect {
       master: axi4.RawInterface,
       slave: axi4.RawInterface
   )(implicit si: SourceInfo): Unit = {
-    require_(
+    require_.here(
       master.cfg.lite == slave.cfg.lite,
       "master and slave must both be either full or lite axi4 interfaces",
       Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")

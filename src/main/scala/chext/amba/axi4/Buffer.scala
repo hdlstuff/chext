@@ -35,7 +35,7 @@ object buffer {
       slave: RawInterface,
       cfg: BufferConfig = BufferConfig.all(2)
   )(implicit si: SourceInfo): Unit = {
-    require_(
+    require_.here(
       master.cfg.lite == slave.cfg.lite,
       "master and slave must both be either full or lite axi4 interfaces",
       Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")

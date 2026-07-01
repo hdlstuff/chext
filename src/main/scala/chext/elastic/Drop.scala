@@ -54,8 +54,8 @@ abstract class Drop[Tin <: Data, Tout <: Data](
     * @example
     *   cond { in.shouldBeDropped }
     */
-  protected final def cond(fn: => Bool): Unit = {
-    require_(condFn_.isEmpty, "'cond { ... }' must be called at most once!")
+  protected final def cond(fn: => Bool)(implicit si_ : SourceInfo): Unit = {
+    require_.here(condFn_.isEmpty, "'cond { ... }' must be called at most once!")
     condFn_ = Some(() => { fn })
   }
 

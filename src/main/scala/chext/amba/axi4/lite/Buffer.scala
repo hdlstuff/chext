@@ -47,7 +47,7 @@ object buffer {
       slave: Interface,
       cfg: BufferConfig
   )(implicit si: SourceInfo): Unit = {
-    require_(
+    require_.here(
       master.cfg == slave.cfg,
       "master and slave configurations do not match!",
       Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")

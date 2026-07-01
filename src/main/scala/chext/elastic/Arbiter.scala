@@ -66,8 +66,8 @@ final class Arbiter[Tin <: Data, Tout <: Data](
     * The function takes the arbitrated input data and returns the transformed
     * value.
     */
-  protected final def out(fn: => OutFn): Unit = {
-    require_(
+  protected final def out(fn: => OutFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       outFn_.isEmpty,
       "'out { (in) => ... }' must be called at most once!"
     )
@@ -78,8 +78,8 @@ final class Arbiter[Tin <: Data, Tout <: Data](
   /** Sets an imperative transformation for the value driven on the sink. The
     * function takes the arbitrated input data and a mutable output wire.
     */
-  protected final def outExplicit(fn: => OutExplicitFn): Unit = {
-    require_(
+  protected final def outExplicit(fn: => OutExplicitFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       outFn_.isEmpty,
       "'outExplicit { (in, out) => ... }' must be called at most once!"
     )

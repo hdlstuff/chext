@@ -69,8 +69,8 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
     * len { (in) => in.len }
     * }}}
     */
-  protected final def len(fn: => LenFn): Unit = {
-    require_(lenFn_.isEmpty, "'len { (in) => ... }' must be called at most once!")
+  protected final def len(fn: => LenFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(lenFn_.isEmpty, "'len { (in) => ... }' must be called at most once!")
     lenFn_ = Some(fn)
   }
 
@@ -82,8 +82,8 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
     * out { (in, index, first, last) => in }
     * }}}
     */
-  protected final def out(fn: => OutFn): Unit = {
-    require_(
+  protected final def out(fn: => OutFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       outFn_.isEmpty,
       "'out { (in, index, first, last) => ... }' must be called at most once!"
     )
@@ -97,7 +97,7 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
     * outExplicit { (in, index, first, last, out) => out := in }
     * }}}
     */
-  protected final def outExplicit(fn: => OutExplicitFn): Unit = {
+  protected final def outExplicit(fn: => OutExplicitFn)(implicit si_ : SourceInfo): Unit = {
     out { (in, index, first, last) =>
       {
         val outResult = Wire(chiselTypeOf(sink.$bits))

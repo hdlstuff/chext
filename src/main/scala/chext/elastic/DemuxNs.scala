@@ -61,8 +61,8 @@ class DemuxNs[Tin <: Data, Tout <: Data](
     * @param fn
     *   function returning the destination sink index
     */
-  protected final def select(fn: => SelectFn): Unit = {
-    require_(
+  protected final def select(fn: => SelectFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       selectFn_.isEmpty,
       "'select { (in) => ... }' must be called at most once!"
     )
@@ -73,8 +73,8 @@ class DemuxNs[Tin <: Data, Tout <: Data](
   /** Sets a pure functional transformation for the value driven on each sink.
     * The function takes the input data and returns the transformed value.
     */
-  protected final def out(fn: => OutFn): Unit = {
-    require_(
+  protected final def out(fn: => OutFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       outFn_.isEmpty,
       "'out { (in) => ... }' must be called at most once!"
     )
@@ -85,8 +85,8 @@ class DemuxNs[Tin <: Data, Tout <: Data](
   /** Sets an imperative transformation for the value driven on each sink. The
     * function takes the input data and a mutable output wire.
     */
-  protected final def outExplicit(fn: => OutExplicitFn): Unit = {
-    require_(
+  protected final def outExplicit(fn: => OutExplicitFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       outFn_.isEmpty,
       "'outExplicit { (in, out) => ... }' must be called at most once!"
     )

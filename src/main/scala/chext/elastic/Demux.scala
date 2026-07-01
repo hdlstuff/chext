@@ -76,8 +76,8 @@ class Demux[Tin <: Data, Tout <: Data](
     * @param fn
     *   predicate returning `true.B` when the current token is the last one
     */
-  protected final def last(fn: => LastFn): Unit = {
-    require_(
+  protected final def last(fn: => LastFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       lastFn_.isEmpty,
       "'last { (in) => ... }' must be called at most once!"
     )
@@ -88,8 +88,8 @@ class Demux[Tin <: Data, Tout <: Data](
   /** Sets a pure functional transformation for the value driven on each sink.
     * The function takes the input data and returns the transformed value.
     */
-  protected final def out(fn: => OutFn): Unit = {
-    require_(
+  protected final def out(fn: => OutFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       outFn_.isEmpty,
       "'out { (in) => ... }' must be called at most once!"
     )
@@ -100,8 +100,8 @@ class Demux[Tin <: Data, Tout <: Data](
   /** Sets an imperative transformation for the value driven on each sink. The
     * function takes the input data and a mutable output wire.
     */
-  protected final def outExplicit(fn: => OutExplicitFn): Unit = {
-    require_(
+  protected final def outExplicit(fn: => OutExplicitFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       outFn_.isEmpty,
       "'outExplicit { (in, out) => ... }' must be called at most once!"
     )

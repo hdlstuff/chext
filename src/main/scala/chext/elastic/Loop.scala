@@ -36,8 +36,8 @@ class Loop[Tstate <: Data](
     *
     * @param fn
     */
-  protected final def end(fn: => EndFn): Unit = {
-    require_(
+  protected final def end(fn: => EndFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       endFn_.isEmpty,
       "'end { (state) => ... }' must be called at most once!"
     )

@@ -90,8 +90,11 @@ abstract class Fold[Tin <: Data, Tout <: Data](
     * operand { in => in.data }
     * }}}
     */
-  protected final def operand(fn: => OperandFn): Unit = {
-    require_(operandFn_.isEmpty, "'operand { (in) => ... }' must be called at most once!")
+  protected final def operand(fn: => OperandFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
+      operandFn_.isEmpty,
+      "'operand { (in) => ... }' must be called at most once!"
+    )
     operandFn_ = Some(fn)
   }
 
@@ -103,7 +106,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
     * operandExplicit { (in, out) => out := in.data }
     * }}}
     */
-  protected final def operandExplicit(fn: => OperandExplicitFn): Unit = {
+  protected final def operandExplicit(fn: => OperandExplicitFn)(implicit si_ : SourceInfo): Unit = {
     operand {
       case (in) => {
         val opResult = Wire(gen)
@@ -121,8 +124,11 @@ abstract class Fold[Tin <: Data, Tout <: Data](
     * first { in => in.isFirst }
     * }}}
     */
-  protected final def first(fn: => FirstFn): Unit = {
-    require_(firstFn_.isEmpty, "'first { (in) => ... }' must be called at most once!")
+  protected final def first(fn: => FirstFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
+      firstFn_.isEmpty,
+      "'first { (in) => ... }' must be called at most once!"
+    )
     firstFn_ = Some(fn)
   }
 
@@ -133,8 +139,11 @@ abstract class Fold[Tin <: Data, Tout <: Data](
     * last { in => in.isLast }
     * }}}
     */
-  protected final def last(fn: => LastFn): Unit = {
-    require_(lastFn_.isEmpty, "'last { (in) => ... }' must be called at most once!")
+  protected final def last(fn: => LastFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
+      lastFn_.isEmpty,
+      "'last { (in) => ... }' must be called at most once!"
+    )
     lastFn_ = Some(fn)
   }
 
@@ -146,8 +155,11 @@ abstract class Fold[Tin <: Data, Tout <: Data](
     * zero { in => in.isZero }
     * }}}
     */
-  protected final def zero(fn: => ZeroFn): Unit = {
-    require_(zeroFn_.isEmpty, "'zero { (in) => ... }' must be called at most once!")
+  protected final def zero(fn: => ZeroFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
+      zeroFn_.isEmpty,
+      "'zero { (in) => ... }' must be called at most once!"
+    )
     zeroFn_ = Some(fn)
   }
 

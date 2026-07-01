@@ -30,16 +30,16 @@ class Scope[Tinit <: Data, Texit <: Data](
 
   private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
-  protected final def init(fn: => InitFn): Unit = {
-    require_(
+  protected final def init(fn: => InitFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       initFn_.isEmpty,
       "'init { (in) => ... }' must be called at most once!"
     )
     initFn_ = Some(fn)
   }
 
-  protected final def exit(fn: => ExitFn): Unit = {
-    require_(
+  protected final def exit(fn: => ExitFn)(implicit si_ : SourceInfo): Unit = {
+    require_.here(
       exitFn_.isEmpty,
       "'exit { (in) => ... }' must be called at most once!"
     )

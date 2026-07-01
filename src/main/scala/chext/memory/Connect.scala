@@ -12,8 +12,8 @@ object connect {
       master: ReadInterface,
       slave: ReadInterface
   )(implicit si: SourceInfo): Unit = {
-    require_(master.wData == slave.wData, "wData of interfaces must match!")
-    require_(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
+    require_.here(master.wData == slave.wData, "wData of interfaces must match!")
+    require_.here(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
 
     master.req :=> slave.req
     slave.resp :=> master.resp
@@ -23,8 +23,8 @@ object connect {
       master: WriteInterface,
       slave: WriteInterface
   )(implicit si: SourceInfo): Unit = {
-    require_(master.wData == slave.wData, "wData of interfaces must match!")
-    require_(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
+    require_.here(master.wData == slave.wData, "wData of interfaces must match!")
+    require_.here(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
 
     master.req :=> slave.req
     slave.resp :=> master.resp
