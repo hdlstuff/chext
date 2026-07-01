@@ -7,22 +7,16 @@ import chext.amba.axi4
 import chext.amba.axi4.lite
 import chext.elastic
 
-/** AXI4-Lite credit buffer configuration.
-  *
-  * Credit buffering reserves local response or payload capacity before forwarding the matching
-  * address channel. Plain per-channel skid buffers remain in `axi4.lite.Buffer`.
-  */
+/** AXI4-Lite credit buffer configuration. */
 case class CreditBufferConfig(
     val axiCfg: axi4.Config,
-    val rBuffer: Int = 0,
-    val awBuffer: Int = 0,
-    val wBuffer: Int = 0,
-    val bBuffer: Int = 0
+    val rBuffer: Int = 8,
+    val wBuffer: Int = 8,
+    val bBuffer: Int = 8
 ) {
   require(axiCfg.lite)
   require(axiCfg.read || axiCfg.write)
   require(rBuffer >= 0)
-  require(awBuffer >= 0)
   require(wBuffer >= 0)
   require(bBuffer >= 0)
 
@@ -31,8 +25,7 @@ case class CreditBufferConfig(
 
 /** AXI4-Lite credit buffer.
   *
-  * AR/AW may be delayed until the local R/B/W buffering has enough credit to absorb the associated
-  * response or payload traffic. A depth of zero leaves that channel directly connected.
+  * Delays addresses until local R, W, or B buffering can accept the associated traffic.
   */
 class CreditBuffer(val cfg: CreditBufferConfig) extends Module {
   import cfg._
@@ -80,19 +73,17 @@ class CreditBuffer(val cfg: CreditBufferConfig) extends Module {
           new WritePayloadBuffer(
             WritePayloadBufferConfig(
               axiCfg = axiCfg,
-              bufLengthW = wBuffer,
-              bufLengthAW = math.max(awBuffer, 1)
+              bufLengthW = wBuffer
             )
           )
         )
       val connectAwIn = new elastic.Connect(s_axi.aw, payloadBuffer.s_aw)
       val connectWIn = new elastic.Connect(s_axi.w, payloadBuffer.s_w)
-      connectWriteResponse(payloadBuffer.m_aw, payloadBuffer.m_w)
-    } else if (awBuffer > 0) {
-      connectWriteResponse(
-        elastic.SourceBuffer(s_axi.aw, awBuffer, name = "awBuffer"),
-        s_axi.w
-      )
+      val awForResponse =
+        if (bBuffer > 0)
+          elastic.SourceBuffer(payloadBuffer.m_aw, 2, name = "awQueue")
+        else payloadBuffer.m_aw
+      connectWriteResponse(awForResponse, payloadBuffer.m_w)
     } else {
       connectWriteResponse(s_axi.aw, s_axi.w)
     }
@@ -111,7 +102,7 @@ class CreditBuffer(val cfg: CreditBufferConfig) extends Module {
   */
 case class ReadResponseBufferConfig(
     val axiCfg: axi4.Config,
-    val bufLengthR: Int = 2
+    val bufLengthR: Int = 8
 ) {
   require(axiCfg.read && axiCfg.lite)
   require(bufLengthR >= 1)
@@ -162,7 +153,7 @@ class ReadResponseBuffer(val cfg: ReadResponseBufferConfig) extends Module {
   */
 case class WriteResponseBufferConfig(
     val axiCfg: axi4.Config,
-    val bufLengthB: Int = 2
+    val bufLengthB: Int = 8
 ) {
   require(axiCfg.write && axiCfg.lite)
   require(bufLengthB >= 1)
@@ -210,17 +201,13 @@ class WriteResponseBuffer(val cfg: WriteResponseBufferConfig) extends Module {
   *   AXI configuration for this component.
   * @param bufLengthW
   *   W-channel buffer capacity, in payloads.
-  * @param bufLengthAW
-  *   AW-channel buffer capacity, in addresses.
   */
 case class WritePayloadBufferConfig(
     val axiCfg: axi4.Config,
-    val bufLengthW: Int = 64,
-    val bufLengthAW: Int = 2
+    val bufLengthW: Int = 8
 ) {
   require(axiCfg.write && axiCfg.lite)
   require(bufLengthW >= 1)
-  require(bufLengthAW >= 1)
 }
 
 /** AXI4-Lite write payload buffer.
@@ -251,7 +238,7 @@ class WritePayloadBuffer(val cfg: WritePayloadBufferConfig) extends Module {
       fire { ctrAddr.inc() }
     }
 
-    val stall1 = new elastic.Stall(elastic.SourceBuffer(s_aw, bufLengthAW), m_aw) {
+    val stall1 = new elastic.Stall(s_aw, m_aw) {
       out := in
 
       cond { ctrAddr.zero }

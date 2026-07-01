@@ -81,7 +81,6 @@ private class BufferedConnectTop extends Module {
       CreditBufferConfig(
         axiCfg = cfg,
         rBuffer = 2,
-        awBuffer = 2,
         wBuffer = 4,
         bBuffer = 2
       )
