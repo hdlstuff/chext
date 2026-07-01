@@ -57,14 +57,9 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
   private var lenFn_ = Option.empty[LenFn]
   private var outFn_ = Option.empty[OutFn]
 
-  private def throw_(msg: String) =
-    throw new IllegalArgumentException(sourceInfo.makeMessage((x) => f"Count: $msg $x"))
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
-  protected final def in: Tin = throw_("in field shall not be used!")
-
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage(x => s"Repeat: $msg $x"))
-  }
+  protected final def in: Tin = require_.fail("in field shall not be used!")
 
   /** Sets the pure functional length function. Takes the input token and returns how many times it
     * should be repeated. Must be called exactly once.

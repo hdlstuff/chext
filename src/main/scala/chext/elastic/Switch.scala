@@ -64,6 +64,8 @@ abstract class Switch[Tin <: Data, Tout <: Data](
   def tpe: String = "Switch"
   def namePrefix: String = "switch"
 
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sink.$bits)
 
@@ -90,10 +92,10 @@ abstract class Switch[Tin <: Data, Tout <: Data](
     * Must be called at most once.
     *
     * @example
-    *   last { _.isLast }
+   *   last { _.isLast }
     */
   protected final def last(fn: => LastFn): Unit = {
-    // require stuff with good message
+    require_(lastFn_.isEmpty, "'last { (out) => ... }' must be called at most once!")
     lastFn_ = Some(fn)
   }
 
@@ -119,10 +121,10 @@ abstract class Switch[Tin <: Data, Tout <: Data](
     // format: on
       : Unit = {
     val name = f"b${branchBuffer.length}"
-    require(
+    require_.here(
       !usedNames.contains(name),
-      s"Switch.branch: Branch name '$name' is already used! ${sourceInfo.makeMessage(x => x)}"
-    )
+      s"Branch name '$name' is already used!"
+    )(sourceInfo)
     usedNames.addOne(name)
     branchBuffer.addOne(Branch(condFn, branchFn, name, sourceInfo))
   }
@@ -152,10 +154,10 @@ abstract class Switch[Tin <: Data, Tout <: Data](
     (implicit sourceInfo: SourceInfo)
     // format: on
       : Unit = {
-    require(
+    require_.here(
       !usedNames.contains(name),
-      s"Switch.namedBranch: Branch name '$name' is already used! ${sourceInfo.makeMessage(x => x)}"
-    )
+      s"Branch name '$name' is already used!"
+    )(sourceInfo)
     usedNames.addOne(name)
     branchBuffer.addOne(Branch(condFn, branchFn, name, sourceInfo))
   }

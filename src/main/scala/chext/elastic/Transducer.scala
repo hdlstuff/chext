@@ -78,21 +78,14 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
 
   private var deferredContext_ = false
 
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage((x) => f"Transducer: $msg $x"))
-  }
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
   private def requireDeferredContext_(funcName: String)(implicit sourceInfo: SourceInfo): Unit = {
-    require(
+    require_.here(
       deferredContext_,
-      sourceInfo.makeMessage((x) =>
-        f"Transducer: $funcName must be called within 'packet { ... }' $x"
-      )
-    )
+      f"$funcName must be called within 'packet { ... }'"
+    )(sourceInfo)
   }
-
-  private def throw_(msg: String) =
-    throw new IllegalArgumentException(sourceInfo.makeMessage((x) => f"Transducer: $msg $x"))
 
   // format: off
 

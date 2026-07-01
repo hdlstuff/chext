@@ -28,14 +28,7 @@ class Scope[Tinit <: Data, Texit <: Data](
   private var initFn_ = Option.empty[InitFn]
   private var exitFn_ = Option.empty[ExitFn]
 
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage(x => s"Scope: $msg $x"))
-  }
-
-  private def throw_(msg: String) =
-    throw new IllegalArgumentException(
-      sourceInfo.makeMessage(x => s"Scope: $msg $x")
-    )
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
   protected final def init(fn: => InitFn): Unit = {
     require_(

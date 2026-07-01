@@ -37,14 +37,9 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
   private var nextFn_ = Option.empty[NextFn]
   private var outFn_ = Option.empty[OutFn]
 
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage((x) => f"Count: $msg $x"))
-  }
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
-  private def throw_(msg: String) =
-    throw new IllegalArgumentException(sourceInfo.makeMessage((x) => f"Count: $msg $x"))
-
-  protected final def in: Tin = throw_("`in` field shall not be used!")
+  protected final def in: Tin = require_.fail("`in` field shall not be used!")
 
   // format: off
 

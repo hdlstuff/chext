@@ -29,9 +29,7 @@ final class Merger[T <: Data](
   override def namePrefix: String = "merger"
   override val sourceInfo: SourceInfo = si_
 
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage((x) => s"Merger: $msg $x"))
-  }
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
   require_(sources.nonEmpty, "requires at least one source interface")
 

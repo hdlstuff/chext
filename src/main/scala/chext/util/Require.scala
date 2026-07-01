@@ -2,32 +2,68 @@ package chext.util
 
 import chisel3.experimental.SourceInfo
 
-case class Require(val identifier: String) {
-  val indent = " " * identifier.length
+case class Require(
+    val identifier: String,
+    val sourceInfo: Option[SourceInfo] = None
+) {
+  private val indent = " " * identifier.length
 
-  private def printFirst(message: String, si: SourceInfo): Unit = {
-    val source = si.makeMessage((x) => (x))
-    println(f"${identifier} : $message $source")
+  private def sourceSuffix(si: SourceInfo): String = {
+    if (si == null) ""
+    else si.makeMessage(identity)
   }
 
-  private def printNext(message: String): Unit = {
-    println(f"${indent}   $message")
+  private def format(message: String, lines: Seq[String], si: SourceInfo): String = {
+    val first = f"${identifier} : $message ${sourceSuffix(si)}"
+    val rest = lines.map { line => f"${indent}   $line" }
+    (first +: rest).mkString(System.lineSeparator())
   }
 
-  def apply(cond: Boolean, message: String)(implicit si: SourceInfo): Unit = {
-    if (!cond) {
-      printFirst(message, si)
-      throw new IllegalArgumentException("requirement failed")
-    }
+  private def selectedSourceInfo(si: SourceInfo): SourceInfo =
+    sourceInfo.getOrElse(si)
+
+  private def raise(message: String, lines: Seq[String], si: SourceInfo): Nothing =
+    throw new IllegalArgumentException(format(message, lines, si))
+
+  def apply(cond: Boolean, message: String)(implicit si: SourceInfo = null): Unit = {
+    if (!cond)
+      raise(message, Seq.empty, selectedSourceInfo(si))
   }
 
-  def apply(cond: Boolean, message: String, lines: Seq[String])(implicit si: SourceInfo): Unit = {
-    if (!cond) {
-      printFirst(message, si)
-      lines.foreach { printNext(_) }
-      throw new IllegalArgumentException("requirement failed")
-    }
+  def apply(
+      cond: Boolean,
+      message: String,
+      lines: Seq[String]
+  )(implicit si: SourceInfo): Unit = {
+    if (!cond)
+      raise(message, lines, selectedSourceInfo(si))
   }
+
+  def here(cond: Boolean, message: String)(implicit si: SourceInfo): Unit =
+    if (!cond)
+      failHere(message)
+
+  def here(
+      cond: Boolean,
+      message: String,
+      lines: Seq[String]
+  )(implicit si: SourceInfo): Unit =
+    if (!cond)
+      failHere(message, lines)
+
+  def fail(message: String): Nothing =
+    fail(message, Seq.empty)
+
+  def fail(message: String, lines: Seq[String]): Nothing =
+    raise(message, lines, sourceInfo.orNull)
+
+  def failHere(message: String)(implicit si: SourceInfo): Nothing =
+    failHere(message, Seq.empty)
+
+  def failHere(message: String, lines: Seq[String])(implicit
+      si: SourceInfo
+  ): Nothing =
+    raise(message, lines, si)
 }
 
 private object MyModule_Emit extends App {

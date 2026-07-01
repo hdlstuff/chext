@@ -42,9 +42,7 @@ class Demux[Tin <: Data, Tout <: Data](
   override def namePrefix: String = "demux"
   override val sourceInfo: SourceInfo = si_
 
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage((x) => s"Demux: $msg $x"))
-  }
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
   require_(sinks.nonEmpty, "requires at least one sink interface")
   require_(

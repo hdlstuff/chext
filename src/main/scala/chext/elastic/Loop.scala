@@ -29,14 +29,7 @@ class Loop[Tstate <: Data](
 
   private var endFn_ = Option.empty[EndFn]
 
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage(x => s"Loop: $msg $x"))
-  }
-
-  private def throw_(msg: String) =
-    throw new IllegalArgumentException(
-      sourceInfo.makeMessage(x => s"Loop: $msg $x")
-    )
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
   /** Declares a combinational function that maps the state to whether its
     * complete or not.

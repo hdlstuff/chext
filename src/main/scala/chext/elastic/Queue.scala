@@ -333,17 +333,9 @@ class Queue[Tin <: Data, Tout <: Data](
 
   private var outFn_ = Option.empty[OutFn]
 
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage((x) => s"Queue: $msg $x"))
-  }
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
-  private def throw_(msg: String): Nothing = {
-    throw new IllegalArgumentException(
-      sourceInfo.makeMessage((x) => s"Queue: $msg $x")
-    )
-  }
-
-  protected final def in: Tin = throw_("`in` field shall not be used!")
+  protected final def in: Tin = require_.fail("`in` field shall not be used!")
 
   /** Sets a pure functional transformation for the value driven on sink.$bits.
     * The function takes the raw queue output and returns the transformed value.

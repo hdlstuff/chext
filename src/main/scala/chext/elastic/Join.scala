@@ -23,9 +23,7 @@ abstract class Join[T <: Data](
   def tpe: String = "Join"
   def namePrefix: String = "join"
 
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage(x => s"Join: $msg $x"))
-  }
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
   private val sourceList = ListBuffer.empty[Interface[Data]]
 

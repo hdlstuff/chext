@@ -78,14 +78,9 @@ abstract class Fold[Tin <: Data, Tout <: Data](
   private var lastFn_ = Option.empty[LastFn]
   private var zeroFn_ = Option.empty[ZeroFn]
 
-  private def require_(cond: Boolean, msg: String): Unit = {
-    require(cond, sourceInfo.makeMessage(x => s"Reduce: $msg $x"))
-  }
+  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
 
-  private def throw_(msg: String) =
-    throw new IllegalArgumentException(sourceInfo.makeMessage(x => s"Reduce: $msg $x"))
-
-  protected final def elem: Tin = throw_("`elem` field shall not be used!")
+  protected final def elem: Tin = require_.fail("`elem` field shall not be used!")
 
   /** Sets the pure transformation function to apply on each input token. Must be called exactly
     * once.
