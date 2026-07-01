@@ -6,6 +6,7 @@ import chisel3.experimental.prefix
 import chisel3.experimental.SourceInfo
 
 import chext.amba.axi4
+import axi4.{Diagnostic, DiagnosticReporter}
 
 import chext.util.SimulationCheck
 
@@ -22,37 +23,20 @@ final class Connect(
   def tpe: String = "Axi4f_Connect"
   def namePrefix: String = "connect"
 
-  private case class Diagnostic(
-      isError: Boolean,
-      message: String,
-      lines: Seq[String] = Seq()
-  ) {
-    def kind: String = if (isError) "error" else "warning"
-  }
-
   private def error(message: String, lines: Seq[String] = Seq()): Diagnostic =
-    Diagnostic(isError = true, message, lines)
+    Diagnostic.error(message, lines)
 
   private def warning(message: String, lines: Seq[String] = Seq()): Diagnostic =
-    Diagnostic(isError = false, message, lines)
+    Diagnostic.warning(message, lines)
 
   private def emitDiagnostics(diagnostics: Seq[Diagnostic]): Unit = {
-    if (diagnostics.nonEmpty) {
-      val prefix = "axi4.full.Connect"
-      val source = sourceInfo.makeMessage((x) => x)
-      println(f"$prefix : diagnostics $source")
-
-      diagnostics.foreach { diagnostic =>
-        println(f"$prefix : ${diagnostic.kind}: ${diagnostic.message}")
-        diagnostic.lines.foreach { line => println(f"$prefix :   $line") }
-      }
-
-      configLines.foreach { line => println(f"$prefix : $line") }
-      interfaceSourceLines.foreach { line => println(f"$prefix : $line") }
-
-      if (diagnostics.exists(_.isError))
-        throw new IllegalArgumentException("axi4.full.Connect failed")
-    }
+    DiagnosticReporter.emit(
+      "axi4.full.Connect",
+      sourceInfo,
+      diagnostics,
+      configLines ++ interfaceSourceLines,
+      "axi4.full.Connect failed"
+    )
   }
 
   private def sourceInfoString(interface: Interface): String =
@@ -404,104 +388,6 @@ final class Connect(
       ).flatten
   }
 
-  private def connectReadBuffered(
-      master: Interface,
-      slave: Interface,
-      cfg: ConnectConfig
-  )(implicit si: SourceInfo): Unit = {
-    if (cfg.rBuffer > 0) {
-      val responseBuffer =
-        Module(
-          new ReadResponseBuffer(
-            master.cfg,
-            ReadResponseBufferConfig(cfg.rBuffer)
-          )
-        )
-      val arSource =
-        if (cfg.arBuffer > 0) elastic.SourceBuffer(master.ar, cfg.arBuffer, name = "arBuffer")
-        else master.ar
-      val connectArIn =
-        new elastic.Connect(
-          arSource.asInstanceOf[elastic.Interface[ReadAddressChannel]],
-          responseBuffer.s_ar
-        )
-      val connectArOut = new elastic.Connect(
-        responseBuffer.m_ar,
-        slave.ar.asInstanceOf[elastic.Interface[ReadAddressChannel]]
-      )
-      val connectROut = new elastic.Connect(slave.r, responseBuffer.m_r)
-      val connectRIn = new elastic.Connect(responseBuffer.s_r, master.r)
-    } else {
-      val arSource =
-        if (cfg.arBuffer > 0) elastic.SourceBuffer(master.ar, cfg.arBuffer, name = "arBuffer")
-        else master.ar
-      val connectAr = new elastic.Connect(arSource, slave.ar)
-      val connectR = new elastic.Connect(slave.r, master.r)
-    }
-  }
-
-  private def connectWriteBuffered(
-      master: Interface,
-      slave: Interface,
-      cfg: ConnectConfig
-  )(implicit si: SourceInfo): Unit = {
-    def connectWriteResponse(
-        awSource: elastic.Interface[AddressChannel],
-        wSource: elastic.Interface[WriteDataChannel]
-    ): Unit = {
-      if (cfg.bBuffer > 0) {
-        val responseBuffer =
-          Module(
-            new WriteResponseBuffer(
-              master.cfg,
-              WriteResponseBufferConfig(cfg.bBuffer)
-            )
-          )
-        val connectAwRespIn = new elastic.Connect(
-          awSource.asInstanceOf[elastic.Interface[WriteAddressChannel]],
-          responseBuffer.s_aw
-        )
-        val connectAwRespOut = new elastic.Connect(
-          responseBuffer.m_aw,
-          slave.aw.asInstanceOf[elastic.Interface[WriteAddressChannel]]
-        )
-        val connectW = new elastic.Connect(wSource, slave.w)
-        val connectBOut = new elastic.Connect(slave.b, responseBuffer.m_b)
-        val connectBIn = new elastic.Connect(responseBuffer.s_b, master.b)
-      } else {
-        val connectAw = new elastic.Connect(awSource, slave.aw)
-        val connectW = new elastic.Connect(wSource, slave.w)
-        val connectB = new elastic.Connect(slave.b, master.b)
-      }
-    }
-
-    if (cfg.wBuffer > 0) {
-      val payloadBuffer =
-        Module(
-          new WritePayloadBuffer(
-            master.cfg,
-            WritePayloadBufferConfig(
-              bufLengthW = cfg.wBuffer,
-              bufLengthAW = math.max(cfg.awBuffer, 1)
-            )
-          )
-        )
-      val connectAwIn = new elastic.Connect(
-        master.aw.asInstanceOf[elastic.Interface[WriteAddressChannel]],
-        payloadBuffer.s_aw
-      )
-      val connectWIn = new elastic.Connect(master.w, payloadBuffer.s_w)
-      connectWriteResponse(payloadBuffer.m_aw, payloadBuffer.m_w)
-    } else if (cfg.awBuffer > 0) {
-      connectWriteResponse(
-        elastic.SourceBuffer(master.aw, cfg.awBuffer, name = "awBuffer"),
-        master.w
-      )
-    } else {
-      connectWriteResponse(master.aw, master.w)
-    }
-  }
-
   private def implConfigured(cfg: ConnectConfig)(implicit si: SourceInfo): Unit = {
     val readCommon = master.cfg.read && slave.cfg.read
     val writeCommon = master.cfg.write && slave.cfg.write
@@ -514,13 +400,13 @@ final class Connect(
     emitDiagnostics(diagnostics)
     insertSimulationChecks(master, slave, cfg)
 
-    if (readCommon) connectReadBuffered(master, slave, cfg)
+    if (readCommon) connectRead(master, slave)
     else {
       if (master.cfg.read && cfg.tieOffMaster) tieOffReadMaster(master)
       if (slave.cfg.read && cfg.tieOffSlave) tieOffReadSlave(slave)
     }
 
-    if (writeCommon) connectWriteBuffered(master, slave, cfg)
+    if (writeCommon) connectWrite(master, slave)
     else {
       if (master.cfg.write && cfg.tieOffMaster) tieOffWriteMaster(master)
       if (slave.cfg.write && cfg.tieOffSlave) tieOffWriteSlave(slave)
@@ -541,15 +427,9 @@ final class Connect(
 
 /** AXI full connection options.
   *
-  * Buffers are per AXI channel. W buffering uses a payload buffer and consumes AW buffering as its
-  * address capacity. Simulation checks only emit hardware when the checked condition is relevant.
+  * Simulation checks only emit hardware when the checked condition is relevant.
   */
 case class ConnectConfig(
-    arBuffer: Int = 0,
-    rBuffer: Int = 0,
-    awBuffer: Int = 0,
-    wBuffer: Int = 0,
-    bBuffer: Int = 0,
     tieOffMaster: Boolean = true,
     tieOffSlave: Boolean = true,
     warnReadWriteMismatch: Boolean = true,
@@ -560,13 +440,7 @@ case class ConnectConfig(
     simCheckAxi3Compat: SimulationCheck = SimulationCheck.Default,
     simCheckIdWidth: SimulationCheck = SimulationCheck.Default,
     simCheckAddrWidth: SimulationCheck = SimulationCheck.Default
-) {
-  require(arBuffer >= 0)
-  require(rBuffer >= 0)
-  require(awBuffer >= 0)
-  require(wBuffer >= 0)
-  require(bBuffer >= 0)
-}
+)
 
 trait ConnectOp {
   /* implicit class names should be different, otherwise shadowed */

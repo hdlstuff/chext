@@ -6,6 +6,7 @@ import java.io.PrintWriter
 import java.nio.file.{Files, Path}
 
 import chext.amba.axi4
+import chext.amba.axi4.lite.components.CreditBufferConfig
 import chext.amba.axi4.lite.ConnectOp._
 import chext.util.SimulationCheck
 
@@ -53,16 +54,20 @@ private class BufferedConnectTop extends Module {
   val master = IO(Slave(cfg))
   val slave = IO(Master(cfg))
 
-  master.connect(
-    slave,
-    ConnectConfig(
-      arBuffer = 2,
-      rBuffer = 2,
-      awBuffer = 2,
-      wBuffer = 2,
-      bBuffer = 2
+  val creditBuffer = Module(
+    new components.CreditBuffer(
+      CreditBufferConfig(
+        axiCfg = cfg,
+        rBuffer = 2,
+        awBuffer = 2,
+        wBuffer = 2,
+        bBuffer = 2
+      )
     )
   )
+
+  master :=> creditBuffer.s_axi
+  creditBuffer.m_axi :=> slave
 }
 
 private class TieOffWarningTop extends Module {
