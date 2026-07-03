@@ -9,15 +9,49 @@ import chext.util.NamedVec
 
 case class Config(
     val wData: Int,
-    val onlyRV: Boolean = false,
     val wId: Int = 0,
     val wDest: Int = 0,
-    val wUser: Int = 0
+    val wUser: Int = 0,
+    val hasStrobe: Boolean = true,
+    val hasKeep: Boolean = true,
+    val hasLast: Boolean = true
 ) {
   require(wData % 8 == 0)
+  require(wId >= 0)
+  require(wDest >= 0)
+  require(wUser >= 0)
 
-  val wStrobe = wData / 8
-  val wKeep = wStrobe
+  private def _maybeZero(p: Boolean, w: Int) = if (p) w else 0
+
+  val wStrobe = _maybeZero(hasStrobe, wData / 8)
+  val wKeep = _maybeZero(hasKeep, wData / 8)
+  val wLast = _maybeZero(hasLast, 1)
+}
+
+object Config {
+  def full(
+      wData: Int = 32,
+      wId: Int = 0,
+      wDest: Int = 0,
+      wUser: Int = 0
+  ): Config =
+    Config(wData = wData, wId = wId, wDest = wDest, wUser = wUser)
+
+  def lite(wData: Int = 32): Config =
+    Config(
+      wData = wData,
+      hasStrobe = false,
+      hasKeep = false,
+      hasLast = false
+    )
+
+  def liteLast(wData: Int = 32): Config =
+    Config(
+      wData = wData,
+      hasStrobe = false,
+      hasKeep = false,
+      hasLast = true
+    )
 }
 
 class Interface(val cfg: Config)(implicit si: SourceInfo) extends Bundle {
@@ -29,15 +63,12 @@ class Interface(val cfg: Config)(implicit si: SourceInfo) extends Bundle {
   val TREADY = Input(Bool())
   val TVALID = Output(Bool())
   val TDATA = Output(UInt(cfg.wData.W))
-  val TSTRB = if (!cfg.onlyRV) Some(Output(UInt(cfg.wStrobe.W))) else None
-  val TKEEP = if (!cfg.onlyRV) Some(Output(UInt(cfg.wKeep.W))) else None
-  val TLAST = if (!cfg.onlyRV) Some(Output(Bool())) else None
-  val TID =
-    if (!cfg.onlyRV && cfg.wId > 0) Some(Output(UInt(cfg.wId.W))) else None
-  val TDEST =
-    if (!cfg.onlyRV && cfg.wDest > 0) Some(Output(UInt(cfg.wDest.W))) else None
-  val TUSER =
-    if (!cfg.onlyRV && cfg.wUser > 0) Some(Output(UInt(cfg.wUser.W))) else None
+  val TSTRB = Output(UInt(cfg.wStrobe.W))
+  val TKEEP = Output(UInt(cfg.wKeep.W))
+  val TLAST = Output(UInt(cfg.wLast.W))
+  val TID = Output(UInt(cfg.wId.W))
+  val TDEST = Output(UInt(cfg.wDest.W))
+  val TUSER = Output(UInt(cfg.wUser.W))
 }
 
 object Master {

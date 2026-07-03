@@ -159,12 +159,12 @@ object TrackingDiagnosticsUtil {
   def driveAxi4sSlaveInputs(axis: axi4s.Interface): Unit = {
     axis.TVALID := false.B
     axis.TDATA := 0.U
-    axis.TSTRB.foreach(_ := 0.U)
-    axis.TKEEP.foreach(_ := 0.U)
-    axis.TLAST.foreach(_ := false.B)
-    axis.TID.foreach(_ := 0.U)
-    axis.TDEST.foreach(_ := 0.U)
-    axis.TUSER.foreach(_ := 0.U)
+    axis.TSTRB := 0.U
+    axis.TKEEP := 0.U
+    axis.TLAST := 0.U
+    axis.TID := 0.U
+    axis.TDEST := 0.U
+    axis.TUSER := 0.U
   }
 }
 
