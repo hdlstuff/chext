@@ -12,6 +12,7 @@ case class Config(
     val wId: Int = 0,
     val wDest: Int = 0,
     val wUser: Int = 0,
+    val hasReady: Boolean = true,
     val hasStrobe: Boolean = true,
     val hasKeep: Boolean = true,
     val hasLast: Boolean = true
@@ -20,6 +21,7 @@ case class Config(
   require(wId >= 0)
   require(wDest >= 0)
   require(wUser >= 0)
+  require(hasReady)
 
   private def _maybeZero(p: Boolean, w: Int) = if (p) w else 0
 

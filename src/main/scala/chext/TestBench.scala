@@ -411,39 +411,35 @@ trait TestBenchTop extends HasHdlinfoModule {
     interfaceNames.addOne(name)
   }
 
-  final def declareAxi4sInterface(
-      interface: chext.amba.axi4s.Interface,
-      associatedClock: String = "clock",
-      associatedReset: String = "reset",
-      interfaceName: Option[String] = None,
-      kind: String = "axi4s",
-      args: Map[String, hdlinfo.TypedObject] = Map.empty
-  )(implicit si: SourceInfo): Unit = {
-    import io.circe.generic.auto._
+  private def axi4sRoleFromData(data: Data, name: String)(implicit
+      si: SourceInfo
+  ): hdlinfo.InterfaceRole = {
+    import chisel3.reflect.DataMirror
 
-    val name = nameFor(interface, interfaceName)
-    requireTestBenchTop.here(
-      !hasInterfaceNamed(name),
-      "duplicate hdlinfo interface",
-      Seq(s"Interface name: $name")
-    )
-
-    val role = {
-      import chisel3.reflect.DataMirror
-
-      DataMirror.directionOf(interface.TDATA) match {
-        case ActualDirection.Input  => hdlinfo.InterfaceRole.slave
-        case ActualDirection.Output => hdlinfo.InterfaceRole.master
-        case _ =>
-          requireTestBenchTop.failHere(
-            "cannot determine AXI4-stream interface role",
-            Seq(
-              s"Interface name: $name",
-              s"TDATA direction: ${DataMirror.directionOf(interface.TDATA)}"
-            )
+    DataMirror.directionOf(data) match {
+      case ActualDirection.Input  => hdlinfo.InterfaceRole.slave
+      case ActualDirection.Output => hdlinfo.InterfaceRole.master
+      case _ =>
+        requireTestBenchTop.failHere(
+          "cannot determine AXI4-stream interface role",
+          Seq(
+            s"Interface name: $name",
+            s"Data direction: ${DataMirror.directionOf(data)}"
           )
-      }
+        )
     }
+  }
+
+  private def declareAxi4sInterfaceImpl(
+      name: String,
+      role: hdlinfo.InterfaceRole,
+      cfg: chext.amba.axi4s.Config,
+      associatedClock: String,
+      associatedReset: String,
+      kind: String,
+      args: Map[String, hdlinfo.TypedObject]
+  ): Unit = {
+    import io.circe.generic.auto._
 
     interfaces.addOne(
       hdlinfo.Interface(
@@ -452,10 +448,78 @@ trait TestBenchTop extends HasHdlinfoModule {
         hdlinfo.InterfaceKind(kind),
         associatedClock,
         associatedReset,
-        Map("config" -> hdlinfo.TypedObject(interface.cfg)) ++ args
+        Map("config" -> hdlinfo.TypedObject(cfg)) ++ args
       )
     )
     interfaceNames.addOne(name)
+  }
+
+  final def declareAxi4sInterface(
+      interface: chext.amba.axi4s.Interface,
+      associatedClock: String = "clock",
+      associatedReset: String = "reset",
+      interfaceName: Option[String] = None,
+      kind: String = "axi4s",
+      args: Map[String, hdlinfo.TypedObject] = Map.empty
+  )(implicit si: SourceInfo): Unit = {
+    val name = nameFor(interface, interfaceName)
+    requireTestBenchTop.here(
+      !hasInterfaceNamed(name),
+      "duplicate hdlinfo interface",
+      Seq(s"Interface name: $name")
+    )
+
+    declareAxi4sInterfaceImpl(
+      name,
+      axi4sRoleFromData(interface.TDATA, name),
+      interface.cfg,
+      associatedClock,
+      associatedReset,
+      kind,
+      args
+    )
+  }
+
+  final def declareAxi4sInterface(
+      interface: chext.elastic.Interface[chext.amba.axi4s.FullChannel],
+      cfg: chext.amba.axi4s.Config,
+      associatedClock: String,
+      associatedReset: String,
+      interfaceName: Option[String],
+      kind: String,
+      args: Map[String, hdlinfo.TypedObject]
+  )(implicit si: SourceInfo): Unit = {
+    val name = nameFor(interface, interfaceName)
+    requireTestBenchTop.here(
+      !hasInterfaceNamed(name),
+      "duplicate hdlinfo interface",
+      Seq(s"Interface name: $name")
+    )
+
+    declareAxi4sInterfaceImpl(
+      name,
+      axi4sRoleFromData(interface.$bits.data, name),
+      cfg,
+      associatedClock,
+      associatedReset,
+      kind,
+      args
+    )
+  }
+
+  final def declareAxi4sInterface(
+      interface: chext.elastic.Interface[chext.amba.axi4s.FullChannel],
+      cfg: chext.amba.axi4s.Config
+  )(implicit si: SourceInfo): Unit = {
+    declareAxi4sInterface(
+      interface = interface,
+      cfg = cfg,
+      associatedClock = "clock",
+      associatedReset = "reset",
+      interfaceName = None,
+      kind = "axi4s_rtl_hier",
+      args = Map.empty
+    )
   }
 
   final def declareElasticInterface[T <: Data](
