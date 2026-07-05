@@ -6,7 +6,7 @@ import chext.elastic
 import elastic.ConnectOp._
 
 object connect {
-  private val require_ = new chext.util.Require("chext.memory.connect")
+  private val require_ = chext.util.Require.inferred()
 
   def apply(
       master: ReadInterface,

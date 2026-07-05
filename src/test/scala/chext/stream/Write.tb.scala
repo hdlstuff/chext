@@ -14,11 +14,13 @@ class Write_Tbtop(
     override val desiredName: String
 ) extends Module
     with chext.TestBenchTop {
+  private val require_ = chext.util.Require.inferred()
+
   private val readCfg = ReadConfig(cfg.axiCfg, resultMode = ReadResultMode.DropEmpty)
   private val read = Module(new Read(readCfg))
   private val write = Module(new Write(cfg))
 
-  require(cfg.axiCfg == axi4.Config(wAddr = 20, wData = 32))
+  require_(cfg.axiCfg == axi4.Config(wAddr = 20, wData = 32))
 
   val rd_sourceTask = IO(elastic.Source(readCfg.genTask))
   val rd_sinkResult = IO(elastic.Sink(readCfg.genResult))

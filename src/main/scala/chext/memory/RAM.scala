@@ -18,6 +18,8 @@ class SinglePortRAM(
     val rawMemCfg: RawMemConfig,
     val portCfg: PortConfig = PortConfig()
 ) extends Module {
+  private val require_ = chext.util.Require.inferred()
+
   import rawMemCfg._
 
   override val desiredName = f"${Target.current.name}SinglePortRAM"
@@ -25,8 +27,8 @@ class SinglePortRAM(
   val read = IO(new ReadInterface(wAddr, wData))
   val write = IO(new WriteInterface(wAddr, wData))
 
-  require(latencyRead >= 1)
-  require(latencyWrite >= 1)
+  require_(latencyRead >= 1)
+  require_(latencyWrite >= 1)
 
   private val rawMem = Module(Target.current.createSinglePortRawRAM(rawMemCfg))
 
@@ -43,6 +45,8 @@ class SinglePortRAM(
 
 class SimpleDualPortRAM(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = PortConfig())
     extends Module {
+  private val require_ = chext.util.Require.inferred()
+
   import rawMemCfg._
 
   override val desiredName = f"${Target.current.name}SimpleDualPortRAM"
@@ -50,8 +54,8 @@ class SimpleDualPortRAM(val rawMemCfg: RawMemConfig, val portCfg: PortConfig = P
   val read = IO(new ReadInterface(wAddr, wData))
   val write = IO(new WriteInterface(wAddr, wData))
 
-  require(latencyRead >= 1)
-  require(latencyWrite >= 1)
+  require_(latencyRead >= 1)
+  require_(latencyWrite >= 1)
 
   private val rawMem = Module(Target.current.createSimpleDualPortRawRAM(rawMemCfg))
 

@@ -22,7 +22,9 @@ case class IdParallelizeConfig(
     val readUseSyncMem: Boolean = true,
     val writeUseSyncMem: Boolean = true
 ) {
-  require(axiSlaveCfg.wId == 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(axiSlaveCfg.wId == 0)
   val axiMasterCfg = axiSlaveCfg.copy(wId = wIdMaster)
 
   // pedantic, to avoid overflows in the calculations
@@ -43,8 +45,10 @@ private class SyncWriteElasticReadMemory[T <: Data](
     val gen: T,
     val useSyncMem: Boolean = true
 ) extends Module {
-  require(wAddr >= 0)
-  require(wAddr <= 30)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(wAddr >= 0)
+  require_(wAddr <= 30)
 
   private val genAddr = UInt(wAddr.W)
   private val rdLatency = 1

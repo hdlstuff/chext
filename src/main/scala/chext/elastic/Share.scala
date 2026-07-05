@@ -22,7 +22,9 @@ case class ShareConfig[Tin <: Data, Tout <: Data](
     val respQueueLength: Int = 2,
     val selQueueLength: Int = 8
 ) {
-  require(log2n >= log2k)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(log2n >= log2k)
 }
 
 /** Deterministic sharing.

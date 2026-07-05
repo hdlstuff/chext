@@ -19,16 +19,18 @@ case class DownscaleConfig(
     val numOutstandingRead: Int = 32,
     val numOutstandingWrite: Int = 32
 ) {
-  require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
-  require(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
-  require(wDataMaster < axiSlaveCfg.wData, "wDataMaster must be < axiSlaveCfg.wData")
+  private val require_ = chext.util.Require.inferred()
 
-  require(wDataMaster >= 8)
-  require(isPow2(wDataMaster))
+  require_(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
+  require_(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
+  require_(wDataMaster < axiSlaveCfg.wData, "wDataMaster must be < axiSlaveCfg.wData")
 
-  require(axiSlaveCfg.wUserR == 0, "User data is not supported on channel R.")
+  require_(wDataMaster >= 8)
+  require_(isPow2(wDataMaster))
 
-  require(
+  require_(axiSlaveCfg.wUserR == 0, "User data is not supported on channel R.")
+
+  require_(
     axiSlaveCfg.wData / wDataMaster <=
       (if (axiSlaveCfg.axi3Compat) 16 else 256),
     "axiSlaveCfg.wData / wDataMaster must be less than 16 or 256 depending on the AXI version!"

@@ -11,9 +11,11 @@ import axi4.Ops._
 import chext.elastic.RandomStall
 
 private class AxiTestSlave(axiCfg: axi4.Config) extends Module {
+  private val require_ = chext.util.Require.inferred()
+
   val s_axi = IO(axi4.full.Slave(axiCfg))
 
-  require(axiCfg.wData == 64)
+  require_(axiCfg.wData == 64)
 
   private def mkData(addr: UInt, index: UInt): UInt = {
     val genUInt32 = UInt(32.W)

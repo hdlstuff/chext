@@ -2,57 +2,75 @@ package chext.util
 
 import chisel3.experimental.SourceInfo
 
-case class Require(
+final class Require private (
     val identifier: String,
     val sourceInfo: Option[SourceInfo] = None
 ) {
   private val indent = " " * identifier.length
 
-  private def sourceSuffix(si: SourceInfo): String = {
-    if (si == null) ""
-    else si.makeMessage(identity)
-  }
+  private def sourceLine(label: String, si: SourceInfo): Option[String] =
+    Option(si).map { si => s"$label: ${si.makeMessage(identity).trim}" }
 
-  private def format(message: String, lines: Seq[String], si: SourceInfo): String = {
-    val first = f"${identifier} : $message ${sourceSuffix(si)}"
-    val rest = lines.map { line => f"${indent}   $line" }
+  private def format(
+      message: String,
+      lines: Seq[String],
+      hereInfo: Option[SourceInfo]
+  ): String = {
+    val first = f"${identifier} : $message"
+    val sourceLines =
+      hereInfo.flatMap(sourceLine("local SourceInfo  ", _)).toSeq ++
+        sourceInfo.flatMap(sourceLine("global SourceInfo ", _)).toSeq
+    val rest = (sourceLines ++ lines).map { line => f"${indent}   $line" }
     (first +: rest).mkString(System.lineSeparator())
   }
 
-  private def raise(message: String, lines: Seq[String], si: SourceInfo): Nothing =
-    throw new IllegalArgumentException(format(message, lines, si))
+  private def raise(
+      message: String,
+      lines: Seq[String],
+      hereInfo: Option[SourceInfo] = None
+  ): Nothing =
+    throw new IllegalArgumentException(format(message, lines, hereInfo))
 
-  def apply(cond: Boolean, message: String)(implicit si: SourceInfo = null): Unit = {
-    if (!cond)
-      raise(message, Seq.empty, sourceInfo.orNull)
+  def apply(cond: sourcecode.Text[Boolean]): Unit = {
+    if (!cond.value)
+      raise(s"requirement failed: ${cond.source}", Seq.empty)
+  }
+
+  def apply(cond: sourcecode.Text[Boolean], message: String)(implicit
+      si: SourceInfo = null
+  ): Unit = {
+    if (!cond.value)
+      raise(message, Seq(s"requirement: ${cond.source}"))
   }
 
   def apply(
-      cond: Boolean,
+      cond: sourcecode.Text[Boolean],
       message: String,
       lines: Seq[String]
   )(implicit si: SourceInfo): Unit = {
-    if (!cond)
-      raise(message, lines, sourceInfo.orNull)
+    if (!cond.value)
+      raise(message, s"requirement: ${cond.source}" +: lines)
   }
 
-  def here(cond: Boolean, message: String)(implicit si: SourceInfo): Unit =
-    if (!cond)
-      failHere(message)
+  def here(cond: sourcecode.Text[Boolean], message: String)(implicit
+      si: SourceInfo
+  ): Unit =
+    if (!cond.value)
+      failHere(message, Seq(s"requirement: ${cond.source}"))
 
   def here(
-      cond: Boolean,
+      cond: sourcecode.Text[Boolean],
       message: String,
       lines: Seq[String]
   )(implicit si: SourceInfo): Unit =
-    if (!cond)
-      failHere(message, lines)
+    if (!cond.value)
+      failHere(message, s"requirement: ${cond.source}" +: lines)
 
   def fail(message: String): Nothing =
     fail(message, Seq.empty)
 
   def fail(message: String, lines: Seq[String]): Nothing =
-    raise(message, lines, sourceInfo.orNull)
+    raise(message, lines)
 
   def failHere(message: String)(implicit si: SourceInfo): Nothing =
     failHere(message, Seq.empty)
@@ -60,42 +78,42 @@ case class Require(
   def failHere(message: String, lines: Seq[String])(implicit
       si: SourceInfo
   ): Nothing =
-    raise(message, lines, si)
+    raise(message, lines, Option(si))
 }
 
-private object MyModule_Emit extends App {
-  import chisel3._
+object Require {
+  def apply(identifier: String): Require =
+    new Require(identifier)
 
-  import chext.elastic
-  import elastic.ConnectOp._
+  def apply(identifier: String, sourceInfo: Option[SourceInfo]): Require =
+    new Require(identifier, sourceInfo)
 
-  import chext.amba.axi4
-  import axi4.Ops._
+  def inferred(): Require =
+    new Require(inferIdentifier())
 
-  class MyModule extends Module {
-    val io = IO(new Bundle {
-      val s_axi = axi4.full.Slave(axi4.Config(wAddr = 8, wData = 256, wId = 5))
-      val m_axi = axi4.full.Master(axi4.Config(wAddr = 8, wData = 256, wId = 8))
-      val source = elastic.Source(UInt(32.W))
-      val sink = elastic.Sink(UInt(32.W))
-    })
+  def inferred(sourceInfo: SourceInfo): Require =
+    new Require(inferIdentifier(), Option(sourceInfo))
 
-    val master = io.s_axi
-    val slave = io.m_axi
-
-    axi4.full.LeftBuffer(master) :=> slave
-    // master :=> slave
-
-    // should fail without the following line
-    io.source :=> io.sink
-
-    // this is not OK, throws a warning
-    io.sink.bits := 0.U
-
-    // this is not OK, supresses the warning
-    io.sink.$bits := 0.U
+  private def inferIdentifier(): String = {
+    val stack = Thread.currentThread().getStackTrace()
+    stack
+      .map(_.getClassName)
+      .find(isUserFrame)
+      .map(normalizeClassName)
+      .getOrElse("unknown")
   }
 
-  // System.out.println("Working Directory = " + System.getProperty("user.dir"));
-  emitVerilog(new MyModule, Array("--target-dir", "output/"))
+  private def isUserFrame(className: String): Boolean =
+    !className.startsWith("java.lang.Thread") &&
+      !className.startsWith("chext.util.Require") &&
+      !className.startsWith("scala.") &&
+      !className.startsWith("java.lang.reflect.") &&
+      !className.startsWith("jdk.internal.reflect.")
+
+  private def normalizeClassName(className: String): String =
+    className
+      .stripSuffix("$")
+      .replace("$package", "")
+      .replace('$', '.')
+      .replaceAll("\\.anon\\$[0-9]+", ".anon")
 }

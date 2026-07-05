@@ -15,7 +15,7 @@ import elastic.ConnectOp._
 import chext.tracking.uniquePrefix
 
 object buffer {
-  val require_ = new chext.util.Require("axi4.full.buffer")
+  private val require_ = chext.util.Require.inferred()
 
   private[full] def insertBufferR(
       master: Interface,

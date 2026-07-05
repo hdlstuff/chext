@@ -78,7 +78,7 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
 
   private var deferredContext_ = false
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   private def requireDeferredContext_(funcName: String)(implicit sourceInfo: SourceInfo): Unit = {
     require_.here(

@@ -12,7 +12,7 @@ object connect {
   import axi4.full.ConnectOp._
   import axi4.lite.ConnectOp._
 
-  private val require_ = new chext.util.Require("axi4.connect")
+  private val require_ = chext.util.Require.inferred()
 
   def apply(
       master: axi4.RawInterface,
@@ -56,6 +56,8 @@ object connect {
 }
 
 trait ConnectOp {
+  private val require_ = chext.util.Require.inferred()
+
   /* implicit class names should be different, otherwise shadowed */
   implicit class axi4_connect_op(master: axi4.RawInterface) {
     def :=>(slave: axi4.RawInterface)(implicit si: SourceInfo) = {
@@ -73,7 +75,7 @@ trait ConnectOp {
 
   implicit class axi4_connect_seq_op(masters: Seq[axi4.RawInterface]) {
     def :=>(slaves: Seq[axi4.RawInterface])(implicit si: SourceInfo): Unit = {
-      require(
+      require_(
         masters.length == slaves.length,
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )

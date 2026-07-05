@@ -9,6 +9,8 @@ import scala.collection.mutable.HashMap
 import scala.collection.mutable.PriorityQueue
 
 object deferred {
+  private val require_ = chext.util.Require.inferred()
+
   // lower the priority hooks are executed later, default priority is one
   private case class Hook(priority: Int, fn: () => Unit)
   private implicit val hookOrdering: Ordering[Hook] = Ordering.by((h: Hook) => h.priority)
@@ -49,7 +51,7 @@ object deferred {
             val methods = classOf[BaseModule].getDeclaredMethods()
             val matchedMethods = methods.filter(_.getName() == "atModuleBodyEnd")
 
-            require(
+            require_(
               matchedMethods.nonEmpty,
               "atModuleBodyEnd, empty matched methods, maybe Chisel had a breaking change?"
             )

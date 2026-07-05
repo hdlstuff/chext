@@ -44,9 +44,11 @@ import chisel3.util._
 //----------------------------------------------------------------------------
 object lowMask
 {
+    private val require_ = chext.util.Require.inferred()
+
     def apply(in: UInt, topBound: BigInt, bottomBound: BigInt): UInt =
     {
-        require(topBound != bottomBound)
+        require_(topBound != bottomBound)
         val numInVals = BigInt(1)<<in.getWidth
         if (topBound < bottomBound) {
             lowMask(~in, numInVals - 1 - topBound, numInVals - 1 - bottomBound)
@@ -124,4 +126,3 @@ object orReduceBy4
         reducedVec.asUInt
     }
 }
-

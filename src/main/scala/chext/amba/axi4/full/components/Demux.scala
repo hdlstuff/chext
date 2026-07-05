@@ -30,15 +30,17 @@ case class DemuxConfig(
     val masterBuffers: BufferConfig = BufferConfig.all(0),
     val arbiterPolicy: elastic.Chooser = elastic.Chooser.rr
 ) {
-  require(!axiSlaveCfg.lite)
-  require(axiSlaveCfg.read || axiSlaveCfg.write)
-  require(numMasters > 0)
+  private val require_ = chext.util.Require.inferred()
 
-  require(numIdsTrackedRead > 0)
-  require(numIdsTrackedWrite > 0)
-  require(numOutstandingRead > 0)
-  require(numOutstandingWrite > 0)
-  require(capacityPortQueueW > 0)
+  require_(!axiSlaveCfg.lite)
+  require_(axiSlaveCfg.read || axiSlaveCfg.write)
+  require_(numMasters > 0)
+
+  require_(numIdsTrackedRead > 0)
+  require_(numIdsTrackedWrite > 0)
+  require_(numOutstandingRead > 0)
+  require_(numOutstandingWrite > 0)
+  require_(capacityPortQueueW > 0)
 
   val wIdTrackedRead: Int = log2Ceil(numIdsTrackedRead + 1)
   val wIdTrackedWrite: Int = log2Ceil(numIdsTrackedWrite + 1)

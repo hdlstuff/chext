@@ -9,6 +9,8 @@ sealed trait SimulationCheck {
 }
 
 object SimulationCheck {
+  private val require_ = chext.util.Require.inferred()
+
   case object Default extends SimulationCheck
   case object None extends SimulationCheck
   case object Printf extends SimulationCheck
@@ -20,7 +22,7 @@ object SimulationCheck {
   def default: SimulationCheck = defaultPolicy
 
   def setDefault(policy: SimulationCheck): Unit = {
-    require(
+    require_(
       policy != Default,
       "Default cannot be the global simulation check policy"
     )

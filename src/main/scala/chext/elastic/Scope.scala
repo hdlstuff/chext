@@ -28,7 +28,7 @@ class Scope[Tinit <: Data, Texit <: Data](
   private var initFn_ = Option.empty[InitFn]
   private var exitFn_ = Option.empty[ExitFn]
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   protected final def init(fn: => InitFn)(implicit si_ : SourceInfo): Unit = {
     require_.here(

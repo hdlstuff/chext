@@ -14,14 +14,16 @@ class SyncReadMemController(
     val axiCfg: axi4.Config,
     val debugEnabled: Boolean = false
 ) extends Module {
+  private val require_ = chext.util.Require.inferred()
+
   val genData = Bits(axiCfg.wData.W)
 
   val addrBitLow = log2Ceil(axiCfg.wData) - 3
   val addrBitHigh = addrBitLow + log2numElements - 1
 
-  require(axiCfg.lite)
-  require(log2numElements > 0)
-  require(addrBitHigh < axiCfg.wAddr)
+  require_(axiCfg.lite)
+  require_(log2numElements > 0)
+  require_(addrBitHigh < axiCfg.wAddr)
 
   /** AXI4-Lite slave interface for reading from and writing to the Synchronous
     * Read Memory.

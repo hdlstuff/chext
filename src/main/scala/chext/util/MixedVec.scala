@@ -62,6 +62,8 @@ object MixedVec {
 final class MixedVec[T <: Data](private val eltsIn: Seq[T])
     extends Record
     with collection.immutable.IndexedSeq[T] {
+  private val require_ = chext.util.Require.inferred()
+
   // We want to create MixedVec only with Chisel types.
   eltsIn.foreach(e => requireIsChiselType(e))
 
@@ -87,7 +89,7 @@ final class MixedVec[T <: Data](private val eltsIn: Seq[T])
     * @group connection
     */
   def :=(that: Seq[T]): Unit = {
-    require(this.length == that.length)
+    require_(this.length == that.length)
     for ((a, b) <- this.zip(that))
       a := b
   }

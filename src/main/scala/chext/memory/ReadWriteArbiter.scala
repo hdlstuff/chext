@@ -19,7 +19,9 @@ object ReadWriteArbiter {
   *   be at least 1.
   */
 class BasicReadWriteArbiter(maxCount: Int) extends Module with ReadWriteArbiter {
-  require(maxCount > 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(maxCount > 0)
 
   val stRead = 0
   val stWrite = 1

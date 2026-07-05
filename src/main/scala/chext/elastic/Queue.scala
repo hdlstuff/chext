@@ -19,6 +19,8 @@ import ConnectOp._
 import chisel3.hacks.deferred
 
 private object memory_impl {
+  private val require_ = chext.util.Require.inferred()
+
   trait Memory {
     val count: Int
     val addrWidth: Int
@@ -214,7 +216,7 @@ private object memory_impl {
       val addrWidth: Int,
       val dataWidth: Int
   ) extends Memory {
-    require(dataWidth == 0, "no_data_mem needs dataWidth == 0")
+    require_(dataWidth == 0, "no_data_mem needs dataWidth == 0")
 
     def noRead(): Unit = {
       // nop
@@ -239,7 +241,7 @@ private object memory_impl {
       val dataWidth: Int
   ) extends Memory
       with AffectsChiselPrefix {
-    require(count == 1, "single_elem_mem needs count == 1")
+    require_(count == 1, "single_elem_mem needs count == 1")
 
     val mem = RegInit(0.U(dataWidth.W))
 
@@ -262,6 +264,8 @@ private object memory_impl {
 }
 
 object Queue {
+  private val require_ = chext.util.Require.inferred()
+
   def between[T <: Data](
       source: Interface[T],
       sink: Interface[T],
@@ -272,7 +276,7 @@ object Queue {
   )(implicit si: SourceInfo): Unit = {
     requireIsHardware(source, "Queue source must be hardware.")
     requireIsHardware(sink, "Queue sink must be hardware.")
-    require(count >= 0, "Length must be non-negative.")
+    require_(count >= 0, "Length must be non-negative.")
 
     if (count == 0) {
       source :=> sink
@@ -292,7 +296,7 @@ object Queue {
       flow: Boolean = false,
       useSyncReadMem: Boolean = false
   )(implicit si: SourceInfo): Queue[T, T] = {
-    require(count > 0, "Length must be positive.")
+    require_(count > 0, "Length must be positive.")
     requireIsChiselType(gen)
 
     val source = EWire(gen)
@@ -316,8 +320,6 @@ class Queue[Tin <: Data, Tout <: Data](
     val useSyncReadMem: Boolean = false
 )(implicit si_ : SourceInfo)
     extends Component {
-  require(count >= 0, "Length must be non-negative.")
-
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sink.$bits)
 
@@ -333,7 +335,9 @@ class Queue[Tin <: Data, Tout <: Data](
 
   private var outFn_ = Option.empty[OutFn]
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
+
+  require_(count >= 0, "Length must be non-negative.")
 
   protected final def in: Tin = require_.fail("`in` field shall not be used!")
 

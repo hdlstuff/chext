@@ -17,8 +17,10 @@ case class IdSerializeConfig(
     val numOutstandingWrite: Int = 4,
     val wIdSelect: Int = 0
 ) {
-  require(!axiSlaveCfg.lite)
-  require(axiSlaveCfg.read || axiSlaveCfg.write)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(!axiSlaveCfg.lite)
+  require_(axiSlaveCfg.read || axiSlaveCfg.write)
 
   val axiMasterCfg = axiSlaveCfg.copy(wId = 0)
 }

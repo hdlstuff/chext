@@ -13,6 +13,8 @@ class NamedVec[T <: Data](
     naming: NamedVec.Naming = NamedVec.Plain
 ) extends Record
     with IndexedSeq[T] {
+  private val require_ = chext.util.Require.inferred()
+
   import scala.collection.immutable.SeqMap
   import chisel3.reflect.DataMirror
   import chisel3.experimental.requireIsChiselType
@@ -20,7 +22,7 @@ class NamedVec[T <: Data](
   requireIsChiselType(gen)
 
   private val names = Array.tabulate(n) { index => naming.name(index, n) }
-  require(names.distinct.length == names.length, "NamedVec element names must be distinct.")
+  require_(names.distinct.length == names.length, "NamedVec element names must be distinct.")
 
   val elements: SeqMap[String, Data] = SeqMap.from(
     Array

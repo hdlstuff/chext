@@ -29,20 +29,21 @@ final class Counter(
     val start: Long = 0
 )(implicit si_ : SourceInfo)
     extends Component {
+  private val require_ = chext.util.Require.inferred()
 
   override def tpe: String = "Counter"
   override def namePrefix: String = "counter"
   override val sourceInfo: SourceInfo = si_
 
-  require(sink.$bits.widthKnown)
-  require((maxValueExclusive == -1) || (maxValueExclusive > 0))
+  require_(sink.$bits.widthKnown)
+  require_((maxValueExclusive == -1) || (maxValueExclusive > 0))
 
   private val wCount = (sink.$bits.getWidth)
   private val maxValueExclusive_ =
     if (maxValueExclusive == -1) (1L << wCount)
     else maxValueExclusive
 
-  require(start < maxValueExclusive_)
+  require_(start < maxValueExclusive_)
 
   addSinkPort("sink", sink)
 

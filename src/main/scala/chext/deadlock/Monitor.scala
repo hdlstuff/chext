@@ -43,6 +43,8 @@ object Monitor {
 }
 
 class Monitor(val component: Component) {
+  private val require_ = chext.util.Require.inferred()
+
   private val sourceInterfaces = component.getSourceInterfaces()
   private val sinkInterfaces = component.getSinkInterfaces()
 
@@ -61,7 +63,7 @@ class Monitor(val component: Component) {
 
   protected implicit class interface_ops[T <: Data](interface: e.Interface[T]) {
     def waitValid: Bool = {
-      require(
+      require_(
         sourceInterfaceSet.contains(interface),
         "unknown source interface registered for deadlock detection"
       )
@@ -70,7 +72,7 @@ class Monitor(val component: Component) {
     }
 
     def waitReady: Bool = {
-      require(
+      require_(
         sinkInterfaceSet.contains(interface),
         "unknown sink interface registered for deadlock detection"
       )

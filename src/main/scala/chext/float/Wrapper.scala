@@ -17,8 +17,10 @@ class Wrapper[
     val moduleDelay: Int,
     val queueLength: Int = 2
 ) extends Module {
-  require(moduleDelay >= 0)
-  require(queueLength >= 1)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(moduleDelay >= 0)
+  require_(queueLength >= 1)
 
   val source = IO(elastic.Source(genInput))
   val sink = IO(elastic.Sink(genOutput))

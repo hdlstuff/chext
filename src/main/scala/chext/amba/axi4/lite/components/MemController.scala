@@ -13,8 +13,10 @@ import axi4.lite.WriteResponseChannel
 import chext.amba.axi4.{Config, ResponseFlag}
 
 class MemDebugPort(val wAddr: Int, val wData: Int) extends Bundle {
-  require(wAddr > 0)
-  require(wData > 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(wAddr > 0)
+  require_(wData > 0)
 
   val waddr = Input(UInt(wAddr.W))
   val wdata = Input(Bits(wData.W))
@@ -29,14 +31,16 @@ class MemController(
     val axiCfg: axi4.Config,
     val debugEnabled: Boolean = false
 ) extends Module {
+  private val require_ = chext.util.Require.inferred()
+
   val genData = Bits(axiCfg.wData.W)
 
   val addrBitLow = log2Ceil(axiCfg.wData) - 3
   val addrBitHigh = addrBitLow + log2numElements - 1
 
-  require(axiCfg.lite)
-  require(log2numElements > 0)
-  require(addrBitHigh < axiCfg.wAddr)
+  require_(axiCfg.lite)
+  require_(log2numElements > 0)
+  require_(addrBitHigh < axiCfg.wAddr)
 
   /** AXI4-Lite slave interface for reading from and writing to the Synchronous Read Memory.
     *

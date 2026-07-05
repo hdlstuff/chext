@@ -41,7 +41,7 @@ final class Arbiter[Tin <: Data, Tout <: Data](
   override def namePrefix: String = "arbiter"
   override val sourceInfo: SourceInfo = si_
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   require_(sources.nonEmpty, "requires at least one source interface")
   require_(

@@ -4,9 +4,11 @@ import chisel3._
 import chisel3.util._
 
 class SteerLeft(val wDataInput: Int, val wDataOutput: Int) extends Module {
-  require(isPow2(wDataInput), "'isPow2(wDataInput)' must be true!")
-  require(isPow2(wDataOutput), "'isPow2(wDataOutput)' must be true!")
-  require(wDataOutput >= wDataInput, "'wDataOutput >= wDataInput' must be true!")
+  private val require_ = chext.util.Require.inferred()
+
+  require_(isPow2(wDataInput), "'isPow2(wDataInput)' must be true!")
+  require_(isPow2(wDataOutput), "'isPow2(wDataOutput)' must be true!")
+  require_(wDataOutput >= wDataInput, "'wDataOutput >= wDataInput' must be true!")
 
   val wOffset = log2Ceil(wDataOutput) - log2Ceil(wDataInput)
 
@@ -26,9 +28,11 @@ class SteerLeft(val wDataInput: Int, val wDataOutput: Int) extends Module {
 }
 
 class SteerRight(val wDataInput: Int, val wDataOutput: Int) extends Module {
-  require(isPow2(wDataInput), "'isPow2(wDataInput)' must be true!")
-  require(isPow2(wDataOutput), "'isPow2(wDataOutput)' must be true!")
-  require(wDataOutput <= wDataInput, "'wDataOutput <= wDataInput' must be true!")
+  private val require_ = chext.util.Require.inferred()
+
+  require_(isPow2(wDataInput), "'isPow2(wDataInput)' must be true!")
+  require_(isPow2(wDataOutput), "'isPow2(wDataOutput)' must be true!")
+  require_(wDataOutput <= wDataInput, "'wDataOutput <= wDataInput' must be true!")
   val wOffset = log2Ceil(wDataInput) - log2Ceil(wDataOutput)
 
   val dataIn = IO(Input(UInt(wDataInput.W)))

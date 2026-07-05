@@ -57,7 +57,7 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
   private var lenFn_ = Option.empty[LenFn]
   private var outFn_ = Option.empty[OutFn]
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   protected final def in: Tin = require_.fail("in field shall not be used!")
 

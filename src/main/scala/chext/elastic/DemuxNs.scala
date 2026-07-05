@@ -37,7 +37,7 @@ class DemuxNs[Tin <: Data, Tout <: Data](
   override def namePrefix: String = "demuxNs"
   override val sourceInfo: SourceInfo = si_
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   require_(sinks.nonEmpty, "requires at least one sink interface")
 

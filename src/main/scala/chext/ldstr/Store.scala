@@ -15,8 +15,10 @@ case class StoreConfig[Tuser <: Data](
     val genUser: Tuser = UInt(0.W),
     val numOutstandingTasks: Int = 8
 ) {
-  require(!axiCfg.lite)
-  require(axiCfg.write)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(!axiCfg.lite)
+  require_(axiCfg.write)
 
   val genTask = new Task(genUser, axiCfg.wAddr)
   val genResult = new StoreResult(this)

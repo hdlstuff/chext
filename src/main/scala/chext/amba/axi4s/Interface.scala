@@ -17,11 +17,13 @@ case class Config(
     val hasKeep: Boolean = true,
     val hasLast: Boolean = true
 ) {
-  require(wData % 8 == 0)
-  require(wId >= 0)
-  require(wDest >= 0)
-  require(wUser >= 0)
-  require(hasReady)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(wData % 8 == 0)
+  require_(wId >= 0)
+  require_(wDest >= 0)
+  require_(wUser >= 0)
+  require_(hasReady)
 
   private def _maybeZero(p: Boolean, w: Int) = if (p) w else 0
 

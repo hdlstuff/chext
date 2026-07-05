@@ -21,13 +21,15 @@ case class MuxConfig(
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
     val arbiterPolicy: elastic.Chooser = elastic.Chooser.rr
 ) {
-  require(axiSlaveCfg.lite, "should use AXI4 lite")
-  require(axiSlaveCfg.read || axiSlaveCfg.write, "must be at least read or write")
-  require(numSlaves > 0, "number of slaves must be positive")
+  private val require_ = chext.util.Require.inferred()
 
-  require(capacityPortQueueR > 0)
-  require(capacityPortQueueW > 0)
-  require(capacityPortQueueB > 0)
+  require_(axiSlaveCfg.lite, "should use AXI4 lite")
+  require_(axiSlaveCfg.read || axiSlaveCfg.write, "must be at least read or write")
+  require_(numSlaves > 0, "number of slaves must be positive")
+
+  require_(capacityPortQueueR > 0)
+  require_(capacityPortQueueW > 0)
+  require_(capacityPortQueueB > 0)
 
   val wPort = log2Up(numSlaves)
 

@@ -24,7 +24,7 @@ abstract class Fork[T <: Data](
   def tpe: String = "Fork"
   def namePrefix: String = "fork"
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   private val sinkList = ListBuffer.empty[Interface[Data]]
 

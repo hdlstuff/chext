@@ -14,11 +14,13 @@ case class CreditBufferConfig(
     val wBuffer: Int = 8,
     val bBuffer: Int = 32
 ) {
-  require(!axiCfg.lite)
-  require(axiCfg.read || axiCfg.write)
-  require(rBuffer >= 0)
-  require(wBuffer >= 0)
-  require(bBuffer >= 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(!axiCfg.lite)
+  require_(axiCfg.read || axiCfg.write)
+  require_(rBuffer >= 0)
+  require_(wBuffer >= 0)
+  require_(bBuffer >= 0)
 
   val axiMasterCfg: axi4.Config = axiCfg
 }
@@ -115,8 +117,10 @@ case class ReadResponseBufferConfig(
     val axiCfg: axi4.Config,
     val bufLengthR: Int = 32
 ) {
-  require(axiCfg.read && !axiCfg.lite)
-  require(bufLengthR >= 1)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(axiCfg.read && !axiCfg.lite)
+  require_(bufLengthR >= 1)
 }
 
 /** AXI4 read response buffer.
@@ -167,8 +171,10 @@ case class WriteResponseBufferConfig(
     val axiCfg: axi4.Config,
     val bufLengthB: Int = 8
 ) {
-  require(axiCfg.write && !axiCfg.lite)
-  require(bufLengthB >= 1)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(axiCfg.write && !axiCfg.lite)
+  require_(bufLengthB >= 1)
 }
 
 /** AXI4 write response buffer.
@@ -218,8 +224,10 @@ case class WritePayloadBufferConfig(
     val axiCfg: axi4.Config,
     val bufLengthW: Int = 32
 ) {
-  require(axiCfg.write && !axiCfg.lite)
-  require(bufLengthW >= 1)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(axiCfg.write && !axiCfg.lite)
+  require_(bufLengthW >= 1)
 }
 
 /** AXI4 write payload buffer.

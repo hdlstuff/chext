@@ -60,6 +60,8 @@ sealed trait BaseComponent extends HasPath {
 }
 
 trait Container extends BaseComponent {
+  private val require_ = chext.util.Require.inferred()
+
   private val components_ = ArrayBuffer.empty[BaseComponent]
   private val args_ = ArrayBuffer.empty[(String, TypedObject)]
 
@@ -68,7 +70,7 @@ trait Container extends BaseComponent {
     * @param baseComponent
     */
   final def addChild(baseComponent: BaseComponent): Unit = {
-    require(
+    require_(
       baseComponent.parentOption.isEmpty,
       "Container.addChild: the baseComponent must not have a parent already!"
     )

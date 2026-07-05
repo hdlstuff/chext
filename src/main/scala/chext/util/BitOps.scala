@@ -4,6 +4,8 @@ import chisel3._
 import chisel3.util._
 
 object BitOps {
+  private val require_ = chext.util.Require.inferred()
+
   implicit class UIntOps_impl(x: UInt) {
     val width = x.getWidth
 
@@ -29,14 +31,14 @@ object BitOps {
     def resetLsbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
-      require(n >= 0 && n <= width)
+      require_(n >= 0 && n <= width)
       x & ~makeLsbMaskN(n)
     }
 
     def resetMsbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
-      require(n >= 0 && n <= width)
+      require_(n >= 0 && n <= width)
       x & ~makeMsbMaskN(n)
     }
 
@@ -48,21 +50,21 @@ object BitOps {
     def setLsbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
-      require(n >= 0 && n <= width)
+      require_(n >= 0 && n <= width)
       x | makeLsbMaskN(n)
     }
 
     def setMsbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
-      require(n >= 0 && n <= width)
+      require_(n >= 0 && n <= width)
       x | makeMsbMaskN(n)
     }
 
     def lsbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
-      require(n >= 0 && n <= width)
+      require_(n >= 0 && n <= width)
 
       if (n == 0)
         0.U(0.W)
@@ -75,7 +77,7 @@ object BitOps {
     def msbN(n: Int): UInt = {
       chisel3.experimental.requireIsHardware(x)
 
-      require(n >= 0 && n <= width)
+      require_(n >= 0 && n <= width)
       if (n == 0)
         0.U(0.W)
       else
@@ -94,7 +96,7 @@ object BitOps {
       chisel3.experimental.requireIsHardware(x)
 
       if (x.widthKnown)
-        indices.foreach { index => require(index < x.getWidth) }
+        indices.foreach { index => require_(index < x.getWidth) }
 
       if (indices.isEmpty)
         0.U(0.W)
@@ -134,7 +136,7 @@ object BitOps {
       */
     def drop(indices: Seq[Int]): UInt = {
       chisel3.experimental.requireIsHardware(x)
-      require(x.widthKnown)
+      require_(x.widthKnown)
 
       extractLittle((0 until x.getWidth).filter { (x) => !indices.contains(x) })
     }

@@ -13,9 +13,11 @@ class TransactionTracker(
     val wPort: Int,
     val wOutstanding: Int
 ) extends Module {
-  require(wIdTracked >= 0)
-  require(wPort >= 0)
-  require(wOutstanding >= 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(wIdTracked >= 0)
+  require_(wPort >= 0)
+  require_(wOutstanding >= 0)
 
   class IdCountPort extends Bundle {
     val id = Input(UInt(wIdTracked.W))

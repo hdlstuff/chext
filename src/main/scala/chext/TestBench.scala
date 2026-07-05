@@ -59,7 +59,7 @@ trait HasHdlinfoModule extends RawModule {
 
 private object Axi4HdlinfoDeclaration {
   private val requireAxi4 =
-    chext.util.Require("TestBenchTop.declareAxi4Interface")
+    chext.util.Require("chext.TestBenchTop.declareAxi4Interface")
 
   private sealed trait Axi4InterfaceDeclaration[-T <: Data] {
     def cfg(interface: T): chext.amba.axi4.Config
@@ -154,7 +154,7 @@ private object Axi4HdlinfoDeclaration {
 /** Utility trait that allows for easier registration of the hdlinfo object.
   */
 trait TestBenchTop extends HasHdlinfoModule {
-  private val requireTestBenchTop = chext.util.Require("TestBenchTop")
+  private val requireTestBenchTop = chext.util.Require.inferred()
 
   private val encodedDataBuilder = new chext.util.EncodedDataBuilder()
   private val ports = scala.collection.mutable.ArrayBuffer.empty[hdlinfo.Port]

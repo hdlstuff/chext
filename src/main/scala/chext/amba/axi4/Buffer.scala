@@ -16,11 +16,13 @@ case class BufferConfig(
     ar: Int = 0,
     r: Int = 0
 ) {
-  require(aw >= 0)
-  require(w >= 0)
-  require(b >= 0)
-  require(ar >= 0)
-  require(r >= 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(aw >= 0)
+  require_(w >= 0)
+  require_(b >= 0)
+  require_(ar >= 0)
+  require_(r >= 0)
 }
 
 object BufferConfig {
@@ -28,7 +30,7 @@ object BufferConfig {
 }
 
 object buffer {
-  private val require_ = new chext.util.Require("axi4.buffer")
+  private val require_ = chext.util.Require.inferred()
 
   def apply(
       master: RawInterface,

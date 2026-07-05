@@ -14,12 +14,14 @@ case class UnburstConfig(
     val numOutstandingRead: Int = 32,
     val numOutstandingWrite: Int = 32
 ) {
-  require(axiCfg.wId == 0, "axiCfg.wId must be zero!")
-  require(!axiCfg.lite, "axiCfg.lite must be false!")
-  require(numOutstandingRead >= 2, "AR queue capacity must be >= 2!")
-  require(numOutstandingWrite >= 2, "AW queue capacity must be >= 2!")
+  private val require_ = chext.util.Require.inferred()
 
-  require(axiCfg.wUserB == 0, "user data is not supported on channel B.")
+  require_(axiCfg.wId == 0, "axiCfg.wId must be zero!")
+  require_(!axiCfg.lite, "axiCfg.lite must be false!")
+  require_(numOutstandingRead >= 2, "AR queue capacity must be >= 2!")
+  require_(numOutstandingWrite >= 2, "AW queue capacity must be >= 2!")
+
+  require_(axiCfg.wUserB == 0, "user data is not supported on channel B.")
 
   val wAddr = axiCfg.wAddr
   val wData = axiCfg.wData

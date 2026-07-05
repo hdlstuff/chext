@@ -19,6 +19,8 @@ private[tracking] class ModuleInfo(
     val module: BaseModule,
     val parent: Option[ModuleInfo]
 ) {
+  private val require_ = chext.util.Require.inferred()
+
   private var atModuleBodyEndCalled_ = false
   private val logger = new Logger("tracking")
 
@@ -257,7 +259,7 @@ private[tracking] class ModuleInfo(
   /** Called when the module body completes.
     */
   def atModuleBodyEnd(): Unit = {
-    require(!atModuleBodyEndCalled_, "atModuleBodyEnd must be called once!")
+    require_(!atModuleBodyEndCalled_, "atModuleBodyEnd must be called once!")
     atModuleBodyEndCalled_ = true
 
     val wires = ModuleInternals

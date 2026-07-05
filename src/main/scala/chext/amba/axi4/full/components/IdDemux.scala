@@ -25,11 +25,13 @@ case class IdDemuxConfig(
     val capacityPortQueueW: Int = 8,
     val arbiterPolicy: elastic.Chooser = elastic.Chooser.rr
 ) {
-  require(!axiSlaveCfg.lite)
-  require(axiSlaveCfg.read || axiSlaveCfg.write)
-  require(wIdSel >= 0)
-  require(axiSlaveCfg.wId >= wIdSel)
-  require(capacityPortQueueW > 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(!axiSlaveCfg.lite)
+  require_(axiSlaveCfg.read || axiSlaveCfg.write)
+  require_(wIdSel >= 0)
+  require_(axiSlaveCfg.wId >= wIdSel)
+  require_(capacityPortQueueW > 0)
 
   val numMasters = 1 << wIdSel
   val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId - wIdSel)

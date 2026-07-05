@@ -38,10 +38,11 @@ class RegisterBlock(
     val wData: Int = 32,
     val wMask: Int = 4
 ) {
+  private val require_ = chext.util.Require.inferred()
 
-  require(chisel3.util.isPow2(wData))
-  require(wMask <= 31, "the implementation supports only 31-bit masks")
-  require(wMask >= (log2Ceil(wData) - 3))
+  require_(chisel3.util.isPow2(wData))
+  require_(wMask <= 31, "the implementation supports only 31-bit masks")
+  require_(wMask >= (log2Ceil(wData) - 3))
 
   /** address increment */
   val addrIncr = wData / 8
@@ -112,10 +113,10 @@ class RegisterBlock(
       write: Boolean = true,
       desc: String = "<no description>"
   ): Int = {
-    require(t.getWidth <= wData)
+    require_(t.getWidth <= wData)
     val ret = lastAddr_
     lastAddr_ = lastAddr_ + addrIncr
-    require(lastAddr_ <= sizeAddressSpace, "Address space is too small.")
+    require_(lastAddr_ <= sizeAddressSpace, "Address space is too small.")
     val readFn = if (read) () => t.asUInt else () => (-1).S(wData.W).asUInt
     val writeFn =
       if (write) (wdata: Bits, wstrb: Bits) => {
@@ -143,7 +144,7 @@ class RegisterBlock(
       lastAddr_ = lastAddr_ + size
     else
       lastAddr_ = lastAddr_ + (size / addrIncr + 1) * addrIncr
-    require(lastAddr_ <= sizeAddressSpace, "Address space is too small.")
+    require_(lastAddr_ <= sizeAddressSpace, "Address space is too small.")
     addrMap_.addOne((ret, lastAddr_ - 1, () => 0.U, (_, _) => (), desc))
     ret
   }

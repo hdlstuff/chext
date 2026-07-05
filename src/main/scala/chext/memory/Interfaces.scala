@@ -13,8 +13,10 @@ class RawInterface(
     val supportsRead: Boolean = true,
     val supportsWrite: Boolean = true
 ) extends Bundle {
-  require(wData >= 8 && (wData % 8) == 0)
-  require(supportsRead || supportsWrite)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(wData >= 8 && (wData % 8) == 0)
+  require_(supportsRead || supportsWrite)
 
   val wStrobe = (wData >> 3)
 
@@ -36,14 +38,18 @@ class ReadInterface(
     val wData: Int
 )(implicit si: SourceInfo)
     extends Bundle {
-  require(wData >= 8 && (wData % 8) == 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(wData >= 8 && (wData % 8) == 0)
 
   val req = elastic.Source(UInt(wAddr.W))
   val resp = elastic.Sink(UInt(wData.W))
 }
 
 class WriteRequest(wAddr: Int, wData: Int) extends Bundle {
-  require(wData >= 8 && (wData % 8) == 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(wData >= 8 && (wData % 8) == 0)
 
   val wStrobe = (wData >> 3)
 

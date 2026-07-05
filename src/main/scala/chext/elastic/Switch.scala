@@ -64,7 +64,7 @@ abstract class Switch[Tin <: Data, Tout <: Data](
   def tpe: String = "Switch"
   def namePrefix: String = "switch"
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sink.$bits)

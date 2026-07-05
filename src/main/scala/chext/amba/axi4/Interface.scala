@@ -89,9 +89,11 @@ case class Config(
     val wUserW: Int = 0,
     val wUserB: Int = 0
 ) {
-  require(wData >= 8)
-  require(isPow2(wData))
-  require(!lite || (wData == 32 || wData == 64))
+  private val require_ = chext.util.Require.inferred()
+
+  require_(wData >= 8)
+  require_(isPow2(wData))
+  require_(!lite || (wData == 32 || wData == 64))
 
   /** width of the strobe signal for the write data channel */
   val wStrobe = wData / 8

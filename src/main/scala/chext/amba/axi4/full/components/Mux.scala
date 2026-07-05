@@ -18,9 +18,11 @@ case class MuxConfig(
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
     val arbiterPolicy: elastic.Chooser = elastic.Chooser.rr
 ) {
-  require(!axiSlaveCfg.lite)
-  require(axiSlaveCfg.read || axiSlaveCfg.write)
-  require(numSlaves > 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(!axiSlaveCfg.lite)
+  require_(axiSlaveCfg.read || axiSlaveCfg.write)
+  require_(numSlaves > 0)
 
   val wPort = log2Ceil(numSlaves)
   val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId + wPort)

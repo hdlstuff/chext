@@ -29,7 +29,7 @@ class Loop[Tstate <: Data](
 
   private var endFn_ = Option.empty[EndFn]
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   /** Declares a combinational function that maps the state to whether its
     * complete or not.

@@ -9,11 +9,13 @@ import chext.elastic
 import elastic.ConnectOp._
 
 object IdExtend {
+  private val require_ = chext.util.Require.inferred()
+
   def read(
       slaveInterfaces: Seq[axi4.full.Interface],
       masterInterfaces: Seq[axi4.full.Interface]
   ): Unit = {
-    require(slaveInterfaces.length == masterInterfaces.length)
+    require_(slaveInterfaces.length == masterInterfaces.length)
 
     slaveInterfaces.zipWithIndex.zip(masterInterfaces).map {
       case ((slave, port), master) => {
@@ -22,8 +24,8 @@ object IdExtend {
 
         master.ar.$bits.id := port.U ## slave.ar.$bits.id
 
-        require(slave.cfg.read && master.cfg.read)
-        require(master.cfg.wId >= slave.cfg.wId + log2Ceil(slaveInterfaces.length))
+        require_(slave.cfg.read && master.cfg.read)
+        require_(master.cfg.wId >= slave.cfg.wId + log2Ceil(slaveInterfaces.length))
       }
     }
   }
@@ -32,7 +34,7 @@ object IdExtend {
       slaveInterfaces: Seq[axi4.full.Interface],
       masterInterfaces: Seq[axi4.full.Interface]
   ): Unit = {
-    require(slaveInterfaces.length == masterInterfaces.length)
+    require_(slaveInterfaces.length == masterInterfaces.length)
 
     slaveInterfaces.zipWithIndex.zip(masterInterfaces).map {
       case ((slave, port), master) => {
@@ -42,8 +44,8 @@ object IdExtend {
 
         master.aw.$bits.id := port.U ## slave.aw.$bits.id
 
-        require(slave.cfg.write && master.cfg.write)
-        require(master.cfg.wId >= slave.cfg.wId + log2Ceil(slaveInterfaces.length))
+        require_(slave.cfg.write && master.cfg.write)
+        require_(master.cfg.wId >= slave.cfg.wId + log2Ceil(slaveInterfaces.length))
       }
     }
   }

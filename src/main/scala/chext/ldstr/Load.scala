@@ -15,8 +15,10 @@ case class LoadConfig[Tuser <: Data](
     val genUser: Tuser = UInt(0.W),
     val numOutstandingTasks: Int = 8
 ) {
-  require(!axiCfg.lite)
-  require(axiCfg.read)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(!axiCfg.lite)
+  require_(axiCfg.read)
 
   val genTask = new Task(genUser, axiCfg.wAddr)
   val genResult = new LoadResult(this)

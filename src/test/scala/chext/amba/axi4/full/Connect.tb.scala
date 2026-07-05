@@ -99,6 +99,8 @@ private class TieOffWarningTop extends Module {
 }
 
 object ConnectDiag_Tb extends App {
+  private val require_ = chext.util.Require.inferred()
+
   private val outputDir = Path.of("output", "connect_diag")
   Files.createDirectories(outputDir)
 
@@ -175,7 +177,7 @@ object ConnectDiag_Tb extends App {
         throw new RuntimeException(s"case was expected to fail: ${testCase.name}")
 
       testCase.contains.foreach { needle =>
-        require(
+        require_(
           sv.contains(needle),
           s"case '${testCase.name}' did not generate expected text: $needle"
         )

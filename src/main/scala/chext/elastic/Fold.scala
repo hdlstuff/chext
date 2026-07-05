@@ -78,7 +78,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
   private var lastFn_ = Option.empty[LastFn]
   private var zeroFn_ = Option.empty[ZeroFn]
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   protected final def elem: Tin = require_.fail("`elem` field shall not be used!")
 

@@ -443,6 +443,8 @@ case class ConnectConfig(
 )
 
 trait ConnectOp {
+  private val require_ = chext.util.Require.inferred()
+
   /* implicit class names should be different, otherwise shadowed */
   implicit class axi4_full_connect_op(master: Interface) {
     def :=>(slave: Interface)(implicit si: SourceInfo) = {
@@ -462,7 +464,7 @@ trait ConnectOp {
 
   implicit class axi4_full_connect_seq_op(masters: Seq[Interface]) {
     def :=>(slaves: Seq[Interface])(implicit si: SourceInfo): Unit = {
-      require(
+      require_(
         masters.length == slaves.length,
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )
@@ -475,7 +477,7 @@ trait ConnectOp {
     }
 
     def connect(slaves: Seq[Interface], cfg: ConnectConfig)(implicit si: SourceInfo): Unit = {
-      require(
+      require_(
         masters.length == slaves.length,
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )

@@ -16,7 +16,9 @@ case class WidenConfig(
     val numOutstandingRead: Int = 32,
     val numOutstandingWrite: Int = 32
 ) {
-  require(!axiCfg.lite, "Widen requires an AXI4-Full interface.")
+  private val require_ = chext.util.Require.inferred()
+
+  require_(!axiCfg.lite, "Widen requires an AXI4-Full interface.")
 }
 
 /** Converts narrow transfers to full-sized transfers.

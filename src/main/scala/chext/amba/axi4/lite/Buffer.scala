@@ -15,7 +15,7 @@ import elastic.ConnectOp._
 import chext.tracking.uniquePrefix
 
 object buffer {
-  val require_ = new chext.util.Require("axi4.lite.buffer")
+  private val require_ = chext.util.Require.inferred()
 
   private[lite] def insertBufferR(
       master: Interface,
@@ -248,4 +248,3 @@ object RightBuffer {
   )(implicit si: SourceInfo): Seq[Interface] =
     apply(interfaces, BufferConfig.all(2), "rightBuffer")
 }
-

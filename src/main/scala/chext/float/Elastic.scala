@@ -9,6 +9,8 @@ import elastic.ConnectOp._
 import chext.bundles.Bundle2
 
 class ElasticAdd(genFp: FloatingPoint, val combinational: Boolean = false) extends Module {
+  private val require_ = chext.util.Require.inferred()
+
   val sourceInA = IO(elastic.Source(genFp))
   val sourceInB = IO(elastic.Source(genFp))
   val sinkOut = IO(elastic.Sink(genFp))
@@ -17,7 +19,7 @@ class ElasticAdd(genFp: FloatingPoint, val combinational: Boolean = false) exten
 
   // HARDCODED: 8, the queue length
   private val wrapper = Module(new Wrapper(new Bundle2(genFp, genFp), genFp, add.delay, 8))
-  require(add.delay < 8)
+  require_(add.delay < 8)
 
   private val join0 = new elastic.Join(wrapper.source) {
     out._1 := join(sourceInA)

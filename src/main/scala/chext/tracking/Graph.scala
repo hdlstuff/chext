@@ -5,12 +5,14 @@ import hdlinfo.TypedObject
 // NOTE: Keeping sourceInfo is mostly useless! Do not attempt doing it later.
 
 object Graph {
+  private val require_ = chext.util.Require.inferred()
+
   case class Interface(
       val path: String,
       val tpe: String,
       val args: Map[String, TypedObject] = Map.empty
   ) {
-    require(path.length > 0 && path.head == '/', "path should start with '/'!")
+    require_(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String) = copy(path = f"$x$path")
   }
@@ -19,7 +21,7 @@ object Graph {
       val path: String,
       val desc: String = ""
   ) {
-    require(path.length > 0 && path.head == '/', "path should start with '/'!")
+    require_(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String) = copy(path = f"$x$path")
   }
@@ -32,7 +34,7 @@ object Graph {
       val parent: String,
       val args: Map[String, TypedObject] = Map.empty
   ) {
-    require(path.length > 0 && path.head == '/', "path should start with '/'!")
+    require_(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String) = copy(
       path = f"$x$path",
@@ -52,7 +54,7 @@ object Graph {
       val parent: String,
       val args: Map[String, TypedObject] = Map.empty
   ) {
-    require(path.length > 0 && path.head == '/', "path should start with '/'!")
+    require_(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String) = copy(
       path = f"$x$path",
@@ -75,7 +77,7 @@ object Graph {
       val children: Seq[Module],
       val args: Map[String, TypedObject] = Map.empty
   ) {
-    require(path.length > 0 && path.head == '/', "path should start with '/'!")
+    require_(path.length > 0 && path.head == '/', "path should start with '/'!")
 
     private[Graph] def pathPrepended(x: String): Module = copy(
       path = f"$x$path",

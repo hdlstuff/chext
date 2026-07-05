@@ -16,9 +16,11 @@ case class IdMuxConfig(
     val wIdSel: Int,
     val arbiterPolicy: elastic.Chooser = elastic.Chooser.rr
 ) {
-  require(!axiSlaveCfg.lite)
-  require(axiSlaveCfg.read || axiSlaveCfg.write)
-  require(wIdSel >= 0)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(!axiSlaveCfg.lite)
+  require_(axiSlaveCfg.read || axiSlaveCfg.write)
+  require_(wIdSel >= 0)
 
   val numSlaves = 1 << wIdSel
   val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId + wIdSel)

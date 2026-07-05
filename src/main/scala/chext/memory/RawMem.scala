@@ -16,10 +16,12 @@ case class RawMemConfig(
       *   should be loaded from a file or the contents are given inline?
       */
 ) {
-  require(latencyRead >= 0)
-  require(latencyWrite >= 0)
+  private val require_ = chext.util.Require.inferred()
 
-  require(wData >= 8 && wData % 8 == 0)
+  require_(latencyRead >= 0)
+  require_(latencyWrite >= 0)
+
+  require_(wData >= 8 && wData % 8 == 0)
 }
 
 trait RawMem extends Module {

@@ -38,13 +38,15 @@ case class ReadConfig[Tuser <: Data](
     val wLength: Int = 32,
     val numOutstandingTasks: Int = 8
 ) {
-  require(!axiCfg.lite)
-  require(axiCfg.read)
+  private val require_ = chext.util.Require.inferred()
+
+  require_(!axiCfg.lite)
+  require_(axiCfg.read)
 
   if (axiCfg.axi3Compat)
-    require(maxBurstLength <= 16, "maxBurstLength <= 16")
+    require_(maxBurstLength <= 16, "maxBurstLength <= 16")
   else
-    require(maxBurstLength <= 256, "maxBurstLength <= 256")
+    require_(maxBurstLength <= 256, "maxBurstLength <= 256")
 
   val genTask = new Task(genUser, axiCfg.wAddr, wLength)
   val genResult =

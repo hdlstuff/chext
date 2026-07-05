@@ -28,13 +28,14 @@ final class RandomStall[T <: Data](
     threshold: Int = 8
 )(implicit si_ : SourceInfo)
     extends Container {
+  private val require_ = chext.util.Require.inferred()
 
   val sourceInfo: SourceInfo = si_
   def tpe: String = "RandomStall"
   def namePrefix: String = "randomStall"
 
-  require(lfsrBits >= 4, "there should be at least 4 bits for LFSR.")
-  require(threshold >= 0 && threshold <= (1L << lfsrBits), "invalid threshold interval.")
+  require_(lfsrBits >= 4, "there should be at least 4 bits for LFSR.")
+  require_(threshold >= 0 && threshold <= (1L << lfsrBits), "invalid threshold interval.")
 
   private val rand = random.LFSR(lfsrBits)
 

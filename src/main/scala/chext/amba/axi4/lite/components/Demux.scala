@@ -24,13 +24,15 @@ case class DemuxConfig(
     val slaveBuffers: axi4.BufferConfig = axi4.BufferConfig.all(2),
     val masterBuffers: axi4.BufferConfig = axi4.BufferConfig.all(0)
 ) {
-  require(axiSlaveCfg.lite, "should use AXI4 lite")
-  require(axiSlaveCfg.read || axiSlaveCfg.write, "must be at least read or write")
-  require(numMasters > 0, "number of masters must be positive")
+  private val require_ = chext.util.Require.inferred()
 
-  require(capacityPortQueueR > 0)
-  require(capacityPortQueueW > 0)
-  require(capacityPortQueueB > 0)
+  require_(axiSlaveCfg.lite, "should use AXI4 lite")
+  require_(axiSlaveCfg.read || axiSlaveCfg.write, "must be at least read or write")
+  require_(numMasters > 0, "number of masters must be positive")
+
+  require_(capacityPortQueueR > 0)
+  require_(capacityPortQueueW > 0)
+  require_(capacityPortQueueB > 0)
 
   val wPort = log2Up(numMasters)
 

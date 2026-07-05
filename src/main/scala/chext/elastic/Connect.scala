@@ -53,6 +53,8 @@ class Connect[Tin <: Data, Tout <: Data](
 }
 
 object ConnectOp {
+  private val require_ = chext.util.Require.inferred()
+
   private def connect_[T <: Data](
       source: Interface[T],
       sink: Interface[T]
@@ -76,7 +78,7 @@ object ConnectOp {
 
   implicit class elastic_connect_seq_op[T <: Data](sources: Seq[Interface[T]]) {
     def :=>(sinks: Seq[Interface[T]])(implicit sourceInfo: SourceInfo): Unit = {
-      require(
+      require_(
         sources.length == sinks.length,
         f"source/sink sequence length mismatch: ${sources.length} != ${sinks.length}"
       )

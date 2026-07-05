@@ -19,12 +19,14 @@ case class UpscaleConfig(
     val numOutstandingRead: Int = 32,
     val numOutstandingWrite: Int = 32
 ) {
-  require(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
-  require(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
-  require(wDataMaster > axiSlaveCfg.wData, "wDataMaster must be > axiSlaveCfg.wData")
+  private val require_ = chext.util.Require.inferred()
 
-  require(wDataMaster >= 8)
-  require(isPow2(wDataMaster))
+  require_(axiSlaveCfg.wId == 0, "axiSlaveCfg.wId must be zero!")
+  require_(!axiSlaveCfg.lite, "axiSlaveCfg.lite must be false!")
+  require_(wDataMaster > axiSlaveCfg.wData, "wDataMaster must be > axiSlaveCfg.wData")
+
+  require_(wDataMaster >= 8)
+  require_(isPow2(wDataMaster))
 
   val wDataSlave = axiSlaveCfg.wData
   val wStrobeMaster = wDataMaster >> 3

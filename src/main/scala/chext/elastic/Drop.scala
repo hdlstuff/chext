@@ -43,7 +43,7 @@ abstract class Drop[Tin <: Data, Tout <: Data](
 
   private var condFn_ = Option.empty[() => Bool]
 
-  private val require_ = chext.util.Require(s"chext.elastic.$tpe", Some(sourceInfo))
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
   /** Sets the condition under which an input token should be dropped.
     *

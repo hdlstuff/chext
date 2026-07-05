@@ -15,11 +15,12 @@ object BadConfig {
 import chisel3._
 
 object writeStrobeLogic {
+  private val require_ = chext.util.Require.inferred()
 
   /** Implements logic for write strobe */
   def apply(original: Bits, wdata: Bits, wstrb: Bits): Bits = {
-    require(original.getWidth == wdata.getWidth)
-    require(wstrb.getWidth == original.getWidth / 8)
+    require_(original.getWidth == wdata.getWidth)
+    require_(wstrb.getWidth == original.getWidth / 8)
 
     VecInit(
       wstrb.asBools.zipWithIndex.map {
