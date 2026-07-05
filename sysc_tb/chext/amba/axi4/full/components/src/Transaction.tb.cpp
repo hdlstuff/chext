@@ -3,7 +3,7 @@
 
 #include <chext_test/chext_test.hpp>
 
-#include <Transaction.hpp>
+#include <chext_test/amba/axi4/full/Transaction.hpp>
 
 #include <DownscaleTestTop1_1.hpp>
 #include <UpscaleTestTop1_1.hpp>

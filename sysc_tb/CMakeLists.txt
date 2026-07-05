@@ -9,11 +9,19 @@ find_package(verilator REQUIRED)
 find_package(fmt REQUIRED)
 find_package(hdlstuff_hal REQUIRED)
 find_package(chext_test REQUIRED)
+find_package(boost_endian REQUIRED)
 find_package(hdlscw REQUIRED)
 
 option(SYSC_TB_ENABLE_VERILATOR_TRACE "Enable Verilator VCD tracing for SystemC testbenches" OFF)
 
 include(CMakeParseArguments)
+
+file(
+    GLOB SYSC_TB_COMMON_SOURCES
+    "${CMAKE_SOURCE_DIR}/_common/src/*.c"
+    "${CMAKE_SOURCE_DIR}/_common/src/*.cc"
+    "${CMAKE_SOURCE_DIR}/_common/src/*.cpp"
+)
 
 function(get_current_ns OUTPUT_VAR)
     file(RELATIVE_PATH REL_PATH "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -53,8 +61,13 @@ function(generate_tb)
         )
     endforeach()
 
-    target_include_directories(${GEN_TB_TARGET_NAME} PUBLIC include/)
-    target_include_directories(${GEN_TB_TARGET_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/common/include)
+    target_include_directories(
+        ${GEN_TB_TARGET_NAME}
+        PUBLIC
+        include/
+        ${CMAKE_SOURCE_DIR}/_common/include
+    )
+    target_sources(${GEN_TB_TARGET_NAME} PUBLIC ${SYSC_TB_COMMON_SOURCES})
 
     target_link_libraries(
         ${GEN_TB_TARGET_NAME}
@@ -62,13 +75,7 @@ function(generate_tb)
         SystemC::systemc
         fmt::fmt
         chext::chext_test
-    )
-
-    target_sources(
-        ${GEN_TB_TARGET_NAME}
-        PUBLIC
-        ${CMAKE_SOURCE_DIR}/common/src/hal/hal.cpp
-        ${CMAKE_SOURCE_DIR}/common/src/chext_test/util/hal.cpp
+        Boost::endian
     )
 
     foreach(MODULE IN LISTS GEN_TB_HDL_MODULES)
@@ -78,7 +85,7 @@ function(generate_tb)
             SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hdl/${MODULE}.sv
             VERILATOR_ARGS
                 ${GEN_TB_VERILATOR_TRACE_ARGS}
-                -I${CMAKE_SOURCE_DIR}/../verilog
+                -I${CMAKE_SOURCE_DIR}/_common/verilog
                 -Wno-fatal
         )
 

@@ -3,7 +3,7 @@
 
 #include <verilated_vcd_sc.h>
 
-#include <ReadWriteTester.hpp>
+#include <chext_test/amba/axi4/full/ReadWriteTester.hpp>
 #include <chext_test/chext_test.hpp>
 
 #include <systemc>

@@ -29,7 +29,9 @@ struct InterconnectTestbench : TestBenchBase {
         : TestBenchBase(sc_module_name("tb"))
         , dut { "dut" }
         , clock { "clock", 2.0, SC_NS }
-        , reset { "reset" } {
+        , reset { "reset" }
+        , slaveCfg { dut.S_AXI_00.config }
+        , masterCfg { dut.M_AXI_00.config } {
 
         dut.clock(clock);
         dut.reset(reset);
@@ -46,6 +48,8 @@ struct InterconnectTestbench : TestBenchBase {
 private:
     sc_clock clock;
     sc_signal<bool> reset;
+    amba::axi4::Config const& slaveCfg;
+    amba::axi4::Config const& masterCfg;
 
     static constexpr unsigned M = 16;
     static constexpr unsigned N = 16;
@@ -242,9 +246,20 @@ private:
         int threadIdx = id + (slaveIdx << threadShift);
         auto& threadInfo = threadInfos[threadIdx];
 
-        threadInfo.arTasks.push_back({ sc_bv<2>(id), sc_bv<32>(addr), len });
-        for (int i = 0; i <= len; ++i)
-            threadInfo.rTasks.push_back({ sc_bv<6>(threadIdx), sc_bv<32>(rand() & 0xffffffff), 0, i == len });
+        Packets::ReadAddress ar { slaveCfg };
+        ar.id = id;
+        ar.addr = addr;
+        ar.len = len;
+        threadInfo.arTasks.push_back(ar);
+
+        for (int i = 0; i <= len; ++i) {
+            Packets::ReadData r { masterCfg };
+            r.id = threadIdx;
+            r.data = rand() & 0xffffffff;
+            r.resp = 0;
+            r.last = i == len;
+            threadInfo.rTasks.push_back(r);
+        }
 
         slaveInfo.r += (len + 1);
         masterInfo.ar += 1;
@@ -257,14 +272,27 @@ private:
         int threadIdx = id + (slaveIdx << threadShift);
         auto& threadInfo = threadInfos[threadIdx];
 
-        threadInfo.awTasks.push_back({ sc_bv<2>(id), sc_bv<32>(addr), len });
+        Packets::WriteAddress aw { slaveCfg };
+        aw.id = id;
+        aw.addr = addr;
+        aw.len = len;
+        threadInfo.awTasks.push_back(aw);
 
         std::vector<Packets::WriteData> burst;
-        for (int i = 0; i <= len; ++i)
-            burst.push_back({ sc_bv<32>(rand() & 0xffffffff), sc_bv<4>(0xf), i == len });
+        for (int i = 0; i <= len; ++i) {
+            Packets::WriteData w { slaveCfg };
+            w.data = rand() & 0xffffffff;
+            w.strb = 0xf;
+            w.last = i == len;
+            burst.push_back(w);
+        }
 
         threadInfo.wTasks.push_back(burst);
-        threadInfo.bTasks.push_back({ sc_bv<6>(threadIdx), 0 });
+
+        Packets::WriteResponse b { masterCfg };
+        b.id = threadIdx;
+        b.resp = 0;
+        threadInfo.bTasks.push_back(b);
 
         slaveInfo.b += 1;
         masterInfo.aw += 1;
@@ -299,8 +327,12 @@ private:
                     threadInfo.rTasks.pop_front();
 
                     EXPECT_EQ(r.id.to_uint64(), ar.id.to_uint64());
-                    auto rExpected = r;
-                    new (&rExpected.id) sc_bv<2>(ar.id.to_uint() & threadMask);
+                    Packets::ReadData rExpected { slaveCfg };
+                    rExpected.id = ar.id.to_uint() & threadMask;
+                    rExpected.data = r.data;
+                    rExpected.resp = r.resp;
+                    rExpected.last = r.last;
+                    rExpected.user = r.user;
                     threadInfo.rExpected.push_back(rExpected);
 
                     waitRandom(4);
@@ -324,7 +356,7 @@ private:
                 innerJoin.add_process(sc_spawn([&] {
                     if (masterInfo.aw > 0) {
                         logMaster(masterIdx, "waiting for AW");
-                        awOpt = master.receiveAW();
+                        awOpt.emplace(master.receiveAW());
                         logMaster(masterIdx, "received AW", *awOpt);
                         masterInfo.aw -= 1;
                     }
@@ -337,14 +369,15 @@ private:
                         do {
                             w.push_back(master.receiveW());
                         } while (!w.back().last);
-                        wOpt = w;
+                        wOpt.emplace(std::move(w));
 
                         fmt::memory_buffer buf;
+                        auto const& receivedW = *wOpt;
                         fmt::format_to(std::back_inserter(buf), "[");
-                        for (size_t i = 0; i < w.size(); ++i) {
+                        for (size_t i = 0; i < receivedW.size(); ++i) {
                             if (i > 0)
                                 fmt::format_to(std::back_inserter(buf), ", ");
-                            fmt::format_to(std::back_inserter(buf), "{}", w[i]);
+                            fmt::format_to(std::back_inserter(buf), "{}", receivedW[i]);
                         }
                         fmt::format_to(std::back_inserter(buf), "]");
 
@@ -373,8 +406,10 @@ private:
                 threadInfo.bTasks.pop_front();
 
                 EXPECT_EQ(b.id.to_uint64(), aw.id.to_uint64());
-                auto bExpected = b;
-                new (&bExpected.id) sc_bv<2>(aw.id.to_uint() & threadMask);
+                Packets::WriteResponse bExpected { slaveCfg };
+                bExpected.id = aw.id.to_uint() & threadMask;
+                bExpected.resp = b.resp;
+                bExpected.user = b.user;
                 threadInfo.bExpected.push_back(bExpected);
 
                 waitRandom(16);
@@ -407,8 +442,19 @@ private:
                         if (!threadInfo.arTasks.empty()) {
                             auto ar = threadInfo.arTasks.front();
                             threadInfo.arTasks.pop_front();
-                            new (&ar.id) sc_bv<6>(threadIdx);
-                            threadInfo.arExpected.push_back(ar);
+                            Packets::ReadAddress arExpected { masterCfg };
+                            arExpected.id = threadIdx;
+                            arExpected.addr = ar.addr;
+                            arExpected.len = ar.len;
+                            arExpected.size = ar.size;
+                            arExpected.burst = ar.burst;
+                            arExpected.lock = ar.lock;
+                            arExpected.cache = ar.cache;
+                            arExpected.prot = ar.prot;
+                            arExpected.qos = ar.qos;
+                            arExpected.region = ar.region;
+                            arExpected.user = ar.user;
+                            threadInfo.arExpected.push_back(arExpected);
                             logSlave(slaveIdx, "send AR", ar);
                             slave.sendAR(ar);
                             waitRandom(4);
@@ -455,15 +501,34 @@ private:
                         if (!threadInfo.awTasks.empty()) {
                             auto aw = threadInfo.awTasks.front();
                             threadInfo.awTasks.pop_front();
-
-                            auto awExpected = aw;
-                            new (&awExpected.id) sc_bv<6>(threadIdx);
+                            Packets::WriteAddress awExpected { masterCfg };
+                            awExpected.id = threadIdx;
+                            awExpected.addr = aw.addr;
+                            awExpected.len = aw.len;
+                            awExpected.size = aw.size;
+                            awExpected.burst = aw.burst;
+                            awExpected.lock = aw.lock;
+                            awExpected.cache = aw.cache;
+                            awExpected.prot = aw.prot;
+                            awExpected.qos = aw.qos;
+                            awExpected.region = aw.region;
+                            awExpected.user = aw.user;
                             threadInfo.awExpected.push_back(awExpected);
 
                             EXPECT_(!threadInfo.wTasks.empty());
                             auto w = threadInfo.wTasks.front();
                             threadInfo.wTasks.pop_front();
-                            threadInfo.wExpected.push_back(w);
+                            std::vector<Packets::WriteData> wExpected;
+                            wExpected.reserve(w.size());
+                            for (auto const& packet : w) {
+                                Packets::WriteData packetExpected { masterCfg };
+                                packetExpected.data = packet.data;
+                                packetExpected.strb = packet.strb;
+                                packetExpected.last = packet.last;
+                                packetExpected.user = packet.user;
+                                wExpected.push_back(packetExpected);
+                            }
+                            threadInfo.wExpected.push_back(std::move(wExpected));
 
                             sc_join inner;
                             inner.add_process(sc_spawn([&] {

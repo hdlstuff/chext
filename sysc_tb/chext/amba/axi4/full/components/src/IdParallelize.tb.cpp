@@ -9,17 +9,15 @@
 
 #include <systemc>
 
-#include <Util.hpp>
 #include <chext_test/chext_test.hpp>
 
+#include <memory>
 #include <random>
 
 using namespace sc_core;
 using namespace sc_dt;
 
 using namespace chext_test;
-using namespace chext_test::util;
-
 using namespace chext_test::amba;
 
 template<typename Dut>
@@ -33,7 +31,7 @@ struct DutTester {
         , logEnabled { logEnabled }
         , clock { fmt::format("{}_clock", name).c_str(), 2.0, SC_NS }
         , reset { fmt::format("{}_reset", name).c_str() }
-        , numThreads { 1u << dut.M_AXI.config().wId }
+        , numThreads { 1u << dut.M_AXI.config.wId }
         , arFifos { numThreads }
         , rFifo {}
         , awFifos { numThreads }
@@ -58,11 +56,11 @@ private:
 
     unsigned numThreads;
 
-    std::vector<sc_fifo<axi4::full::Packets::ReadAddress>> arFifos;
-    sc_fifo<axi4::full::Packets::ReadData> rFifo;
+    std::vector<sc_fifo<std::shared_ptr<axi4::full::Packets::ReadAddress>>> arFifos;
+    sc_fifo<std::shared_ptr<axi4::full::Packets::ReadData>> rFifo;
 
-    std::vector<sc_fifo<axi4::full::Packets::WriteAddress>> awFifos;
-    sc_fifo<axi4::full::Packets::WriteResponse> bFifo;
+    std::vector<sc_fifo<std::shared_ptr<axi4::full::Packets::WriteAddress>>> awFifos;
+    sc_fifo<std::shared_ptr<axi4::full::Packets::WriteResponse>> bFifo;
 
     // test params
     unsigned numReadTransactions = 4096;
@@ -142,11 +140,10 @@ private:
 
     void s_axi_ar() {
         for (uint64_t i = 0; i < numReadTransactions; ++i) {
-            axi4::full::Packets::ReadAddress ar {
-                .id = bv_from(i & (numThreads - 1)),
-                .addr = bv_from(i << addrOffset),
-                .len = zeroLen ? (uint8_t)0 : (uint8_t)distBeats(mt)
-            };
+            auto ar = dut.S_AXI.makeAR();
+            ar.id = i & (numThreads - 1);
+            ar.addr = i << addrOffset;
+            ar.len = zeroLen ? (uint8_t)0 : (uint8_t)distBeats(mt);
 
             randomWait();
 
@@ -182,7 +179,7 @@ private:
             auto ar = dut.M_AXI.receiveAR();
             printLog("[{:^20}] [{:^20}] dut.M_AXI.receiveAR() = {}\n", sc_time_stamp().to_string(), "m_axi_ar", ar);
 
-            arFifos.at(ar.id.to_uint64()).write(ar);
+            arFifos.at(ar.id.to_uint64()).write(std::make_shared<axi4::full::Packets::ReadAddress>(ar));
         }
     }
 
@@ -191,18 +188,17 @@ private:
             auto r = rFifo.read();
 
             randomWait();
-            dut.M_AXI.sendR(r);
-            printLog("[{:^20}] [{:^20}] dut.M_AXI.sendR({})\n", sc_time_stamp().to_string(), "m_axi_r", r);
+            dut.M_AXI.sendR(*r);
+            printLog("[{:^20}] [{:^20}] dut.M_AXI.sendR({})\n", sc_time_stamp().to_string(), "m_axi_r", *r);
         }
     }
 
     void s_axi_aw() {
         for (uint64_t i = 0; i < numWriteTransactions; ++i) {
-            axi4::full::Packets::WriteAddress aw {
-                .id = bv_from(i & (numThreads - 1)),
-                .addr = bv_from(i << addrOffset),
-                .len = zeroLen ? (uint8_t)0 : (uint8_t)distBeats(mt) // we do not test the W channel
-            };
+            auto aw = dut.S_AXI.makeAW();
+            aw.id = i & (numThreads - 1);
+            aw.addr = i << addrOffset;
+            aw.len = zeroLen ? (uint8_t)0 : (uint8_t)distBeats(mt); // we do not test the W channel
 
             randomWait();
 
@@ -233,7 +229,7 @@ private:
             auto aw = dut.M_AXI.receiveAW();
             printLog("[{:^20}] [{:^20}] dut.M_AXI.receiveAW() = {}\n", sc_time_stamp().to_string(), "m_axi_aw", aw);
 
-            awFifos.at(aw.id.to_uint64()).write(aw);
+            awFifos.at(aw.id.to_uint64()).write(std::make_shared<axi4::full::Packets::WriteAddress>(aw));
         }
     }
 
@@ -242,8 +238,8 @@ private:
             auto b = bFifo.read();
 
             randomWait();
-            dut.M_AXI.sendB(b);
-            printLog("[{:^20}] [{:^20}] dut.M_AXI.sendB({})\n", sc_time_stamp().to_string(), "m_axi_b", b);
+            dut.M_AXI.sendB(*b);
+            printLog("[{:^20}] [{:^20}] dut.M_AXI.sendB({})\n", sc_time_stamp().to_string(), "m_axi_b", *b);
         }
     }
 
@@ -253,18 +249,17 @@ private:
         SC_SPAWN_TO(j) {
             while (true) {
                 auto ar = arFifos[id].read();
-                printLog("[{:^20}] [{:^20}] arFifos[id].read() = {}\n", sc_time_stamp().to_string(), fmt::format("idThread({:^4d}).rd", id), ar);
+                printLog("[{:^20}] [{:^20}] arFifos[id].read() = {}\n", sc_time_stamp().to_string(), fmt::format("idThread({:^4d}).rd", id), *ar);
 
-                for (unsigned j = 0; j <= ar.len; ++j) {
-                    axi4::full::Packets::ReadData r {
-                        .id = bv_from(id),
-                        .data = bv_from(ar.addr.to_uint64() + j),
-                        .resp = 0,
-                        .last = (j == ar.len)
-                    };
+                for (unsigned j = 0; j <= ar->len; ++j) {
+                    auto r = dut.M_AXI.makeR();
+                    r.id = id;
+                    r.data = ar->addr.to_uint64() + j;
+                    r.resp = 0;
+                    r.last = (j == ar->len);
 
                     randomWait();
-                    rFifo.write(r);
+                    rFifo.write(std::make_shared<axi4::full::Packets::ReadData>(r));
                 }
 
                 randomWait();
@@ -274,18 +269,17 @@ private:
         SC_SPAWN_TO(j) {
             while (true) {
                 auto aw = awFifos[id].read();
-                printLog("[{:^20}] [{:^20}] arFifos[id].read() = {}\n", sc_time_stamp().to_string(), fmt::format("idThread({:^4d}).wr", id), aw);
+                printLog("[{:^20}] [{:^20}] arFifos[id].read() = {}\n", sc_time_stamp().to_string(), fmt::format("idThread({:^4d}).wr", id), *aw);
 
                 // we assume that W channel works correctly (it is passthrough)
 
-                axi4::full::Packets::WriteResponse b {
-                    .id = bv_from(id),
-                    .resp = 0,
-                    .user = aw.addr
-                };
+                auto b = dut.M_AXI.makeB();
+                b.id = id;
+                b.resp = 0;
+                b.user = aw->addr;
 
                 randomWait();
-                bFifo.write(b);
+                bFifo.write(std::make_shared<axi4::full::Packets::WriteResponse>(b));
             }
         };
 

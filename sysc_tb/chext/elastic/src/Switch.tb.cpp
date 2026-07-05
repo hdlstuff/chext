@@ -38,7 +38,7 @@ private:
     }
 
     std::uint32_t expectResult(std::uint32_t x) {
-        auto result = dut.sinkResult.receive().to_uint64();
+        auto result = dut.sinkResult.receive();
         fmt::println("Received: {} at {} {}", result, sc_time_stamp().to_string(), x == result ? "SUCCESS" : "FAIL");
         return result;
     }

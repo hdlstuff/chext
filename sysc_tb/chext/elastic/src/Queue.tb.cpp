@@ -29,13 +29,13 @@ struct Testbench : public sc_module {
         wait(10, SC_NS);
         reset.write(0);
 
-        dut.source.send(sc_bv<32>(187));
-        dut.source.send(sc_bv<32>(874));
-        dut.source.send(sc_bv<32>(991));
+        dut.source.send(187);
+        dut.source.send(874);
+        dut.source.send(991);
 
-        std::cout << dut.sink.receive().to_int() << std::endl;
-        std::cout << dut.sink.receive().to_int() << std::endl;
-        std::cout << dut.sink.receive().to_int() << std::endl;
+        std::cout << dut.sink.receive() << std::endl;
+        std::cout << dut.sink.receive() << std::endl;
+        std::cout << dut.sink.receive() << std::endl;
     }
 };
 

@@ -70,7 +70,7 @@ private:
         for (uint32_t i = 0; i < N; ++i) {
             auto handle = sc_spawn([this, i] {
                 for (uint32_t j = 0; j < numPackets; ++j) {
-                    rr_sources[i]->send(sc_bv<32>((i << 16) + j));
+                    rr_sources[i]->send((i << 16) + j);
                 }
             });
 
@@ -79,7 +79,7 @@ private:
 
         SC_SPAWN_TO(j) {
             for (uint32_t j = 0; j < (N * numPackets); ++j) {
-                auto received = rr_sink->receive().to_uint64();
+                auto received = rr_sink->receive();
                 auto source = received >> 16;
                 auto index = received & 0xffff;
 
@@ -91,7 +91,7 @@ private:
 
         SC_SPAWN_TO(j) {
             for (uint32_t j = 0; j < (N * numPackets); ++j) {
-                auto received = rr_select->receive().to_uint64();
+                auto received = rr_select->receive();
 
                 fmt::println("[{:^06}] received @[{:^10}], select = {}", j, sc_time_stamp().to_string(), received);
             }
@@ -121,7 +121,7 @@ private:
         for (uint32_t i = 0; i < N; ++i) {
             auto handle = sc_spawn([this, i] {
                 for (uint32_t j = 0; j < numPackets; ++j) {
-                    rr_sources[i]->send(sc_bv<32>((i << 16) + j));
+                    rr_sources[i]->send((i << 16) + j);
                     waitRandom();
                 }
             });
@@ -131,7 +131,7 @@ private:
 
         SC_SPAWN_TO(j) {
             for (uint32_t j = 0; j < (N * numPackets); ++j) {
-                auto received = rr_sink->receive().to_uint64();
+                auto received = rr_sink->receive();
                 auto source = received >> 16;
                 auto index = received & 0xffff;
 
@@ -145,7 +145,7 @@ private:
 
         SC_SPAWN_TO(j) {
             for (uint32_t j = 0; j < (N * numPackets); ++j) {
-                auto received = rr_select->receive().to_uint64();
+                auto received = rr_select->receive();
 
                 fmt::println("[{:^06}] received @[{:^10}], select = {}", j, sc_time_stamp().to_string(), received);
             }
@@ -175,7 +175,7 @@ private:
         for (uint32_t i = 0; i < N; ++i) {
             auto handle = sc_spawn([this, i] {
                 for (uint32_t j = 0; j < numPackets; ++j) {
-                    priority_sources[i]->send(sc_bv<32>((i << 16) + j));
+                    priority_sources[i]->send((i << 16) + j);
                 }
             });
 
@@ -184,7 +184,7 @@ private:
 
         SC_SPAWN_TO(j) {
             for (uint32_t j = 0; j < (N * numPackets); ++j) {
-                auto received = priority_sink->receive().to_uint64();
+                auto received = priority_sink->receive();
                 auto source = received >> 16;
                 auto index = received & 0xffff;
 
@@ -196,7 +196,7 @@ private:
 
         SC_SPAWN_TO(j) {
             for (uint32_t j = 0; j < (N * numPackets); ++j) {
-                auto received = priority_select->receive().to_uint64();
+                auto received = priority_select->receive();
 
                 fmt::println("[{:^06}] received @[{:^10}], select = {}", j, sc_time_stamp().to_string(), received);
             }
@@ -226,7 +226,7 @@ private:
         for (uint32_t i = 0; i < N; ++i) {
             auto handle = sc_spawn([this, i] {
                 for (uint32_t j = 0; j < numPackets; ++j) {
-                    priority_sources[i]->send(sc_bv<32>((i << 16) + j));
+                    priority_sources[i]->send((i << 16) + j);
                     waitRandom();
                 }
             });
@@ -236,7 +236,7 @@ private:
 
         SC_SPAWN_TO(j) {
             for (uint32_t j = 0; j < (N * numPackets); ++j) {
-                auto received = priority_sink->receive().to_uint64();
+                auto received = priority_sink->receive();
                 auto source = received >> 16;
                 auto index = received & 0xffff;
 
@@ -250,7 +250,7 @@ private:
 
         SC_SPAWN_TO(j) {
             for (uint32_t j = 0; j < (N * numPackets); ++j) {
-                auto received = priority_select->receive().to_uint64();
+                auto received = priority_select->receive();
 
                 fmt::println("[{:^06}] received @[{:^10}], select = {}", j, sc_time_stamp().to_string(), received);
             }

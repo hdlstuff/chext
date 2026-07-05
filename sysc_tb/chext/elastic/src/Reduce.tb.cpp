@@ -29,12 +29,12 @@ struct Testbench : public sc_module {
         wait(10, SC_NS);
         reset.write(0);
 
-        dut.sourceElem.send(sc_bv<32>(187));
-        dut.sourceElem.send(sc_bv<32>(874));
-        dut.sourceElem.send(sc_bv<32>(991));
-        dut.sourceElem.send(sc_bv<32>(1ull << 31));
+        dut.sourceElem.send(187);
+        dut.sourceElem.send(874);
+        dut.sourceElem.send(991);
+        dut.sourceElem.send(1u << 31);
 
-        std::cout << dut.sinkRes.receive().to_int() << std::endl;
+        std::cout << dut.sinkRes.receive() << std::endl;
     }
 };
 

@@ -50,7 +50,7 @@ struct Testbench : public sc_module {
 
         SC_SPAWN_TO(j) {
             while (true) {
-                fmt::println("received: {}", dut.sink.receive().to_uint64());
+                fmt::println("received: {}", dut.sink.receive());
             }
         };
 
