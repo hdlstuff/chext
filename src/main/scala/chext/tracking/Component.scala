@@ -1,32 +1,10 @@
 package chext.tracking
 
-import chisel3.Data
 import chisel3.experimental.SourceInfo
-
-import chisel3.hacks.PrefixManager
 
 import hdlinfo.TypedObject
 
 import scala.collection.mutable.ArrayBuffer
-
-trait Intermediate
-
-private[tracking] case class ContainerIntermediate(
-    prefix: String,
-    tpe: String,
-    location: String = "",
-    args: Seq[(String, TypedObject)] = Seq.empty
-) extends Intermediate
-
-private[tracking] case class ComponentIntermediate(
-    prefix: String,
-    container: String,
-    tpe: String,
-    sources: Seq[(String, Tracked)],
-    sinks: Seq[(String, Tracked)],
-    location: String = "",
-    args: Seq[(String, TypedObject)] = Seq.empty
-) extends Intermediate
 
 sealed trait BaseComponent extends HasPath {
   final def isContainer: Boolean = this.isInstanceOf[Container]
@@ -50,8 +28,6 @@ sealed trait BaseComponent extends HasPath {
   }
   private[tracking] final def args = args_.toSeq
 
-  private[tracking] def toIntermediate: Intermediate
-
   // addChild(...) calls parentOption_, which must initialized
   // for this reason, we have init code here.
   private val moduleInfo = Manager.registerCurrentModule()
@@ -63,7 +39,6 @@ trait Container extends BaseComponent {
   private val require_ = chext.util.Require.inferred()
 
   private val components_ = ArrayBuffer.empty[BaseComponent]
-  private val args_ = ArrayBuffer.empty[(String, TypedObject)]
 
   /** Adds a child to this container.
     *
@@ -80,15 +55,6 @@ trait Container extends BaseComponent {
   }
 
   def children: Seq[BaseComponent] = components_.toSeq
-
-  private[tracking] override final def toIntermediate: ContainerIntermediate =
-    ContainerIntermediate(
-      path.toString,
-      tpe,
-      util.sourceInfoToString(sourceInfo),
-      args_.toSeq
-    )
-
 }
 
 // A component cannot have other components declared inside, though I am not going to enforce this
@@ -114,18 +80,6 @@ trait Component extends BaseComponent {
   private[tracking] final def sinkPorts = sinkPorts_.toSeq
 
   def children: Seq[BaseComponent] = Seq.empty
-
-  private[tracking] override final def toIntermediate: ComponentIntermediate =
-    ComponentIntermediate(
-      path.toString,
-      parentOption.map { _.path.toString }.getOrElse(""),
-      tpe,
-      sourcePorts,
-      sinkPorts,
-      util.sourceInfoToString(sourceInfo),
-      args
-    )
-
 }
 
 object withContainer {
