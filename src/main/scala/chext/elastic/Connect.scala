@@ -70,13 +70,13 @@ object ConnectOp {
     }
   }
 
-  implicit class elastic_connect_op[T <: Data](source: Interface[T]) {
+  implicit class elastic_connect_op[T <: Data](val source: Interface[T]) extends AnyVal {
     def :=>(sink: Interface[T])(implicit sourceInfo: SourceInfo): Unit = {
       connect_(source, sink)
     }
   }
 
-  implicit class elastic_connect_seq_op[T <: Data](sources: Seq[Interface[T]]) {
+  implicit class elastic_connect_seq_op[T <: Data](val sources: Seq[Interface[T]]) extends AnyVal {
     def :=>(sinks: Seq[Interface[T]])(implicit sourceInfo: SourceInfo): Unit = {
       require_(
         sources.length == sinks.length,

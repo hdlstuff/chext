@@ -6,7 +6,7 @@ import chisel3.util._
 package object float {
   private val debug = false
 
-  implicit class fixedPointHelpers(fx: SInt) {
+  implicit class fixedPointHelpers(val fx: SInt) extends AnyVal {
     def to_floating_point(gen_fp: FloatingPoint): FloatingPoint = {
       val result = Wire(gen_fp)
       val fixed_point_width = fx.getWidth
@@ -61,7 +61,7 @@ package object float {
     }
   }
 
-  implicit class fixedPointHelpersU(fx: UInt) {
+  implicit class fixedPointHelpersU(val fx: UInt) extends AnyVal {
     def to_floating_point(gen_fp: FloatingPoint): FloatingPoint = {
       val result = Wire(gen_fp)
       val fixed_point_width = fx.getWidth
@@ -93,7 +93,7 @@ package object float {
     }
   }
 
-  implicit class floatingPointHelpers(fp: FloatingPoint) {
+  implicit class floatingPointHelpers(val fp: FloatingPoint) extends AnyVal {
     def to_unsigned_fixed_point(gen_fx: UInt): UInt = {
       val result = Wire(gen_fx)
       val fixed_point_width = gen_fx.getWidth

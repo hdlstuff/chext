@@ -32,13 +32,13 @@ object connect {
 }
 
 object ConnectOp {
-  implicit class readInterface_connectOp(val master: ReadInterface) {
+  implicit class readInterface_connectOp(val master: ReadInterface) extends AnyVal {
     def :=>(slave: ReadInterface)(implicit si: SourceInfo): Unit = {
       connect(master, slave)
     }
   }
 
-  implicit class writeInterface_connectOp(val master: WriteInterface) {
+  implicit class writeInterface_connectOp(val master: WriteInterface) extends AnyVal {
     def :=>(slave: WriteInterface)(implicit si: SourceInfo): Unit = {
       connect(master, slave)
     }

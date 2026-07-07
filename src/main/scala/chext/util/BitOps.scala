@@ -6,8 +6,8 @@ import chisel3.util._
 object BitOps {
   private val require_ = chext.util.Require.inferred()
 
-  implicit class UIntOps_impl(x: UInt) {
-    val width = x.getWidth
+  implicit class UIntOps_impl(val x: UInt) extends AnyVal {
+    private def width = x.getWidth
 
     /** Creates a mask whose least-significant n bits are set.
       *

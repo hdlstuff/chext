@@ -76,7 +76,7 @@ private object ViewWarnings {
 }
 
 object Casts {
-  implicit class viewAxisInterfaceAs(x: Interface) {
+  implicit class viewAxisInterfaceAs(val x: Interface) extends AnyVal {
     import FullChannel._
     import BasicChannel._
 
