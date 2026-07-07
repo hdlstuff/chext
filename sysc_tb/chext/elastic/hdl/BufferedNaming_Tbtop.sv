@@ -28,18 +28,18 @@ module BufferedNaming_Tbtop(
   input         sinks_3_ready
 );
 
-  wire [15:0] sourcesBuffered_3_bits;
-  wire        sourcesBuffered_3_valid;
   wire        sinksBuffered_3_ready;
-  wire [15:0] sourcesBuffered_2_bits;
-  wire        sourcesBuffered_2_valid;
+  wire        sourcesBuffered_3_valid;
+  wire [15:0] sourcesBuffered_3_bits;
   wire        sinksBuffered_2_ready;
-  wire [15:0] sourcesBuffered_1_bits;
-  wire        sourcesBuffered_1_valid;
+  wire        sourcesBuffered_2_valid;
+  wire [15:0] sourcesBuffered_2_bits;
   wire        sinksBuffered_1_ready;
-  wire [15:0] sourcesBuffered_0_bits;
-  wire        sourcesBuffered_0_valid;
+  wire        sourcesBuffered_1_valid;
+  wire [15:0] sourcesBuffered_1_bits;
   wire        sinksBuffered_0_ready;
+  wire        sourcesBuffered_0_valid;
+  wire [15:0] sourcesBuffered_0_bits;
   wire [15:0] sinksBuffered_0_bits = sourcesBuffered_0_bits;
   wire        sinksBuffered_0_valid = sourcesBuffered_0_valid;
   wire [15:0] sinksBuffered_1_bits = sourcesBuffered_1_bits;
@@ -63,6 +63,13 @@ module BufferedNaming_Tbtop(
     ~sourcesBuffered_queue0_full & sources_0_valid;
   assign sourcesBuffered_0_valid =
     ~(sourcesBuffered_queue0_ptrMatch & ~sourcesBuffered_queue0_maybeFull);
+  wire        sinksBuffered_queue0_doEnq = sinksBuffered_3_ready & sinksBuffered_3_valid;
+  wire        sinksBuffered_queue0_doEnq_1 =
+    sinksBuffered_2_ready & sinksBuffered_2_valid;
+  wire        sinksBuffered_queue0_doEnq_2 =
+    sinksBuffered_1_ready & sinksBuffered_1_valid;
+  wire        sinksBuffered_queue0_doEnq_3 =
+    sinksBuffered_0_ready & sinksBuffered_0_valid;
   reg         sinksBuffered_queue0_enqPtr_value;
   reg         sinksBuffered_queue0_deqPtr_value;
   reg         sinksBuffered_queue0_maybeFull;
@@ -70,7 +77,6 @@ module BufferedNaming_Tbtop(
     sinksBuffered_queue0_enqPtr_value == sinksBuffered_queue0_deqPtr_value;
   wire        sinksBuffered_queue0_empty =
     sinksBuffered_queue0_ptrMatch & ~sinksBuffered_queue0_maybeFull;
-  wire        sinksBuffered_queue0_doEnq = sinksBuffered_3_ready & sinksBuffered_3_valid;
   assign sinksBuffered_3_ready =
     ~(sinksBuffered_queue0_ptrMatch & sinksBuffered_queue0_maybeFull);
   reg         sourcesBuffered_queue0_enqPtr_value_1;
@@ -91,9 +97,7 @@ module BufferedNaming_Tbtop(
     sinksBuffered_queue0_enqPtr_value_1 == sinksBuffered_queue0_deqPtr_value_1;
   wire        sinksBuffered_queue0_empty_1 =
     sinksBuffered_queue0_ptrMatch_1 & ~sinksBuffered_queue0_maybeFull_1;
-  wire        sinksBuffered_queue0_doEnq_1 =
-    sinksBuffered_1_ready & sinksBuffered_1_valid;
-  assign sinksBuffered_1_ready =
+  assign sinksBuffered_2_ready =
     ~(sinksBuffered_queue0_ptrMatch_1 & sinksBuffered_queue0_maybeFull_1);
   reg         sinksBuffered_queue0_enqPtr_value_2;
   reg         sinksBuffered_queue0_deqPtr_value_2;
@@ -102,10 +106,17 @@ module BufferedNaming_Tbtop(
     sinksBuffered_queue0_enqPtr_value_2 == sinksBuffered_queue0_deqPtr_value_2;
   wire        sinksBuffered_queue0_empty_2 =
     sinksBuffered_queue0_ptrMatch_2 & ~sinksBuffered_queue0_maybeFull_2;
-  wire        sinksBuffered_queue0_doEnq_2 =
-    sinksBuffered_0_ready & sinksBuffered_0_valid;
-  assign sinksBuffered_0_ready =
+  assign sinksBuffered_1_ready =
     ~(sinksBuffered_queue0_ptrMatch_2 & sinksBuffered_queue0_maybeFull_2);
+  reg         sinksBuffered_queue0_enqPtr_value_3;
+  reg         sinksBuffered_queue0_deqPtr_value_3;
+  reg         sinksBuffered_queue0_maybeFull_3;
+  wire        sinksBuffered_queue0_ptrMatch_3 =
+    sinksBuffered_queue0_enqPtr_value_3 == sinksBuffered_queue0_deqPtr_value_3;
+  wire        sinksBuffered_queue0_empty_3 =
+    sinksBuffered_queue0_ptrMatch_3 & ~sinksBuffered_queue0_maybeFull_3;
+  assign sinksBuffered_0_ready =
+    ~(sinksBuffered_queue0_ptrMatch_3 & sinksBuffered_queue0_maybeFull_3);
   reg         sourcesBuffered_queue0_enqPtr_value_2;
   reg         sourcesBuffered_queue0_deqPtr_value_2;
   reg         sourcesBuffered_queue0_maybeFull_2;
@@ -117,17 +128,6 @@ module BufferedNaming_Tbtop(
     ~sourcesBuffered_queue0_full_2 & sources_3_valid;
   assign sourcesBuffered_3_valid =
     ~(sourcesBuffered_queue0_ptrMatch_2 & ~sourcesBuffered_queue0_maybeFull_2);
-  reg         sinksBuffered_queue0_enqPtr_value_3;
-  reg         sinksBuffered_queue0_deqPtr_value_3;
-  reg         sinksBuffered_queue0_maybeFull_3;
-  wire        sinksBuffered_queue0_ptrMatch_3 =
-    sinksBuffered_queue0_enqPtr_value_3 == sinksBuffered_queue0_deqPtr_value_3;
-  wire        sinksBuffered_queue0_empty_3 =
-    sinksBuffered_queue0_ptrMatch_3 & ~sinksBuffered_queue0_maybeFull_3;
-  wire        sinksBuffered_queue0_doEnq_3 =
-    sinksBuffered_2_ready & sinksBuffered_2_valid;
-  assign sinksBuffered_2_ready =
-    ~(sinksBuffered_queue0_ptrMatch_3 & sinksBuffered_queue0_maybeFull_3);
   reg         sourcesBuffered_queue0_enqPtr_value_3;
   reg         sourcesBuffered_queue0_deqPtr_value_3;
   reg         sourcesBuffered_queue0_maybeFull_3;
@@ -156,12 +156,12 @@ module BufferedNaming_Tbtop(
       sinksBuffered_queue0_enqPtr_value_2 <= 1'h0;
       sinksBuffered_queue0_deqPtr_value_2 <= 1'h0;
       sinksBuffered_queue0_maybeFull_2 <= 1'h0;
-      sourcesBuffered_queue0_enqPtr_value_2 <= 1'h0;
-      sourcesBuffered_queue0_deqPtr_value_2 <= 1'h0;
-      sourcesBuffered_queue0_maybeFull_2 <= 1'h0;
       sinksBuffered_queue0_enqPtr_value_3 <= 1'h0;
       sinksBuffered_queue0_deqPtr_value_3 <= 1'h0;
       sinksBuffered_queue0_maybeFull_3 <= 1'h0;
+      sourcesBuffered_queue0_enqPtr_value_2 <= 1'h0;
+      sourcesBuffered_queue0_deqPtr_value_2 <= 1'h0;
+      sourcesBuffered_queue0_maybeFull_2 <= 1'h0;
       sourcesBuffered_queue0_enqPtr_value_3 <= 1'h0;
       sourcesBuffered_queue0_deqPtr_value_3 <= 1'h0;
       sourcesBuffered_queue0_maybeFull_3 <= 1'h0;
@@ -174,13 +174,13 @@ module BufferedNaming_Tbtop(
       automatic logic sourcesBuffered_queue0_doDeq_1 =
         sourcesBuffered_2_ready & sourcesBuffered_2_valid;
       automatic logic sinksBuffered_queue0_doDeq_1 =
-        sinks_1_ready & ~sinksBuffered_queue0_empty_1;
+        sinks_2_ready & ~sinksBuffered_queue0_empty_1;
       automatic logic sinksBuffered_queue0_doDeq_2 =
-        sinks_0_ready & ~sinksBuffered_queue0_empty_2;
+        sinks_1_ready & ~sinksBuffered_queue0_empty_2;
+      automatic logic sinksBuffered_queue0_doDeq_3 =
+        sinks_0_ready & ~sinksBuffered_queue0_empty_3;
       automatic logic sourcesBuffered_queue0_doDeq_2 =
         sourcesBuffered_3_ready & sourcesBuffered_3_valid;
-      automatic logic sinksBuffered_queue0_doDeq_3 =
-        sinks_2_ready & ~sinksBuffered_queue0_empty_3;
       automatic logic sourcesBuffered_queue0_doDeq_3 =
         sourcesBuffered_1_ready & sourcesBuffered_1_valid;
       if (sourcesBuffered_queue0_doEnq)
@@ -215,6 +215,12 @@ module BufferedNaming_Tbtop(
         sinksBuffered_queue0_deqPtr_value_2 <= sinksBuffered_queue0_deqPtr_value_2 - 1'h1;
       if (sinksBuffered_queue0_doEnq_2 != sinksBuffered_queue0_doDeq_2)
         sinksBuffered_queue0_maybeFull_2 <= sinksBuffered_queue0_doEnq_2;
+      if (sinksBuffered_queue0_doEnq_3)
+        sinksBuffered_queue0_enqPtr_value_3 <= sinksBuffered_queue0_enqPtr_value_3 - 1'h1;
+      if (sinksBuffered_queue0_doDeq_3)
+        sinksBuffered_queue0_deqPtr_value_3 <= sinksBuffered_queue0_deqPtr_value_3 - 1'h1;
+      if (sinksBuffered_queue0_doEnq_3 != sinksBuffered_queue0_doDeq_3)
+        sinksBuffered_queue0_maybeFull_3 <= sinksBuffered_queue0_doEnq_3;
       if (sourcesBuffered_queue0_doEnq_2)
         sourcesBuffered_queue0_enqPtr_value_2 <=
           sourcesBuffered_queue0_enqPtr_value_2 - 1'h1;
@@ -223,12 +229,6 @@ module BufferedNaming_Tbtop(
           sourcesBuffered_queue0_deqPtr_value_2 - 1'h1;
       if (sourcesBuffered_queue0_doEnq_2 != sourcesBuffered_queue0_doDeq_2)
         sourcesBuffered_queue0_maybeFull_2 <= sourcesBuffered_queue0_doEnq_2;
-      if (sinksBuffered_queue0_doEnq_3)
-        sinksBuffered_queue0_enqPtr_value_3 <= sinksBuffered_queue0_enqPtr_value_3 - 1'h1;
-      if (sinksBuffered_queue0_doDeq_3)
-        sinksBuffered_queue0_deqPtr_value_3 <= sinksBuffered_queue0_deqPtr_value_3 - 1'h1;
-      if (sinksBuffered_queue0_doEnq_3 != sinksBuffered_queue0_doDeq_3)
-        sinksBuffered_queue0_maybeFull_3 <= sinksBuffered_queue0_doEnq_3;
       if (sourcesBuffered_queue0_doEnq_3)
         sourcesBuffered_queue0_enqPtr_value_3 <=
           sourcesBuffered_queue0_enqPtr_value_3 - 1'h1;
@@ -283,9 +283,9 @@ module BufferedNaming_Tbtop(
     .clock    (clock),
     .addrA    (sinksBuffered_queue0_enqPtr_value_1),
     .writeEnA (sinksBuffered_queue0_doEnq_1),
-    .dataInA  (sinksBuffered_1_bits),
+    .dataInA  (sinksBuffered_2_bits),
     .addrB    (sinksBuffered_queue0_deqPtr_value_1),
-    .dataOutB (sinks_1_bits)
+    .dataOutB (sinks_2_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
@@ -295,8 +295,20 @@ module BufferedNaming_Tbtop(
     .clock    (clock),
     .addrA    (sinksBuffered_queue0_enqPtr_value_2),
     .writeEnA (sinksBuffered_queue0_doEnq_2),
-    .dataInA  (sinksBuffered_0_bits),
+    .dataInA  (sinksBuffered_1_bits),
     .addrB    (sinksBuffered_queue0_deqPtr_value_2),
+    .dataOutB (sinks_1_bits)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(1),
+    .COUNT(2),
+    .DATA_WIDTH(16)
+  ) sinksBuffered_queue0_ram_3 (
+    .clock    (clock),
+    .addrA    (sinksBuffered_queue0_enqPtr_value_3),
+    .writeEnA (sinksBuffered_queue0_doEnq_3),
+    .dataInA  (sinksBuffered_0_bits),
+    .addrB    (sinksBuffered_queue0_deqPtr_value_3),
     .dataOutB (sinks_0_bits)
   );
   chext_mem_1w1r #(
@@ -315,18 +327,6 @@ module BufferedNaming_Tbtop(
     .ADDR_WIDTH(1),
     .COUNT(2),
     .DATA_WIDTH(16)
-  ) sinksBuffered_queue0_ram_3 (
-    .clock    (clock),
-    .addrA    (sinksBuffered_queue0_enqPtr_value_3),
-    .writeEnA (sinksBuffered_queue0_doEnq_3),
-    .dataInA  (sinksBuffered_2_bits),
-    .addrB    (sinksBuffered_queue0_deqPtr_value_3),
-    .dataOutB (sinks_2_bits)
-  );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(1),
-    .COUNT(2),
-    .DATA_WIDTH(16)
   ) sourcesBuffered_queue0_ram_3 (
     .clock    (clock),
     .addrA    (sourcesBuffered_queue0_enqPtr_value_3),
@@ -339,9 +339,9 @@ module BufferedNaming_Tbtop(
   assign sources_1_ready = ~sourcesBuffered_queue0_full_3;
   assign sources_2_ready = ~sourcesBuffered_queue0_full_1;
   assign sources_3_ready = ~sourcesBuffered_queue0_full_2;
-  assign sinks_0_valid = ~sinksBuffered_queue0_empty_2;
-  assign sinks_1_valid = ~sinksBuffered_queue0_empty_1;
-  assign sinks_2_valid = ~sinksBuffered_queue0_empty_3;
+  assign sinks_0_valid = ~sinksBuffered_queue0_empty_3;
+  assign sinks_1_valid = ~sinksBuffered_queue0_empty_2;
+  assign sinks_2_valid = ~sinksBuffered_queue0_empty_1;
   assign sinks_3_valid = ~sinksBuffered_queue0_empty;
 endmodule
 

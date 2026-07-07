@@ -1,21 +1,13 @@
 package chext.elastic
 
 import chisel3._
-
-import chisel3.experimental.SourceInfo
-import chisel3.experimental.prefix
-
+import chisel3.experimental.{SourceInfo, prefix}
 import chisel3.hacks.deferred
 
 // To avoid confusion with chisel Mux
+import chext.elastic.ConnectOp._
 import chext.elastic.{Mux => EMux}
-
-import chext.tracking
-import tracking.Container
-import tracking.withContainer
-import tracking.suggestInstanceName
-
-import ConnectOp._
+import chext.tracking.{Container, suggestInstanceName, withContainer}
 
 /** Elastic fold (i.e., reduction) primitive.
   *

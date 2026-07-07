@@ -1204,29 +1204,29 @@ module Widen(
   output        m_axi_b_ready
 );
 
-  wire        write_fork1_result_2_valid;
   wire        write_ewireBeatLast_ready;
-  wire        write_fork1_result_1_valid;
+  wire        write_fork1_result_2_valid;
   wire        write_ewireBeatFirst_ready;
-  wire        write_fork1_result_valid;
+  wire        write_fork1_result_1_valid;
   wire        write_ewireTransferLast_ready;
+  wire        write_fork1_result_valid;
   wire        write_fork0_control0_wire0_bits_last;
   wire        write_fork0_control0_wire0_bits_first;
   wire        write_fork0_control0_sourceBuffer0_queueSink_valid;
   wire [2:0]  write_fork0_control0_sourceBuffer0_queueSink_bits_size;
-  wire        read_fork2_result_1_valid;
   wire        read_ewireMuxSink0_ready;
-  wire        read_fork2_result_valid;
+  wire        read_fork2_result_1_valid;
   wire        read_ewireDemuxSource_ready;
+  wire        read_fork2_result_valid;
   wire        read_ewireMuxSink_bits_last;
   wire [1:0]  read_ewireMuxSink_bits_resp;
   wire [63:0] read_ewireMuxSink_bits_data;
-  wire        read_fork1_result_2_valid;
   wire        read_ewireBeatLast_ready;
-  wire        read_fork1_result_1_valid;
+  wire        read_fork1_result_2_valid;
   wire        read_ewireBeatFirst_ready;
-  wire        read_fork1_result_valid;
+  wire        read_fork1_result_1_valid;
   wire        read_ewireTransferLast_ready;
+  wire        read_fork1_result_valid;
   wire        read_fork0_control0_wire0_bits_last;
   wire        read_fork0_control0_wire0_bits_first;
   wire        read_fork0_control0_sourceBuffer0_queueSink_valid;
@@ -1518,6 +1518,15 @@ module Widen(
   assign write_queue0_sink_bits_last = _write_queue0_ram_dataOutB[0];
   assign write_queue0_sink_bits_strb = _write_queue0_ram_dataOutB[8:1];
   assign write_queue0_sink_bits_data = _write_queue0_ram_dataOutB[72:9];
+  wire        read_demux0_valid = read_ewireBeatLast_valid & read_ewireDemuxSource_valid;
+  wire        read_queue0_source_ready;
+  wire        read_demux0_fire =
+    read_demux0_valid
+    & (read_ewireBeatLast_bits ? read_ewireDemuxSink_ready : read_queue0_source_ready);
+  assign read_ewireBeatLast_ready = read_demux0_fire;
+  assign read_ewireDemuxSource_ready = read_demux0_fire;
+  wire        read_queue0_source_valid = read_demux0_valid & ~read_ewireBeatLast_bits;
+  wire        read_ewireDemuxSink_valid = read_demux0_valid & read_ewireBeatLast_bits;
   reg         write_fork1_regs_0;
   reg         write_fork1_regs_1;
   reg         write_fork1_regs_2;
@@ -1594,6 +1603,15 @@ module Widen(
     _write_fork0_control0_sourceBuffer0_queue0_ram_dataOutB[28:21];
   assign write_fork0_control0_sourceBuffer0_queueSink_bits_addr =
     _write_fork0_control0_sourceBuffer0_queue0_ram_dataOutB[42:29];
+  reg         write_fork0_regs_0;
+  reg         write_fork0_regs_1;
+  wire        write_fork0_ready_qual1_0 =
+    write_fork0_transform0_result_ready | write_fork0_regs_0;
+  wire        write_fork0_ready_qual1_1 =
+    write_fork0_control0_result_ready | write_fork0_regs_1;
+  wire        write_fork0_ready = write_fork0_ready_qual1_0 & write_fork0_ready_qual1_1;
+  wire        write_fork0_transform0_result_valid = s_axi_aw_valid & ~write_fork0_regs_0;
+  assign write_fork0_control0_result_valid = s_axi_aw_valid & ~write_fork0_regs_1;
   wire        read_join0_allValid =
     read_ewireMuxSink0_valid & read_ewireTransferLast_valid;
   wire        read_join0_fire = s_axi_r_ready & read_join0_allValid;
@@ -1607,17 +1625,8 @@ module Widen(
     read_fork2_ready_qual1_0 & read_fork2_ready_qual1_1;
   wire        read_ewireMuxSink_valid;
   assign read_fork2_result_valid = read_ewireMuxSink_valid & ~read_fork2_regs_0;
-  assign read_fork2_result_1_valid = read_ewireMuxSink_valid & ~read_fork2_regs_1;
-  wire        read_demux0_valid = read_ewireBeatLast_valid & read_ewireDemuxSource_valid;
-  wire        read_queue0_source_ready;
-  wire        read_demux0_fire =
-    read_demux0_valid
-    & (read_ewireBeatLast_bits ? read_ewireDemuxSink_ready : read_queue0_source_ready);
-  assign read_ewireBeatLast_ready = read_demux0_fire;
-  assign read_ewireDemuxSource_ready = read_demux0_fire;
-  wire        read_queue0_source_valid = read_demux0_valid & ~read_ewireBeatLast_bits;
-  wire        read_ewireDemuxSink_valid = read_demux0_valid & read_ewireBeatLast_bits;
   wire        read_queue0_sink_valid;
+  assign read_fork2_result_1_valid = read_ewireMuxSink_valid & ~read_fork2_regs_1;
   assign read_ewireMuxSink_valid =
     read_ewireBeatFirst_valid
     & (read_ewireBeatFirst_bits ? m_axi_r_valid : read_queue0_sink_valid);
@@ -1695,22 +1704,22 @@ module Widen(
       if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorAtLeastTwoActions
           & _write_fork0_control0_transducer0_cond_WIRE_0 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
       if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorAtLeastTwoActions
           & _write_fork0_control0_transducer0_cond_WIRE_1 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
       if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorAtLeastTwoActions
           & _write_fork0_control0_transducer0_cond_WIRE_2 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
       if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorAtLeastTwoActions
           & _write_fork0_control0_transducer0_cond_WIRE_3 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
       if ((`PRINTF_COND_) & write_fork0_control0_transducer0_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
       if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
           & ~reset)
         $fwrite(32'h80000002,
@@ -1718,22 +1727,22 @@ module Widen(
       if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
           & _read_fork0_control0_transducer0_cond_WIRE_0 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
       if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
           & _read_fork0_control0_transducer0_cond_WIRE_1 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
       if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
           & _read_fork0_control0_transducer0_cond_WIRE_2 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
       if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorAtLeastTwoActions
           & _read_fork0_control0_transducer0_cond_WIRE_3 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
       if ((`PRINTF_COND_) & read_fork0_control0_transducer0_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:110:35]\n");
+                "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/Widen.scala:112:35]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
   reg  [4:0]  read_fork0_control0_sourceBuffer0_queue0_enqPtr_value;
@@ -1767,15 +1776,6 @@ module Widen(
     _read_fork0_control0_sourceBuffer0_queue0_ram_dataOutB[28:21];
   assign read_fork0_control0_sourceBuffer0_queueSink_bits_addr =
     _read_fork0_control0_sourceBuffer0_queue0_ram_dataOutB[42:29];
-  reg         write_fork0_regs_0;
-  reg         write_fork0_regs_1;
-  wire        write_fork0_ready_qual1_0 =
-    write_fork0_transform0_result_ready | write_fork0_regs_0;
-  wire        write_fork0_ready_qual1_1 =
-    write_fork0_control0_result_ready | write_fork0_regs_1;
-  wire        write_fork0_ready = write_fork0_ready_qual1_0 & write_fork0_ready_qual1_1;
-  wire        write_fork0_transform0_result_valid = s_axi_aw_valid & ~write_fork0_regs_0;
-  assign write_fork0_control0_result_valid = s_axi_aw_valid & ~write_fork0_regs_1;
   always @(posedge clock) begin
     if (reset) begin
       read_fork0_control0_transducer0_state <= 1'h0;
@@ -1795,6 +1795,8 @@ module Widen(
       write_fork0_control0_sourceBuffer0_queue0_enqPtr_value <= 5'h0;
       write_fork0_control0_sourceBuffer0_queue0_deqPtr_value <= 5'h0;
       write_fork0_control0_sourceBuffer0_queue0_maybeFull <= 1'h0;
+      write_fork0_regs_0 <= 1'h0;
+      write_fork0_regs_1 <= 1'h0;
       read_fork2_regs_0 <= 1'h0;
       read_fork2_regs_1 <= 1'h0;
       read_queue0_enqPtr_value <= 1'h0;
@@ -1806,8 +1808,6 @@ module Widen(
       read_fork0_control0_sourceBuffer0_queue0_enqPtr_value <= 5'h0;
       read_fork0_control0_sourceBuffer0_queue0_deqPtr_value <= 5'h0;
       read_fork0_control0_sourceBuffer0_queue0_maybeFull <= 1'h0;
-      write_fork0_regs_0 <= 1'h0;
-      write_fork0_regs_1 <= 1'h0;
     end
     else begin
       automatic logic write_queue0_doDeq =
@@ -1874,6 +1874,10 @@ module Widen(
       if (write_fork0_control0_sourceBuffer0_queue0_doEnq != write_fork0_control0_sourceBuffer0_queue0_doDeq)
         write_fork0_control0_sourceBuffer0_queue0_maybeFull <=
           write_fork0_control0_sourceBuffer0_queue0_doEnq;
+      write_fork0_regs_0 <=
+        write_fork0_ready_qual1_0 & s_axi_aw_valid & ~write_fork0_ready;
+      write_fork0_regs_1 <=
+        write_fork0_ready_qual1_1 & s_axi_aw_valid & ~write_fork0_ready;
       read_fork2_regs_0 <=
         read_fork2_ready_qual1_0 & read_ewireMuxSink_valid & ~read_ewireMuxSink_ready;
       read_fork2_regs_1 <=
@@ -1899,10 +1903,6 @@ module Widen(
       if (read_fork0_control0_sourceBuffer0_queue0_doEnq != read_fork0_control0_sourceBuffer0_queue0_doDeq)
         read_fork0_control0_sourceBuffer0_queue0_maybeFull <=
           read_fork0_control0_sourceBuffer0_queue0_doEnq;
-      write_fork0_regs_0 <=
-        write_fork0_ready_qual1_0 & s_axi_aw_valid & ~write_fork0_ready;
-      write_fork0_regs_1 <=
-        write_fork0_ready_qual1_1 & s_axi_aw_valid & ~write_fork0_ready;
     end
   end // always @(posedge)
   chext_mem_1w1r #(
@@ -2087,16 +2087,16 @@ module Widen_Tbtop(
   output [1:0]  S_AXI_TEST_BRESP
 );
 
-  wire [1:0]  masterBuffer1_result_b_bits_resp;
   wire [1:0]  masterBuffer0_result_b_bits_resp;
+  wire [1:0]  masterBuffer1_result_b_bits_resp;
   wire [1:0]  masterBuffer1_bBuffer0_queueSource_bits_resp;
-  wire [66:0] _masterBuffer0_rBuffer0_queue0_ram_dataOutB;
-  wire [72:0] _masterBuffer0_wBuffer0_queue0_ram_dataOutB;
+  wire [42:0] _masterBuffer0_awBuffer0_queue0_ram_dataOutB;
   wire [42:0] _masterBuffer1_arBuffer0_queue0_ram_dataOutB;
   wire [66:0] _masterBuffer1_rBuffer0_queue0_ram_dataOutB;
   wire [42:0] _masterBuffer1_awBuffer0_queue0_ram_dataOutB;
   wire [72:0] _masterBuffer1_wBuffer0_queue0_ram_dataOutB;
-  wire [42:0] _masterBuffer0_awBuffer0_queue0_ram_dataOutB;
+  wire [72:0] _masterBuffer0_wBuffer0_queue0_ram_dataOutB;
+  wire [66:0] _masterBuffer0_rBuffer0_queue0_ram_dataOutB;
   wire [42:0] _masterBuffer2_arBuffer0_queue0_ram_dataOutB;
   wire [66:0] _masterBuffer2_rBuffer0_queue0_ram_dataOutB;
   wire [42:0] _masterBuffer2_awBuffer0_queue0_ram_dataOutB;
@@ -2229,15 +2229,15 @@ module Widen_Tbtop(
   wire        masterBuffer2_result_ar_valid;
   wire        masterBuffer2_arBuffer0_queue0_doEnq =
     masterBuffer2_result_ar_ready & masterBuffer2_result_ar_valid;
+  wire        masterBuffer2_bBuffer0_queueSource_ready;
+  wire        masterBuffer2_bBuffer0_queueSource_valid;
+  wire        masterBuffer2_bBuffer0_queue0_doEnq =
+    masterBuffer2_bBuffer0_queueSource_ready & masterBuffer2_bBuffer0_queueSource_valid;
   reg         masterBuffer2_bBuffer0_queue0_enqPtr_value;
   reg         masterBuffer2_bBuffer0_queue0_deqPtr_value;
   reg         masterBuffer2_bBuffer0_queue0_maybeFull;
   wire        masterBuffer2_bBuffer0_queue0_ptrMatch =
     masterBuffer2_bBuffer0_queue0_enqPtr_value == masterBuffer2_bBuffer0_queue0_deqPtr_value;
-  wire        masterBuffer2_bBuffer0_queueSource_ready;
-  wire        masterBuffer2_bBuffer0_queueSource_valid;
-  wire        masterBuffer2_bBuffer0_queue0_doEnq =
-    masterBuffer2_bBuffer0_queueSource_ready & masterBuffer2_bBuffer0_queueSource_valid;
   wire        masterBuffer2_result_b_valid =
     ~(masterBuffer2_bBuffer0_queue0_ptrMatch & ~masterBuffer2_bBuffer0_queue0_maybeFull);
   assign masterBuffer2_bBuffer0_queueSource_ready =
@@ -2294,17 +2294,17 @@ module Widen_Tbtop(
     _masterBuffer2_awBuffer0_queue0_ram_dataOutB[20:18];
   wire [7:0]  masterBuffer2_awBuffer0_queueSink_bits_len =
     _masterBuffer2_awBuffer0_queue0_ram_dataOutB[28:21];
+  wire        masterBuffer2_rBuffer0_queueSource_ready;
+  wire        masterBuffer2_rBuffer0_queueSource_valid;
   wire [13:0] masterBuffer2_awBuffer0_queueSink_bits_addr =
     _masterBuffer2_awBuffer0_queue0_ram_dataOutB[42:29];
+  wire        masterBuffer2_rBuffer0_queue0_doEnq =
+    masterBuffer2_rBuffer0_queueSource_ready & masterBuffer2_rBuffer0_queueSource_valid;
   reg         masterBuffer2_rBuffer0_queue0_enqPtr_value;
   reg         masterBuffer2_rBuffer0_queue0_deqPtr_value;
   reg         masterBuffer2_rBuffer0_queue0_maybeFull;
   wire        masterBuffer2_rBuffer0_queue0_ptrMatch =
     masterBuffer2_rBuffer0_queue0_enqPtr_value == masterBuffer2_rBuffer0_queue0_deqPtr_value;
-  wire        masterBuffer2_rBuffer0_queueSource_ready;
-  wire        masterBuffer2_rBuffer0_queueSource_valid;
-  wire        masterBuffer2_rBuffer0_queue0_doEnq =
-    masterBuffer2_rBuffer0_queueSource_ready & masterBuffer2_rBuffer0_queueSource_valid;
   wire [63:0] masterBuffer2_rBuffer0_queueSource_bits_data;
   wire        masterBuffer2_rBuffer0_queueSource_bits_last;
   wire        masterBuffer2_result_r_valid =
@@ -2362,37 +2362,58 @@ module Widen_Tbtop(
   wire        masterBuffer1_result_ar_ready;
   wire        masterBuffer1_arBuffer0_queue0_doEnq =
     masterBuffer1_result_ar_ready & masterBuffer1_result_ar_valid;
-  reg         masterBuffer0_awBuffer0_queue0_enqPtr_value;
-  reg         masterBuffer0_awBuffer0_queue0_deqPtr_value;
-  reg         masterBuffer0_awBuffer0_queue0_maybeFull;
-  wire        masterBuffer0_awBuffer0_queue0_ptrMatch =
-    masterBuffer0_awBuffer0_queue0_enqPtr_value == masterBuffer0_awBuffer0_queue0_deqPtr_value;
-  wire        masterBuffer0_result_aw_ready;
-  wire        masterBuffer0_awBuffer0_queue0_doEnq =
-    masterBuffer0_result_aw_ready & masterBuffer0_result_aw_valid;
-  wire        masterBuffer0_awBuffer0_queueSink_valid =
-    ~(masterBuffer0_awBuffer0_queue0_ptrMatch
-      & ~masterBuffer0_awBuffer0_queue0_maybeFull);
-  assign masterBuffer0_result_aw_ready =
-    ~(masterBuffer0_awBuffer0_queue0_ptrMatch & masterBuffer0_awBuffer0_queue0_maybeFull);
-  wire [3:0]  masterBuffer0_awBuffer0_queueSink_bits_region =
-    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[3:0];
-  wire [3:0]  masterBuffer0_awBuffer0_queueSink_bits_qos =
-    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[7:4];
-  wire [2:0]  masterBuffer0_awBuffer0_queueSink_bits_prot =
-    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[10:8];
-  wire [3:0]  masterBuffer0_awBuffer0_queueSink_bits_cache =
-    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[14:11];
-  wire        masterBuffer0_awBuffer0_queueSink_bits_lock =
-    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[15];
-  wire [1:0]  masterBuffer0_awBuffer0_queueSink_bits_burst =
-    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[17:16];
-  wire [2:0]  masterBuffer0_awBuffer0_queueSink_bits_size =
-    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[20:18];
-  wire [7:0]  masterBuffer0_awBuffer0_queueSink_bits_len =
-    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[28:21];
-  wire [13:0] masterBuffer0_awBuffer0_queueSink_bits_addr =
-    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[42:29];
+  wire        masterBuffer1_bBuffer0_queueSource_ready;
+  wire        masterBuffer1_bBuffer0_queueSource_valid;
+  wire        masterBuffer1_bBuffer0_queue0_doEnq =
+    masterBuffer1_bBuffer0_queueSource_ready & masterBuffer1_bBuffer0_queueSource_valid;
+  reg         masterBuffer1_bBuffer0_queue0_enqPtr_value;
+  reg         masterBuffer1_bBuffer0_queue0_deqPtr_value;
+  reg         masterBuffer1_bBuffer0_queue0_maybeFull;
+  wire        masterBuffer1_bBuffer0_queue0_ptrMatch =
+    masterBuffer1_bBuffer0_queue0_enqPtr_value == masterBuffer1_bBuffer0_queue0_deqPtr_value;
+  wire        masterBuffer1_result_b_valid =
+    ~(masterBuffer1_bBuffer0_queue0_ptrMatch & ~masterBuffer1_bBuffer0_queue0_maybeFull);
+  assign masterBuffer1_bBuffer0_queueSource_ready =
+    ~(masterBuffer1_bBuffer0_queue0_ptrMatch & masterBuffer1_bBuffer0_queue0_maybeFull);
+  reg         masterBuffer0_rBuffer0_queue0_enqPtr_value;
+  reg         masterBuffer0_rBuffer0_queue0_deqPtr_value;
+  reg         masterBuffer0_rBuffer0_queue0_maybeFull;
+  wire        masterBuffer0_rBuffer0_queue0_ptrMatch =
+    masterBuffer0_rBuffer0_queue0_enqPtr_value == masterBuffer0_rBuffer0_queue0_deqPtr_value;
+  wire        masterBuffer0_rBuffer0_queueSource_ready;
+  wire        masterBuffer0_rBuffer0_queueSource_valid;
+  wire        masterBuffer0_rBuffer0_queue0_doEnq =
+    masterBuffer0_rBuffer0_queueSource_ready & masterBuffer0_rBuffer0_queueSource_valid;
+  wire [63:0] masterBuffer0_rBuffer0_queueSource_bits_data;
+  wire        masterBuffer0_rBuffer0_queueSource_bits_last;
+  wire        masterBuffer0_result_r_valid =
+    ~(masterBuffer0_rBuffer0_queue0_ptrMatch & ~masterBuffer0_rBuffer0_queue0_maybeFull);
+  assign masterBuffer0_rBuffer0_queueSource_ready =
+    ~(masterBuffer0_rBuffer0_queue0_ptrMatch & masterBuffer0_rBuffer0_queue0_maybeFull);
+  wire        masterBuffer0_result_r_bits_last =
+    _masterBuffer0_rBuffer0_queue0_ram_dataOutB[0];
+  wire [1:0]  masterBuffer0_result_r_bits_resp =
+    _masterBuffer0_rBuffer0_queue0_ram_dataOutB[2:1];
+  wire [63:0] masterBuffer0_result_r_bits_data =
+    _masterBuffer0_rBuffer0_queue0_ram_dataOutB[66:3];
+  reg         masterBuffer0_wBuffer0_queue0_enqPtr_value;
+  reg         masterBuffer0_wBuffer0_queue0_deqPtr_value;
+  reg         masterBuffer0_wBuffer0_queue0_maybeFull;
+  wire        masterBuffer0_wBuffer0_queue0_ptrMatch =
+    masterBuffer0_wBuffer0_queue0_enqPtr_value == masterBuffer0_wBuffer0_queue0_deqPtr_value;
+  wire        masterBuffer0_result_w_ready;
+  wire        masterBuffer0_wBuffer0_queue0_doEnq =
+    masterBuffer0_result_w_ready & masterBuffer0_result_w_valid;
+  wire        masterBuffer0_wBuffer0_queueSink_valid =
+    ~(masterBuffer0_wBuffer0_queue0_ptrMatch & ~masterBuffer0_wBuffer0_queue0_maybeFull);
+  assign masterBuffer0_result_w_ready =
+    ~(masterBuffer0_wBuffer0_queue0_ptrMatch & masterBuffer0_wBuffer0_queue0_maybeFull);
+  wire        masterBuffer0_wBuffer0_queueSink_bits_last =
+    _masterBuffer0_wBuffer0_queue0_ram_dataOutB[0];
+  wire [7:0]  masterBuffer0_wBuffer0_queueSink_bits_strb =
+    _masterBuffer0_wBuffer0_queue0_ram_dataOutB[8:1];
+  wire [63:0] masterBuffer0_wBuffer0_queueSink_bits_data =
+    _masterBuffer0_wBuffer0_queue0_ram_dataOutB[72:9];
   reg         masterBuffer1_wBuffer0_queue0_enqPtr_value;
   reg         masterBuffer1_wBuffer0_queue0_deqPtr_value;
   reg         masterBuffer1_wBuffer0_queue0_maybeFull;
@@ -2434,17 +2455,17 @@ module Widen_Tbtop(
     _masterBuffer1_awBuffer0_queue0_ram_dataOutB[20:18];
   wire [7:0]  masterBuffer1_awBuffer0_queueSink_bits_len =
     _masterBuffer1_awBuffer0_queue0_ram_dataOutB[28:21];
+  wire        masterBuffer1_rBuffer0_queueSource_ready;
+  wire        masterBuffer1_rBuffer0_queueSource_valid;
   wire [13:0] masterBuffer1_awBuffer0_queueSink_bits_addr =
     _masterBuffer1_awBuffer0_queue0_ram_dataOutB[42:29];
+  wire        masterBuffer1_rBuffer0_queue0_doEnq =
+    masterBuffer1_rBuffer0_queueSource_ready & masterBuffer1_rBuffer0_queueSource_valid;
   reg         masterBuffer1_rBuffer0_queue0_enqPtr_value;
   reg         masterBuffer1_rBuffer0_queue0_deqPtr_value;
   reg         masterBuffer1_rBuffer0_queue0_maybeFull;
   wire        masterBuffer1_rBuffer0_queue0_ptrMatch =
     masterBuffer1_rBuffer0_queue0_enqPtr_value == masterBuffer1_rBuffer0_queue0_deqPtr_value;
-  wire        masterBuffer1_rBuffer0_queueSource_ready;
-  wire        masterBuffer1_rBuffer0_queueSource_valid;
-  wire        masterBuffer1_rBuffer0_queue0_doEnq =
-    masterBuffer1_rBuffer0_queueSource_ready & masterBuffer1_rBuffer0_queueSource_valid;
   wire [63:0] masterBuffer1_rBuffer0_queueSource_bits_data;
   wire [1:0]  masterBuffer1_rBuffer0_queueSource_bits_resp;
   wire        masterBuffer1_rBuffer0_queueSource_bits_last;
@@ -2484,74 +2505,53 @@ module Widen_Tbtop(
     _masterBuffer1_arBuffer0_queue0_ram_dataOutB[20:18];
   wire [7:0]  masterBuffer1_arBuffer0_queueSink_bits_len =
     _masterBuffer1_arBuffer0_queue0_ram_dataOutB[28:21];
-  wire        masterBuffer0_result_w_ready;
+  wire        masterBuffer0_result_aw_ready;
   wire [13:0] masterBuffer1_arBuffer0_queueSink_bits_addr =
     _masterBuffer1_arBuffer0_queue0_ram_dataOutB[42:29];
-  wire        masterBuffer0_wBuffer0_queue0_doEnq =
-    masterBuffer0_result_w_ready & masterBuffer0_result_w_valid;
+  wire        masterBuffer0_awBuffer0_queue0_doEnq =
+    masterBuffer0_result_aw_ready & masterBuffer0_result_aw_valid;
+  wire        masterBuffer0_bBuffer0_queueSource_ready;
+  wire        masterBuffer0_bBuffer0_queueSource_valid;
+  wire        masterBuffer0_bBuffer0_queue0_doEnq =
+    masterBuffer0_bBuffer0_queueSource_ready & masterBuffer0_bBuffer0_queueSource_valid;
   reg         masterBuffer0_bBuffer0_queue0_enqPtr_value;
   reg         masterBuffer0_bBuffer0_queue0_deqPtr_value;
   reg         masterBuffer0_bBuffer0_queue0_maybeFull;
   wire        masterBuffer0_bBuffer0_queue0_ptrMatch =
     masterBuffer0_bBuffer0_queue0_enqPtr_value == masterBuffer0_bBuffer0_queue0_deqPtr_value;
-  wire        masterBuffer0_bBuffer0_queueSource_ready;
-  wire        masterBuffer0_bBuffer0_queueSource_valid;
-  wire        masterBuffer0_bBuffer0_queue0_doEnq =
-    masterBuffer0_bBuffer0_queueSource_ready & masterBuffer0_bBuffer0_queueSource_valid;
   wire        masterBuffer0_result_b_valid =
     ~(masterBuffer0_bBuffer0_queue0_ptrMatch & ~masterBuffer0_bBuffer0_queue0_maybeFull);
   assign masterBuffer0_bBuffer0_queueSource_ready =
     ~(masterBuffer0_bBuffer0_queue0_ptrMatch & masterBuffer0_bBuffer0_queue0_maybeFull);
-  reg         masterBuffer0_wBuffer0_queue0_enqPtr_value;
-  reg         masterBuffer0_wBuffer0_queue0_deqPtr_value;
-  reg         masterBuffer0_wBuffer0_queue0_maybeFull;
-  wire        masterBuffer0_wBuffer0_queue0_ptrMatch =
-    masterBuffer0_wBuffer0_queue0_enqPtr_value == masterBuffer0_wBuffer0_queue0_deqPtr_value;
-  wire        masterBuffer0_wBuffer0_queueSink_valid =
-    ~(masterBuffer0_wBuffer0_queue0_ptrMatch & ~masterBuffer0_wBuffer0_queue0_maybeFull);
-  assign masterBuffer0_result_w_ready =
-    ~(masterBuffer0_wBuffer0_queue0_ptrMatch & masterBuffer0_wBuffer0_queue0_maybeFull);
-  wire        masterBuffer0_wBuffer0_queueSink_bits_last =
-    _masterBuffer0_wBuffer0_queue0_ram_dataOutB[0];
-  wire [7:0]  masterBuffer0_wBuffer0_queueSink_bits_strb =
-    _masterBuffer0_wBuffer0_queue0_ram_dataOutB[8:1];
-  wire [63:0] masterBuffer0_wBuffer0_queueSink_bits_data =
-    _masterBuffer0_wBuffer0_queue0_ram_dataOutB[72:9];
-  reg         masterBuffer1_bBuffer0_queue0_enqPtr_value;
-  reg         masterBuffer1_bBuffer0_queue0_deqPtr_value;
-  reg         masterBuffer1_bBuffer0_queue0_maybeFull;
-  wire        masterBuffer1_bBuffer0_queue0_ptrMatch =
-    masterBuffer1_bBuffer0_queue0_enqPtr_value == masterBuffer1_bBuffer0_queue0_deqPtr_value;
-  wire        masterBuffer1_bBuffer0_queueSource_ready;
-  wire        masterBuffer1_bBuffer0_queueSource_valid;
-  wire        masterBuffer1_bBuffer0_queue0_doEnq =
-    masterBuffer1_bBuffer0_queueSource_ready & masterBuffer1_bBuffer0_queueSource_valid;
-  wire        masterBuffer1_result_b_valid =
-    ~(masterBuffer1_bBuffer0_queue0_ptrMatch & ~masterBuffer1_bBuffer0_queue0_maybeFull);
-  assign masterBuffer1_bBuffer0_queueSource_ready =
-    ~(masterBuffer1_bBuffer0_queue0_ptrMatch & masterBuffer1_bBuffer0_queue0_maybeFull);
-  reg         masterBuffer0_rBuffer0_queue0_enqPtr_value;
-  reg         masterBuffer0_rBuffer0_queue0_deqPtr_value;
-  reg         masterBuffer0_rBuffer0_queue0_maybeFull;
-  wire        masterBuffer0_rBuffer0_queue0_ptrMatch =
-    masterBuffer0_rBuffer0_queue0_enqPtr_value == masterBuffer0_rBuffer0_queue0_deqPtr_value;
-  wire        masterBuffer0_rBuffer0_queueSource_ready;
-  wire        masterBuffer0_rBuffer0_queueSource_valid;
-  wire        masterBuffer0_rBuffer0_queue0_doEnq =
-    masterBuffer0_rBuffer0_queueSource_ready & masterBuffer0_rBuffer0_queueSource_valid;
-  wire [63:0] masterBuffer0_rBuffer0_queueSource_bits_data;
-  wire        masterBuffer0_rBuffer0_queueSource_bits_last;
-  wire        masterBuffer0_result_r_valid =
-    ~(masterBuffer0_rBuffer0_queue0_ptrMatch & ~masterBuffer0_rBuffer0_queue0_maybeFull);
-  assign masterBuffer0_rBuffer0_queueSource_ready =
-    ~(masterBuffer0_rBuffer0_queue0_ptrMatch & masterBuffer0_rBuffer0_queue0_maybeFull);
-  wire        masterBuffer0_result_r_bits_last =
-    _masterBuffer0_rBuffer0_queue0_ram_dataOutB[0];
-  wire [1:0]  masterBuffer0_result_r_bits_resp =
-    _masterBuffer0_rBuffer0_queue0_ram_dataOutB[2:1];
-  wire [63:0] masterBuffer0_result_r_bits_data =
-    _masterBuffer0_rBuffer0_queue0_ram_dataOutB[66:3];
+  reg         masterBuffer0_awBuffer0_queue0_enqPtr_value;
+  reg         masterBuffer0_awBuffer0_queue0_deqPtr_value;
+  reg         masterBuffer0_awBuffer0_queue0_maybeFull;
+  wire        masterBuffer0_awBuffer0_queue0_ptrMatch =
+    masterBuffer0_awBuffer0_queue0_enqPtr_value == masterBuffer0_awBuffer0_queue0_deqPtr_value;
+  wire        masterBuffer0_awBuffer0_queueSink_valid =
+    ~(masterBuffer0_awBuffer0_queue0_ptrMatch
+      & ~masterBuffer0_awBuffer0_queue0_maybeFull);
+  assign masterBuffer0_result_aw_ready =
+    ~(masterBuffer0_awBuffer0_queue0_ptrMatch & masterBuffer0_awBuffer0_queue0_maybeFull);
+  wire [3:0]  masterBuffer0_awBuffer0_queueSink_bits_region =
+    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[3:0];
+  wire [3:0]  masterBuffer0_awBuffer0_queueSink_bits_qos =
+    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[7:4];
+  wire [2:0]  masterBuffer0_awBuffer0_queueSink_bits_prot =
+    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[10:8];
+  wire [3:0]  masterBuffer0_awBuffer0_queueSink_bits_cache =
+    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[14:11];
+  wire        masterBuffer0_awBuffer0_queueSink_bits_lock =
+    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[15];
+  wire [1:0]  masterBuffer0_awBuffer0_queueSink_bits_burst =
+    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[17:16];
+  wire [2:0]  masterBuffer0_awBuffer0_queueSink_bits_size =
+    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[20:18];
+  wire [7:0]  masterBuffer0_awBuffer0_queueSink_bits_len =
+    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[28:21];
   wire        masterBuffer0_arBuffer0_queueSink_ready;
+  wire [13:0] masterBuffer0_awBuffer0_queueSink_bits_addr =
+    _masterBuffer0_awBuffer0_queue0_ram_dataOutB[42:29];
   wire        masterBuffer0_awBuffer0_queueSink_ready;
   wire        masterBuffer0_wBuffer0_queueSink_ready;
   wire        masterBuffer1_arBuffer0_queueSink_ready;
@@ -2582,9 +2582,15 @@ module Widen_Tbtop(
       masterBuffer2_arBuffer0_queue0_enqPtr_value <= 1'h0;
       masterBuffer2_arBuffer0_queue0_deqPtr_value <= 1'h0;
       masterBuffer2_arBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffer0_awBuffer0_queue0_enqPtr_value <= 1'h0;
-      masterBuffer0_awBuffer0_queue0_deqPtr_value <= 1'h0;
-      masterBuffer0_awBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffer1_bBuffer0_queue0_enqPtr_value <= 1'h0;
+      masterBuffer1_bBuffer0_queue0_deqPtr_value <= 1'h0;
+      masterBuffer1_bBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffer0_rBuffer0_queue0_enqPtr_value <= 1'h0;
+      masterBuffer0_rBuffer0_queue0_deqPtr_value <= 1'h0;
+      masterBuffer0_rBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffer0_wBuffer0_queue0_enqPtr_value <= 1'h0;
+      masterBuffer0_wBuffer0_queue0_deqPtr_value <= 1'h0;
+      masterBuffer0_wBuffer0_queue0_maybeFull <= 1'h0;
       masterBuffer1_wBuffer0_queue0_enqPtr_value <= 1'h0;
       masterBuffer1_wBuffer0_queue0_deqPtr_value <= 1'h0;
       masterBuffer1_wBuffer0_queue0_maybeFull <= 1'h0;
@@ -2600,15 +2606,9 @@ module Widen_Tbtop(
       masterBuffer0_bBuffer0_queue0_enqPtr_value <= 1'h0;
       masterBuffer0_bBuffer0_queue0_deqPtr_value <= 1'h0;
       masterBuffer0_bBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffer0_wBuffer0_queue0_enqPtr_value <= 1'h0;
-      masterBuffer0_wBuffer0_queue0_deqPtr_value <= 1'h0;
-      masterBuffer0_wBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffer1_bBuffer0_queue0_enqPtr_value <= 1'h0;
-      masterBuffer1_bBuffer0_queue0_deqPtr_value <= 1'h0;
-      masterBuffer1_bBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffer0_rBuffer0_queue0_enqPtr_value <= 1'h0;
-      masterBuffer0_rBuffer0_queue0_deqPtr_value <= 1'h0;
-      masterBuffer0_rBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffer0_awBuffer0_queue0_enqPtr_value <= 1'h0;
+      masterBuffer0_awBuffer0_queue0_deqPtr_value <= 1'h0;
+      masterBuffer0_awBuffer0_queue0_maybeFull <= 1'h0;
     end
     else begin
       automatic logic masterBuffer0_arBuffer0_queue0_doDeq =
@@ -2623,8 +2623,12 @@ module Widen_Tbtop(
         masterBuffer2_result_r_ready & masterBuffer2_result_r_valid;
       automatic logic masterBuffer2_arBuffer0_queue0_doDeq =
         masterBuffer2_arBuffer0_queueSink_ready & masterBuffer2_arBuffer0_queueSink_valid;
-      automatic logic masterBuffer0_awBuffer0_queue0_doDeq =
-        masterBuffer0_awBuffer0_queueSink_ready & masterBuffer0_awBuffer0_queueSink_valid;
+      automatic logic masterBuffer1_bBuffer0_queue0_doDeq =
+        masterBuffer1_result_b_ready & masterBuffer1_result_b_valid;
+      automatic logic masterBuffer0_rBuffer0_queue0_doDeq =
+        masterBuffer0_result_r_ready & masterBuffer0_result_r_valid;
+      automatic logic masterBuffer0_wBuffer0_queue0_doDeq =
+        masterBuffer0_wBuffer0_queueSink_ready & masterBuffer0_wBuffer0_queueSink_valid;
       automatic logic masterBuffer1_wBuffer0_queue0_doDeq =
         masterBuffer1_wBuffer0_queueSink_ready & masterBuffer1_wBuffer0_queueSink_valid;
       automatic logic masterBuffer1_awBuffer0_queue0_doDeq =
@@ -2635,12 +2639,8 @@ module Widen_Tbtop(
         masterBuffer1_arBuffer0_queueSink_ready & masterBuffer1_arBuffer0_queueSink_valid;
       automatic logic masterBuffer0_bBuffer0_queue0_doDeq =
         masterBuffer0_result_b_ready & masterBuffer0_result_b_valid;
-      automatic logic masterBuffer0_wBuffer0_queue0_doDeq =
-        masterBuffer0_wBuffer0_queueSink_ready & masterBuffer0_wBuffer0_queueSink_valid;
-      automatic logic masterBuffer1_bBuffer0_queue0_doDeq =
-        masterBuffer1_result_b_ready & masterBuffer1_result_b_valid;
-      automatic logic masterBuffer0_rBuffer0_queue0_doDeq =
-        masterBuffer0_result_r_ready & masterBuffer0_result_r_valid;
+      automatic logic masterBuffer0_awBuffer0_queue0_doDeq =
+        masterBuffer0_awBuffer0_queueSink_ready & masterBuffer0_awBuffer0_queueSink_valid;
       if (masterBuffer0_arBuffer0_queue0_doEnq)
         masterBuffer0_arBuffer0_queue0_enqPtr_value <=
           masterBuffer0_arBuffer0_queue0_enqPtr_value - 1'h1;
@@ -2689,14 +2689,30 @@ module Widen_Tbtop(
           masterBuffer2_arBuffer0_queue0_deqPtr_value - 1'h1;
       if (masterBuffer2_arBuffer0_queue0_doEnq != masterBuffer2_arBuffer0_queue0_doDeq)
         masterBuffer2_arBuffer0_queue0_maybeFull <= masterBuffer2_arBuffer0_queue0_doEnq;
-      if (masterBuffer0_awBuffer0_queue0_doEnq)
-        masterBuffer0_awBuffer0_queue0_enqPtr_value <=
-          masterBuffer0_awBuffer0_queue0_enqPtr_value - 1'h1;
-      if (masterBuffer0_awBuffer0_queue0_doDeq)
-        masterBuffer0_awBuffer0_queue0_deqPtr_value <=
-          masterBuffer0_awBuffer0_queue0_deqPtr_value - 1'h1;
-      if (masterBuffer0_awBuffer0_queue0_doEnq != masterBuffer0_awBuffer0_queue0_doDeq)
-        masterBuffer0_awBuffer0_queue0_maybeFull <= masterBuffer0_awBuffer0_queue0_doEnq;
+      if (masterBuffer1_bBuffer0_queue0_doEnq)
+        masterBuffer1_bBuffer0_queue0_enqPtr_value <=
+          masterBuffer1_bBuffer0_queue0_enqPtr_value - 1'h1;
+      if (masterBuffer1_bBuffer0_queue0_doDeq)
+        masterBuffer1_bBuffer0_queue0_deqPtr_value <=
+          masterBuffer1_bBuffer0_queue0_deqPtr_value - 1'h1;
+      if (masterBuffer1_bBuffer0_queue0_doEnq != masterBuffer1_bBuffer0_queue0_doDeq)
+        masterBuffer1_bBuffer0_queue0_maybeFull <= masterBuffer1_bBuffer0_queue0_doEnq;
+      if (masterBuffer0_rBuffer0_queue0_doEnq)
+        masterBuffer0_rBuffer0_queue0_enqPtr_value <=
+          masterBuffer0_rBuffer0_queue0_enqPtr_value - 1'h1;
+      if (masterBuffer0_rBuffer0_queue0_doDeq)
+        masterBuffer0_rBuffer0_queue0_deqPtr_value <=
+          masterBuffer0_rBuffer0_queue0_deqPtr_value - 1'h1;
+      if (masterBuffer0_rBuffer0_queue0_doEnq != masterBuffer0_rBuffer0_queue0_doDeq)
+        masterBuffer0_rBuffer0_queue0_maybeFull <= masterBuffer0_rBuffer0_queue0_doEnq;
+      if (masterBuffer0_wBuffer0_queue0_doEnq)
+        masterBuffer0_wBuffer0_queue0_enqPtr_value <=
+          masterBuffer0_wBuffer0_queue0_enqPtr_value - 1'h1;
+      if (masterBuffer0_wBuffer0_queue0_doDeq)
+        masterBuffer0_wBuffer0_queue0_deqPtr_value <=
+          masterBuffer0_wBuffer0_queue0_deqPtr_value - 1'h1;
+      if (masterBuffer0_wBuffer0_queue0_doEnq != masterBuffer0_wBuffer0_queue0_doDeq)
+        masterBuffer0_wBuffer0_queue0_maybeFull <= masterBuffer0_wBuffer0_queue0_doEnq;
       if (masterBuffer1_wBuffer0_queue0_doEnq)
         masterBuffer1_wBuffer0_queue0_enqPtr_value <=
           masterBuffer1_wBuffer0_queue0_enqPtr_value - 1'h1;
@@ -2737,30 +2753,14 @@ module Widen_Tbtop(
           masterBuffer0_bBuffer0_queue0_deqPtr_value - 1'h1;
       if (masterBuffer0_bBuffer0_queue0_doEnq != masterBuffer0_bBuffer0_queue0_doDeq)
         masterBuffer0_bBuffer0_queue0_maybeFull <= masterBuffer0_bBuffer0_queue0_doEnq;
-      if (masterBuffer0_wBuffer0_queue0_doEnq)
-        masterBuffer0_wBuffer0_queue0_enqPtr_value <=
-          masterBuffer0_wBuffer0_queue0_enqPtr_value - 1'h1;
-      if (masterBuffer0_wBuffer0_queue0_doDeq)
-        masterBuffer0_wBuffer0_queue0_deqPtr_value <=
-          masterBuffer0_wBuffer0_queue0_deqPtr_value - 1'h1;
-      if (masterBuffer0_wBuffer0_queue0_doEnq != masterBuffer0_wBuffer0_queue0_doDeq)
-        masterBuffer0_wBuffer0_queue0_maybeFull <= masterBuffer0_wBuffer0_queue0_doEnq;
-      if (masterBuffer1_bBuffer0_queue0_doEnq)
-        masterBuffer1_bBuffer0_queue0_enqPtr_value <=
-          masterBuffer1_bBuffer0_queue0_enqPtr_value - 1'h1;
-      if (masterBuffer1_bBuffer0_queue0_doDeq)
-        masterBuffer1_bBuffer0_queue0_deqPtr_value <=
-          masterBuffer1_bBuffer0_queue0_deqPtr_value - 1'h1;
-      if (masterBuffer1_bBuffer0_queue0_doEnq != masterBuffer1_bBuffer0_queue0_doDeq)
-        masterBuffer1_bBuffer0_queue0_maybeFull <= masterBuffer1_bBuffer0_queue0_doEnq;
-      if (masterBuffer0_rBuffer0_queue0_doEnq)
-        masterBuffer0_rBuffer0_queue0_enqPtr_value <=
-          masterBuffer0_rBuffer0_queue0_enqPtr_value - 1'h1;
-      if (masterBuffer0_rBuffer0_queue0_doDeq)
-        masterBuffer0_rBuffer0_queue0_deqPtr_value <=
-          masterBuffer0_rBuffer0_queue0_deqPtr_value - 1'h1;
-      if (masterBuffer0_rBuffer0_queue0_doEnq != masterBuffer0_rBuffer0_queue0_doDeq)
-        masterBuffer0_rBuffer0_queue0_maybeFull <= masterBuffer0_rBuffer0_queue0_doEnq;
+      if (masterBuffer0_awBuffer0_queue0_doEnq)
+        masterBuffer0_awBuffer0_queue0_enqPtr_value <=
+          masterBuffer0_awBuffer0_queue0_enqPtr_value - 1'h1;
+      if (masterBuffer0_awBuffer0_queue0_doDeq)
+        masterBuffer0_awBuffer0_queue0_deqPtr_value <=
+          masterBuffer0_awBuffer0_queue0_deqPtr_value - 1'h1;
+      if (masterBuffer0_awBuffer0_queue0_doEnq != masterBuffer0_awBuffer0_queue0_doDeq)
+        masterBuffer0_awBuffer0_queue0_maybeFull <= masterBuffer0_awBuffer0_queue0_doEnq;
     end
   end // always @(posedge)
   ChiselTrueDualPortRAM mem (
@@ -3071,23 +3071,44 @@ module Widen_Tbtop(
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
-    .DATA_WIDTH(43)
-  ) masterBuffer0_awBuffer0_queue0_ram (
+    .DATA_WIDTH(2)
+  ) masterBuffer1_bBuffer0_queue0_ram (
     .clock    (clock),
-    .addrA    (masterBuffer0_awBuffer0_queue0_enqPtr_value),
-    .writeEnA (masterBuffer0_awBuffer0_queue0_doEnq),
+    .addrA    (masterBuffer1_bBuffer0_queue0_enqPtr_value),
+    .writeEnA (masterBuffer1_bBuffer0_queue0_doEnq),
+    .dataInA  (masterBuffer1_bBuffer0_queueSource_bits_resp),
+    .addrB    (masterBuffer1_bBuffer0_queue0_deqPtr_value),
+    .dataOutB (masterBuffer1_result_b_bits_resp)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(1),
+    .COUNT(2),
+    .DATA_WIDTH(67)
+  ) masterBuffer0_rBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (masterBuffer0_rBuffer0_queue0_enqPtr_value),
+    .writeEnA (masterBuffer0_rBuffer0_queue0_doEnq),
     .dataInA
-      ({masterBuffer0_result_aw_bits_addr,
-        masterBuffer0_result_aw_bits_len,
-        masterBuffer0_result_aw_bits_size,
-        masterBuffer0_result_aw_bits_burst,
-        masterBuffer0_result_aw_bits_lock,
-        masterBuffer0_result_aw_bits_cache,
-        masterBuffer0_result_aw_bits_prot,
-        masterBuffer0_result_aw_bits_qos,
-        masterBuffer0_result_aw_bits_region}),
-    .addrB    (masterBuffer0_awBuffer0_queue0_deqPtr_value),
-    .dataOutB (_masterBuffer0_awBuffer0_queue0_ram_dataOutB)
+      ({masterBuffer0_rBuffer0_queueSource_bits_data,
+        masterBuffer0_rBuffer0_queueSource_bits_resp,
+        masterBuffer0_rBuffer0_queueSource_bits_last}),
+    .addrB    (masterBuffer0_rBuffer0_queue0_deqPtr_value),
+    .dataOutB (_masterBuffer0_rBuffer0_queue0_ram_dataOutB)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(1),
+    .COUNT(2),
+    .DATA_WIDTH(73)
+  ) masterBuffer0_wBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (masterBuffer0_wBuffer0_queue0_enqPtr_value),
+    .writeEnA (masterBuffer0_wBuffer0_queue0_doEnq),
+    .dataInA
+      ({masterBuffer0_result_w_bits_data,
+        masterBuffer0_result_w_bits_strb,
+        masterBuffer0_result_w_bits_last}),
+    .addrB    (masterBuffer0_wBuffer0_queue0_deqPtr_value),
+    .dataOutB (_masterBuffer0_wBuffer0_queue0_ram_dataOutB)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
@@ -3176,44 +3197,23 @@ module Widen_Tbtop(
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
-    .DATA_WIDTH(73)
-  ) masterBuffer0_wBuffer0_queue0_ram (
+    .DATA_WIDTH(43)
+  ) masterBuffer0_awBuffer0_queue0_ram (
     .clock    (clock),
-    .addrA    (masterBuffer0_wBuffer0_queue0_enqPtr_value),
-    .writeEnA (masterBuffer0_wBuffer0_queue0_doEnq),
+    .addrA    (masterBuffer0_awBuffer0_queue0_enqPtr_value),
+    .writeEnA (masterBuffer0_awBuffer0_queue0_doEnq),
     .dataInA
-      ({masterBuffer0_result_w_bits_data,
-        masterBuffer0_result_w_bits_strb,
-        masterBuffer0_result_w_bits_last}),
-    .addrB    (masterBuffer0_wBuffer0_queue0_deqPtr_value),
-    .dataOutB (_masterBuffer0_wBuffer0_queue0_ram_dataOutB)
-  );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(1),
-    .COUNT(2),
-    .DATA_WIDTH(2)
-  ) masterBuffer1_bBuffer0_queue0_ram (
-    .clock    (clock),
-    .addrA    (masterBuffer1_bBuffer0_queue0_enqPtr_value),
-    .writeEnA (masterBuffer1_bBuffer0_queue0_doEnq),
-    .dataInA  (masterBuffer1_bBuffer0_queueSource_bits_resp),
-    .addrB    (masterBuffer1_bBuffer0_queue0_deqPtr_value),
-    .dataOutB (masterBuffer1_result_b_bits_resp)
-  );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(1),
-    .COUNT(2),
-    .DATA_WIDTH(67)
-  ) masterBuffer0_rBuffer0_queue0_ram (
-    .clock    (clock),
-    .addrA    (masterBuffer0_rBuffer0_queue0_enqPtr_value),
-    .writeEnA (masterBuffer0_rBuffer0_queue0_doEnq),
-    .dataInA
-      ({masterBuffer0_rBuffer0_queueSource_bits_data,
-        masterBuffer0_rBuffer0_queueSource_bits_resp,
-        masterBuffer0_rBuffer0_queueSource_bits_last}),
-    .addrB    (masterBuffer0_rBuffer0_queue0_deqPtr_value),
-    .dataOutB (_masterBuffer0_rBuffer0_queue0_ram_dataOutB)
+      ({masterBuffer0_result_aw_bits_addr,
+        masterBuffer0_result_aw_bits_len,
+        masterBuffer0_result_aw_bits_size,
+        masterBuffer0_result_aw_bits_burst,
+        masterBuffer0_result_aw_bits_lock,
+        masterBuffer0_result_aw_bits_cache,
+        masterBuffer0_result_aw_bits_prot,
+        masterBuffer0_result_aw_bits_qos,
+        masterBuffer0_result_aw_bits_region}),
+    .addrB    (masterBuffer0_awBuffer0_queue0_deqPtr_value),
+    .dataOutB (_masterBuffer0_awBuffer0_queue0_ram_dataOutB)
   );
   assign S_AXI_NORMAL_ARREADY = masterBuffer0_result_ar_ready;
   assign S_AXI_NORMAL_RVALID = masterBuffer0_result_r_valid;

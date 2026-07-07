@@ -9,15 +9,15 @@ import chisel3.hacks.ModuleInternals
 
 import scala.collection.mutable.HashMap
 
-private[tracking] object Manager {
+private[chext] object Manager {
   private val moduleInfos_ = HashMap.empty[BaseModule, ModuleInfo]
 
-  private[tracking] def unregisterModule(module: BaseModule): Unit = {
+  private[chext] def unregisterModule(module: BaseModule): Unit = {
     // println("Unregistering a module info for: ", module)
     moduleInfos_.remove(module)
   }
 
-  private[tracking] def registerModule(module: BaseModule): ModuleInfo = {
+  private[chext] def registerModule(module: BaseModule): ModuleInfo = {
     val parentModule = ModuleInternals.getParent(module)
     parentModule.foreach { registerModule(_) }
 
@@ -50,7 +50,7 @@ private[tracking] object Manager {
     registerModule(currentModule)
   }
 
-  private[tracking] final def registerCurrentModule() =
+  private[chext] final def registerCurrentModule() =
     registerCurrentModule_()
 
 }

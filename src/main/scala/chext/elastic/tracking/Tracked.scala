@@ -1,13 +1,13 @@
-package chext.tracking
+package chext.elastic.tracking
 
-import chisel3.{ChiselException, Data, Module, RawModule, SpecifiedDirection}
-import chisel3.experimental.{SourceInfo, BaseModule, requireIsHardware}
-import chisel3.hacks.{DataInternals, ModuleInternals}
+import chisel3.{ChiselException, Data, Module, SpecifiedDirection}
+import chisel3.experimental.{BaseModule, SourceInfo, requireIsHardware}
+import chisel3.hacks.DataInternals
 import chisel3.reflect.DataMirror
 
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.HashMap
-import scala.collection.mutable.HashSet
+
+import chext.tracking.Logger
 import chext.tracking.util.sourceInfoToString
 
 sealed abstract case class DeclaredRole(str: String)
@@ -66,7 +66,8 @@ object Tracked {
     tracked.enforceRole_(role)
 }
 
-/** This trait brings `markSource()`, `markSink()`, `sanityCheck()` capabilities to `Interface`.
+/** This trait brings `markSource()`, `markSink()`, `sanityCheck()` capabilities to Elastic
+  * interfaces.
   */
 trait Tracked extends Data {
   def tpe: String
@@ -90,12 +91,12 @@ trait Tracked extends Data {
   ): Unit = {
     requireIsHardware(
       this,
-      f"chext.tracking.Tracked: mark${role.str} must be called on a hardware!"
+      f"chext.elastic.tracking.Tracked: mark${role.str} must be called on a hardware!"
     )
 
     val currentModule = Module.currentModule.getOrElse(
       throw new ChiselException(
-        f"chext.tracking.Tracked: mark${role.str} must be called from a module!"
+        f"chext.elastic.tracking.Tracked: mark${role.str} must be called from a module!"
       )
     )
     array.addOne((currentModule, sourceInfo))
@@ -111,13 +112,13 @@ trait Tracked extends Data {
         val pos = sourceInfoToString(sourceInfo)
 
         throw new ChiselException(
-          f"chext.tracking.Tracked: Interface '$this' is declared as a ${effectiveRole.str}, but marked as ${role.str}. @[$pos]!"
+          f"chext.elastic.tracking.Tracked: Interface '$this' is declared as a ${effectiveRole.str}, but marked as ${role.str}. @[$pos]!"
         )
       }
     }
 
     // ensure that the current module is tracked
-    Manager.registerCurrentModule()
+    chext.tracking.Manager.registerCurrentModule()
   }
 
   final def markSource()(implicit sourceInfo: SourceInfo): Unit =
@@ -135,7 +136,7 @@ trait Tracked extends Data {
     * @param instanceSourceInfo
     *   If an interface belongs to child, describes where it is instantiated.
     */
-  private[tracking] final def sanityCheck(
+  private[chext] final def sanityCheck(
       logger: Logger,
       isRootIO: Boolean = false,
       instanceSourceInfo: Option[SourceInfo] = Option.empty,
@@ -143,9 +144,9 @@ trait Tracked extends Data {
       displayOwner: Option[BaseModule] = Option.empty,
       displaySourceInfo: Option[SourceInfo] = Option.empty
   ): Unit = {
-    val currentModule = Module.currentModule.getOrElse(
+    Module.currentModule.getOrElse(
       throw new ChiselException(
-        "chext.tracking.Tracked: sanityCheck must be called from a module!"
+        "chext.elastic.tracking.Tracked: sanityCheck must be called from a module!"
       )
     )
 
@@ -183,8 +184,6 @@ trait Tracked extends Data {
 
       logger.warn("sanityChecks", lines.toSeq: _*)
     }
-
-    // log("debug")
 
     // Check (1)
     if (!isRootIO) {

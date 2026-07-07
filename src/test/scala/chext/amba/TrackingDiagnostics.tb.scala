@@ -42,7 +42,7 @@ object TrackingDiagnosticsEmit {
                 val module = gen
 
                 chext.tracking.onComplete(module) {
-                  graph = chext.tracking.moduleGraphOption(module).map(_.flatten.asJson.toString())
+                  graph = chext.elastic.tracking.moduleGraphOption(module).map(_.flatten.asJson.toString())
                 }
 
                 module

@@ -2,12 +2,9 @@ package chext.elastic
 
 import chisel3._
 import chisel3.experimental.SourceInfo
-
 import chisel3.hacks.deferred
 
-import chext.tracking
-import tracking.Container
-import tracking.withContainer
+import chext.tracking.{Container, withContainer}
 
 /** `Repeat` replicates each input token multiple times at the output.
   *

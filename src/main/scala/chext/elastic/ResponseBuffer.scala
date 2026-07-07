@@ -1,10 +1,8 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.util._
 
 import chext.elastic
-import elastic.ConnectOp._
 
 /** Stops issuing requests if there is no sufficient buffer space. Useful for
   * avoiding deadlocks in case of a shared resource.

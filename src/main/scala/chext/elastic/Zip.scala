@@ -1,12 +1,9 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.SourceInfo
 
 import chext.bundles._
-
-import scala.collection.mutable.ListBuffer
 
 private object _wrap {
   def apply[T <: Data](t: T)(implicit si: SourceInfo): Interface[T] = {

@@ -1,13 +1,11 @@
 package chext.elastic
 
-import chisel3._
-import chisel3.experimental.requireIsHardware
-import chisel3.experimental.requireIsChiselType
-import chisel3.experimental.SourceInfo
-import chisel3.experimental.skipPrefix
+import chext.elastic.{tracking => t}
 
-import chext.tracking
-import tracking.{Component, RigidComponent, uniquePrefix}
+import chisel3._
+import chisel3.experimental.{SourceInfo, requireIsChiselType, requireIsHardware}
+
+import chext.tracking.{Component, uniquePrefix}
 
 abstract class Const[Tin <: Data, Tout <: Data](
     sink: Interface[Tout]
@@ -15,6 +13,9 @@ abstract class Const[Tin <: Data, Tout <: Data](
     extends Component
     with Fire[Tout] {
   protected def fireSink: Interface[Tout] = sink
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSinkPort("sink", sink)
 
@@ -38,25 +39,26 @@ object Const {
     uniquePrefix(name) {
       val interface = EWire(chiselTypeOf(constant))
 
-      val component = skipPrefix { new RigidComponent("Const", "const") }
-      component.sink("sink", interface)
+      val const0 = new Const(interface) {
+        out := constant
+      }
 
-      interface.enq(constant)
       interface
     }
   }
 
-  def explicit[T <: Data](gen: T, name: String = "const")(fn: => (T) => Unit) = {
+  def explicit[T <: Data](gen: T, name: String = "const")(fn: => (T) => Unit)(implicit
+      si: SourceInfo
+  ): Interface[T] = {
     requireIsChiselType(gen, "The gen parameter must be a Chisel type.")
 
     uniquePrefix(name) {
       val interface = EWire(gen.cloneType)
 
-      val component = new RigidComponent("Const", "const")
-      component.sink("sink", interface)
+      val const0 = new Const(interface) {
+        fn(out)
+      }
 
-      fn(interface.$bits)
-      interface.$valid := true.B
       interface
     }
   }

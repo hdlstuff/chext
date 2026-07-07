@@ -1227,8 +1227,8 @@ module IdSerialize(
   output        m_axi_b_ready
 );
 
-  wire        write_fork0_result_valid;
   wire        write_wire0_ready;
+  wire        write_fork0_result_valid;
   wire [46:0] _read_fork0_repeat0_sourceBuffer0_queue0_ram_dataOutB;
   wire [3:0]  read_fork0_repeat0_x1_bits_id = s_axi_ar_bits_id;
   wire [13:0] read_fork0_repeat0_x1_bits_addr = s_axi_ar_bits_addr;
@@ -1277,17 +1277,17 @@ module IdSerialize(
   wire        read_fork0_repeat0_x1_valid = s_axi_ar_valid & ~read_fork0_regs_0;
   wire        read_fork0_result_valid = s_axi_ar_valid & ~read_fork0_regs_1;
   wire        write_join0_allValid = m_axi_b_valid & write_wire0_valid;
+  wire        read_wire0_valid;
   assign write_wire0_ready = s_axi_b_ready & write_join0_allValid;
+  wire        read_join0_allValid = m_axi_r_valid & read_wire0_valid;
+  wire        read_wire0_ready = s_axi_r_ready & read_join0_allValid;
   reg         write_fork0_regs_0;
   reg         write_fork0_regs_1;
   wire        write_fork0_ready_qual1_0 = write_fork0_result_ready | write_fork0_regs_0;
   wire        write_fork0_ready_qual1_1 = write_fork0_result_1_ready | write_fork0_regs_1;
   wire        write_fork0_ready = write_fork0_ready_qual1_0 & write_fork0_ready_qual1_1;
   assign write_fork0_result_valid = s_axi_aw_valid & ~write_fork0_regs_0;
-  wire        read_wire0_valid;
   wire        write_fork0_result_1_valid = s_axi_aw_valid & ~write_fork0_regs_1;
-  wire        read_join0_allValid = m_axi_r_valid & read_wire0_valid;
-  wire        read_wire0_ready = s_axi_r_ready & read_join0_allValid;
   reg  [8:0]  read_fork0_repeat0_count_state;
   reg         read_fork0_repeat0_count_valid;
   wire [8:0]  _read_fork0_repeat0_count_nextState_T =

@@ -1,15 +1,10 @@
 package chext.elastic
 
 import chisel3._
-
+import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
-import chisel3.experimental.SourceInfo
-
-import chext.tracking
-import tracking.Container
-import tracking.withContainer
-import tracking.suggestInstanceName
+import chext.tracking.{Container, withContainer}
 
 class Loop[Tstate <: Data](
     sourceInit: Interface[Tstate],

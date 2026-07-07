@@ -7,8 +7,7 @@ import chisel3.experimental.dataview._
 
 import chisel3.hacks.DataInternals
 import chisel3.hacks.ModuleInternals
-import chext.tracking
-import chext.tracking.DeclaredRole
+import chext.elastic.{tracking => t}
 import chext.tracking.Logger
 import chext.tracking.util.sourceInfoToString
 
@@ -75,31 +74,31 @@ private object ViewWarnings {
 }
 
 trait Casts {
-  private def requestRole(source: RawInterface): Option[DeclaredRole] =
-    tracking.Tracked.roleFromCurrentModule(source)
+  private def requestRole(source: RawInterface): Option[t.DeclaredRole] =
+    t.Tracked.roleFromCurrentModule(source)
 
   private def enforceAxi4Roles(
       source: RawInterface,
-      ar: => tracking.Tracked,
-      r: => tracking.Tracked,
-      aw: => tracking.Tracked,
-      w: => tracking.Tracked,
-      b: => tracking.Tracked
+      ar: => t.Tracked,
+      r: => t.Tracked,
+      aw: => t.Tracked,
+      w: => t.Tracked,
+      b: => t.Tracked
   ): Unit =
     requestRole(source) match {
       case None => ()
       case Some(requestRole) =>
-        val responseRole = DeclaredRole.invert(requestRole)
+        val responseRole = t.DeclaredRole.invert(requestRole)
 
         if (source.cfg.read) {
-          tracking.Tracked.enforceRole(ar, requestRole)
-          tracking.Tracked.enforceRole(r, responseRole)
+          t.Tracked.enforceRole(ar, requestRole)
+          t.Tracked.enforceRole(r, responseRole)
         }
 
         if (source.cfg.write) {
-          tracking.Tracked.enforceRole(aw, requestRole)
-          tracking.Tracked.enforceRole(w, requestRole)
-          tracking.Tracked.enforceRole(b, responseRole)
+          t.Tracked.enforceRole(aw, requestRole)
+          t.Tracked.enforceRole(w, requestRole)
+          t.Tracked.enforceRole(b, responseRole)
         }
     }
 
@@ -114,7 +113,7 @@ trait Casts {
       ViewWarnings.record(x, "asFull")
       val view = x.viewAs[full.Interface]
       enforceFullRoles(view, x)
-      tracking.registerView(view, x, sourceInfo = Some(si))
+      t.registerView(view, x, sourceInfo = Some(si))
       view
     }
 
@@ -122,7 +121,7 @@ trait Casts {
       ViewWarnings.record(x, "asLite")
       val view = x.viewAs[lite.Interface]
       enforceLiteRoles(view, x)
-      tracking.registerView(view, x, sourceInfo = Some(si))
+      t.registerView(view, x, sourceInfo = Some(si))
       view
     }
   }

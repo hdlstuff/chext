@@ -1,12 +1,13 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
 
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
-import chext.tracking.Component
 import chext.deadlock
+import chext.tracking.Component
 
 /** Elastic demultiplexer with no explicit select interface. The destination
   * sink is computed directly from the current input token by the `select`
@@ -43,6 +44,9 @@ class DemuxNs[Tin <: Data, Tout <: Data](
 
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sinks.head.$bits)
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSourcePort("source", source)
   sinks.zipWithIndex.foreach { //

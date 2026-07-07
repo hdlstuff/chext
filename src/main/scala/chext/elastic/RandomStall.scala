@@ -1,13 +1,11 @@
 package chext.elastic
 
 import chisel3._
+import chisel3.experimental.SourceInfo
+import chisel3.hacks.deferred
 import chisel3.util._
 
-import chisel3.experimental.SourceInfo
-
-import chext.tracking
-import tracking.Container
-import tracking.withContainer
+import chext.tracking.{Container, withContainer}
 
 /** Applies a random stall the elastic interface.
   *

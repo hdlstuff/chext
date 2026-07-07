@@ -1,13 +1,14 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
 
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.experimental.requireIsHardware
 import chisel3.hacks.deferred
 
-import chext.tracking.Component
 import chext.deadlock
+import chext.tracking.Component
 
 /** Sends an elastic packet only once.
   *
@@ -27,6 +28,9 @@ class Once[T <: Data](val sink: Interface[T])(implicit si_ : SourceInfo)
   override val sourceInfo: SourceInfo = si_
 
   protected val out = sink.$bits
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSinkPort("sink", sink)
 

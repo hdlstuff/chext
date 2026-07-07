@@ -1,17 +1,15 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
 
 import chisel3._
-
 import chisel3.experimental.SourceInfo
-
 import chisel3.hacks.deferred
 
 import scala.collection.mutable.ArrayBuffer
 
-import chext.tracking
-import tracking.Component
 import chext.deadlock
+import chext.tracking.Component
 
 /** `Transducer` creates a finite-state transducer between a source and a sink.
   *
@@ -54,6 +52,9 @@ abstract class Transducer[Tin <: Data, Tout <: Data](
     extends Component
     with Fire[Tout] {
   protected def fireSink: Interface[Tout] = sink
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSourcePort("source", source)
   addSinkPort("sink", sink)

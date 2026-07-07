@@ -9,6 +9,7 @@ import chisel3.experimental.dataview._
 import chisel3.hacks.DataInternals
 import chisel3.hacks.ModuleInternals
 import chext.elastic
+import chext.elastic.{tracking => t}
 import chext.tracking
 import chext.tracking.Logger
 import chext.tracking.util.sourceInfoToString
@@ -89,22 +90,22 @@ object Casts {
     def asLite(implicit si: SourceInfo) = {
       ViewWarnings.record(x, "asLite")
       val view = x.viewAs[elastic.Interface[Bits]]
-      tracking.Tracked.roleFromCurrentModule(x) match {
-        case Some(role) => tracking.Tracked.enforceRole(view, role)
+      t.Tracked.roleFromCurrentModule(x) match {
+        case Some(role) => t.Tracked.enforceRole(view, role)
         case None       => ()
       }
-      tracking.registerView(view, x, Some("$view"), Some(si))
+      t.registerView(view, x, Some("$view"), Some(si))
       view
     }
 
     def asFull(implicit si: SourceInfo) = {
       ViewWarnings.record(x, "asFull")
       val view = x.viewAs[elastic.Interface[FullChannel]]
-      tracking.Tracked.roleFromCurrentModule(x) match {
-        case Some(role) => tracking.Tracked.enforceRole(view, role)
+      t.Tracked.roleFromCurrentModule(x) match {
+        case Some(role) => t.Tracked.enforceRole(view, role)
         case None       => ()
       }
-      tracking.registerView(view, x, Some("$view"), Some(si))
+      t.registerView(view, x, Some("$view"), Some(si))
       view
     }
   }

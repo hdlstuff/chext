@@ -1,13 +1,14 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
 
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 import chisel3.util.log2Ceil
 
-import chext.tracking.Component
 import chext.deadlock
+import chext.tracking.Component
 
 /** Elastic arbiter that selects one valid source and forwards it to the sink.
   *
@@ -55,6 +56,9 @@ final class Arbiter[Tin <: Data, Tout <: Data](
 
   private val genIn = chiselTypeOf(sources.head.$bits)
   private val genOut = chiselTypeOf(sink.$bits)
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   sources.zipWithIndex.foreach { //
     case (source, i) => addSourcePort(s"source_$i", source)

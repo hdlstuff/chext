@@ -1,23 +1,24 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
 
 import chisel3._
-
 import chisel3.experimental.SourceInfo
-
 import chisel3.hacks.deferred
 
 import scala.collection.mutable.ListBuffer
 
-import chext.tracking
-import tracking.Component
 import chext.deadlock
+import chext.tracking.Component
 
 abstract class Fork[T <: Data](
     source: Interface[T],
     eager: Boolean = true
 )(implicit si_ : SourceInfo)
     extends Component {
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
+
   addSourcePort("source", source)
 
   val sourceInfo: SourceInfo = si_

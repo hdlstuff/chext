@@ -1,15 +1,14 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
 
 import chisel3._
-import util.log2Ceil
-
-import chext.tracking.Component
-import chext.deadlock
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
+import chisel3.util.log2Ceil
 
-import chext.tracking.uniquePrefix
+import chext.deadlock
+import chext.tracking.Component
 
 /** A small elastic counter that emits the current count on `sink`.
   *
@@ -44,6 +43,9 @@ final class Counter(
     else maxValueExclusive
 
   require_(start < maxValueExclusive_)
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSinkPort("sink", sink)
 

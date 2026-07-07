@@ -1,22 +1,21 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
 
 import chisel3._
-
-import chisel3.experimental.SourceInfo
-import chisel3.experimental.AffectsChiselPrefix
-import chisel3.experimental.requireIsChiselType
-import chisel3.experimental.requireIsHardware
-import chisel3.experimental.skipPrefix
-
+import chisel3.experimental.{
+  AffectsChiselPrefix,
+  SourceInfo,
+  requireIsChiselType,
+  requireIsHardware,
+  skipPrefix
+}
+import chisel3.hacks.deferred
 import chisel3.util.log2Ceil
 
-import chext.tracking
-import tracking.Component
 import chext.deadlock
-
-import ConnectOp._
-import chisel3.hacks.deferred
+import chext.elastic.ConnectOp._
+import chext.tracking.Component
 
 private object memory_impl {
   private val require_ = chext.util.Require.inferred()
@@ -322,6 +321,9 @@ class Queue[Tin <: Data, Tout <: Data](
     extends Component {
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sink.$bits)
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSourcePort("source", source)
   addSinkPort("sink", sink)

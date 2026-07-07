@@ -1,14 +1,10 @@
 package chext.elastic
 
 import chisel3._
-
+import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
-import chisel3.experimental.SourceInfo
-
-import chext.tracking
-import tracking.Container
-import tracking.withContainer
+import chext.tracking.{Container, withContainer}
 
 class Scope[Tinit <: Data, Texit <: Data](
     sourceInit: Interface[Tinit],
@@ -47,22 +43,24 @@ class Scope[Tinit <: Data, Texit <: Data](
   }
 
   deferred {
-    val stall = RegInit(false.B)
+    withContainer(this) {
+      val stall = RegInit(false.B)
 
-    val stall0 = new Stall(sourceInit, SinkBuffer(sinkBegin)) {
-      out := in
+      val stall0 = new Stall(sourceInit, SinkBuffer(sinkBegin)) {
+        out := in
 
-      cond { stall }
-      fire {
-        stall := true.B
-        initFn_.foreach { _(in) }
+        cond { stall }
+        fire {
+          stall := true.B
+          initFn_.foreach { _(in) }
+        }
       }
-    }
 
-    val connect0 = new Connect(sourceEnd, SinkBuffer(sinkExit)) {
-      fire {
-        stall := false.B
-        exitFn_.foreach { _(in) }
+      val connect0 = new Connect(sourceEnd, SinkBuffer(sinkExit)) {
+        fire {
+          stall := false.B
+          exitFn_.foreach { _(in) }
+        }
       }
     }
   }

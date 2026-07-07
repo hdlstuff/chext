@@ -1,21 +1,13 @@
 package chext.elastic
 
 import chisel3._
+import chisel3.experimental.{SourceInfo, prefix}
+import chisel3.hacks.deferred
 import chisel3.util._
 
-import chisel3.experimental.prefix
-import chisel3.experimental.SourceInfo
-
-import chisel3.hacks.deferred
-
 import chext.elastic
-import elastic.ConnectOp._
-
-import chext.bundles.Bundle2
-
-import chext.tracking
-import tracking.Container
-import tracking.withContainer
+import chext.elastic.ConnectOp._
+import chext.tracking.{Container, withContainer}
 
 /** `Switch` conditionally routes tokens to one of multiple branches.
   *

@@ -1,12 +1,12 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
+
 import chisel3._
 import chisel3.experimental.SourceInfo
-
 import chisel3.hacks.deferred
 
-import chext.tracking
-import tracking.Component
+import chext.tracking.Component
 
 abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
     source: Interface[Tin],
@@ -16,6 +16,9 @@ abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
     extends Component
     with Fire[Tout] {
   protected def fireSink: Interface[Tout] = sink
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSourcePort("source", source)
   addSinkPort("sink", sink)

@@ -2,8 +2,8 @@ package chext.elastic
 
 import chisel3._
 
+import chext.elastic.ConnectOp._
 import chext.elastic.{Mux => EMux}
-import ConnectOp._
 
 /** @param genIn
   * @param genOut

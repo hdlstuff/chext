@@ -1,24 +1,20 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
+
 import chisel3._
-
-import chisel3.reflect.DataMirror
-import chisel3.experimental.SourceInfo
-import chisel3.experimental.requireIsChiselType
-import chisel3.experimental.requireIsHardware
-
+import chisel3.experimental.{SourceInfo, requireIsChiselType, requireIsHardware}
 import chisel3.internal.sourceinfo.SourceInfoTransform
-
-import scala.language.experimental.macros
+import chisel3.reflect.DataMirror
 
 import scala.collection.immutable.SeqMap
+import scala.language.experimental.macros
 
-import chext.tracking
 import chext.util.NamedVec
 
 class Interface[+T <: Data](gen: T)(implicit si_ : SourceInfo)
     extends Record
-    with tracking.Tracked {
+    with t.Tracked {
   private val ready_ = Input(Bool())
   private val valid_ = Output(Bool())
   private val bits_ = Output(gen.cloneType)
@@ -27,11 +23,11 @@ class Interface[+T <: Data](gen: T)(implicit si_ : SourceInfo)
 
   val tpe: String = f"chext.elastic.Interface[${gen.toString()}]"
 
-  lazy val declaredRole: tracking.DeclaredRole = {
+  lazy val declaredRole: t.DeclaredRole = {
     (hacks.DataInternals.isIO(this), DataMirror.directionOf(this.$valid)) match {
-      case (true, ActualDirection.Output) => tracking.DeclaredRole.Sink
-      case (true, ActualDirection.Input)  => tracking.DeclaredRole.Source
-      case _                              => tracking.DeclaredRole.None
+      case (true, ActualDirection.Output) => t.DeclaredRole.Sink
+      case (true, ActualDirection.Input)  => t.DeclaredRole.Source
+      case _                              => t.DeclaredRole.None
     }
   }
 
@@ -281,8 +277,6 @@ private object InterfaceApp extends App {
 }
 
 private object XApp extends App {
-  import hdlinfo.TypedObject
-
   class ModuleY extends Module {
     val in0 = IO(Input(UInt(6.W)))
     val out0 = IO(Output(UInt(32.W)))

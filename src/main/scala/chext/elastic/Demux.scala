@@ -1,13 +1,14 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
 
 import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 import chisel3.util.log2Ceil
 
-import chext.tracking.Component
 import chext.deadlock
+import chext.tracking.Component
 
 /** Elastic demultiplexer with an optional `last` predicate.
   *
@@ -56,6 +57,9 @@ class Demux[Tin <: Data, Tout <: Data](
 
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sinks.head.$bits)
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSourcePort("source", source)
   sinks.zipWithIndex.foreach { //

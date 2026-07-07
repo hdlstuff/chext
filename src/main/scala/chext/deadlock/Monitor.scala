@@ -4,9 +4,8 @@ import chisel3._
 
 import chext.{elastic => e}
 
-import chext.tracking.Utils._
 import chext.tracking.Component
-import chext.tracking.Tracked
+import chext.elastic.tracking._
 
 import scala.collection.mutable.HashMap
 import chisel3.hacks.deferred

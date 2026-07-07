@@ -1,12 +1,12 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
+
 import chisel3._
 import chisel3.experimental.SourceInfo
-
 import chisel3.hacks.deferred
 
-import chext.tracking
-import tracking.Component
+import chext.tracking.Component
 
 /** `Stall` conditionally stalls tokens.
   *
@@ -33,6 +33,9 @@ abstract class Stall[Tin <: Data, Tout <: Data](
     extends Component
     with Fire[Tout] {
   protected def fireSink: Interface[Tout] = sink
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSourcePort("source", source)
   addSinkPort("sink", sink)

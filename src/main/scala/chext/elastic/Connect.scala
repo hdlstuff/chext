@@ -1,16 +1,11 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
+
 import chisel3._
-import chisel3.experimental.prefix
-import chisel3.experimental.SourceInfo
-import chisel3.experimental.skipPrefix
+import chisel3.experimental.{SourceInfo, prefix}
 
-import chisel3.hacks.deferred
-
-import chext.tracking
-import tracking.Component
-import tracking.RigidComponent
-import tracking.uniquePrefix
+import chext.tracking.{Component, uniquePrefix}
 
 /** `Connect` connects two elastic interfaces, with an optional combinational transformation given
   * by:
@@ -35,6 +30,9 @@ class Connect[Tin <: Data, Tout <: Data](
     with Fire[Tout] {
   protected def fireSink: Interface[Tout] = sink
 
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
+
   addSourcePort("source", source)
   addSinkPort("sink", sink)
 
@@ -58,17 +56,10 @@ object ConnectOp {
   private def connect_[T <: Data](
       source: Interface[T],
       sink: Interface[T]
-  )(implicit sourceInfo: SourceInfo) = {
-    uniquePrefix {
-      source.$ready := sink.$ready
-      sink.$valid := source.$valid
-      sink.$bits := source.$bits
-
-      val component = skipPrefix { new RigidComponent("Connect", "connect") }
-      component.source("source", source)
-      component.sink("sink", sink)
+  )(implicit sourceInfo: SourceInfo): Connect[T, T] =
+    uniquePrefix("connect") {
+      new Connect(source, sink)
     }
-  }
 
   implicit class elastic_connect_op[T <: Data](val source: Interface[T]) extends AnyVal {
     def :=>(sink: Interface[T])(implicit sourceInfo: SourceInfo): Unit = {

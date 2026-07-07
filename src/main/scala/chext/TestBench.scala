@@ -42,7 +42,7 @@ private object emitHdlinfo {
 }
 
 private object emitModuleGraph {
-  def apply(moduleGraph: tracking.Graph.Module, targetDir: String): Unit = {
+  def apply(moduleGraph: elastic.tracking.Graph.Module, targetDir: String): Unit = {
     import io.circe.syntax._
     import io.circe.generic.auto._
     import java.io.PrintWriter
@@ -652,7 +652,7 @@ trait TestBench extends App {
 
         tracking.onComplete(module) {
           val hdlinfoModule = Some(module.hdlinfoModule)
-          val graphModule = tracking.moduleGraphOption(module)
+          val graphModule = elastic.tracking.moduleGraphOption(module)
 
           hdlinfoModule.foreach { x => emitHdlinfo(x, hdlPath) }
           graphModule.foreach { x => emitModuleGraph(x, hdlPath) }

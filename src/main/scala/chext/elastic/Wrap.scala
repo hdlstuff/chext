@@ -1,22 +1,23 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
+
 import chisel3._
+import chisel3.experimental.SourceInfo
+import chisel3.hacks.deferred
 import chisel3.util.ShiftRegister
 
-import chisel3.experimental.SourceInfo
-
-import chisel3.hacks.deferred
-
 import chext.util.Counter
-
-import chext.tracking
-import tracking.Component
+import chext.tracking.Component
 
 abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interface[T2])(implicit
     val sourceInfo: SourceInfo
 ) extends Component
     with Fire[T2] {
   protected def fireSink: Interface[T2] = sink
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   addSourcePort("source", source)
   addSinkPort("sink", sink)

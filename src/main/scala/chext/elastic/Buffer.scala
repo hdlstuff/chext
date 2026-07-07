@@ -1,8 +1,7 @@
 package chext.elastic
 
 import chisel3._
-import chisel3.experimental.prefix
-import chisel3.experimental.SourceInfo
+import chisel3.experimental.{SourceInfo, prefix}
 
 import chext.tracking.uniquePrefix
 

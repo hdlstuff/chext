@@ -38,7 +38,7 @@
   ],
   "interfaces" : [
     {
-      "name" : "sources[0]",
+      "name" : "sources_0",
       "role" : "source",
       "kind" : "readyValid[In]",
       "associatedClock" : "clock",
@@ -48,7 +48,7 @@
       }
     },
     {
-      "name" : "sources[1]",
+      "name" : "sources_1",
       "role" : "source",
       "kind" : "readyValid[In]",
       "associatedClock" : "clock",
@@ -58,7 +58,7 @@
       }
     },
     {
-      "name" : "sources[2]",
+      "name" : "sources_2",
       "role" : "source",
       "kind" : "readyValid[In]",
       "associatedClock" : "clock",
@@ -68,7 +68,7 @@
       }
     },
     {
-      "name" : "sources[3]",
+      "name" : "sources_3",
       "role" : "source",
       "kind" : "readyValid[In]",
       "associatedClock" : "clock",
@@ -78,7 +78,7 @@
       }
     },
     {
-      "name" : "sinks[0]",
+      "name" : "sinks_0",
       "role" : "sink",
       "kind" : "readyValid[Out]",
       "associatedClock" : "clock",
@@ -88,7 +88,7 @@
       }
     },
     {
-      "name" : "sinks[1]",
+      "name" : "sinks_1",
       "role" : "sink",
       "kind" : "readyValid[Out]",
       "associatedClock" : "clock",
@@ -98,7 +98,7 @@
       }
     },
     {
-      "name" : "sinks[2]",
+      "name" : "sinks_2",
       "role" : "sink",
       "kind" : "readyValid[Out]",
       "associatedClock" : "clock",
@@ -108,7 +108,7 @@
       }
     },
     {
-      "name" : "sinks[3]",
+      "name" : "sinks_3",
       "role" : "sink",
       "kind" : "readyValid[Out]",
       "associatedClock" : "clock",

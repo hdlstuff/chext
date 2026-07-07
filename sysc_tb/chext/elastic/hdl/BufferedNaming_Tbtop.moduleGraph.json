@@ -3,28 +3,28 @@
   "path" : "/",
   "sources" : [
     {
-      "path" : "/sources[0]",
+      "path" : "/sources.3",
       "tpe" : "chext.elastic.Interface[UInt<16>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/sources[1]",
+      "path" : "/sources.2",
       "tpe" : "chext.elastic.Interface[UInt<16>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/sources[2]",
+      "path" : "/sources.1",
       "tpe" : "chext.elastic.Interface[UInt<16>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/sources[3]",
+      "path" : "/sources.0",
       "tpe" : "chext.elastic.Interface[UInt<16>]",
       "args" : {
         
@@ -33,28 +33,28 @@
   ],
   "sinks" : [
     {
-      "path" : "/sinks[0]",
+      "path" : "/sinks.3",
       "tpe" : "chext.elastic.Interface[UInt<16>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/sinks[1]",
+      "path" : "/sinks.2",
       "tpe" : "chext.elastic.Interface[UInt<16>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/sinks[2]",
+      "path" : "/sinks.1",
       "tpe" : "chext.elastic.Interface[UInt<16>]",
       "args" : {
         
       }
     },
     {
-      "path" : "/sinks[3]",
+      "path" : "/sinks.0",
       "tpe" : "chext.elastic.Interface[UInt<16>]",
       "args" : {
         
@@ -127,7 +127,7 @@
         [
           "source",
           {
-            "path" : "/sources[0]",
+            "path" : "/sources.0",
             "desc" : "IO"
           }
         ]
@@ -153,7 +153,7 @@
         [
           "source",
           {
-            "path" : "/sources[1]",
+            "path" : "/sources.1",
             "desc" : "IO"
           }
         ]
@@ -179,7 +179,7 @@
         [
           "source",
           {
-            "path" : "/sources[2]",
+            "path" : "/sources.2",
             "desc" : "IO"
           }
         ]
@@ -205,7 +205,7 @@
         [
           "source",
           {
-            "path" : "/sources[3]",
+            "path" : "/sources.3",
             "desc" : "IO"
           }
         ]
@@ -240,7 +240,7 @@
         [
           "sink",
           {
-            "path" : "/sinks[0]",
+            "path" : "/sinks.0",
             "desc" : "IO"
           }
         ]
@@ -266,7 +266,7 @@
         [
           "sink",
           {
-            "path" : "/sinks[1]",
+            "path" : "/sinks.1",
             "desc" : "IO"
           }
         ]
@@ -292,7 +292,7 @@
         [
           "sink",
           {
-            "path" : "/sinks[2]",
+            "path" : "/sinks.2",
             "desc" : "IO"
           }
         ]
@@ -318,7 +318,7 @@
         [
           "sink",
           {
-            "path" : "/sinks[3]",
+            "path" : "/sinks.3",
             "desc" : "IO"
           }
         ]
@@ -329,7 +329,7 @@
       }
     },
     {
-      "path" : "/elastic0",
+      "path" : "/0_connect0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -355,7 +355,7 @@
       }
     },
     {
-      "path" : "/elastic1",
+      "path" : "/1_connect0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -381,7 +381,7 @@
       }
     },
     {
-      "path" : "/elastic2",
+      "path" : "/2_connect0",
       "tpe" : "Connect",
       "sources" : [
         [
@@ -407,7 +407,7 @@
       }
     },
     {
-      "path" : "/elastic3",
+      "path" : "/3_connect0",
       "tpe" : "Connect",
       "sources" : [
         [

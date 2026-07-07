@@ -1,13 +1,14 @@
 package chext.elastic
 
+import chext.elastic.{tracking => t}
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
+import chisel3.util._
 
-import chext.tracking.Component
 import chext.deadlock
+import chext.tracking.Component
 
 /** Merges multiple elastic streams into one. It **must** be guaranteed that at
   * any given time at most a single `source` is active.
@@ -34,6 +35,9 @@ final class Merger[T <: Data](
   require_(sources.nonEmpty, "requires at least one source interface")
 
   private val genIn = chiselTypeOf(sources.head.$bits)
+
+  private val elasticState = trackingState(t.Tag)
+  import elasticState._
 
   sources.zipWithIndex.foreach { //
     case (source, i) => addSourcePort(s"source_$i", source)

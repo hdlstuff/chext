@@ -26,11 +26,11 @@ sealed trait BaseComponent extends HasPath {
   protected final def addArgument(name: String, arg: TypedObject): Unit = {
     args_.addOne(name -> arg)
   }
-  private[tracking] final def args = args_.toSeq
+  private[chext] final def args = args_.toSeq
 
   // addChild(...) calls parentOption_, which must initialized
   // for this reason, we have init code here.
-  private val moduleInfo = Manager.registerCurrentModule()
+  private[tracking] final val moduleInfo = Manager.registerCurrentModule()
   moduleInfo.addComponent(this)
   moduleInfo.lastContainerOption.foreach { _.addChild(this) }
 }
@@ -59,25 +59,28 @@ trait Container extends BaseComponent {
 
 // A component cannot have other components declared inside, though I am not going to enforce this
 trait Component extends BaseComponent {
-  private val sourcePorts_ = ArrayBuffer.empty[(String, Tracked)]
-  private val sinkPorts_ = ArrayBuffer.empty[(String, Tracked)]
+  private val trackingStates_ = ArrayBuffer.empty[ComponentState]
 
-  protected final def addSourcePort(name: String, source: Tracked)(implicit
-      sourceInfo: SourceInfo
-  ): Unit = {
-    sourcePorts_.addOne(name -> source)
-    source.markSource()
+  TagRegistry.tags.foreach { tag =>
+    trackingState(tag)
   }
 
-  protected final def addSinkPort(name: String, sink: Tracked)(implicit
-      sourceInfo: SourceInfo
-  ): Unit = {
-    sinkPorts_.addOne(name -> sink)
-    sink.markSink()
-  }
+  final def trackingState[T <: Tag](tag: T): tag.CS =
+    trackingStateFor(tag).asInstanceOf[tag.CS]
 
-  private[tracking] final def sourcePorts = sourcePorts_.toSeq
-  private[tracking] final def sinkPorts = sinkPorts_.toSeq
+  private def trackingStateFor(tag: Tag): ComponentState = {
+    while (trackingStates_.length <= tag.index)
+      trackingStates_.addOne(null)
+
+    val existing = trackingStates_(tag.index)
+    if (existing ne null)
+      existing
+    else {
+      val created = moduleInfo.trackingState(tag).newComponentState(this)
+      trackingStates_(tag.index) = created
+      created
+    }
+  }
 
   def children: Seq[BaseComponent] = Seq.empty
 }
@@ -92,20 +95,4 @@ object withContainer {
 
     result
   }
-}
-
-/** You should probably instantiate this one using `skipPrefix { ... }`.
-  *
-  * @param tpe
-  * @param namePrefix
-  * @param sourceInfo
-  */
-final class RigidComponent(
-    override val tpe: String,
-    override val namePrefix: String = ""
-)(implicit val sourceInfo: SourceInfo)
-    extends Component {
-  def source(name: String, source: Tracked) = addSourcePort(name, source)
-  def sink(name: String, sink: Tracked) = addSinkPort(name, sink)
-
 }
