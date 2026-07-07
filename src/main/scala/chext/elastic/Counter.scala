@@ -27,7 +27,10 @@ final class Counter(
     val maxValueExclusive: Long = -1,
     val start: Long = 0
 )(implicit si_ : SourceInfo)
-    extends Component {
+    extends Component
+    with Fire[UInt] {
+  protected def fireSink: Interface[UInt] = sink
+
   private val require_ = chext.util.Require.inferred()
 
   override def tpe: String = "Counter"

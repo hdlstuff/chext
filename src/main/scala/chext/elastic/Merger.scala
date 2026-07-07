@@ -24,7 +24,9 @@ final class Merger[T <: Data](
     val sources: Seq[Interface[T]],
     val sink: Interface[T]
 )(implicit si_ : SourceInfo)
-    extends Component {
+    extends Component
+    with Fire[T] {
+  protected def fireSink: Interface[T] = sink
 
   override def tpe: String = "Merger"
   override def namePrefix: String = "merger"

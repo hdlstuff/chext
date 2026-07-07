@@ -31,7 +31,10 @@ class Mux[Tin <: Data, Tout <: Data](
     val sink: Interface[Tout],
     val sourceSelect: Interface[UInt]
 )(implicit si_ : SourceInfo)
-    extends Component {
+    extends Component
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
+
   type LastFn = Tin => Bool
   type OutFn = Tin => Data
   type OutExplicitFn = (Tin, Data) => Unit

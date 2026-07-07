@@ -9,7 +9,10 @@ import chext.tracking.Component
 final class NullSink[T <: Data](
     source: Interface[T]
 )(implicit si_ : SourceInfo)
-    extends Component {
+    extends Component
+    with Fire[T] {
+  protected def fireSink: Interface[T] = source
+
   private val elasticState = trackingState(t.Tag)
   import elasticState._
 
@@ -19,5 +22,5 @@ final class NullSink[T <: Data](
   def tpe: String = "NullSink"
   def namePrefix: String = "nullSink"
 
-  source.nodeq()
+  source.deq()
 }

@@ -318,7 +318,10 @@ class Queue[Tin <: Data, Tout <: Data](
     val flow: Boolean = false,
     val useSyncReadMem: Boolean = false
 )(implicit si_ : SourceInfo)
-    extends Component {
+    extends Component
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
+
   private val genIn = chiselTypeOf(source.$bits)
   private val genOut = chiselTypeOf(sink.$bits)
 

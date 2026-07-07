@@ -28,7 +28,10 @@ final class ArbiterNs[Tin <: Data, Tout <: Data](
     val sink: Interface[Tout],
     val chooser: Chooser
 )(implicit si_ : SourceInfo)
-    extends Component {
+    extends Component
+    with Fire[Tout] {
+  protected def fireSink: Interface[Tout] = sink
+
   type OutFn = Tin => Data
   type OutExplicitFn = (Tin, Data) => Unit
 

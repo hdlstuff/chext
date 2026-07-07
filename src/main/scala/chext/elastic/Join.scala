@@ -14,7 +14,9 @@ import chext.tracking.Component
 abstract class Join[T <: Data](
     val sink: Interface[T]
 )(implicit si_ : SourceInfo)
-    extends Component {
+    extends Component
+    with Fire[T] {
+  protected def fireSink: Interface[T] = sink
 
   private val elasticState = trackingState(t.Tag)
   import elasticState._

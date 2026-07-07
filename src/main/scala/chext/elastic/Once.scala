@@ -21,7 +21,9 @@ import chext.tracking.Component
   *   elastic sink interface that receives the one-shot value
   */
 class Once[T <: Data](val sink: Interface[T])(implicit si_ : SourceInfo)
-    extends Component {
+    extends Component
+    with Fire[T] {
+  protected def fireSink: Interface[T] = sink
 
   override def tpe: String = "Once"
   override def namePrefix: String = "once"
