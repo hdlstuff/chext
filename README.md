@@ -111,7 +111,7 @@ https://github.com/hdlstuff/chext-examples and can be used as-is.
 ### 1) Fork + Transform
 
 ```scala
-class Example0 extends Module with chext.TestBenchTop {
+class Example0 extends Module with chext.AnnotatedModule {
   val io = IO(new Bundle {
     val source = e.Source(UInt(32.W))
     val sink0  = e.Sink(UInt(32.W))
@@ -134,7 +134,7 @@ class Example0 extends Module with chext.TestBenchTop {
 ### 2) Repeat + Mux (select-driven source choice)
 
 ```scala
-class Example1 extends Module with chext.TestBenchTop {
+class Example1 extends Module with chext.AnnotatedModule {
   val io = IO(new Bundle {
     val sourceSelect = e.Source(new Bundle {
       val sourceId = UInt(1.W)
@@ -177,7 +177,7 @@ class Example2_Out extends Bundle {
   val last   = Bool()
 }
 
-class Example2 extends Module with chext.TestBenchTop {
+class Example2 extends Module with chext.AnnotatedModule {
   val genIn  = new Example2_In(8)
   val genOut = new Example2_Out
 
