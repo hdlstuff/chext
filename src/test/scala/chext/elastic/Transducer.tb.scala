@@ -2,7 +2,7 @@ package chext.elastic
 
 import chisel3._
 
-class Transducer_Tbtop extends Module with chext.TestBenchTop {
+class Transducer_Tbtop extends Module with chext.AnnotatedModule {
   val source = IO(Source(new Bundle {
     val skip = UInt(8.W)
     val data = UInt(32.W)

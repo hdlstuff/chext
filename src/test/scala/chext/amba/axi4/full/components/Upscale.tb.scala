@@ -15,7 +15,7 @@ case class Upscale_Tbtop(
     val wDataWide: Int,
     override val desiredName: String
 ) extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
   val log2bytesTotal = 14
 
   val rawMemCfg = memory.RawMemConfig(log2bytesTotal - log2Ceil(wDataWide / 8), wDataWide, 4, 4)

@@ -8,7 +8,7 @@ import elastic.ConnectOp._
 
 class AddressGenerator_Tbtop(val wAddr: Int, override val desiredName: String)
     extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
 
   private val dut = Module(new AddressGenerator(wAddr))
 

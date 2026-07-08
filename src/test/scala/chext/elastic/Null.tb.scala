@@ -4,7 +4,7 @@ import chisel3._
 
 import chext.{elastic => e}
 
-class Null_Tbtop extends Module with chext.TestBenchTop {
+class Null_Tbtop extends Module with chext.AnnotatedModule {
   val source = IO(e.Source(UInt(32.W)))
   val sink = IO(e.Sink(UInt(32.W)))
 

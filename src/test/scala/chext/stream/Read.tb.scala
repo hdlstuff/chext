@@ -47,7 +47,7 @@ class Read_Tbtop(
     val cfg: ReadConfig[UInt],
     override val desiredName: String
 ) extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
   private val read = Module(new Read(cfg))
   private val axiTestSlave = Module(new AxiTestSlave(cfg.axiCfg))
 

@@ -11,7 +11,7 @@ class AddressStrobeGenerator_Tbtop(
     val wData: Int,
     override val desiredName: String
 ) extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
 
   private val dut = Module(new AddressStrobeGenerator(wAddr, wData))
 

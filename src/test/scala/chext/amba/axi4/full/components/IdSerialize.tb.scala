@@ -14,7 +14,7 @@ case class IdSerialize_Tbtop(
     val wId: Int,
     override val desiredName: String
 ) extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
   val log2bytesTotal = 14
   val wData = 64
 

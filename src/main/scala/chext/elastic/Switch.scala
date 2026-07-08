@@ -191,7 +191,7 @@ abstract class Switch[Tin <: Data, Tout <: Data](
   }
 }
 
-class Switch_Tbtop extends Module with chext.TestBenchTop {
+class Switch_Tbtop extends Module with chext.AnnotatedModule {
   val source = IO(elastic.Source(new Bundle {
     val tokenType = UInt(2.W)
     val data = UInt(32.W)

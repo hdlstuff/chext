@@ -4,7 +4,7 @@ import chisel3._
 
 import chext.elastic
 
-class Fold_Tbtop extends Module with chext.TestBenchTop {
+class Fold_Tbtop extends Module with chext.AnnotatedModule {
   val source = IO(Source(new Bundle {
     val zero = Bool()
     val last = Bool()

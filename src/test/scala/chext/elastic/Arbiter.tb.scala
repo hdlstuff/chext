@@ -4,7 +4,7 @@ import chisel3._
 
 import chext.elastic
 
-class Arbiter_Tbtop extends Module with chext.TestBenchTop {
+class Arbiter_Tbtop extends Module with chext.AnnotatedModule {
   val rr_sources = IO(Source.many(16, UInt(32.W)))
   val rr_sink = IO(Sink(UInt(32.W)))
   val rr_select = IO(Sink(UInt(4.W)))

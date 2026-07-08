@@ -13,7 +13,7 @@ import elastic.ConnectOp._
 class Unburst_Tbtop(
     override val desiredName: String
 ) extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
   val log2bytesTotal = 14
   val wData = 128
 

@@ -6,7 +6,7 @@ import chisel3.util._
 import chext.elastic
 import elastic.ConnectOp._
 
-class Elastic_Tbtop extends Module with chext.TestBenchTop {
+class Elastic_Tbtop extends Module with chext.AnnotatedModule {
   val genFp32 = FloatingPoint.ieee_fp32
   val genFp64 = FloatingPoint.ieee_fp64
 

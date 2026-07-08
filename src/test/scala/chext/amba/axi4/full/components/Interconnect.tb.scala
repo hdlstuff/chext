@@ -13,7 +13,7 @@ import chext.util.NamedVec
 class Interconnect_Tbtop(
     override val desiredName: String
 ) extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
   val axiCfg = axi4.Config(wId = 2, wAddr = 32, wData = 32)
 
   val S_AXI = IO(axi4.Slave.many(16, axiCfg, NamedVec.ZeroExtended()))
@@ -46,8 +46,8 @@ class Interconnect_Tbtop(
 
   declareClock(clock)
   declareReset(reset)
-  S_AXI.foreach { declareAxi4Interface(_) }
-  M_AXI.foreach { declareAxi4Interface(_) }
+  declareAxi4Interface(S_AXI)
+  declareAxi4Interface(M_AXI)
 }
 
 object Interconnect_Tb extends chext.TestBench {

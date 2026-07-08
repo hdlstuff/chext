@@ -11,7 +11,7 @@ import axi4.Ops._
 
 import chext.memory
 
-class Widen_Tbtop extends Module with chext.TestBenchTop {
+class Widen_Tbtop extends Module with chext.AnnotatedModule {
   val wAddr = 14
   val wData = 64
 

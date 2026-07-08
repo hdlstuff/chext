@@ -6,7 +6,7 @@ import chext.{elastic => e}
 import e.ConnectOp._
 import chext.util.NamedVec
 
-class BufferedNaming_Tbtop extends Module with chext.TestBenchTop {
+class BufferedNaming_Tbtop extends Module with chext.AnnotatedModule {
   val sources = IO(e.Source.many(4, UInt(16.W)))
   val sinks = IO(e.Sink.many(4, UInt(16.W)))
 
@@ -22,15 +22,15 @@ class BufferedNaming_Tbtop extends Module with chext.TestBenchTop {
 
   declareClock(clock)
   declareReset(reset)
-  sources.foreach { declareElasticInterface(_, "In") }
-  sinks.foreach { declareElasticInterface(_, "Out") }
+  declareElasticInterface(sources, "In")
+  declareElasticInterface(sinks, "Out")
 }
 
 object BufferedNaming_Tb extends chext.TestBench {
   emit(new BufferedNaming_Tbtop)
 }
 
-class BufferedNamingSeq_Tbtop extends Module with chext.TestBenchTop {
+class BufferedNamingSeq_Tbtop extends Module with chext.AnnotatedModule {
   val sources = IO(e.Source.many(4, UInt(16.W), NamedVec.ZeroExtended()))
   val sinks = IO(e.Sink.many(4, UInt(16.W), NamedVec.ZeroExtended()))
 
@@ -41,8 +41,8 @@ class BufferedNamingSeq_Tbtop extends Module with chext.TestBenchTop {
 
   declareClock(clock)
   declareReset(reset)
-  sources.foreach { declareElasticInterface(_, "In") }
-  sinks.foreach { declareElasticInterface(_, "Out") }
+  declareElasticInterface(sources, "In")
+  declareElasticInterface(sinks, "Out")
 }
 
 object BufferedNamingSeq_Tb extends chext.TestBench {

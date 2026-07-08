@@ -13,7 +13,7 @@ class Write_Tbtop(
     val cfg: WriteConfig[UInt],
     override val desiredName: String
 ) extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
   private val require_ = chext.util.Require.inferred()
 
   private val readCfg = ReadConfig(cfg.axiCfg, resultMode = ReadResultMode.DropEmpty)

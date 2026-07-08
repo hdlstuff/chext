@@ -13,7 +13,7 @@ import elastic.ConnectOp._
 class IdParallelize_Tbtop(
     override val desiredName: String
 ) extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
   val log2bytesTotal = 14
   val wData = 128
 
@@ -65,7 +65,7 @@ class IdParallelize_Tbtop1(
     val writeUseSyncMem: Boolean,
     override val desiredName: String
 ) extends Module
-    with chext.TestBenchTop {
+    with chext.AnnotatedModule {
 
   private val cfg = IdParallelizeConfig(
     axi4.Config(wId = 0, wAddr = 32, wData = 64, wUserB = 32 /* for testing purposes */ ),
