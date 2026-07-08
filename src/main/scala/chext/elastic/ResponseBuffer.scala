@@ -15,12 +15,20 @@ class ResponseBuffer[Req <: Data, Resp <: Data](
     genReq: Req,
     genResp: Resp,
     numEntries: Int
-) extends Module {
+) extends Module
+    with chext.AnnotatedModule {
   val sourceReq = IO(elastic.Source(genReq))
   val sinkResp = IO(elastic.Sink(genResp))
 
   val sinkReq = IO(elastic.Sink(genReq))
   val sourceResp = IO(elastic.Source(genResp))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(sourceReq, "Req")
+  declareElasticInterface(sinkResp, "Resp")
+  declareElasticInterface(sinkReq, "Req")
+  declareElasticInterface(sourceResp, "Resp")
 
   private def impl(): Unit = {
     val ctr = new chext.util.Counter(numEntries + 1)

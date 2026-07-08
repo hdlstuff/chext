@@ -191,13 +191,21 @@ private class Read0[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
   }
 }
 
-final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser]) extends Module {
+final class Read[Tuser <: Data](val cfg: ReadConfig[Tuser])
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
 
   val sourceTask = IO(elastic.Source(genTask))
   val sinkResult = IO(elastic.Sink(genResult))
 
   val m_axi = IO(axi4.full.Master(axiCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(sourceTask, "Task")
+  declareElasticInterface(sinkResult, "Result")
+  declareAxi4Interface(m_axi)
 
   private val read0 = Module(new Read0(cfg))
   read0.m_axi :=> m_axi

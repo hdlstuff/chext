@@ -30,7 +30,8 @@ class MemController(
     val log2numElements: Int,
     val axiCfg: axi4.Config,
     val debugEnabled: Boolean = false
-) extends Module {
+) extends Module
+    with chext.AnnotatedModule {
   private val require_ = chext.util.Require.inferred()
 
   val genData = Bits(axiCfg.wData.W)
@@ -48,6 +49,10 @@ class MemController(
     *   byte-addressed.
     */
   val s_axil = IO(axi4.lite.Slave(axiCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axil)
 
   /** Debug port.
     *

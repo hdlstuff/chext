@@ -45,11 +45,16 @@ case class DownscaleConfig(
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
 }
 
-class Downscale(val cfg: DownscaleConfig) extends Module {
+class Downscale(val cfg: DownscaleConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   private val genOffsetLast = chext.bundles.BundleN(UInt(wOffset.W), Bool())
 

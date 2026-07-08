@@ -29,12 +29,17 @@ case class CreditBufferConfig(
   *
   * Delays addresses until local R, W, or B buffering can accept the associated traffic.
   */
-class CreditBuffer(val cfg: CreditBufferConfig) extends Module {
+class CreditBuffer(val cfg: CreditBufferConfig) extends Module with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 
   val s_axi = IO(full.Slave(axiCfg))
   val m_axi = IO(full.Master(axiMasterCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   private def connectRead()(implicit si: SourceInfo): Unit = {
     if (rBuffer > 0) {
@@ -128,7 +133,7 @@ case class ReadResponseBufferConfig(
   * `s_*` are slave-side ports of this component; `m_*` are master-side ports. AR is forwarded only
   * when the local R buffer has room for the whole burst (`ar.len + 1` beats).
   */
-class ReadResponseBuffer(val cfg: ReadResponseBufferConfig) extends Module {
+class ReadResponseBuffer(val cfg: ReadResponseBufferConfig) extends Module with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 
@@ -136,6 +141,13 @@ class ReadResponseBuffer(val cfg: ReadResponseBufferConfig) extends Module {
   val s_r = IO(elastic.Sink(new full.ReadDataChannel))
   val m_ar = IO(elastic.Sink(new full.ReadAddressChannel))
   val m_r = IO(elastic.Source(new full.ReadDataChannel))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(s_ar, "AR")
+  declareElasticInterface(s_r, "R")
+  declareElasticInterface(m_ar, "AR")
+  declareElasticInterface(m_r, "R")
 
   private def impl(): Unit = {
     val ctrR = new chext.util.CounterEx(bufLengthR + 1)
@@ -182,7 +194,7 @@ case class WriteResponseBufferConfig(
   * `s_*` are slave-side ports of this component; `m_*` are master-side ports. AW is forwarded only
   * when one B-buffer entry can be reserved. The W channel is intentionally not included.
   */
-class WriteResponseBuffer(val cfg: WriteResponseBufferConfig) extends Module {
+class WriteResponseBuffer(val cfg: WriteResponseBufferConfig) extends Module with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 
@@ -190,6 +202,13 @@ class WriteResponseBuffer(val cfg: WriteResponseBufferConfig) extends Module {
   val s_b = IO(elastic.Sink(new full.WriteResponseChannel))
   val m_aw = IO(elastic.Sink(new full.WriteAddressChannel))
   val m_b = IO(elastic.Source(new full.WriteResponseChannel))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(s_aw, "AW")
+  declareElasticInterface(s_b, "B")
+  declareElasticInterface(m_aw, "AW")
+  declareElasticInterface(m_b, "B")
 
   private def impl(): Unit = {
     val ctrB = new chext.util.Counter(bufLengthB + 1)
@@ -235,7 +254,7 @@ case class WritePayloadBufferConfig(
   * `s_*` are slave-side ports of this component; `m_*` are master-side ports. W is buffered, and AW
   * is released only after the matching W burst is locally accepted. B is intentionally not included.
   */
-class WritePayloadBuffer(val cfg: WritePayloadBufferConfig) extends Module {
+class WritePayloadBuffer(val cfg: WritePayloadBufferConfig) extends Module with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 
@@ -243,6 +262,13 @@ class WritePayloadBuffer(val cfg: WritePayloadBufferConfig) extends Module {
   val s_w = IO(elastic.Source(new full.WriteDataChannel))
   val m_aw = IO(elastic.Sink(new full.WriteAddressChannel))
   val m_w = IO(elastic.Sink(new full.WriteDataChannel))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(s_aw, "AW")
+  declareElasticInterface(s_w, "W")
+  declareElasticInterface(m_aw, "AW")
+  declareElasticInterface(m_w, "W")
 
   private def impl(): Unit = {
     val ctrAddr = new chext.util.Counter(bufLengthW + 1)

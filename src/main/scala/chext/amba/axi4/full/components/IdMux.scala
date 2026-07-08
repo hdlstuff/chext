@@ -26,11 +26,16 @@ case class IdMuxConfig(
   val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId + wIdSel)
 }
 
-class IdMux(val cfg: IdMuxConfig) extends Module {
+class IdMux(val cfg: IdMuxConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave.many(numSlaves, axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   private val s_axi_ = {
     val result = Wire(Vec(numSlaves, axi4.full.Interface(axiMasterCfg)))

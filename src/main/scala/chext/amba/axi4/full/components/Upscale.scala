@@ -36,11 +36,16 @@ case class UpscaleConfig(
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
 }
 
-class Upscale(val cfg: UpscaleConfig) extends Module {
+class Upscale(val cfg: UpscaleConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   private def implRead(): Unit = prefix("read") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataMaster >> 3)))

@@ -8,12 +8,20 @@ import elastic.ConnectOp._
 
 import chext.bundles.Bundle2
 
-class ElasticAdd(genFp: FloatingPoint, val combinational: Boolean = false) extends Module {
+class ElasticAdd(genFp: FloatingPoint, val combinational: Boolean = false)
+    extends Module
+    with chext.AnnotatedModule {
   private val require_ = chext.util.Require.inferred()
 
   val sourceInA = IO(elastic.Source(genFp))
   val sourceInB = IO(elastic.Source(genFp))
   val sinkOut = IO(elastic.Sink(genFp))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(sourceInA, "Fp")
+  declareElasticInterface(sourceInB, "Fp")
+  declareElasticInterface(sinkOut, "Fp")
 
   private val add = Module(new OpAdd(genFp, combinational))
 
@@ -33,10 +41,18 @@ class ElasticAdd(genFp: FloatingPoint, val combinational: Boolean = false) exten
   wrapper.moduleOut := add.out
 }
 
-class ElasticMultiply(genFp: FloatingPoint, val combinational: Boolean = false) extends Module {
+class ElasticMultiply(genFp: FloatingPoint, val combinational: Boolean = false)
+    extends Module
+    with chext.AnnotatedModule {
   val sourceInA = IO(elastic.Source(genFp))
   val sourceInB = IO(elastic.Source(genFp))
   val sinkOut = IO(elastic.Sink(genFp))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(sourceInA, "Fp")
+  declareElasticInterface(sourceInB, "Fp")
+  declareElasticInterface(sinkOut, "Fp")
 
   private val multiply = Module(new OpMultiply(genFp, combinational))
 

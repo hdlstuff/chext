@@ -27,11 +27,16 @@ case class UnburstConfig(
   val wData = axiCfg.wData
 }
 
-class Unburst(val cfg: UnburstConfig) extends Module {
+class Unburst(val cfg: UnburstConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiCfg))
   val m_axi = IO(axi4.full.Master(axiCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   dontTouch(s_axi)
   dontTouch(m_axi)

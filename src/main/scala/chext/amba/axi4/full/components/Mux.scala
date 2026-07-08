@@ -28,13 +28,18 @@ case class MuxConfig(
   val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId + wPort)
 }
 
-class Mux(val cfg: MuxConfig) extends Module {
+class Mux(val cfg: MuxConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   private val genPort = UInt(wPort.W)
 
   val s_axi = IO(axi4.full.Slave.many(numSlaves, axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   private val s_axi_ = {
     val result = Wire(Vec(numSlaves, axi4.full.Interface(axiMasterCfg)))

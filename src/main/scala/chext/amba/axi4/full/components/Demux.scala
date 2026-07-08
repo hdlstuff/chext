@@ -52,11 +52,16 @@ case class DemuxConfig(
   val axiMasterCfg = axiSlaveCfg
 }
 
-class Demux(val cfg: DemuxConfig) extends Module {
+class Demux(val cfg: DemuxConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master.many(numMasters, axiMasterCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   private val s_axi_ = SlaveBuffered(s_axi, slaveBuffers)
   private val m_axi_ = MasterBuffered(m_axi, masterBuffers)

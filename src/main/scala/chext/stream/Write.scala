@@ -51,7 +51,7 @@ class WriteResult[Tuser <: Data](cfg: WriteConfig[Tuser]) extends Bundle {
   val user = cfg.genUser.cloneType
 }
 
-final class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
+private class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
   import cfg._
 
   val sourceTask = IO(elastic.Source(genTask))
@@ -197,7 +197,9 @@ final class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
   }
 }
 
-final class Write[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
+final class Write[Tuser <: Data](val cfg: WriteConfig[Tuser])
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
 
   val sourceTask = IO(elastic.Source(genTask))
@@ -206,6 +208,13 @@ final class Write[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module {
   val sourceData = IO(elastic.Source(genData))
 
   val m_axi = IO(axi4.full.Master(axiCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(sourceTask, "Task")
+  declareElasticInterface(sinkResult, "Result")
+  declareElasticInterface(sourceData, "Data")
+  declareAxi4Interface(m_axi)
 
   private val write0 = Module(new Write0(cfg))
   write0.m_axi :=> m_axi

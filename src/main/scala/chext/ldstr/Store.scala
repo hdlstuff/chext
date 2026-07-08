@@ -30,7 +30,9 @@ class StoreResult[Tuser <: Data](cfg: StoreConfig[Tuser]) extends Bundle {
   val user = cfg.genUser.cloneType
 }
 
-class Store[Tuser <: Data](val cfg: StoreConfig[Tuser]) extends Module {
+class Store[Tuser <: Data](val cfg: StoreConfig[Tuser])
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
 
   val sourceTask = IO(elastic.Source(genTask))
@@ -39,6 +41,13 @@ class Store[Tuser <: Data](val cfg: StoreConfig[Tuser]) extends Module {
   val sourceData = IO(elastic.Source(genData))
 
   val m_axi = IO(axi4.full.Master(axiCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(sourceTask, "Task")
+  declareElasticInterface(sinkResult, "Result")
+  declareElasticInterface(sourceData, "Data")
+  declareAxi4Interface(m_axi)
 
   {
     val taskAW = elastic.EWire(genTask)

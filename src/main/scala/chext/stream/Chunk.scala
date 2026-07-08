@@ -47,11 +47,17 @@ private class ChunkState(val cfg: ChunkConfig[_]) extends Bundle {
   */
 final class Chunk[Tuser <: Data](
     cfg: ChunkConfig[Tuser]
-) extends Module {
+) extends Module
+    with chext.AnnotatedModule {
   import cfg._
 
   val source = IO(elastic.Source(genSource))
   val sink = IO(elastic.Sink(genSink))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(source, "Task")
+  declareElasticInterface(sink, "Result")
 
   private val count0 = new elastic.Count(source, sink, new ChunkState(cfg)) {
     val beatIncr = (wData / 8)

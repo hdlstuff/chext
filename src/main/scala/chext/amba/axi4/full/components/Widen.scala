@@ -26,11 +26,16 @@ case class WidenConfig(
   * @note
   *   Does not work for FIXED bursts.
   */
-class Widen(val cfg: WidenConfig) extends Module {
+class Widen(val cfg: WidenConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiCfg))
   val m_axi = IO(axi4.full.Master(axiCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   private class Control extends Bundle {
     val beatFirst = Bool()

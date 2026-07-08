@@ -29,13 +29,21 @@ class LoadResult[Tuser <: Data](cfg: LoadConfig[Tuser]) extends Bundle {
   val user = cfg.genUser.cloneType
 }
 
-class Load[Tuser <: Data](val cfg: LoadConfig[Tuser]) extends Module {
+class Load[Tuser <: Data](val cfg: LoadConfig[Tuser])
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
 
   val sourceTask = IO(elastic.Source(genTask))
   val sinkResult = IO(elastic.Sink(genResult))
 
   val m_axi = IO(axi4.full.Master(axiCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(sourceTask, "Task")
+  declareElasticInterface(sinkResult, "Result")
+  declareAxi4Interface(m_axi)
 
   {
     val taskAR = elastic.EWire(genTask)

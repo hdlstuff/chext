@@ -33,11 +33,17 @@ case class ShareConfig[Tin <: Data, Tout <: Data](
   */
 abstract class ShareD[Tin <: Data, Tout <: Data](
     cfg: ShareConfig[Tin, Tout]
-) extends Module {
+) extends Module
+    with chext.AnnotatedModule {
   import cfg._
 
   val source_N = IO(Source.many(1 << log2n, genIn))
   val sink_N = IO(Sink.many(1 << log2n, genOut))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(source_N, "In")
+  declareElasticInterface(sink_N, "Out")
 
   protected def instantiate(
       index: Int,
@@ -76,11 +82,17 @@ abstract class ShareD[Tin <: Data, Tout <: Data](
 
 abstract class ShareNd[Tin <: Data, Tout <: Data](
     cfg: ShareConfig[Tin, Tout]
-) extends Module {
+) extends Module
+    with chext.AnnotatedModule {
   import cfg._
 
   val source_N = IO(Source.many(1 << log2n, genIn))
   val sink_N = IO(Sink.many(1 << log2n, genOut))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(source_N, "In")
+  declareElasticInterface(sink_N, "Out")
 
   protected def instantiate(
       index: Int,

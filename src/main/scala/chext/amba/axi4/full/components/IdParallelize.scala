@@ -114,11 +114,18 @@ private class SyncWriteElasticReadMemory[T <: Data](
   }
 }
 
-class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig()) extends Module {
+class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig())
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   def implRead(): Unit = prefix("read") {
     val s_ar = s_axi.ar

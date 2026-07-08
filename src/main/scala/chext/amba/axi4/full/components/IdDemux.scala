@@ -37,11 +37,16 @@ case class IdDemuxConfig(
   val axiMasterCfg = axiSlaveCfg.copy(wId = axiSlaveCfg.wId - wIdSel)
 }
 
-class IdDemux(val cfg: IdDemuxConfig) extends Module {
+class IdDemux(val cfg: IdDemuxConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master.many(numMasters, axiMasterCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axi)
+  declareAxi4Interface(m_axi)
 
   private val s_axi_ = s_axi
   private val m_axi_ = m_axi

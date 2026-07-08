@@ -39,13 +39,18 @@ case class DemuxConfig(
   val axiMasterCfg = axiSlaveCfg
 }
 
-class Demux(val cfg: DemuxConfig) extends Module {
+class Demux(val cfg: DemuxConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   override def desiredName: String = "axi4LiteDemux"
 
   val s_axil = IO(axi4.lite.Slave(axiSlaveCfg))
   val m_axil = IO(axi4.lite.Master.many(numMasters, axiMasterCfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(s_axil)
+  declareAxi4Interface(m_axil)
 
   private val genPort = UInt(wPort.W)
 
