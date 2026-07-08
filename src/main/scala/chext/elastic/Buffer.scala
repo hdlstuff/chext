@@ -19,18 +19,27 @@ package detail {
       val prefixName = if (name.nonEmpty) name else defaultName
 
       uniquePrefix(prefixName) {
-        val queueSink = EWire.like(source)
-        val queue0 = new Queue(
-          source,
-          queueSink,
-          count,
-          pipe = pipe,
-          flow = flow,
-          useSyncReadMem = false
-        )
-
-        queueSink
+        impl(source, count, flow, pipe)
       }
+    }
+
+    protected def impl[T <: Data](
+        source: Interface[T],
+        count: Int,
+        flow: Boolean,
+        pipe: Boolean
+    )(implicit si: SourceInfo): Interface[T] = {
+      val queueSink = EWire.like(source)
+      val queue0 = new Queue(
+        source,
+        queueSink,
+        count,
+        pipe = pipe,
+        flow = flow,
+        useSyncReadMem = false
+      )
+
+      queueSink
     }
 
     def apply[T <: Data](
@@ -40,9 +49,13 @@ package detail {
         pipe: Boolean,
         name: String
     )(implicit si: SourceInfo): Seq[Interface[T]] = {
-      sources.zipWithIndex.map { case (source, index) =>
-        prefix(index.toString) {
-          apply(source, count, flow, pipe, name)
+      val prefixName = if (name.nonEmpty) name else defaultName
+
+      uniquePrefix(s"${prefixName}Many") {
+        sources.zipWithIndex.map { case (source, index) =>
+          prefix(index.toString) {
+            impl(source, count, flow, pipe)
+          }
         }
       }
     }
@@ -93,9 +106,11 @@ package detail {
         flow: Boolean,
         pipe: Boolean
     )(implicit si: SourceInfo): Seq[Interface[T]] = {
-      sources.zipWithIndex.map { case (source, index) =>
-        prefix(index.toString) {
-          apply(source, count, flow, pipe)
+      uniquePrefix("sourceBufferedMany") {
+        sources.zipWithIndex.map { case (source, index) =>
+          prefix(index.toString) {
+            apply(source, count, flow, pipe)
+          }
         }
       }
     }
@@ -125,18 +140,27 @@ package detail {
       val prefixName = if (name.nonEmpty) name else defaultName
 
       uniquePrefix(prefixName) {
-        val queueSource = EWire.like(sink)
-        val queue0 = new Queue(
-          queueSource,
-          sink,
-          count,
-          pipe = pipe,
-          flow = flow,
-          useSyncReadMem = false
-        )
-
-        queueSource
+        impl(sink, count, flow, pipe)
       }
+    }
+
+    protected def impl[T <: Data](
+        sink: Interface[T],
+        count: Int,
+        flow: Boolean,
+        pipe: Boolean
+    )(implicit si: SourceInfo): Interface[T] = {
+      val queueSource = EWire.like(sink)
+      val queue0 = new Queue(
+        queueSource,
+        sink,
+        count,
+        pipe = pipe,
+        flow = flow,
+        useSyncReadMem = false
+      )
+
+      queueSource
     }
 
     def apply[T <: Data](
@@ -146,9 +170,13 @@ package detail {
         pipe: Boolean,
         name: String
     )(implicit si: SourceInfo): Seq[Interface[T]] = {
-      sinks.zipWithIndex.map { case (sink, index) =>
-        prefix(index.toString) {
-          apply(sink, count, flow, pipe, name)
+      val prefixName = if (name.nonEmpty) name else defaultName
+
+      uniquePrefix(s"${prefixName}Many") {
+        sinks.zipWithIndex.map { case (sink, index) =>
+          prefix(index.toString) {
+            impl(sink, count, flow, pipe)
+          }
         }
       }
     }
@@ -199,9 +227,11 @@ package detail {
         flow: Boolean,
         pipe: Boolean
     )(implicit si: SourceInfo): Seq[Interface[T]] = {
-      sinks.zipWithIndex.map { case (sink, index) =>
-        prefix(index.toString) {
-          apply(sink, count, flow, pipe)
+      uniquePrefix("sinkBufferedMany") {
+        sinks.zipWithIndex.map { case (sink, index) =>
+          prefix(index.toString) {
+            apply(sink, count, flow, pipe)
+          }
         }
       }
     }

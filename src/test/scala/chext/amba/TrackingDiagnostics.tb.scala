@@ -175,6 +175,13 @@ private class ElasticConnectTop extends Module {
   source :=> sink
 }
 
+private class ElasticConnectManyTop extends Module {
+  val sources = IO(e.Source.many(2, UInt(8.W)))
+  val sinks = IO(e.Sink.many(2, UInt(8.W)))
+
+  sources :=> sinks
+}
+
 private class ElasticNullTop extends Module {
   val source = IO(e.Source(UInt(8.W)))
   val sink = IO(e.Sink(UInt(8.W)))
@@ -780,6 +787,20 @@ object TrackingDiagnostics_Tb extends App {
       logExcludes = Seq("Interface never marked!", "more than 1 times")
     ),
     TestCase(
+      name = "elastic_connect_many",
+      description = "Sequence elastic connections use a semantic connectMany prefix in the module graph.",
+      shouldPass = true,
+      gen = () => new ElasticConnectManyTop,
+      svContains = Seq("module ElasticConnectManyTop"),
+      graphContains = Seq(
+        """"path" : "/connectMany0_0"""",
+        """"path" : "/connectMany0_1"""",
+        """"/connectMany0_0"""",
+        """"/connectMany0_1""""
+      ),
+      logExcludes = Seq("Interface never marked!", "more than 1 times")
+    ),
+    TestCase(
       name = "elastic_null",
       description = "Plain elastic IO endpoints are consumed and produced by null components.",
       shouldPass = true,
@@ -892,7 +913,7 @@ object TrackingDiagnostics_Tb extends App {
       shouldPass = true,
       gen = () => new Axi4FullNativeTop,
       svContains = Seq("module Axi4FullNativeTop"),
-      graphContains = Seq("/s_axi.ar", "/m_axi.r"),
+      graphContains = Seq("/s_axi_ar", "/m_axi_r"),
       logExcludes = Seq("axi4View", "Interface never marked!", "more than 1 times")
     ),
     TestCase(
@@ -900,8 +921,8 @@ object TrackingDiagnostics_Tb extends App {
       description = "Native AXI4 full interface channel is consumed twice without any raw DataView conversion.",
       shouldPass = true,
       gen = () => new Axi4FullNativeDuplicateTop,
-      graphContains = Seq("/s_axi.ar", "/s_axi.r", "/s_axi.b"),
-      logContains = Seq("Interface marked as source more than 1 times!", "Interface '/s_axi.ar' is defined by"),
+      graphContains = Seq("/s_axi_ar", "/s_axi_r", "/s_axi_b"),
+      logContains = Seq("Interface marked as source more than 1 times!", "Interface '/s_axi_ar' is defined by"),
       logExcludes = Seq("axi4View")
     ),
     TestCase(

@@ -53,12 +53,18 @@ class Connect[Tin <: Data, Tout <: Data](
 object ConnectOp {
   private val require_ = chext.util.Require.inferred()
 
+  private def connectImpl[T <: Data](
+      source: Interface[T],
+      sink: Interface[T]
+  )(implicit sourceInfo: SourceInfo): Connect[T, T] =
+    new Connect(source, sink)
+
   private def connect_[T <: Data](
       source: Interface[T],
       sink: Interface[T]
   )(implicit sourceInfo: SourceInfo): Connect[T, T] =
     uniquePrefix("connect") {
-      new Connect(source, sink)
+      connectImpl(source, sink)
     }
 
   implicit class elastic_connect_op[T <: Data](val source: Interface[T]) extends AnyVal {
@@ -74,9 +80,11 @@ object ConnectOp {
         f"source/sink sequence length mismatch: ${sources.length} != ${sinks.length}"
       )
 
-      sources.zip(sinks).zipWithIndex.foreach { case ((source, sink), index) =>
-        prefix(index.toString) {
-          connect_(source, sink)
+      uniquePrefix("connectMany") {
+        sources.zip(sinks).zipWithIndex.foreach { case ((source, sink), index) =>
+          prefix(index.toString) {
+            connectImpl(source, sink)
+          }
         }
       }
     }

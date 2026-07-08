@@ -55,7 +55,15 @@ object SlaveBuffer {
       interface: RawInterface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "slaveBuffer"
-  )(implicit si: SourceInfo): RawInterface = uniquePrefix(name) {
+  )(implicit si: SourceInfo): RawInterface =
+    uniquePrefix(name) {
+      impl(interface, cfg)
+    }
+
+  private def impl(
+      interface: RawInterface,
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Slave(interface.cfg))
     buffer(interface, result, cfg)
     result
@@ -66,9 +74,11 @@ object SlaveBuffer {
       cfg: BufferConfig,
       name: String
   )(implicit si: SourceInfo): Seq[RawInterface] =
-    interfaces.zipWithIndex.map { case (interface, index) =>
-      prefix(index.toString) {
-        apply(interface, cfg, name)
+    uniquePrefix(s"${name}Many") {
+      interfaces.zipWithIndex.map { case (interface, index) =>
+        prefix(index.toString) {
+          impl(interface, cfg)
+        }
       }
     }
 
@@ -98,9 +108,11 @@ object SlaveBuffered {
       interfaces: Seq[RawInterface],
       cfg: BufferConfig
   )(implicit si: SourceInfo): Seq[RawInterface] =
-    interfaces.zipWithIndex.map { case (interface, index) =>
-      prefix(index.toString) {
-        apply(interface, cfg)
+    uniquePrefix("slaveBufferedMany") {
+      interfaces.zipWithIndex.map { case (interface, index) =>
+        prefix(index.toString) {
+          apply(interface, cfg)
+        }
       }
     }
 
@@ -115,7 +127,15 @@ object LeftBuffer {
       interface: RawInterface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "leftBuffer"
-  )(implicit si: SourceInfo): RawInterface = uniquePrefix(name) {
+  )(implicit si: SourceInfo): RawInterface =
+    uniquePrefix(name) {
+      impl(interface, cfg)
+    }
+
+  private def impl(
+      interface: RawInterface,
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Slave(interface.cfg))
     buffer(interface, result, cfg)
     result
@@ -126,9 +146,11 @@ object LeftBuffer {
       cfg: BufferConfig,
       name: String
   )(implicit si: SourceInfo): Seq[RawInterface] =
-    interfaces.zipWithIndex.map { case (interface, index) =>
-      prefix(index.toString) {
-        apply(interface, cfg, name)
+    uniquePrefix(s"${name}Many") {
+      interfaces.zipWithIndex.map { case (interface, index) =>
+        prefix(index.toString) {
+          impl(interface, cfg)
+        }
       }
     }
 
@@ -149,7 +171,15 @@ object MasterBuffer {
       interface: RawInterface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "masterBuffer"
-  )(implicit si: SourceInfo): RawInterface = uniquePrefix(name) {
+  )(implicit si: SourceInfo): RawInterface =
+    uniquePrefix(name) {
+      impl(interface, cfg)
+    }
+
+  private def impl(
+      interface: RawInterface,
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Master(interface.cfg))
     buffer(result, interface, cfg)
     result
@@ -160,9 +190,11 @@ object MasterBuffer {
       cfg: BufferConfig,
       name: String
   )(implicit si: SourceInfo): Seq[RawInterface] =
-    interfaces.zipWithIndex.map { case (interface, index) =>
-      prefix(index.toString) {
-        apply(interface, cfg, name)
+    uniquePrefix(s"${name}Many") {
+      interfaces.zipWithIndex.map { case (interface, index) =>
+        prefix(index.toString) {
+          impl(interface, cfg)
+        }
       }
     }
 
@@ -192,9 +224,11 @@ object MasterBuffered {
       interfaces: Seq[RawInterface],
       cfg: BufferConfig
   )(implicit si: SourceInfo): Seq[RawInterface] =
-    interfaces.zipWithIndex.map { case (interface, index) =>
-      prefix(index.toString) {
-        apply(interface, cfg)
+    uniquePrefix("masterBufferedMany") {
+      interfaces.zipWithIndex.map { case (interface, index) =>
+        prefix(index.toString) {
+          apply(interface, cfg)
+        }
       }
     }
 
@@ -209,7 +243,15 @@ object RightBuffer {
       interface: RawInterface,
       cfg: BufferConfig = BufferConfig.all(2),
       name: String = "rightBuffer"
-  )(implicit si: SourceInfo): RawInterface = uniquePrefix(name) {
+  )(implicit si: SourceInfo): RawInterface =
+    uniquePrefix(name) {
+      impl(interface, cfg)
+    }
+
+  private def impl(
+      interface: RawInterface,
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Master(interface.cfg))
     buffer(result, interface, cfg)
     result
@@ -220,9 +262,11 @@ object RightBuffer {
       cfg: BufferConfig,
       name: String
   )(implicit si: SourceInfo): Seq[RawInterface] =
-    interfaces.zipWithIndex.map { case (interface, index) =>
-      prefix(index.toString) {
-        apply(interface, cfg, name)
+    uniquePrefix(s"${name}Many") {
+      interfaces.zipWithIndex.map { case (interface, index) =>
+        prefix(index.toString) {
+          impl(interface, cfg)
+        }
       }
     }
 

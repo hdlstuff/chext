@@ -6,6 +6,7 @@ import chisel3.experimental.prefix
 import chisel3.experimental.SourceInfo
 
 import chext.amba.axi4
+import chext.tracking.uniquePrefix
 
 object connect {
   import axi4.Casts._
@@ -53,6 +54,22 @@ object connect {
     else
       master.asFull :=> slave.asFull
   }
+
+  private[axi4] def impl(
+      master: axi4.RawInterface,
+      slave: axi4.RawInterface
+  )(implicit si: SourceInfo): Unit = {
+    require_.here(
+      master.cfg.lite == slave.cfg.lite,
+      "master and slave must both be either full or lite axi4 interfaces",
+      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
+    )
+
+    if (master.cfg.lite)
+      axi4.lite.ConnectOp.connectImpl(master.asLite, slave.asLite, None)
+    else
+      axi4.full.ConnectOp.connectImpl(master.asFull, slave.asFull, None)
+  }
 }
 
 trait ConnectOp {
@@ -80,9 +97,11 @@ trait ConnectOp {
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )
 
-      masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
-        prefix(index.toString) {
-          connect(master, slave)
+      uniquePrefix("connectMany") {
+        masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
+          prefix(index.toString) {
+            connect.impl(master, slave)
+          }
         }
       }
     }

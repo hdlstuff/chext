@@ -445,11 +445,19 @@ case class ConnectConfig(
 trait ConnectOp {
   private val require_ = chext.util.Require.inferred()
 
+  private[axi4] def connectImpl(
+      master: Interface,
+      slave: Interface,
+      cfgOption: Option[ConnectConfig]
+  )(implicit si: SourceInfo): Unit = {
+    new Connect(master, slave, cfgOption)(si)
+  }
+
   /* implicit class names should be different, otherwise shadowed */
   implicit class axi4_full_connect_op(master: Interface) {
     def :=>(slave: Interface)(implicit si: SourceInfo) = {
       uniquePrefix("axi4f_connect") {
-        new Connect(master, slave, None)(si)
+        connectImpl(master, slave, None)
       }
     }
 
@@ -457,7 +465,7 @@ trait ConnectOp {
         si: SourceInfo
     ) = {
       uniquePrefix("axi4f_connect") {
-        new Connect(master, slave, Some(cfg))(si)
+        connectImpl(master, slave, Some(cfg))
       }
     }
   }
@@ -469,9 +477,11 @@ trait ConnectOp {
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )
 
-      masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
-        prefix(index.toString) {
-          master :=> slave
+      uniquePrefix("connectMany") {
+        masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
+          prefix(index.toString) {
+            connectImpl(master, slave, None)
+          }
         }
       }
     }
@@ -482,9 +492,11 @@ trait ConnectOp {
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )
 
-      masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
-        prefix(index.toString) {
-          master.connect(slave, cfg)
+      uniquePrefix("connectMany") {
+        masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
+          prefix(index.toString) {
+            connectImpl(master, slave, Some(cfg))
+          }
         }
       }
     }
