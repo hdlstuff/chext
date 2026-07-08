@@ -74,6 +74,24 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
       .map { channel => f"$$view.$channel" }
       .getOrElse("$view")
 
+  /** Converts a Chisel early name into the spelling used by module-graph paths.
+    *
+    * `Data.earlyName` exposes Chisel aggregate syntax. For `Record`-backed data this can include
+    * dot-separated field names, e.g. `sources.0`; for `Vec`-like data it can include index syntax,
+    * e.g. `sources[0]`. The rest of the tracking graph is based on Chisel prefixes via
+    * `PrefixManager.currentStr`, and those prefixes are flattened with underscores. Firtool also
+    * emits public ports using underscore-separated names such as `sources_0_bits`.
+    *
+    * Normalizing at this boundary keeps `NamedVec` free to remain a `Record` while ensuring all
+    * module-graph interface paths use the same underscore-separated naming convention as component
+    * paths and generated HDL ports.
+    */
+  private def graphName(data: chisel3.Data): String =
+    DataInternals
+      .earlyName(data)
+      .replace('.', '_')
+      .replaceAll("\\[([^\\]]+)\\]", "_$1")
+
   /** Resolves Elastic interfaces that are real hardware objects.
     *
     * Wires are local to this module. IO can either belong to this module or to a child module,
@@ -82,19 +100,19 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
     * the explicit `.asLite`/`.asFull` registration.
     */
   private def directInterfaceRef(interface: chisel3.Data): Option[Graph.InterfaceRef] = {
-    val earlyName = DataInternals.earlyName(interface)
+    val name = graphName(interface)
 
     if (DataInternals.isWire(interface))
-      Some(Graph.InterfaceRef(path = f"/$earlyName", desc = "Wire"))
+      Some(Graph.InterfaceRef(path = f"/$name", desc = "Wire"))
     else if (DataInternals.isIO(interface)) {
       val owningModule = DataInternals.getOwningModule(interface)
 
       if (owningModule == moduleInfo.module)
-        Some(Graph.InterfaceRef(path = f"/$earlyName", desc = "IO"))
+        Some(Graph.InterfaceRef(path = f"/$name", desc = "IO"))
       else {
         val instanceName = moduleInfo.childInstanceName(owningModule)
 
-        Some(Graph.InterfaceRef(path = f"/$instanceName/$earlyName", desc = "ChildIO"))
+        Some(Graph.InterfaceRef(path = f"/$instanceName/$name", desc = "ChildIO"))
       }
     } else
       None
@@ -181,10 +199,10 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
           .flatten
       )
       .toSeq
-      .sortBy(DataInternals.earlyName)
+      .sortBy(graphName)
 
     val interfaceRefs = interfaces.map { interface =>
-      val earlyName = DataInternals.earlyName(interface)
+      val name = graphName(interface)
 
       val ref = interfaceRef(interface)
         .getOrElse {
@@ -195,7 +213,7 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
             f"${interface} @[${sourceInfoToString(interface.sourceInfo)}]"
           )
 
-          Graph.InterfaceRef(path = f"/???/$earlyName", desc = "Unknown")
+          Graph.InterfaceRef(path = f"/???/$name", desc = "Unknown")
         }
 
       interface -> ref
@@ -209,9 +227,10 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
           ports
             .map { _._1 }
             .filter { _.declaredRole == DeclaredRole.Source }
+            .sortBy(graphName)
             .map { interface =>
               Graph.Interface(
-                path = f"/${DataInternals.earlyName(interface)}",
+                path = f"/${graphName(interface)}",
                 tpe = f"${interface.tpe}",
                 args = Map.empty
               )
@@ -221,9 +240,10 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
           ports
             .map { _._1 }
             .filter { _.declaredRole == DeclaredRole.Sink }
+            .sortBy(graphName)
             .map { interface =>
               Graph.Interface(
-                path = f"/${DataInternals.earlyName(interface)}",
+                path = f"/${graphName(interface)}",
                 tpe = f"${interface.tpe}",
                 args = Map.empty
               )
@@ -234,7 +254,7 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
             .filter { DataInternals.isWire }
             .map { interface =>
               Graph.Interface(
-                path = f"/${DataInternals.earlyName(interface)}",
+                path = f"/${graphName(interface)}",
                 tpe = f"${interface.tpe}",
                 args = Map.empty
               )

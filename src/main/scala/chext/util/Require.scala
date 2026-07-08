@@ -16,7 +16,7 @@ final class Require private (
       lines: Seq[String],
       hereInfo: Option[SourceInfo]
   ): String = {
-    val first = f"${identifier} : $message"
+    val first = f"Requirement failed\n${identifier} : $message"
     val sourceLines =
       hereInfo.flatMap(sourceLine("local SourceInfo  ", _)).toSeq ++
         sourceInfo.flatMap(sourceLine("global SourceInfo ", _)).toSeq
