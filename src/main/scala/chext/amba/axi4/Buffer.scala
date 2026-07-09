@@ -29,7 +29,7 @@ object BufferConfig {
   def all(n: Int) = BufferConfig(n, n, n, n, n)
 }
 
-object buffer {
+private object BufferImpl {
   private val require_ = chext.util.Require.inferred()
 
   def apply(
@@ -44,9 +44,9 @@ object buffer {
     )
 
     if (master.cfg.lite)
-      lite.buffer(master.asLite, slave.asLite, cfg)
+      lite.BufferImpl(master.asLite, slave.asLite, cfg)
     else
-      full.buffer(master.asFull, slave.asFull, cfg)
+      full.BufferImpl(master.asFull, slave.asFull, cfg)
   }
 }
 
@@ -65,7 +65,7 @@ object SlaveBuffer {
       cfg: BufferConfig
   )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Slave(interface.cfg))
-    buffer(interface, result, cfg)
+    BufferImpl(interface, result, cfg)
     result
   }
 
@@ -100,7 +100,7 @@ object SlaveBuffered {
       cfg: BufferConfig = BufferConfig.all(2)
   )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Slave(interface.cfg))
-    buffer(interface, result, cfg)
+    BufferImpl(interface, result, cfg)
     result
   }
 
@@ -135,7 +135,7 @@ object LeftBuffer {
       cfg: BufferConfig
   )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Slave(interface.cfg))
-    buffer(interface, result, cfg)
+    BufferImpl(interface, result, cfg)
     result
   }
 
@@ -179,7 +179,7 @@ object MasterBuffer {
       cfg: BufferConfig
   )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Master(interface.cfg))
-    buffer(result, interface, cfg)
+    BufferImpl(result, interface, cfg)
     result
   }
 
@@ -214,7 +214,7 @@ object MasterBuffered {
       cfg: BufferConfig = BufferConfig.all(2)
   )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Master(interface.cfg))
-    buffer(result, interface, cfg)
+    BufferImpl(result, interface, cfg)
     result
   }
 
@@ -249,7 +249,7 @@ object RightBuffer {
       cfg: BufferConfig
   )(implicit si: SourceInfo): RawInterface = {
     val result = Wire(Master(interface.cfg))
-    buffer(result, interface, cfg)
+    BufferImpl(result, interface, cfg)
     result
   }
 

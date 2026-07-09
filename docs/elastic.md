@@ -123,7 +123,6 @@ val q = e.Queue(UInt(16.W), count = 4)
 producer :=> q.source
 q.sink :=> consumer
 
-e.Queue.between(source, sink, count = 2, useSyncReadMem = true)
 e.Queue.useVerilogMem(enabled = false)
 ```
 

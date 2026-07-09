@@ -24,41 +24,6 @@ object BufferConfig {
   def all(n: Int): BufferConfig = BufferConfig(n, n)
 }
 
-object buffer {
-  private val require_ = chext.util.Require.inferred()
-
-  private[memory] def read(
-      master: ReadInterface,
-      slave: ReadInterface,
-      cfg: BufferConfig = BufferConfig.all(2)
-  )(implicit si: SourceInfo): Unit = {
-    require_.here(master.wData == slave.wData, "wData of interfaces must match!")
-    require_.here(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
-
-    SourceBuffer(master.req, cfg.req, name = "reqBuffer") :=> slave.req
-    slave.resp :=> SinkBuffer(master.resp, cfg.resp, name = "respBuffer")
-  }
-
-  private[memory] def write(
-      master: WriteInterface,
-      slave: WriteInterface,
-      cfg: BufferConfig
-  )(implicit si: SourceInfo): Unit = {
-    require_.here(master.wData == slave.wData, "wData of interfaces must match!")
-    require_.here(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
-
-    SourceBuffer(master.req, cfg.req, name = "reqBuffer") :=> slave.req
-    slave.resp :=> SinkBuffer(master.resp, cfg.resp, name = "respBuffer")
-  }
-
-  def apply[I <: Data](
-      master: I,
-      slave: I,
-      cfg: BufferConfig = BufferConfig.all(2)
-  )(implicit si: SourceInfo, ops: BufferOps[I]): Unit =
-    ops.buffer(master, slave, cfg)
-}
-
 trait BufferOps[I <: Data] {
   def slaveLike(interface: I)(implicit si: SourceInfo): I
   def masterLike(interface: I)(implicit si: SourceInfo): I
@@ -78,7 +43,7 @@ object BufferOps {
         slave: ReadInterface,
         cfg: BufferConfig
     )(implicit si: SourceInfo): Unit =
-      chext.memory.buffer.read(master, slave, cfg)
+      BufferImpl.read(master, slave, cfg)
   }
 
   implicit object Write extends BufferOps[WriteInterface] {
@@ -93,11 +58,44 @@ object BufferOps {
         slave: WriteInterface,
         cfg: BufferConfig
     )(implicit si: SourceInfo): Unit =
-      chext.memory.buffer.write(master, slave, cfg)
+      BufferImpl.write(master, slave, cfg)
   }
 }
 
 private object BufferImpl {
+  private val require_ = chext.util.Require.inferred()
+
+  def apply[I <: Data](
+      master: I,
+      slave: I,
+      cfg: BufferConfig
+  )(implicit si: SourceInfo, ops: BufferOps[I]): Unit =
+    ops.buffer(master, slave, cfg)
+
+  def read(
+      master: ReadInterface,
+      slave: ReadInterface,
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): Unit = {
+    require_.here(master.wData == slave.wData, "wData of interfaces must match!")
+    require_.here(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
+
+    SourceBuffer(master.req, cfg.req, name = "reqBuffer") :=> slave.req
+    slave.resp :=> SinkBuffer(master.resp, cfg.resp, name = "respBuffer")
+  }
+
+  def write(
+      master: WriteInterface,
+      slave: WriteInterface,
+      cfg: BufferConfig
+  )(implicit si: SourceInfo): Unit = {
+    require_.here(master.wData == slave.wData, "wData of interfaces must match!")
+    require_.here(master.wAddr == slave.wAddr, "wAddr of interfaces must match!")
+
+    SourceBuffer(master.req, cfg.req, name = "reqBuffer") :=> slave.req
+    slave.resp :=> SinkBuffer(master.resp, cfg.resp, name = "respBuffer")
+  }
+
   def left[I <: Data](
       interface: I,
       cfg: BufferConfig

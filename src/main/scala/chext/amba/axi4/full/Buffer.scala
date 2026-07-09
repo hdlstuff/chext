@@ -14,7 +14,7 @@ import elastic.ConnectOp._
 
 import chext.tracking.uniquePrefix
 
-object buffer {
+private[axi4] object BufferImpl {
   private val require_ = chext.util.Require.inferred()
 
   private[full] def insertBufferR(
@@ -76,7 +76,7 @@ object SlaveBuffer {
       cfg: BufferConfig
   )(implicit si: SourceInfo): Interface = {
     val result = Wire(Slave(interface.cfg))
-    buffer(interface, result, cfg)
+    BufferImpl(interface, result, cfg)
     result
   }
 
@@ -111,7 +111,7 @@ object SlaveBuffered {
       cfg: BufferConfig = BufferConfig.all(2)
   )(implicit si: SourceInfo): Interface = {
     val result = Wire(Slave(interface.cfg))
-    buffer(interface, result, cfg)
+    BufferImpl(interface, result, cfg)
     result
   }
 
@@ -146,7 +146,7 @@ object LeftBuffer {
       cfg: BufferConfig
   )(implicit si: SourceInfo): Interface = {
     val result = Wire(Slave(interface.cfg))
-    buffer(interface, result, cfg)
+    BufferImpl(interface, result, cfg)
     result
   }
 
@@ -190,7 +190,7 @@ object MasterBuffer {
       cfg: BufferConfig
   )(implicit si: SourceInfo): Interface = {
     val result = Wire(Master(interface.cfg))
-    buffer(result, interface, cfg)
+    BufferImpl(result, interface, cfg)
     result
   }
 
@@ -225,7 +225,7 @@ object MasterBuffered {
       cfg: BufferConfig = BufferConfig.all(2)
   )(implicit si: SourceInfo): Interface = {
     val result = Wire(Master(interface.cfg))
-    buffer(result, interface, cfg)
+    BufferImpl(result, interface, cfg)
     result
   }
 
@@ -260,7 +260,7 @@ object RightBuffer {
       cfg: BufferConfig
   )(implicit si: SourceInfo): Interface = {
     val result = Wire(Master(interface.cfg))
-    buffer(result, interface, cfg)
+    BufferImpl(result, interface, cfg)
     result
   }
 

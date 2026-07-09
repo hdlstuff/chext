@@ -265,7 +265,7 @@ private object memory_impl {
 object Queue {
   private val require_ = chext.util.Require.inferred()
 
-  def between[T <: Data](
+  private[elastic] def between[T <: Data](
       source: Interface[T],
       sink: Interface[T],
       count: Int,

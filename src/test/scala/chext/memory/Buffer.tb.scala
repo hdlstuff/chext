@@ -11,8 +11,8 @@ class Buffer_Tbtop extends Module with chext.AnnotatedModule {
   val writeIn = IO(new WriteInterface(8, 32))
   val writeOut = IO(Flipped(new WriteInterface(8, 32)))
 
-  buffer(readIn, readOut, BufferConfig(req = 1, resp = 2))
-  buffer(writeIn, writeOut, BufferConfig(req = 2, resp = 1))
+  SlaveBuffer(readIn, BufferConfig(req = 1, resp = 2)) :=> readOut
+  writeIn :=> MasterBuffer(writeOut, BufferConfig(req = 2, resp = 1))
 
   declareClock(clock)
   declareReset(reset)
