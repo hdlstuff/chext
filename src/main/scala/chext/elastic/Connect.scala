@@ -41,7 +41,7 @@ class Connect[Tin <: Data, Tout <: Data](
   def namePrefix: String = "connect"
 
   protected final val in = source.$bits
-  protected final val out = sink.$bits
+  private final val out = sink.$bits
 
   out := in
 
