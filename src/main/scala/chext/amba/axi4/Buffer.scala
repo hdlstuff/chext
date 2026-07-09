@@ -108,11 +108,9 @@ object SlaveBuffered {
       interfaces: Seq[RawInterface],
       cfg: BufferConfig
   )(implicit si: SourceInfo): Seq[RawInterface] =
-    uniquePrefix("slaveBufferedMany") {
-      interfaces.zipWithIndex.map { case (interface, index) =>
-        prefix(index.toString) {
-          apply(interface, cfg)
-        }
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg)
       }
     }
 
@@ -224,11 +222,9 @@ object MasterBuffered {
       interfaces: Seq[RawInterface],
       cfg: BufferConfig
   )(implicit si: SourceInfo): Seq[RawInterface] =
-    uniquePrefix("masterBufferedMany") {
-      interfaces.zipWithIndex.map { case (interface, index) =>
-        prefix(index.toString) {
-          apply(interface, cfg)
-        }
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg)
       }
     }
 

@@ -165,11 +165,9 @@ trait LeftBufferedOps {
       interfaces: Seq[I],
       cfg: BufferConfig
   )(implicit si: SourceInfo, ops: BufferOps[I]): Seq[I] =
-    uniquePrefix("leftBufferedMany") {
-      interfaces.zipWithIndex.map { case (interface, index) =>
-        prefix(index.toString) {
-          apply(interface, cfg)
-        }
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg)
       }
     }
 
@@ -227,11 +225,9 @@ trait RightBufferedOps {
       interfaces: Seq[I],
       cfg: BufferConfig
   )(implicit si: SourceInfo, ops: BufferOps[I]): Seq[I] =
-    uniquePrefix("rightBufferedMany") {
-      interfaces.zipWithIndex.map { case (interface, index) =>
-        prefix(index.toString) {
-          apply(interface, cfg)
-        }
+    interfaces.zipWithIndex.map { case (interface, index) =>
+      prefix(index.toString) {
+        apply(interface, cfg)
       }
     }
 

@@ -40,6 +40,29 @@ object BufferOp_Tb extends chext.TestBench {
   emit(new BufferOp_Tbtop)
 }
 
+class BufferedManyNaming_Tbtop extends Module with chext.AnnotatedModule {
+  val readIn = Seq.fill(2)(IO(new ReadInterface(8, 32)))
+  val readOut = Seq.fill(2)(IO(Flipped(new ReadInterface(8, 32))))
+
+  val writeIn = Seq.fill(2)(IO(new WriteInterface(8, 32)))
+  val writeOut = Seq.fill(2)(IO(Flipped(new WriteInterface(8, 32))))
+
+  private val slaveBufferedRead = SlaveBuffered(readIn, BufferConfig.all(1))
+  private val masterBufferedRead = MasterBuffered(readOut, BufferConfig.all(1))
+  private val slaveBufferedWrite = SlaveBuffered(writeIn, BufferConfig.all(1))
+  private val masterBufferedWrite = MasterBuffered(writeOut, BufferConfig.all(1))
+
+  slaveBufferedRead :=> masterBufferedRead
+  slaveBufferedWrite :=> masterBufferedWrite
+
+  declareClock(clock)
+  declareReset(reset)
+}
+
+object BufferedManyNaming_Tb extends chext.TestBench {
+  emit(new BufferedManyNaming_Tbtop)
+}
+
 class ConnectSeq_Tbtop extends Module with chext.AnnotatedModule {
   val readIn = Seq.fill(2)(IO(new ReadInterface(8, 32)))
   val readOut = Seq.fill(2)(IO(Flipped(new ReadInterface(8, 32))))

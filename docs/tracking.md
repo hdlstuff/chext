@@ -47,7 +47,7 @@ In practice:
 |---|---|---|
 | `tpe` | User-facing component/container type name. | Emitted as `"tpe"` in module graph JSON, for example `"Queue"`, `"Transducer"`, `"Repeat"`. |
 | `namePrefix` | Default conceptual prefix for a construction. | Mostly advisory today. Actual graph path comes from Chisel prefix/variable names and helper prefixes; most classes still define it consistently. |
-| `uniquePrefix(name) { ... }` | Generates a Chisel prefix unique in the current module for a base name. | Produces names like `connect0`, `connectMany0`, `sourceBufferedMany0`, `sinkBuffer0`; nested prefixes concatenate with underscores. |
+| `uniquePrefix(name) { ... }` | Generates a Chisel prefix unique in the current module for a base name. | Produces names like `connect0`, `connectMany0`, `sourceBuffer0`, `sinkBuffer0`; nested prefixes concatenate with underscores. `Buffered` helpers deliberately rely on the assigned Scala `val` name, and their sequence overloads add only numeric element prefixes. |
 | `prefix("x") { ... }` | Chisel prefix scope. | Components created inside receive paths such as `/x_transform0`, `/read_ar_transform0`, etc. |
 | Sequence helper prefixes | Helpers over `Seq` usually wrap each element in a unique `...Many` prefix and then `prefix(index.toString)`. | Example: `sources :=> sinks` creates `Connect` components under `/connectMany0_0_connect0`, `/connectMany0_1_connect0`, unless surrounding Scala names/prefixes alter the path. |
 | Elastic graph ports | Elastic components call `addSourcePort` / `addSinkPort` through `trackingState(t.Tag)`. | Component entries include named ports such as `source`, `sink`, `source_0`, `sink_1`, `sourceSelect`, `sinkSelect`. |

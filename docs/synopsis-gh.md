@@ -1,7 +1,7 @@
 <!-- Generated from docs/synopsis.txt by scripts/generate_synopsis.py. Do not edit by hand. -->
 # Chext Synopsis for GitHub
 
-This is a working synopsis of the main Chext constructions, their intended use, and how they appear in the tracking/module graph. For the underlying component model, see [tracking.md](tracking.md). For elastic-specific tracking and AXI4 DataView recovery, see [tracking-elastic.md](tracking-elastic.md).
+This is a working synopsis of the main Chext constructions, their intended use, and how they appear in the tracking/module graph. For the underlying component model, see [tracking.md](tracking.md). For elastic-specific tracking and AXI4 DataView recovery, see [tracking-elastic.md](tracking-elastic.md). For detailed AXI4 component guides, see [axi4-full.md](axi4-full.md) and [axi4-lite.md](axi4-lite.md).
 
 ## Contents
 
@@ -169,7 +169,7 @@ val zipped = e.Zip(sourceA, sourceB)
 
 Many elastic components support `fire { ... }`, a protected hook that runs when the component's sink interface fires. The `Stall` row shows the pattern.
 
-Buffer naming convention: `SourceBuffer`, `SinkBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used inline in a connection expression. `SourceBuffered` and `SinkBuffered` return a buffered interface directly; bind them to a `val` when the buffered interface is the thing you want to keep using.
+Buffer naming convention: `SourceBuffer`, `SinkBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used inline in a connection expression. `SourceBuffered` and `SinkBuffered` return a buffered interface directly and do not add an internal `uniquePrefix`, including for sequence overloads; bind them to a `val` when the buffered interface is the thing you want to keep using.
 
 <a id="entry-elastic-components-e-connect"></a>
 
@@ -337,7 +337,7 @@ val sourceBuffered0 =
   e.SourceBuffered(source, count = 2)
 ```
 
-**Details:** Function. Creates a `Queue` but does not wrap the single-interface form in `uniquePrefix`; the Scala `val` name is the important handle. Sequence form uses UniquePrefix: sourceBufferedMany.
+**Details:** Function. Creates a `Queue` but does not wrap the single-interface or sequence form in `uniquePrefix`; the Scala `val` name is the important handle. Sequence overloads add only per-element index prefixes, for example `sourceBuffered_0_queue0`.
 
 ---
 
@@ -353,7 +353,7 @@ val sinkBuffered0 =
   e.SinkBuffered(sink, count = 2)
 ```
 
-**Details:** Function. Creates a `Queue` but does not wrap the single-interface form in `uniquePrefix`; the Scala `val` name is the important handle. Sequence form uses UniquePrefix: sinkBufferedMany.
+**Details:** Function. Creates a `Queue` but does not wrap the single-interface or sequence form in `uniquePrefix`; the Scala `val` name is the important handle. Sequence overloads add only per-element index prefixes, for example `sinkBuffered_0_queue0`.
 
 ---
 
@@ -988,7 +988,7 @@ s_axi_raw_N :=> m_axi_raw_N
 
 ## AXI4 Buffers
 
-AXI buffer naming follows the elastic convention: `SlaveBuffer`, `MasterBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used anonymously inside a connection expression. `SlaveBuffered` and `MasterBuffered` return an interface directly; bind them to a `val` when the buffered AXI side is reused.
+AXI buffer naming follows the elastic convention: `SlaveBuffer`, `MasterBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used anonymously inside a connection expression. `SlaveBuffered` and `MasterBuffered` return an interface directly and do not add an internal `uniquePrefix`, including for sequence overloads; bind them to a `val` when the buffered AXI side is reused.
 
 <a id="entry-axi-buffers-axi4-buffer-config"></a>
 
@@ -1039,7 +1039,7 @@ val s_axi_buffered = axi4f.SlaveBuffered(s_axi, bufferCfg)
 val m_axi_buffered = axi4f.MasterBuffered(m_axi, bufferCfg)
 ```
 
-**Details:** Function. Same channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface form does not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence forms use `slaveBufferedMany` / `masterBufferedMany`.
+**Details:** Function. Same channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface and sequence forms do not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence overloads add only per-element index prefixes, for example `slaveBuffered_0_arBuffer0_queue0`.
 
 ---
 
@@ -1071,13 +1071,13 @@ val s_axil_buffered = axi4l.SlaveBuffered(s_axil, bufferCfg)
 val m_axil_buffered = axi4l.MasterBuffered(m_axil, bufferCfg)
 ```
 
-**Details:** Function. Same channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface form does not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence forms use `slaveBufferedMany` / `masterBufferedMany`.
+**Details:** Function. Same channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface and sequence forms do not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence overloads add only per-element index prefixes, for example `slaveBuffered_0_arBuffer0_queue0`.
 
 ---
 
 ## AXI4 Full Components
 
-AXI4 full components are Chisel modules. They are not Chext components themselves; graph content comes from the elastic components they instantiate internally.
+AXI4 full components are Chisel modules. They are not Chext components themselves; graph content comes from the elastic components they instantiate internally. For the detailed guide and examples for every full AXI component/helper, see [axi4-full.md](axi4-full.md).
 
 <a id="entry-axi4-full-components-demux-config"></a>
 
@@ -1510,7 +1510,7 @@ val protocolConverter0 =
 
 ## AXI4 Lite Components
 
-AXI4-Lite components are Chisel modules. They are not Chext components themselves; graph content comes from the internal channel-level elastic components.
+AXI4-Lite components are Chisel modules. They are not Chext components themselves; graph content comes from the internal channel-level elastic components. For the detailed guide and examples for every Lite AXI component/helper, see [axi4-lite.md](axi4-lite.md).
 
 <a id="entry-axi4-lite-components-demux-config"></a>
 
@@ -1691,7 +1691,7 @@ s_axil :=> regs.s_axil
 
 Memory interfaces are bundle-level protocols whose request/response fields are elastic interfaces. RAM wrappers are Chisel modules; their graph visibility mostly comes from the elastic ports and components they instantiate or connect.
 
-Memory buffer naming follows the same convention as elastic and AXI: `SlaveBuffer` / `MasterBuffer` are the named-prefix inline forms, while `SlaveBuffered` / `MasterBuffered` are for binding the returned interface to a `val`.
+Memory buffer naming follows the same convention as elastic and AXI: `SlaveBuffer` / `MasterBuffer` are the named-prefix inline forms, while `SlaveBuffered` / `MasterBuffered` are for binding the returned interface to a `val`. `SlaveBuffered` / `MasterBuffered` do not add an internal `uniquePrefix`, including for sequence overloads.
 
 <a id="entry-memory-read-interface-memory-write-interface"></a>
 
@@ -1764,7 +1764,7 @@ val readBuffered = memory.SlaveBuffered(readMaster, bufferCfg)
 val writeBuffered = memory.MasterBuffered(writeSlave, bufferCfg)
 ```
 
-**Details:** Function. Same request/response buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface form does not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence forms use `leftBufferedMany` / `rightBufferedMany`.
+**Details:** Function. Same request/response buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface and sequence forms do not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence overloads add only per-element index prefixes, for example `slaveBufferedRead_0_reqBuffer0_queue0`.
 
 ---
 

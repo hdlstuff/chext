@@ -106,11 +106,9 @@ package detail {
         flow: Boolean,
         pipe: Boolean
     )(implicit si: SourceInfo): Seq[Interface[T]] = {
-      uniquePrefix("sourceBufferedMany") {
-        sources.zipWithIndex.map { case (source, index) =>
-          prefix(index.toString) {
-            apply(source, count, flow, pipe)
-          }
+      sources.zipWithIndex.map { case (source, index) =>
+        prefix(index.toString) {
+          apply(source, count, flow, pipe)
         }
       }
     }
@@ -227,11 +225,9 @@ package detail {
         flow: Boolean,
         pipe: Boolean
     )(implicit si: SourceInfo): Seq[Interface[T]] = {
-      uniquePrefix("sinkBufferedMany") {
-        sinks.zipWithIndex.map { case (sink, index) =>
-          prefix(index.toString) {
-            apply(sink, count, flow, pipe)
-          }
+      sinks.zipWithIndex.map { case (sink, index) =>
+        prefix(index.toString) {
+          apply(sink, count, flow, pipe)
         }
       }
     }

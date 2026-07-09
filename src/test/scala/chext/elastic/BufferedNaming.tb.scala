@@ -48,3 +48,21 @@ class BufferedNamingSeq_Tbtop extends Module with chext.AnnotatedModule {
 object BufferedNamingSeq_Tb extends chext.TestBench {
   emit(new BufferedNamingSeq_Tbtop)
 }
+
+class SourceBufferedManyNaming_Tbtop extends Module with chext.AnnotatedModule {
+  val sources = IO(e.Source.many(4, UInt(16.W), NamedVec.ZeroExtended()))
+  val sinks = IO(e.Sink.many(4, UInt(16.W), NamedVec.ZeroExtended()))
+
+  private val sourceBuffered0 = e.SourceBuffered(sources, 2)
+
+  sourceBuffered0 :=> sinks
+
+  declareClock(clock)
+  declareReset(reset)
+  declareElasticInterface(sources, "In")
+  declareElasticInterface(sinks, "Out")
+}
+
+object SourceBufferedManyNaming_Tb extends chext.TestBench {
+  emit(new SourceBufferedManyNaming_Tbtop)
+}

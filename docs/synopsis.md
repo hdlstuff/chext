@@ -1,7 +1,7 @@
 <!-- Generated from docs/synopsis.txt by scripts/generate_synopsis.py. Do not edit by hand. -->
 # Chext Synopsis
 
-This is a working synopsis of the main Chext constructions, their intended use, and how they appear in the tracking/module graph. For the underlying component model, see [tracking.md](tracking.md). For elastic-specific tracking and AXI4 DataView recovery, see [tracking-elastic.md](tracking-elastic.md).
+This is a working synopsis of the main Chext constructions, their intended use, and how they appear in the tracking/module graph. For the underlying component model, see [tracking.md](tracking.md). For elastic-specific tracking and AXI4 DataView recovery, see [tracking-elastic.md](tracking-elastic.md). For detailed AXI4 component guides, see [axi4-full.md](axi4-full.md) and [axi4-lite.md](axi4-lite.md).
 
 ## Contents
 
@@ -111,7 +111,7 @@ import e.ConnectOp._
 
 Many elastic components support <code>fire { &hellip; }</code>, a protected hook that runs when the component's sink interface fires. The <code>Stall</code> row shows the pattern.
 
-Buffer naming convention: <code>SourceBuffer</code>, <code>SinkBuffer</code>, <code>LeftBuffer</code>, and <code>RightBuffer</code> wrap their internal implementation in <code>uniquePrefix(name)</code> and are usually used inline in a connection expression. <code>SourceBuffered</code> and <code>SinkBuffered</code> return a buffered interface directly; bind them to a <code>val</code> when the buffered interface is the thing you want to keep using.
+Buffer naming convention: <code>SourceBuffer</code>, <code>SinkBuffer</code>, <code>LeftBuffer</code>, and <code>RightBuffer</code> wrap their internal implementation in <code>uniquePrefix(name)</code> and are usually used inline in a connection expression. <code>SourceBuffered</code> and <code>SinkBuffered</code> return a buffered interface directly and do not add an internal <code>uniquePrefix</code>, including for sequence overloads; bind them to a <code>val</code> when the buffered interface is the thing you want to keep using.
 
 <table style="table-layout:fixed;width:100%;">
   <colgroup>
@@ -195,13 +195,13 @@ source :=&gt; e.RightBuffer(sink)</code></pre></td>
       <td style="vertical-align:top;"><code>e.SourceBuffered</code> <a href="#entry-elastic-components-e-source-buffered" style="text-decoration:none;" aria-label="Permalink to entry-elastic-components-e-source-buffered">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Buffer.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/test/scala/chext/elastic/BufferedNaming.tb.scala" style="text-decoration:none;"><span style="background:#edf2ff;color:#364fc7;padding:2px 6px;border-radius:4px;">Scala TB</span></a></div></div></td>
       <td style="vertical-align:top;">Return a buffered source-side interface for reuse as a named value:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val sourceBuffered0 =
   e.SourceBuffered(source, count = 2)</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Creates a <code>Queue</code> but does not wrap the single-interface form in <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence form uses <span style="background:#f1f3f4;color:#3c4043;padding:2px 6px;border-radius:4px;">UniquePrefix: sourceBufferedMany</span>.</td>
+      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Creates a <code>Queue</code> but does not wrap the single-interface or sequence form in <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence overloads add only per-element index prefixes, for example <code>sourceBuffered_0_queue0</code>.</td>
     </tr>
     <tr id="entry-elastic-components-e-sink-buffered">
       <td style="vertical-align:top;"><code>e.SinkBuffered</code> <a href="#entry-elastic-components-e-sink-buffered" style="text-decoration:none;" aria-label="Permalink to entry-elastic-components-e-sink-buffered">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Buffer.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/test/scala/chext/elastic/BufferedNaming.tb.scala" style="text-decoration:none;"><span style="background:#edf2ff;color:#364fc7;padding:2px 6px;border-radius:4px;">Scala TB</span></a></div></div></td>
       <td style="vertical-align:top;">Return a buffered sink-side interface for reuse as a named value:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val sinkBuffered0 =
   e.SinkBuffered(sink, count = 2)</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Creates a <code>Queue</code> but does not wrap the single-interface form in <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence form uses <span style="background:#f1f3f4;color:#3c4043;padding:2px 6px;border-radius:4px;">UniquePrefix: sinkBufferedMany</span>.</td>
+      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Creates a <code>Queue</code> but does not wrap the single-interface or sequence form in <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence overloads add only per-element index prefixes, for example <code>sinkBuffered_0_queue0</code>.</td>
     </tr>
     <tr id="entry-elastic-components-e-null-sink">
       <td style="vertical-align:top;"><code>e.NullSink</code> <a href="#entry-elastic-components-e-null-sink" style="text-decoration:none;" aria-label="Permalink to entry-elastic-components-e-null-sink">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/NullSink.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/test/scala/chext/elastic/Null.tb.scala" style="text-decoration:none;"><span style="background:#edf2ff;color:#364fc7;padding:2px 6px;border-radius:4px;">Scala TB</span></a></div></div></td>
@@ -521,7 +521,7 @@ val m_axil = IO(axi4l.Master(axiCfg))</code></pre></td>
 
 ## AXI4 Buffers
 
-AXI buffer naming follows the elastic convention: <code>SlaveBuffer</code>, <code>MasterBuffer</code>, <code>LeftBuffer</code>, and <code>RightBuffer</code> wrap their internal implementation in <code>uniquePrefix(name)</code> and are usually used anonymously inside a connection expression. <code>SlaveBuffered</code> and <code>MasterBuffered</code> return an interface directly; bind them to a <code>val</code> when the buffered AXI side is reused.
+AXI buffer naming follows the elastic convention: <code>SlaveBuffer</code>, <code>MasterBuffer</code>, <code>LeftBuffer</code>, and <code>RightBuffer</code> wrap their internal implementation in <code>uniquePrefix(name)</code> and are usually used anonymously inside a connection expression. <code>SlaveBuffered</code> and <code>MasterBuffered</code> return an interface directly and do not add an internal <code>uniquePrefix</code>, including for sequence overloads; bind them to a <code>val</code> when the buffered AXI side is reused.
 
 <table style="table-layout:fixed;width:100%;">
   <colgroup>
@@ -558,7 +558,7 @@ s_axi :=&gt; axi4f.MasterBuffer(m_axi, bufferCfg)</code></pre></td>
       <td style="vertical-align:top;"><code>axi4f.SlaveBuffered</code> / <code>axi4f.MasterBuffered</code> <a href="#entry-axi-buffers-full-slave-master-buffered" style="text-decoration:none;" aria-label="Permalink to entry-axi-buffers-full-slave-master-buffered">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/full/Buffer.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
       <td style="vertical-align:top;">Create a buffered full AXI side for reuse as a named value:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val s_axi_buffered = axi4f.SlaveBuffered(s_axi, bufferCfg)
 val m_axi_buffered = axi4f.MasterBuffered(m_axi, bufferCfg)</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Same channel-level buffering as <code>SlaveBuffer</code> / <code>MasterBuffer</code>, but the single-interface form does not add a <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence forms use <code>slaveBufferedMany</code> / <code>masterBufferedMany</code>.</td>
+      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Same channel-level buffering as <code>SlaveBuffer</code> / <code>MasterBuffer</code>, but the single-interface and sequence forms do not add a <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence overloads add only per-element index prefixes, for example <code>slaveBuffered_0_arBuffer0_queue0</code>.</td>
     </tr>
     <tr id="entry-axi-buffers-lite-slave-master-buffer">
       <td style="vertical-align:top;"><code>axi4l.SlaveBuffer</code> / <code>axi4l.MasterBuffer</code> <a href="#entry-axi-buffers-lite-slave-master-buffer" style="text-decoration:none;" aria-label="Permalink to entry-axi-buffers-lite-slave-master-buffer">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/lite/Buffer.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
@@ -570,14 +570,14 @@ s_axil :=&gt; axi4l.MasterBuffer(m_axil, bufferCfg)</code></pre></td>
       <td style="vertical-align:top;"><code>axi4l.SlaveBuffered</code> / <code>axi4l.MasterBuffered</code> <a href="#entry-axi-buffers-lite-slave-master-buffered" style="text-decoration:none;" aria-label="Permalink to entry-axi-buffers-lite-slave-master-buffered">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/lite/Buffer.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
       <td style="vertical-align:top;">Create a buffered AXI4-Lite side for reuse as a named value:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val s_axil_buffered = axi4l.SlaveBuffered(s_axil, bufferCfg)
 val m_axil_buffered = axi4l.MasterBuffered(m_axil, bufferCfg)</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Same channel-level buffering as <code>SlaveBuffer</code> / <code>MasterBuffer</code>, but the single-interface form does not add a <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence forms use <code>slaveBufferedMany</code> / <code>masterBufferedMany</code>.</td>
+      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Same channel-level buffering as <code>SlaveBuffer</code> / <code>MasterBuffer</code>, but the single-interface and sequence forms do not add a <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence overloads add only per-element index prefixes, for example <code>slaveBuffered_0_arBuffer0_queue0</code>.</td>
     </tr>
   </tbody>
 </table>
 
 ## AXI4 Full Components
 
-AXI4 full components are Chisel modules. They are not Chext components themselves; graph content comes from the elastic components they instantiate internally.
+AXI4 full components are Chisel modules. They are not Chext components themselves; graph content comes from the elastic components they instantiate internally. For the detailed guide and examples for every full AXI component/helper, see [axi4-full.md](axi4-full.md).
 
 <table style="table-layout:fixed;width:100%;">
   <colgroup>
@@ -787,7 +787,7 @@ AXI4 full components are Chisel modules. They are not Chext components themselve
 
 ## AXI4 Lite Components
 
-AXI4-Lite components are Chisel modules. They are not Chext components themselves; graph content comes from the internal channel-level elastic components.
+AXI4-Lite components are Chisel modules. They are not Chext components themselves; graph content comes from the internal channel-level elastic components. For the detailed guide and examples for every Lite AXI component/helper, see [axi4-lite.md](axi4-lite.md).
 
 <table style="table-layout:fixed;width:100%;">
   <colgroup>
@@ -895,7 +895,7 @@ s_axil :=&gt; regs.s_axil</code></pre></td>
 
 Memory interfaces are bundle-level protocols whose request/response fields are elastic interfaces. RAM wrappers are Chisel modules; their graph visibility mostly comes from the elastic ports and components they instantiate or connect.
 
-Memory buffer naming follows the same convention as elastic and AXI: <code>SlaveBuffer</code> / <code>MasterBuffer</code> are the named-prefix inline forms, while <code>SlaveBuffered</code> / <code>MasterBuffered</code> are for binding the returned interface to a <code>val</code>.
+Memory buffer naming follows the same convention as elastic and AXI: <code>SlaveBuffer</code> / <code>MasterBuffer</code> are the named-prefix inline forms, while <code>SlaveBuffered</code> / <code>MasterBuffered</code> are for binding the returned interface to a <code>val</code>. <code>SlaveBuffered</code> / <code>MasterBuffered</code> do not add an internal <code>uniquePrefix</code>, including for sequence overloads.
 
 <table style="table-layout:fixed;width:100%;">
   <colgroup>
@@ -940,7 +940,7 @@ writeMaster :=&gt; memory.MasterBuffer(writeSlave, bufferCfg)</code></pre></td>
       <td style="vertical-align:top;">Create a buffered memory interface for reuse as a named value:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val bufferCfg = memory.BufferConfig.all(2) // req and resp depth
 val readBuffered = memory.SlaveBuffered(readMaster, bufferCfg)
 val writeBuffered = memory.MasterBuffered(writeSlave, bufferCfg)</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Same request/response buffering as <code>SlaveBuffer</code> / <code>MasterBuffer</code>, but the single-interface form does not add a <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence forms use <code>leftBufferedMany</code> / <code>rightBufferedMany</code>.</td>
+      <td style="vertical-align:top;"><span style="background:#ffe8ef;color:#a50e38;padding:2px 6px;border-radius:4px;">Function</span> Same request/response buffering as <code>SlaveBuffer</code> / <code>MasterBuffer</code>, but the single-interface and sequence forms do not add a <code>uniquePrefix</code>; the Scala <code>val</code> name is the important handle. Sequence overloads add only per-element index prefixes, for example <code>slaveBufferedRead_0_reqBuffer0_queue0</code>.</td>
     </tr>
     <tr id="entry-memory-raw-mem-config-memory-port-config">
       <td style="vertical-align:top;"><code>memory.RawMemConfig</code> / <code>memory.PortConfig</code> <a href="#entry-memory-raw-mem-config-memory-port-config" style="text-decoration:none;" aria-label="Permalink to entry-memory-raw-mem-config-memory-port-config">#</a><div style="margin-top:6px;font-size:0.92em;"><div><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span></div></div><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/memory/RawMem.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/main/scala/chext/memory/RAM.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
