@@ -10,7 +10,8 @@ The input format is intentionally small and INI-like:
     multiline text
     END
 
-    [row.some_table.001]
+    [row.some_table]
+    anchor = stable-entry-name
     construct = ...
     intent <<END
     ...
@@ -22,8 +23,10 @@ The input format is intentionally small and INI-like:
     source links
     END
 
-Rows are attached to the most recent table whose id matches the middle part of
-the row section name.
+Rows are attached to the table whose id matches the part after `row.`.
+Legacy names such as `[row.some_table.001]` are also accepted, but row
+permalinks come from the explicit anchor field, not from the row section name,
+so row ordering can change without breaking links.
 """
 
 from __future__ import annotations
@@ -316,20 +319,44 @@ def table_id(block_name: str) -> str:
 
 def row_table_id(block_name: str) -> str:
     parts = block_name.split(".")
-    if len(parts) < 3 or parts[0] != "row":
+    if len(parts) < 2 or parts[0] != "row":
         raise ValueError(f"bad row name: {block_name}")
     return parts[1]
 
 
-def entry_id(block_name: str) -> str:
-    parts = block_name.split(".")
-    if len(parts) < 3 or parts[0] != "row":
-        raise ValueError(f"bad row name: {block_name}")
-    raw = "-".join(parts[1:])
-    return "entry-" + re.sub(r"[^a-zA-Z0-9]+", "-", raw).strip("-").lower()
+def anchor_value(row: Block) -> str:
+    anchor = row.fields.get("anchor")
+    if not anchor:
+        raise ValueError(f"missing anchor for [{row.name}]")
+    normalized = re.sub(r"[^a-zA-Z0-9]+", "-", anchor).strip("-").lower()
+    if normalized != anchor:
+        raise ValueError(
+            f"bad anchor for [{row.name}]: {anchor!r}; "
+            f"use lowercase letters, digits, and hyphens"
+        )
+    return anchor
+
+
+def entry_id(row: Block) -> str:
+    return "entry-" + anchor_value(row)
+
+
+def validate_rows(blocks: list[Block]) -> None:
+    seen: dict[str, str] = {}
+    for block in blocks:
+        if not block.name.startswith("row."):
+            continue
+        eid = entry_id(block)
+        if eid in seen:
+            raise ValueError(
+                f"duplicate anchor {block.fields['anchor']!r} in "
+                f"[{seen[eid]}] and [{block.name}]"
+            )
+        seen[eid] = block.name
 
 
 def generate(blocks: list[Block]) -> str:
+    validate_rows(blocks)
     rows: dict[str, list[Block]] = {}
     for block in blocks:
         if block.name.startswith("row."):
@@ -403,7 +430,7 @@ def generate(blocks: list[Block]) -> str:
             out.append("  </thead>")
             out.append("  <tbody>")
             for row in rows.get(tid, []):
-                eid = entry_id(row.name)
+                eid = entry_id(row)
                 construct = render_text(row.fields["construct"])
                 construct = construct + (
                     f' <a href="#{eid}" style="text-decoration:none;" '
@@ -431,6 +458,7 @@ def generate(blocks: list[Block]) -> str:
 
 
 def generate_github(blocks: list[Block]) -> str:
+    validate_rows(blocks)
     rows: dict[str, list[Block]] = {}
     for block in blocks:
         if block.name.startswith("row."):
@@ -488,7 +516,7 @@ def generate_github(blocks: list[Block]) -> str:
                 if index:
                     out.append("---")
                     out.append("")
-                eid = entry_id(row.name)
+                eid = entry_id(row)
                 out.append(f'<a id="{eid}"></a>')
                 out.append("")
                 out.append(

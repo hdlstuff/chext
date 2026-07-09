@@ -30,9 +30,9 @@ import e.ConnectOp._
 
 ## Elastic Interfaces and Operators
 
-<a id="entry-elastic-interfaces-001"></a>
+<a id="entry-elastic-interfaces-e-interface"></a>
 
-### `e.Interface(gen)` [#](#entry-elastic-interfaces-001)
+### `e.Interface(gen)` [#](#entry-elastic-interfaces-e-interface)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Interface.scala)
 
@@ -45,9 +45,9 @@ val genElastic = e.Interface(UInt(32.W))
 
 ---
 
-<a id="entry-elastic-interfaces-002"></a>
+<a id="entry-elastic-interfaces-e-source"></a>
 
-### `e.Source(gen)` [#](#entry-elastic-interfaces-002)
+### `e.Source(gen)` [#](#entry-elastic-interfaces-e-source)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Interface.scala)
 
@@ -60,9 +60,9 @@ val source = IO(e.Source(UInt(32.W)))
 
 ---
 
-<a id="entry-elastic-interfaces-003"></a>
+<a id="entry-elastic-interfaces-e-sink"></a>
 
-### `e.Sink(gen)` [#](#entry-elastic-interfaces-003)
+### `e.Sink(gen)` [#](#entry-elastic-interfaces-e-sink)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Interface.scala)
 
@@ -75,9 +75,9 @@ val sink = IO(e.Sink(UInt(32.W)))
 
 ---
 
-<a id="entry-elastic-interfaces-004"></a>
+<a id="entry-elastic-interfaces-e-ewire"></a>
 
-### `e.EWire(gen)` [#](#entry-elastic-interfaces-004)
+### `e.EWire(gen)` [#](#entry-elastic-interfaces-e-ewire)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Interface.scala)
 
@@ -90,9 +90,9 @@ val ewire0 = e.EWire(UInt(32.W))
 
 ---
 
-<a id="entry-elastic-interfaces-005"></a>
+<a id="entry-elastic-interfaces-e-source-like-e-sink-like-e-ewire-like"></a>
 
-### `e.Source.like`, `e.Sink.like`, `e.EWire.like` [#](#entry-elastic-interfaces-005)
+### `e.Source.like`, `e.Sink.like`, `e.EWire.like` [#](#entry-elastic-interfaces-e-source-like-e-sink-like-e-ewire-like)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Interface.scala)
 
@@ -105,9 +105,9 @@ val ewire0 = e.EWire.like(source)
 
 ---
 
-<a id="entry-elastic-interfaces-006"></a>
+<a id="entry-elastic-interfaces-e-source-many-e-sink-many-e-interface-many"></a>
 
-### `e.Source.many`, `e.Sink.many`, `e.Interface.many` [#](#entry-elastic-interfaces-006)
+### `e.Source.many`, `e.Sink.many`, `e.Interface.many` [#](#entry-elastic-interfaces-e-source-many-e-sink-many-e-interface-many)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Interface.scala)
 
@@ -120,9 +120,9 @@ val sources = IO(e.Source.many(4, UInt(32.W)))
 
 ---
 
-<a id="entry-elastic-interfaces-007"></a>
+<a id="entry-elastic-interfaces-source-connect-sink"></a>
 
-### `source :=> sink` [#](#entry-elastic-interfaces-007)
+### `source :=> sink` [#](#entry-elastic-interfaces-source-connect-sink)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Connect.scala)
 
@@ -135,9 +135,9 @@ source :=> sink
 
 ---
 
-<a id="entry-elastic-interfaces-008"></a>
+<a id="entry-elastic-interfaces-sources-connect-sinks"></a>
 
-### `sources :=> sinks` [#](#entry-elastic-interfaces-008)
+### `sources :=> sinks` [#](#entry-elastic-interfaces-sources-connect-sinks)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Connect.scala)
 
@@ -150,9 +150,9 @@ sources :=> sinks
 
 ---
 
-<a id="entry-elastic-interfaces-009"></a>
+<a id="entry-elastic-interfaces-e-zip"></a>
 
-### `e.Zip(...)` [#](#entry-elastic-interfaces-009)
+### `e.Zip(...)` [#](#entry-elastic-interfaces-e-zip)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Zip.scala)
 
@@ -171,9 +171,9 @@ Many elastic components support `fire { ... }`, a protected hook that runs when 
 
 Buffer naming convention: `SourceBuffer`, `SinkBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used inline in a connection expression. `SourceBuffered` and `SinkBuffered` return a buffered interface directly; bind them to a `val` when the buffered interface is the thing you want to keep using.
 
-<a id="entry-elastic-components-001"></a>
+<a id="entry-elastic-components-e-connect"></a>
 
-### `e.Connect` [#](#entry-elastic-components-001)
+### `e.Connect` [#](#entry-elastic-components-e-connect)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Connect.scala)
 
@@ -186,9 +186,9 @@ val connect0 = new e.Connect(source, sink)
 
 ---
 
-<a id="entry-elastic-components-002"></a>
+<a id="entry-elastic-components-e-transform"></a>
 
-### `e.Transform` [#](#entry-elastic-components-002)
+### `e.Transform` [#](#entry-elastic-components-e-transform)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Transform.scala)
 
@@ -203,9 +203,9 @@ val transform0 = new e.Transform(source, sink) {
 
 ---
 
-<a id="entry-elastic-components-003"></a>
+<a id="entry-elastic-components-e-stall"></a>
 
-### `e.Stall` [#](#entry-elastic-components-003)
+### `e.Stall` [#](#entry-elastic-components-e-stall)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Stall.scala)
 
@@ -222,9 +222,9 @@ val stall0 = new e.Stall(source, sink) {
 
 ---
 
-<a id="entry-elastic-components-004"></a>
+<a id="entry-elastic-components-e-drop"></a>
 
-### `e.Drop` [#](#entry-elastic-components-004)
+### `e.Drop` [#](#entry-elastic-components-e-drop)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Drop.scala)
 
@@ -240,9 +240,9 @@ val drop0 = new e.Drop(source, sink) {
 
 ---
 
-<a id="entry-elastic-components-005"></a>
+<a id="entry-elastic-components-e-transducer"></a>
 
-### `e.Transducer` [#](#entry-elastic-components-005)
+### `e.Transducer` [#](#entry-elastic-components-e-transducer)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Transducer.scala); [Scala TB](../src/test/scala/chext/elastic/Transducer.tb.scala); [SysC TB](../sysc_tb/chext/elastic/src/Transducer.tb.cpp)
 
@@ -263,9 +263,9 @@ val transducer0 = new e.Transducer(source, sink) {
 
 ---
 
-<a id="entry-elastic-components-006"></a>
+<a id="entry-elastic-components-e-queue"></a>
 
-### `e.Queue` [#](#entry-elastic-components-006)
+### `e.Queue` [#](#entry-elastic-components-e-queue)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Queue.scala); [SysC TB](../sysc_tb/chext/elastic/src/Queue.tb.cpp)
 
@@ -279,9 +279,9 @@ val queue0 =
 
 ---
 
-<a id="entry-elastic-components-007"></a>
+<a id="entry-elastic-components-e-source-buffer"></a>
 
-### `e.SourceBuffer` [#](#entry-elastic-components-007)
+### `e.SourceBuffer` [#](#entry-elastic-components-e-source-buffer)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Buffer.scala); [Scala TB](../src/test/scala/chext/elastic/BufferedNaming.tb.scala)
 
@@ -294,9 +294,9 @@ e.SourceBuffer(source, count = 2) :=> sink
 
 ---
 
-<a id="entry-elastic-components-008"></a>
+<a id="entry-elastic-components-e-sink-buffer"></a>
 
-### `e.SinkBuffer` [#](#entry-elastic-components-008)
+### `e.SinkBuffer` [#](#entry-elastic-components-e-sink-buffer)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Buffer.scala); [Scala TB](../src/test/scala/chext/elastic/BufferedNaming.tb.scala)
 
@@ -309,9 +309,9 @@ source :=> e.SinkBuffer(sink, count = 2)
 
 ---
 
-<a id="entry-elastic-components-009"></a>
+<a id="entry-elastic-components-e-left-buffer-e-right-buffer"></a>
 
-### `e.LeftBuffer` / `e.RightBuffer` [#](#entry-elastic-components-009)
+### `e.LeftBuffer` / `e.RightBuffer` [#](#entry-elastic-components-e-left-buffer-e-right-buffer)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Buffer.scala); [Scala TB](../src/test/scala/chext/elastic/BufferedNaming.tb.scala)
 
@@ -325,9 +325,9 @@ source :=> e.RightBuffer(sink)
 
 ---
 
-<a id="entry-elastic-components-010"></a>
+<a id="entry-elastic-components-e-source-buffered"></a>
 
-### `e.SourceBuffered` [#](#entry-elastic-components-010)
+### `e.SourceBuffered` [#](#entry-elastic-components-e-source-buffered)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Buffer.scala); [Scala TB](../src/test/scala/chext/elastic/BufferedNaming.tb.scala)
 
@@ -341,9 +341,9 @@ val sourceBuffered0 =
 
 ---
 
-<a id="entry-elastic-components-011"></a>
+<a id="entry-elastic-components-e-sink-buffered"></a>
 
-### `e.SinkBuffered` [#](#entry-elastic-components-011)
+### `e.SinkBuffered` [#](#entry-elastic-components-e-sink-buffered)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Buffer.scala); [Scala TB](../src/test/scala/chext/elastic/BufferedNaming.tb.scala)
 
@@ -357,9 +357,9 @@ val sinkBuffered0 =
 
 ---
 
-<a id="entry-elastic-components-012"></a>
+<a id="entry-elastic-components-e-null-sink"></a>
 
-### `e.NullSink` [#](#entry-elastic-components-012)
+### `e.NullSink` [#](#entry-elastic-components-e-null-sink)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/NullSink.scala); [Scala TB](../src/test/scala/chext/elastic/Null.tb.scala)
 
@@ -373,9 +373,9 @@ val nullSink0 =
 
 ---
 
-<a id="entry-elastic-components-013"></a>
+<a id="entry-elastic-components-e-null-source"></a>
 
-### `e.NullSource` [#](#entry-elastic-components-013)
+### `e.NullSource` [#](#entry-elastic-components-e-null-source)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/NullSource.scala); [Scala TB](../src/test/scala/chext/elastic/Null.tb.scala)
 
@@ -389,9 +389,9 @@ val nullSource0 =
 
 ---
 
-<a id="entry-elastic-components-014"></a>
+<a id="entry-elastic-components-e-fork"></a>
 
-### `e.Fork` [#](#entry-elastic-components-014)
+### `e.Fork` [#](#entry-elastic-components-e-fork)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Fork.scala)
 
@@ -407,9 +407,9 @@ val fork0 = new e.Fork(source) {
 
 ---
 
-<a id="entry-elastic-components-015"></a>
+<a id="entry-elastic-components-e-join"></a>
 
-### `e.Join` [#](#entry-elastic-components-015)
+### `e.Join` [#](#entry-elastic-components-e-join)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Join.scala)
 
@@ -424,9 +424,9 @@ val join0 = new e.Join(sink) {
 
 ---
 
-<a id="entry-elastic-components-016"></a>
+<a id="entry-elastic-components-e-merger"></a>
 
-### `e.Merger` [#](#entry-elastic-components-016)
+### `e.Merger` [#](#entry-elastic-components-e-merger)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Merger.scala)
 
@@ -440,9 +440,9 @@ val merger0 =
 
 ---
 
-<a id="entry-elastic-components-017"></a>
+<a id="entry-elastic-components-e-mux"></a>
 
-### `e.Mux` [#](#entry-elastic-components-017)
+### `e.Mux` [#](#entry-elastic-components-e-mux)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Mux.scala)
 
@@ -456,9 +456,9 @@ val mux0 =
 
 ---
 
-<a id="entry-elastic-components-018"></a>
+<a id="entry-elastic-components-e-demux"></a>
 
-### `e.Demux` [#](#entry-elastic-components-018)
+### `e.Demux` [#](#entry-elastic-components-e-demux)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Demux.scala)
 
@@ -472,9 +472,9 @@ val demux0 =
 
 ---
 
-<a id="entry-elastic-components-019"></a>
+<a id="entry-elastic-components-e-arbiter"></a>
 
-### `e.Arbiter` [#](#entry-elastic-components-019)
+### `e.Arbiter` [#](#entry-elastic-components-e-arbiter)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Arbiter.scala); [Scala TB](../src/test/scala/chext/elastic/Arbiter.tb.scala); [SysC TB](../sysc_tb/chext/elastic/src/Arbiter.tb.cpp)
 
@@ -488,9 +488,9 @@ val arbiter0 =
 
 ---
 
-<a id="entry-elastic-components-020"></a>
+<a id="entry-elastic-components-e-arbiter-ns"></a>
 
-### `e.ArbiterNs` [#](#entry-elastic-components-020)
+### `e.ArbiterNs` [#](#entry-elastic-components-e-arbiter-ns)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/ArbiterNs.scala)
 
@@ -504,9 +504,9 @@ val arbiter0 =
 
 ---
 
-<a id="entry-elastic-components-021"></a>
+<a id="entry-elastic-components-e-demux-ns"></a>
 
-### `e.DemuxNs` [#](#entry-elastic-components-021)
+### `e.DemuxNs` [#](#entry-elastic-components-e-demux-ns)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/DemuxNs.scala)
 
@@ -521,9 +521,9 @@ val demux0 = new e.DemuxNs(source, sinks) {
 
 ---
 
-<a id="entry-elastic-components-022"></a>
+<a id="entry-elastic-components-e-count"></a>
 
-### `e.Count` [#](#entry-elastic-components-022)
+### `e.Count` [#](#entry-elastic-components-e-count)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Count.scala); [Scala TB](../src/test/scala/chext/elastic/Count.tb.scala)
 
@@ -541,9 +541,9 @@ val count0 = new e.Count(source, sink, UInt(8.W)) {
 
 ---
 
-<a id="entry-elastic-components-023"></a>
+<a id="entry-elastic-components-self-alias-form"></a>
 
-### Self-alias form [#](#entry-elastic-components-023)
+### Self-alias form [#](#entry-elastic-components-self-alias-form)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Count.scala); [Scala TB](../src/test/scala/chext/elastic/Count.tb.scala)
 
@@ -558,9 +558,9 @@ val count0 = new e.Count(source, sink, UInt(8.W)) { count0 =>
 
 ---
 
-<a id="entry-elastic-components-024"></a>
+<a id="entry-elastic-components-e-once"></a>
 
-### `e.Once` [#](#entry-elastic-components-024)
+### `e.Once` [#](#entry-elastic-components-e-once)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Once.scala)
 
@@ -576,9 +576,9 @@ val once0 = new e.Once(sinkOnce) {
 
 ---
 
-<a id="entry-elastic-components-025"></a>
+<a id="entry-elastic-components-e-once-2"></a>
 
-### `e.Once(value)` [#](#entry-elastic-components-025)
+### `e.Once(value)` [#](#entry-elastic-components-e-once-2)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Once.scala)
 
@@ -591,9 +591,9 @@ val sourceOnce = e.Once(value)
 
 ---
 
-<a id="entry-elastic-components-026"></a>
+<a id="entry-elastic-components-e-counter"></a>
 
-### `e.Counter` [#](#entry-elastic-components-026)
+### `e.Counter` [#](#entry-elastic-components-e-counter)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Counter.scala)
 
@@ -607,9 +607,9 @@ val counter0 = new e.Counter(sinkCounter)
 
 ---
 
-<a id="entry-elastic-components-027"></a>
+<a id="entry-elastic-components-e-counter-e-counter-from-width"></a>
 
-### `e.Counter(...)` / `e.Counter.fromWidth(...)` [#](#entry-elastic-components-027)
+### `e.Counter(...)` / `e.Counter.fromWidth(...)` [#](#entry-elastic-components-e-counter-e-counter-from-width)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Counter.scala)
 
@@ -623,9 +623,9 @@ val sourceCounter =
 
 ---
 
-<a id="entry-elastic-components-028"></a>
+<a id="entry-elastic-components-e-wrap"></a>
 
-### `e.Wrap` [#](#entry-elastic-components-028)
+### `e.Wrap` [#](#entry-elastic-components-e-wrap)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Wrap.scala)
 
@@ -643,9 +643,9 @@ val wrap0 = new e.Wrap(source, sink) {
 
 ## Elastic Containers
 
-<a id="entry-elastic-containers-001"></a>
+<a id="entry-elastic-containers-e-repeat"></a>
 
-### `e.Repeat` [#](#entry-elastic-containers-001)
+### `e.Repeat` [#](#entry-elastic-containers-e-repeat)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Repeat.scala); [Scala TB](../src/test/scala/chext/elastic/Count.tb.scala)
 
@@ -661,9 +661,9 @@ val repeat0 = new e.Repeat(source, sink, wIndex = 8) {
 
 ---
 
-<a id="entry-elastic-containers-002"></a>
+<a id="entry-elastic-containers-e-fold"></a>
 
-### `e.Fold` [#](#entry-elastic-containers-002)
+### `e.Fold` [#](#entry-elastic-containers-e-fold)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Fold.scala); [Scala TB](../src/test/scala/chext/elastic/Fold.tb.scala); [SysC TB](../sysc_tb/chext/elastic/src/Fold.tb.cpp)
 
@@ -682,9 +682,9 @@ val fold0 = new e.Fold(source, sourceInit, sink) {
 
 ---
 
-<a id="entry-elastic-containers-003"></a>
+<a id="entry-elastic-containers-e-loop"></a>
 
-### `e.Loop` [#](#entry-elastic-containers-003)
+### `e.Loop` [#](#entry-elastic-containers-e-loop)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Loop.scala)
 
@@ -701,9 +701,9 @@ val loop0 = new e.Loop(sourceInit, sinkExit) {
 
 ---
 
-<a id="entry-elastic-containers-004"></a>
+<a id="entry-elastic-containers-e-scope"></a>
 
-### `e.Scope` [#](#entry-elastic-containers-004)
+### `e.Scope` [#](#entry-elastic-containers-e-scope)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Scope.scala)
 
@@ -721,9 +721,9 @@ val scope0 = new e.Scope(sourceInit, sinkExit) {
 
 ---
 
-<a id="entry-elastic-containers-005"></a>
+<a id="entry-elastic-containers-e-random-stall"></a>
 
-### `e.RandomStall` [#](#entry-elastic-containers-005)
+### `e.RandomStall` [#](#entry-elastic-containers-e-random-stall)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/RandomStall.scala)
 
@@ -750,9 +750,9 @@ import chext.{elastic => e}
 
 ## AXI4 Interfaces and Connects
 
-<a id="entry-axi-connects-001"></a>
+<a id="entry-axi-connects-axi4-config"></a>
 
-### `axi4.Config` [#](#entry-axi-connects-001)
+### `axi4.Config` [#](#entry-axi-connects-axi4-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/Interface.scala)
 
@@ -783,9 +783,9 @@ val axiCfg = axi4.Config(
 
 ---
 
-<a id="entry-axi-connects-001-full-connect-config"></a>
+<a id="entry-axi-connects-full-connect-config"></a>
 
-### `axi4f.ConnectConfig` [#](#entry-axi-connects-001-full-connect-config)
+### `axi4f.ConnectConfig` [#](#entry-axi-connects-full-connect-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/Connect.scala)
 
@@ -811,9 +811,9 @@ val cfg = axi4f.ConnectConfig(
 
 ---
 
-<a id="entry-axi-connects-001-lite-connect-config"></a>
+<a id="entry-axi-connects-lite-connect-config"></a>
 
-### `axi4l.ConnectConfig` [#](#entry-axi-connects-001-lite-connect-config)
+### `axi4l.ConnectConfig` [#](#entry-axi-connects-lite-connect-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Connect.scala)
 
@@ -834,9 +834,9 @@ val cfg = axi4l.ConnectConfig(
 
 ---
 
-<a id="entry-axi-connects-002"></a>
+<a id="entry-axi-connects-full-slave-master"></a>
 
-### `axi4f.Slave` / `axi4f.Master` [#](#entry-axi-connects-002)
+### `axi4f.Slave` / `axi4f.Master` [#](#entry-axi-connects-full-slave-master)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/Interface.scala)
 
@@ -850,9 +850,9 @@ val m_axi = IO(axi4f.Master(axiCfg))
 
 ---
 
-<a id="entry-axi-connects-003"></a>
+<a id="entry-axi-connects-lite-slave-master"></a>
 
-### `axi4l.Slave` / `axi4l.Master` [#](#entry-axi-connects-003)
+### `axi4l.Slave` / `axi4l.Master` [#](#entry-axi-connects-lite-slave-master)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Interface.scala)
 
@@ -866,9 +866,9 @@ val m_axil = IO(axi4l.Master(axiCfg))
 
 ---
 
-<a id="entry-axi-connects-004"></a>
+<a id="entry-axi-connects-full-single-connect"></a>
 
-### Full single connect [#](#entry-axi-connects-004)
+### Full single connect [#](#entry-axi-connects-full-single-connect)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/Connect.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/Connect.tb.scala)
 
@@ -881,9 +881,9 @@ s_axi :=> m_axi
 
 ---
 
-<a id="entry-axi-connects-005"></a>
+<a id="entry-axi-connects-full-configured-connect"></a>
 
-### Full configured connect [#](#entry-axi-connects-005)
+### Full configured connect [#](#entry-axi-connects-full-configured-connect)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/Connect.scala)
 
@@ -896,9 +896,9 @@ s_axi.connect(m_axi, axi4f.ConnectConfig())
 
 ---
 
-<a id="entry-axi-connects-006"></a>
+<a id="entry-axi-connects-full-many-connect"></a>
 
-### Full many connect [#](#entry-axi-connects-006)
+### Full many connect [#](#entry-axi-connects-full-many-connect)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/Connect.scala)
 
@@ -911,9 +911,9 @@ s_axi_N :=> m_axi_N
 
 ---
 
-<a id="entry-axi-connects-007"></a>
+<a id="entry-axi-connects-lite-single-connect"></a>
 
-### Lite single connect [#](#entry-axi-connects-007)
+### Lite single connect [#](#entry-axi-connects-lite-single-connect)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Connect.scala); [Scala TB](../src/test/scala/chext/amba/axi4/lite/Connect.tb.scala)
 
@@ -926,9 +926,9 @@ s_axil :=> m_axil
 
 ---
 
-<a id="entry-axi-connects-008"></a>
+<a id="entry-axi-connects-lite-configured-connect"></a>
 
-### Lite configured connect [#](#entry-axi-connects-008)
+### Lite configured connect [#](#entry-axi-connects-lite-configured-connect)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Connect.scala); [Scala TB](../src/test/scala/chext/amba/axi4/lite/Connect.tb.scala)
 
@@ -941,9 +941,9 @@ s_axil.connect(m_axil, axi4l.ConnectConfig())
 
 ---
 
-<a id="entry-axi-connects-009"></a>
+<a id="entry-axi-connects-lite-many-connect"></a>
 
-### Lite many connect [#](#entry-axi-connects-009)
+### Lite many connect [#](#entry-axi-connects-lite-many-connect)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Connect.scala)
 
@@ -956,9 +956,9 @@ s_axil_N :=> m_axil_N
 
 ---
 
-<a id="entry-axi-connects-010"></a>
+<a id="entry-axi-connects-raw-single-connect"></a>
 
-### Raw single connect [#](#entry-axi-connects-010)
+### Raw single connect [#](#entry-axi-connects-raw-single-connect)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/Connect.scala)
 
@@ -971,9 +971,9 @@ s_axi_raw :=> m_axi_raw
 
 ---
 
-<a id="entry-axi-connects-011"></a>
+<a id="entry-axi-connects-raw-many-connect"></a>
 
-### Raw many connect [#](#entry-axi-connects-011)
+### Raw many connect [#](#entry-axi-connects-raw-many-connect)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/Connect.scala)
 
@@ -990,9 +990,9 @@ s_axi_raw_N :=> m_axi_raw_N
 
 AXI buffer naming follows the elastic convention: `SlaveBuffer`, `MasterBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used anonymously inside a connection expression. `SlaveBuffered` and `MasterBuffered` return an interface directly; bind them to a `val` when the buffered AXI side is reused.
 
-<a id="entry-axi-buffers-000"></a>
+<a id="entry-axi-buffers-axi4-buffer-config"></a>
 
-### `axi4.BufferConfig` [#](#entry-axi-buffers-000)
+### `axi4.BufferConfig` [#](#entry-axi-buffers-axi4-buffer-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/Buffer.scala)
 
@@ -1011,9 +1011,9 @@ val bufferCfg = axi4.BufferConfig(
 
 ---
 
-<a id="entry-axi-buffers-001"></a>
+<a id="entry-axi-buffers-full-slave-master-buffer"></a>
 
-### `axi4f.SlaveBuffer` / `axi4f.MasterBuffer` [#](#entry-axi-buffers-001)
+### `axi4f.SlaveBuffer` / `axi4f.MasterBuffer` [#](#entry-axi-buffers-full-slave-master-buffer)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/Buffer.scala)
 
@@ -1027,9 +1027,9 @@ s_axi :=> axi4f.MasterBuffer(m_axi, bufferCfg)
 
 ---
 
-<a id="entry-axi-buffers-002"></a>
+<a id="entry-axi-buffers-full-slave-master-buffered"></a>
 
-### `axi4f.SlaveBuffered` / `axi4f.MasterBuffered` [#](#entry-axi-buffers-002)
+### `axi4f.SlaveBuffered` / `axi4f.MasterBuffered` [#](#entry-axi-buffers-full-slave-master-buffered)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/Buffer.scala)
 
@@ -1043,9 +1043,9 @@ val m_axi_buffered = axi4f.MasterBuffered(m_axi, bufferCfg)
 
 ---
 
-<a id="entry-axi-buffers-003"></a>
+<a id="entry-axi-buffers-lite-slave-master-buffer"></a>
 
-### `axi4l.SlaveBuffer` / `axi4l.MasterBuffer` [#](#entry-axi-buffers-003)
+### `axi4l.SlaveBuffer` / `axi4l.MasterBuffer` [#](#entry-axi-buffers-lite-slave-master-buffer)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Buffer.scala)
 
@@ -1059,9 +1059,9 @@ s_axil :=> axi4l.MasterBuffer(m_axil, bufferCfg)
 
 ---
 
-<a id="entry-axi-buffers-004"></a>
+<a id="entry-axi-buffers-lite-slave-master-buffered"></a>
 
-### `axi4l.SlaveBuffered` / `axi4l.MasterBuffered` [#](#entry-axi-buffers-004)
+### `axi4l.SlaveBuffered` / `axi4l.MasterBuffered` [#](#entry-axi-buffers-lite-slave-master-buffered)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Buffer.scala)
 
@@ -1079,9 +1079,9 @@ val m_axil_buffered = axi4l.MasterBuffered(m_axil, bufferCfg)
 
 AXI4 full components are Chisel modules. They are not Chext components themselves; graph content comes from the elastic components they instantiate internally.
 
-<a id="entry-axi4-full-components-000-demux-config"></a>
+<a id="entry-axi4-full-components-demux-config"></a>
 
-### `axi4f.components.DemuxConfig` [#](#entry-axi4-full-components-000-demux-config)
+### `axi4f.components.DemuxConfig` [#](#entry-axi4-full-components-demux-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Demux.scala)
 
@@ -1106,9 +1106,9 @@ val cfg = axi4f.components.DemuxConfig(
 
 ---
 
-<a id="entry-axi4-full-components-001"></a>
+<a id="entry-axi4-full-components-demux"></a>
 
-### `axi4f.components.Demux` [#](#entry-axi4-full-components-001)
+### `axi4f.components.Demux` [#](#entry-axi4-full-components-demux)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Demux.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala); [SysC TB](../sysc_tb/chext/amba/axi4/full/components/src/Interconnect.tb.cpp)
 
@@ -1121,9 +1121,9 @@ val demux0 = Module(new axi4f.components.Demux(cfg))
 
 ---
 
-<a id="entry-axi4-full-components-001-mux-config"></a>
+<a id="entry-axi4-full-components-mux-config"></a>
 
-### `axi4f.components.MuxConfig` [#](#entry-axi4-full-components-001-mux-config)
+### `axi4f.components.MuxConfig` [#](#entry-axi4-full-components-mux-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Mux.scala)
 
@@ -1142,9 +1142,9 @@ val cfg = axi4f.components.MuxConfig(
 
 ---
 
-<a id="entry-axi4-full-components-002"></a>
+<a id="entry-axi4-full-components-mux"></a>
 
-### `axi4f.components.Mux` [#](#entry-axi4-full-components-002)
+### `axi4f.components.Mux` [#](#entry-axi4-full-components-mux)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Mux.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala); [SysC TB](../sysc_tb/chext/amba/axi4/full/components/src/Interconnect.tb.cpp)
 
@@ -1157,9 +1157,9 @@ val mux0 = Module(new axi4f.components.Mux(cfg))
 
 ---
 
-<a id="entry-axi4-full-components-002-id-demux-config"></a>
+<a id="entry-axi4-full-components-id-demux-config"></a>
 
-### `axi4f.components.IdDemuxConfig` [#](#entry-axi4-full-components-002-id-demux-config)
+### `axi4f.components.IdDemuxConfig` [#](#entry-axi4-full-components-id-demux-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/IdDemux.scala)
 
@@ -1177,9 +1177,9 @@ val cfg = axi4f.components.IdDemuxConfig(
 
 ---
 
-<a id="entry-axi4-full-components-003"></a>
+<a id="entry-axi4-full-components-id-demux"></a>
 
-### `axi4f.components.IdDemux` [#](#entry-axi4-full-components-003)
+### `axi4f.components.IdDemux` [#](#entry-axi4-full-components-id-demux)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/IdDemux.scala)
 
@@ -1192,9 +1192,9 @@ val idDemux0 = Module(new axi4f.components.IdDemux(cfg))
 
 ---
 
-<a id="entry-axi4-full-components-003-id-mux-config"></a>
+<a id="entry-axi4-full-components-id-mux-config"></a>
 
-### `axi4f.components.IdMuxConfig` [#](#entry-axi4-full-components-003-id-mux-config)
+### `axi4f.components.IdMuxConfig` [#](#entry-axi4-full-components-id-mux-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/IdMux.scala)
 
@@ -1211,9 +1211,9 @@ val cfg = axi4f.components.IdMuxConfig(
 
 ---
 
-<a id="entry-axi4-full-components-004"></a>
+<a id="entry-axi4-full-components-id-mux"></a>
 
-### `axi4f.components.IdMux` [#](#entry-axi4-full-components-004)
+### `axi4f.components.IdMux` [#](#entry-axi4-full-components-id-mux)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/IdMux.scala)
 
@@ -1226,9 +1226,9 @@ val idMux0 = Module(new axi4f.components.IdMux(cfg))
 
 ---
 
-<a id="entry-axi4-full-components-004-id-serialize-config"></a>
+<a id="entry-axi4-full-components-id-serialize-config"></a>
 
-### `axi4f.components.IdSerializeConfig` [#](#entry-axi4-full-components-004-id-serialize-config)
+### `axi4f.components.IdSerializeConfig` [#](#entry-axi4-full-components-id-serialize-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/IdSerialize.scala)
 
@@ -1246,9 +1246,9 @@ val cfg = axi4f.components.IdSerializeConfig(
 
 ---
 
-<a id="entry-axi4-full-components-005"></a>
+<a id="entry-axi4-full-components-id-serialize"></a>
 
-### `axi4f.components.IdSerialize` [#](#entry-axi4-full-components-005)
+### `axi4f.components.IdSerialize` [#](#entry-axi4-full-components-id-serialize)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/IdSerialize.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/IdSerialize.tb.scala); [SysC TB](../sysc_tb/chext/amba/axi4/full/components/src/IdSerialize.tb.cpp)
 
@@ -1262,9 +1262,9 @@ val idSerialize0 =
 
 ---
 
-<a id="entry-axi4-full-components-005-id-parallelize-config"></a>
+<a id="entry-axi4-full-components-id-parallelize-config"></a>
 
-### `axi4f.components.IdParallelizeConfig` [#](#entry-axi4-full-components-005-id-parallelize-config)
+### `axi4f.components.IdParallelizeConfig` [#](#entry-axi4-full-components-id-parallelize-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala)
 
@@ -1283,9 +1283,9 @@ val cfg = axi4f.components.IdParallelizeConfig(
 
 ---
 
-<a id="entry-axi4-full-components-006"></a>
+<a id="entry-axi4-full-components-id-parallelize"></a>
 
-### `axi4f.components.IdParallelize` [#](#entry-axi4-full-components-006)
+### `axi4f.components.IdParallelize` [#](#entry-axi4-full-components-id-parallelize)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/IdParallelize.tb.scala); [SysC TB](../sysc_tb/chext/amba/axi4/full/components/src/IdParallelize.tb.cpp)
 
@@ -1299,9 +1299,9 @@ val idParallelize0 =
 
 ---
 
-<a id="entry-axi4-full-components-006-upscale-config"></a>
+<a id="entry-axi4-full-components-upscale-config"></a>
 
-### `axi4f.components.UpscaleConfig` [#](#entry-axi4-full-components-006-upscale-config)
+### `axi4f.components.UpscaleConfig` [#](#entry-axi4-full-components-upscale-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Upscale.scala)
 
@@ -1319,9 +1319,9 @@ val cfg = axi4f.components.UpscaleConfig(
 
 ---
 
-<a id="entry-axi4-full-components-007"></a>
+<a id="entry-axi4-full-components-upscale"></a>
 
-### `axi4f.components.Upscale` [#](#entry-axi4-full-components-007)
+### `axi4f.components.Upscale` [#](#entry-axi4-full-components-upscale)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Upscale.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/Upscale.tb.scala); [SysC TB](../sysc_tb/chext/amba/axi4/full/components/src/Upscale.tb.cpp)
 
@@ -1334,9 +1334,9 @@ val upscale0 = Module(new axi4f.components.Upscale(cfg))
 
 ---
 
-<a id="entry-axi4-full-components-007-downscale-config"></a>
+<a id="entry-axi4-full-components-downscale-config"></a>
 
-### `axi4f.components.DownscaleConfig` [#](#entry-axi4-full-components-007-downscale-config)
+### `axi4f.components.DownscaleConfig` [#](#entry-axi4-full-components-downscale-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Downscale.scala)
 
@@ -1354,9 +1354,9 @@ val cfg = axi4f.components.DownscaleConfig(
 
 ---
 
-<a id="entry-axi4-full-components-008"></a>
+<a id="entry-axi4-full-components-downscale"></a>
 
-### `axi4f.components.Downscale` [#](#entry-axi4-full-components-008)
+### `axi4f.components.Downscale` [#](#entry-axi4-full-components-downscale)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Downscale.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/Downscale.tb.scala); [SysC TB](../sysc_tb/chext/amba/axi4/full/components/src/Downscale.tb.cpp)
 
@@ -1369,9 +1369,9 @@ val downscale0 = Module(new axi4f.components.Downscale(cfg))
 
 ---
 
-<a id="entry-axi4-full-components-008-unburst-config"></a>
+<a id="entry-axi4-full-components-unburst-config"></a>
 
-### `axi4f.components.UnburstConfig` [#](#entry-axi4-full-components-008-unburst-config)
+### `axi4f.components.UnburstConfig` [#](#entry-axi4-full-components-unburst-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Unburst.scala)
 
@@ -1388,9 +1388,9 @@ val cfg = axi4f.components.UnburstConfig(
 
 ---
 
-<a id="entry-axi4-full-components-009"></a>
+<a id="entry-axi4-full-components-unburst"></a>
 
-### `axi4f.components.Unburst` [#](#entry-axi4-full-components-009)
+### `axi4f.components.Unburst` [#](#entry-axi4-full-components-unburst)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Unburst.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/Unburst.tb.scala); [SysC TB](../sysc_tb/chext/amba/axi4/full/components/src/Unburst.tb.cpp)
 
@@ -1403,9 +1403,9 @@ val unburst0 = Module(new axi4f.components.Unburst(cfg))
 
 ---
 
-<a id="entry-axi4-full-components-009-widen-config"></a>
+<a id="entry-axi4-full-components-widen-config"></a>
 
-### `axi4f.components.WidenConfig` [#](#entry-axi4-full-components-009-widen-config)
+### `axi4f.components.WidenConfig` [#](#entry-axi4-full-components-widen-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Widen.scala)
 
@@ -1422,9 +1422,9 @@ val cfg = axi4f.components.WidenConfig(
 
 ---
 
-<a id="entry-axi4-full-components-010"></a>
+<a id="entry-axi4-full-components-widen"></a>
 
-### `axi4f.components.Widen` [#](#entry-axi4-full-components-010)
+### `axi4f.components.Widen` [#](#entry-axi4-full-components-widen)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Widen.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala); [SysC TB](../sysc_tb/chext/amba/axi4/full/components/src/Widen.tb.cpp)
 
@@ -1437,9 +1437,9 @@ val widen0 = Module(new axi4f.components.Widen(cfg))
 
 ---
 
-<a id="entry-axi4-full-components-010-credit-buffer-config"></a>
+<a id="entry-axi4-full-components-credit-buffer-config"></a>
 
-### `axi4f.components.CreditBufferConfig` [#](#entry-axi4-full-components-010-credit-buffer-config)
+### `axi4f.components.CreditBufferConfig` [#](#entry-axi4-full-components-credit-buffer-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/CreditBuffer.scala)
 
@@ -1457,9 +1457,9 @@ val cfg = axi4f.components.CreditBufferConfig(
 
 ---
 
-<a id="entry-axi4-full-components-010-credit-buffer"></a>
+<a id="entry-axi4-full-components-credit-buffer"></a>
 
-### `axi4f.components.CreditBuffer` [#](#entry-axi4-full-components-010-credit-buffer)
+### `axi4f.components.CreditBuffer` [#](#entry-axi4-full-components-credit-buffer)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/CreditBuffer.scala)
 
@@ -1473,9 +1473,9 @@ val creditBuffer0 =
 
 ---
 
-<a id="entry-axi4-full-components-010-protocol-converter-config"></a>
+<a id="entry-axi4-full-components-protocol-converter-config"></a>
 
-### `axi4f.components.ProtocolConverterConfig` [#](#entry-axi4-full-components-010-protocol-converter-config)
+### `axi4f.components.ProtocolConverterConfig` [#](#entry-axi4-full-components-protocol-converter-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala)
 
@@ -1492,9 +1492,9 @@ val cfg = axi4f.components.ProtocolConverterConfig(
 
 ---
 
-<a id="entry-axi4-full-components-011"></a>
+<a id="entry-axi4-full-components-protocol-converter"></a>
 
-### `axi4f.components.ProtocolConverter` [#](#entry-axi4-full-components-011)
+### `axi4f.components.ProtocolConverter` [#](#entry-axi4-full-components-protocol-converter)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala)
 
@@ -1512,9 +1512,9 @@ val protocolConverter0 =
 
 AXI4-Lite components are Chisel modules. They are not Chext components themselves; graph content comes from the internal channel-level elastic components.
 
-<a id="entry-axi4-lite-components-000-demux-config"></a>
+<a id="entry-axi4-lite-components-demux-config"></a>
 
-### `axi4l.components.DemuxConfig` [#](#entry-axi4-lite-components-000-demux-config)
+### `axi4l.components.DemuxConfig` [#](#entry-axi4-lite-components-demux-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/Demux.scala)
 
@@ -1536,9 +1536,9 @@ val cfg = axi4l.components.DemuxConfig(
 
 ---
 
-<a id="entry-axi4-lite-components-001"></a>
+<a id="entry-axi4-lite-components-demux"></a>
 
-### `axi4l.components.Demux` [#](#entry-axi4-lite-components-001)
+### `axi4l.components.Demux` [#](#entry-axi4-lite-components-demux)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/Demux.scala)
 
@@ -1551,9 +1551,9 @@ val demux0 = Module(new axi4l.components.Demux(cfg))
 
 ---
 
-<a id="entry-axi4-lite-components-001-mux-config"></a>
+<a id="entry-axi4-lite-components-mux-config"></a>
 
-### `axi4l.components.MuxConfig` [#](#entry-axi4-lite-components-001-mux-config)
+### `axi4l.components.MuxConfig` [#](#entry-axi4-lite-components-mux-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/Mux.scala)
 
@@ -1575,9 +1575,9 @@ val cfg = axi4l.components.MuxConfig(
 
 ---
 
-<a id="entry-axi4-lite-components-002"></a>
+<a id="entry-axi4-lite-components-mux"></a>
 
-### `axi4l.components.Mux` [#](#entry-axi4-lite-components-002)
+### `axi4l.components.Mux` [#](#entry-axi4-lite-components-mux)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/Mux.scala)
 
@@ -1590,9 +1590,9 @@ val mux0 = Module(new axi4l.components.Mux(cfg))
 
 ---
 
-<a id="entry-axi4-lite-components-002-credit-buffer-config"></a>
+<a id="entry-axi4-lite-components-credit-buffer-config"></a>
 
-### `axi4l.components.CreditBufferConfig` [#](#entry-axi4-lite-components-002-credit-buffer-config)
+### `axi4l.components.CreditBufferConfig` [#](#entry-axi4-lite-components-credit-buffer-config)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/CreditBuffer.scala)
 
@@ -1610,9 +1610,9 @@ val cfg = axi4l.components.CreditBufferConfig(
 
 ---
 
-<a id="entry-axi4-lite-components-003"></a>
+<a id="entry-axi4-lite-components-credit-buffer"></a>
 
-### `axi4l.components.CreditBuffer` [#](#entry-axi4-lite-components-003)
+### `axi4l.components.CreditBuffer` [#](#entry-axi4-lite-components-credit-buffer)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/CreditBuffer.scala)
 
@@ -1626,9 +1626,9 @@ val creditBuffer0 =
 
 ---
 
-<a id="entry-axi4-lite-components-004"></a>
+<a id="entry-axi4-lite-components-mem-controller"></a>
 
-### `axi4l.components.MemController` [#](#entry-axi4-lite-components-004)
+### `axi4l.components.MemController` [#](#entry-axi4-lite-components-mem-controller)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/MemController.scala)
 
@@ -1646,9 +1646,9 @@ val memController0 =
 
 ---
 
-<a id="entry-axi4-lite-components-005"></a>
+<a id="entry-axi4-lite-components-sync-read-mem-controller"></a>
 
-### `axi4l.components.SyncReadMemController` [#](#entry-axi4-lite-components-005)
+### `axi4l.components.SyncReadMemController` [#](#entry-axi4-lite-components-sync-read-mem-controller)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/SyncReadMemController.scala)
 
@@ -1666,9 +1666,9 @@ val syncReadMemController0 =
 
 ---
 
-<a id="entry-axi4-lite-components-006"></a>
+<a id="entry-axi4-lite-components-register-block"></a>
 
-### `axi4l.components.RegisterBlock` [#](#entry-axi4-lite-components-006)
+### `axi4l.components.RegisterBlock` [#](#entry-axi4-lite-components-register-block)
 
 **Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala)
 
@@ -1693,9 +1693,9 @@ Memory interfaces are bundle-level protocols whose request/response fields are e
 
 Memory buffer naming follows the same convention as elastic and AXI: `SlaveBuffer` / `MasterBuffer` are the named-prefix inline forms, while `SlaveBuffered` / `MasterBuffered` are for binding the returned interface to a `val`.
 
-<a id="entry-memory-001"></a>
+<a id="entry-memory-read-interface-memory-write-interface"></a>
 
-### `memory.ReadInterface`, `memory.WriteInterface` [#](#entry-memory-001)
+### `memory.ReadInterface`, `memory.WriteInterface` [#](#entry-memory-read-interface-memory-write-interface)
 
 **Sources:** [Scala](../src/main/scala/chext/memory/Interfaces.scala)
 
@@ -1705,9 +1705,9 @@ Memory buffer naming follows the same convention as elastic and AXI: `SlaveBuffe
 
 ---
 
-<a id="entry-memory-002"></a>
+<a id="entry-memory-connect-op-master-connect-slave"></a>
 
-### `memory.ConnectOp._` / `master :=> slave` [#](#entry-memory-002)
+### `memory.ConnectOp._` / `master :=> slave` [#](#entry-memory-connect-op-master-connect-slave)
 
 **Sources:** [Scala](../src/main/scala/chext/memory/Connect.scala)
 
@@ -1717,9 +1717,9 @@ Memory buffer naming follows the same convention as elastic and AXI: `SlaveBuffe
 
 ---
 
-<a id="entry-memory-003"></a>
+<a id="entry-memory-buffer-config"></a>
 
-### `memory.BufferConfig` [#](#entry-memory-003)
+### `memory.BufferConfig` [#](#entry-memory-buffer-config)
 
 **Sources:** [Scala](../src/main/scala/chext/memory/Buffer.scala)
 
@@ -1735,9 +1735,9 @@ val bufferCfg = memory.BufferConfig(
 
 ---
 
-<a id="entry-memory-004"></a>
+<a id="entry-memory-slave-buffer-memory-master-buffer"></a>
 
-### `memory.SlaveBuffer`, `memory.MasterBuffer` [#](#entry-memory-004)
+### `memory.SlaveBuffer`, `memory.MasterBuffer` [#](#entry-memory-slave-buffer-memory-master-buffer)
 
 **Sources:** [Scala](../src/main/scala/chext/memory/Buffer.scala); [Scala TB](../src/test/scala/chext/memory/Buffer.tb.scala)
 
@@ -1751,9 +1751,9 @@ writeMaster :=> memory.MasterBuffer(writeSlave, bufferCfg)
 
 ---
 
-<a id="entry-memory-005"></a>
+<a id="entry-memory-slave-buffered-memory-master-buffered"></a>
 
-### `memory.SlaveBuffered`, `memory.MasterBuffered` [#](#entry-memory-005)
+### `memory.SlaveBuffered`, `memory.MasterBuffered` [#](#entry-memory-slave-buffered-memory-master-buffered)
 
 **Sources:** [Scala](../src/main/scala/chext/memory/Buffer.scala); [Scala TB](../src/test/scala/chext/memory/Buffer.tb.scala)
 
@@ -1768,9 +1768,9 @@ val writeBuffered = memory.MasterBuffered(writeSlave, bufferCfg)
 
 ---
 
-<a id="entry-memory-006"></a>
+<a id="entry-memory-raw-mem-config-memory-port-config"></a>
 
-### `memory.RawMemConfig` / `memory.PortConfig` [#](#entry-memory-006)
+### `memory.RawMemConfig` / `memory.PortConfig` [#](#entry-memory-raw-mem-config-memory-port-config)
 
 **Sources:** [Scala](../src/main/scala/chext/memory/RawMem.scala); [Scala](../src/main/scala/chext/memory/RAM.scala)
 
@@ -1793,9 +1793,9 @@ val portCfg = memory.PortConfig(
 
 ---
 
-<a id="entry-memory-007"></a>
+<a id="entry-memory-single-port-ram-simple-dual-port-ram-true-dual-port-ram"></a>
 
-### `memory.SinglePortRAM`, `SimpleDualPortRAM`, `TrueDualPortRAM` [#](#entry-memory-007)
+### `memory.SinglePortRAM`, `SimpleDualPortRAM`, `TrueDualPortRAM` [#](#entry-memory-single-port-ram-simple-dual-port-ram-true-dual-port-ram)
 
 **Sources:** [Scala](../src/main/scala/chext/memory/RAM.scala)
 
@@ -1813,9 +1813,9 @@ val ram0 =
 
 Stream modules create AXI-facing work/result frontends. They are Chisel modules; graph visibility comes from their task/data/result elastic channels and internal elastic control components.
 
-<a id="entry-stream-001"></a>
+<a id="entry-stream-chunk-config"></a>
 
-### `stream.ChunkConfig` [#](#entry-stream-001)
+### `stream.ChunkConfig` [#](#entry-stream-chunk-config)
 
 **Sources:** [Scala](../src/main/scala/chext/stream/Chunk.scala)
 
@@ -1834,9 +1834,9 @@ val cfg = stream.ChunkConfig(
 
 ---
 
-<a id="entry-stream-002"></a>
+<a id="entry-stream-chunk"></a>
 
-### `stream.Chunk` [#](#entry-stream-002)
+### `stream.Chunk` [#](#entry-stream-chunk)
 
 **Sources:** [Scala](../src/main/scala/chext/stream/Chunk.scala)
 
@@ -1849,9 +1849,9 @@ val chunk0 = Module(new stream.Chunk(cfg))
 
 ---
 
-<a id="entry-stream-003"></a>
+<a id="entry-stream-read-config-stream-write-config"></a>
 
-### `stream.ReadConfig` / `stream.WriteConfig` [#](#entry-stream-003)
+### `stream.ReadConfig` / `stream.WriteConfig` [#](#entry-stream-read-config-stream-write-config)
 
 **Sources:** [Scala](../src/main/scala/chext/stream/Read.scala); [Scala](../src/main/scala/chext/stream/Write.scala)
 
@@ -1879,9 +1879,9 @@ val writeCfg = stream.WriteConfig(
 
 ---
 
-<a id="entry-stream-004"></a>
+<a id="entry-stream-read-stream-write"></a>
 
-### `stream.Read`, `stream.Write` [#](#entry-stream-004)
+### `stream.Read`, `stream.Write` [#](#entry-stream-read-stream-write)
 
 **Sources:** [Scala](../src/main/scala/chext/stream/Read.scala); [Scala](../src/main/scala/chext/stream/Write.scala); [Scala TB](../src/test/scala/chext/stream/Read.tb.scala); [Scala TB](../src/test/scala/chext/stream/Write.tb.scala); [SysC TB](../sysc_tb/chext/stream/src/Read.tb.cpp); [SysC TB](../sysc_tb/chext/stream/src/Write.tb.cpp)
 
@@ -1899,9 +1899,9 @@ val write0 = Module(new stream.Write(writeCfg))
 
 Load/store modules are single-beat AXI full frontends. They expose elastic task/result interfaces and a full AXI master port, then build the necessary AXI channel traffic internally.
 
-<a id="entry-load-store-001"></a>
+<a id="entry-load-store-ldstr-load-config-ldstr-store-config"></a>
 
-### `ldstr.LoadConfig` / `ldstr.StoreConfig` [#](#entry-load-store-001)
+### `ldstr.LoadConfig` / `ldstr.StoreConfig` [#](#entry-load-store-ldstr-load-config-ldstr-store-config)
 
 **Sources:** [Scala](../src/main/scala/chext/ldstr/Load.scala); [Scala](../src/main/scala/chext/ldstr/Store.scala)
 
@@ -1923,9 +1923,9 @@ val storeCfg = ldstr.StoreConfig(
 
 ---
 
-<a id="entry-load-store-002"></a>
+<a id="entry-load-store-ldstr-load-ldstr-store"></a>
 
-### `ldstr.Load`, `ldstr.Store` [#](#entry-load-store-002)
+### `ldstr.Load`, `ldstr.Store` [#](#entry-load-store-ldstr-load-ldstr-store)
 
 **Sources:** [Scala](../src/main/scala/chext/ldstr/Load.scala); [Scala](../src/main/scala/chext/ldstr/Store.scala)
 
@@ -1943,9 +1943,9 @@ val store0 = Module(new ldstr.Store(storeCfg))
 
 Floating-point elastic modules wrap floating-point datapaths with elastic source/sink interfaces. Their graph participation comes from the wrapper queues, joins, and surrounding elastic wiring.
 
-<a id="entry-float-001"></a>
+<a id="entry-float-floating-point"></a>
 
-### `float.FloatingPoint` [#](#entry-float-001)
+### `float.FloatingPoint` [#](#entry-float-floating-point)
 
 **Sources:** [Scala](../src/main/scala/chext/float/FloatingPoint.scala)
 
@@ -1962,9 +1962,9 @@ val custom = float.FloatingPoint(
 
 ---
 
-<a id="entry-float-002"></a>
+<a id="entry-float-elastic-add-float-elastic-multiply"></a>
 
-### `float.ElasticAdd`, `float.ElasticMultiply` [#](#entry-float-002)
+### `float.ElasticAdd`, `float.ElasticMultiply` [#](#entry-float-elastic-add-float-elastic-multiply)
 
 **Sources:** [Scala](../src/main/scala/chext/float/Elastic.scala); [Scala TB](../src/test/scala/chext/float/Elastic.tb.scala); [SysC TB](../sysc_tb/chext/float/src/ElasticTop.tb.cpp)
 

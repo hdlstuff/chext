@@ -36,7 +36,8 @@ END
 kind = table
 title = Elastic Interfaces and Operators
 
-[row.elastic_interfaces.001]
+[row.elastic_interfaces]
+anchor = elastic-interfaces-e-interface
 construct = `e.Interface(gen)`
 intent <<END
 For Chisel types:
@@ -51,7 +52,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
 END
 
-[row.elastic_interfaces.002]
+[row.elastic_interfaces]
+anchor = elastic-interfaces-e-source
 construct = `e.Source(gen)`
 intent <<END
 Producer endpoint from the module's perspective:
@@ -66,7 +68,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
 END
 
-[row.elastic_interfaces.003]
+[row.elastic_interfaces]
+anchor = elastic-interfaces-e-sink
 construct = `e.Sink(gen)`
 intent <<END
 Consumer endpoint from the module's perspective:
@@ -81,7 +84,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
 END
 
-[row.elastic_interfaces.004]
+[row.elastic_interfaces]
+anchor = elastic-interfaces-e-ewire
 construct = `e.EWire(gen)`
 intent <<END
 Internal elastic wire:
@@ -96,7 +100,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
 END
 
-[row.elastic_interfaces.005]
+[row.elastic_interfaces]
+anchor = elastic-interfaces-e-source-like-e-sink-like-e-ewire-like
 construct = `e.Source.like`, `e.Sink.like`, `e.EWire.like`
 intent <<END
 Preserve the payload type of an existing elastic interface:
@@ -111,7 +116,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
 END
 
-[row.elastic_interfaces.006]
+[row.elastic_interfaces]
+anchor = elastic-interfaces-e-source-many-e-sink-many-e-interface-many
 construct = `e.Source.many`, `e.Sink.many`, `e.Interface.many`
 intent <<END
 Similar to the single-interface constructors, but returns `chext.util.NamedVec[e.Interface[T]]`:
@@ -126,7 +132,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
 END
 
-[row.elastic_interfaces.007]
+[row.elastic_interfaces]
+anchor = elastic-interfaces-source-connect-sink
 construct = `source :=> sink`
 intent <<END
 Connect elastic interfaces:
@@ -141,7 +148,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Connect.scala}}
 END
 
-[row.elastic_interfaces.008]
+[row.elastic_interfaces]
+anchor = elastic-interfaces-sources-connect-sinks
 construct = `sources :=> sinks`
 intent <<END
 Connect matching sequences:
@@ -156,7 +164,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Connect.scala}}
 END
 
-[row.elastic_interfaces.009]
+[row.elastic_interfaces]
+anchor = elastic-interfaces-e-zip
 construct = `e.Zip(...)`
 intent <<END
 Join sources into a bundle-valued elastic interface:
@@ -180,7 +189,8 @@ Many elastic components support `fire { ... }`, a protected hook that runs when 
 Buffer naming convention: `SourceBuffer`, `SinkBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used inline in a connection expression. `SourceBuffered` and `SinkBuffered` return a buffered interface directly; bind them to a `val` when the buffered interface is the thing you want to keep using.
 END
 
-[row.elastic_components.001]
+[row.elastic_components]
+anchor = elastic-components-e-connect
 construct = `e.Connect`
 intent <<END
 Direct pass-through connection. Prefer `source :=> sink` unless a named value is useful:
@@ -195,7 +205,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Connect.scala}}
 END
 
-[row.elastic_components.002]
+[row.elastic_components]
+anchor = elastic-components-e-transform
 construct = `e.Transform`
 intent <<END
 Combinational payload transform:
@@ -212,7 +223,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Transform.scala}}
 END
 
-[row.elastic_components.003]
+[row.elastic_components]
+anchor = elastic-components-e-stall
 construct = `e.Stall`
 intent <<END
 Conditionally hold a token; supports `fire`:
@@ -231,7 +243,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Stall.scala}}
 END
 
-[row.elastic_components.004]
+[row.elastic_components]
+anchor = elastic-components-e-drop
 construct = `e.Drop`
 intent <<END
 Conditionally drop a token:
@@ -249,7 +262,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Drop.scala}}
 END
 
-[row.elastic_components.005]
+[row.elastic_components]
+anchor = elastic-components-e-transducer
 construct = `e.Transducer`
 intent <<END
 Stateful packet-level control:
@@ -274,7 +288,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/elastic/src/Transducer.tb.cpp}}
 END
 
-[row.elastic_components.006]
+[row.elastic_components]
+anchor = elastic-components-e-queue
 construct = `e.Queue`
 intent <<END
 Explicit queue between existing endpoints:
@@ -291,7 +306,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/elastic/src/Queue.tb.cpp}}
 END
 
-[row.elastic_components.007]
+[row.elastic_components]
+anchor = elastic-components-e-source-buffer
 construct = `e.SourceBuffer`
 intent <<END
 Insert a queue after a source, usually inline in a connection:
@@ -307,7 +323,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
 END
 
-[row.elastic_components.008]
+[row.elastic_components]
+anchor = elastic-components-e-sink-buffer
 construct = `e.SinkBuffer`
 intent <<END
 Insert a queue before a sink, usually inline in a connection:
@@ -323,7 +340,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
 END
 
-[row.elastic_components.009]
+[row.elastic_components]
+anchor = elastic-components-e-left-buffer-e-right-buffer
 construct = `e.LeftBuffer` / `e.RightBuffer`
 intent <<END
 Generic aliases for source-side / sink-side buffering:
@@ -340,7 +358,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
 END
 
-[row.elastic_components.010]
+[row.elastic_components]
+anchor = elastic-components-e-source-buffered
 construct = `e.SourceBuffered`
 intent <<END
 Return a buffered source-side interface for reuse as a named value:
@@ -357,7 +376,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
 END
 
-[row.elastic_components.011]
+[row.elastic_components]
+anchor = elastic-components-e-sink-buffered
 construct = `e.SinkBuffered`
 intent <<END
 Return a buffered sink-side interface for reuse as a named value:
@@ -374,7 +394,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
 END
 
-[row.elastic_components.012]
+[row.elastic_components]
+anchor = elastic-components-e-null-sink
 construct = `e.NullSink`
 intent <<END
 Consume/drop all tokens from a source:
@@ -391,7 +412,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/Null.tb.scala}}
 END
 
-[row.elastic_components.013]
+[row.elastic_components]
+anchor = elastic-components-e-null-source
 construct = `e.NullSource`
 intent <<END
 Drive a sink with no valid tokens:
@@ -408,7 +430,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/Null.tb.scala}}
 END
 
-[row.elastic_components.014]
+[row.elastic_components]
+anchor = elastic-components-e-fork
 construct = `e.Fork`
 intent <<END
 Branch one source to several sinks:
@@ -426,7 +449,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Fork.scala}}
 END
 
-[row.elastic_components.015]
+[row.elastic_components]
+anchor = elastic-components-e-join
 construct = `e.Join`
 intent <<END
 Join several sources into one sink:
@@ -443,7 +467,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Join.scala}}
 END
 
-[row.elastic_components.016]
+[row.elastic_components]
+anchor = elastic-components-e-merger
 construct = `e.Merger`
 intent <<END
 Merge multiple sources into one sink:
@@ -459,7 +484,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Merger.scala}}
 END
 
-[row.elastic_components.017]
+[row.elastic_components]
+anchor = elastic-components-e-mux
 construct = `e.Mux`
 intent <<END
 Select one source by an elastic select stream:
@@ -475,7 +501,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Mux.scala}}
 END
 
-[row.elastic_components.018]
+[row.elastic_components]
+anchor = elastic-components-e-demux
 construct = `e.Demux`
 intent <<END
 Route one source to selected sink:
@@ -491,7 +518,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Demux.scala}}
 END
 
-[row.elastic_components.019]
+[row.elastic_components]
+anchor = elastic-components-e-arbiter
 construct = `e.Arbiter`
 intent <<END
 Select among sources and emit the selected index:
@@ -509,7 +537,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/elastic/src/Arbiter.tb.cpp}}
 END
 
-[row.elastic_components.020]
+[row.elastic_components]
+anchor = elastic-components-e-arbiter-ns
 construct = `e.ArbiterNs`
 intent <<END
 Select among sources without a selected-index stream:
@@ -525,7 +554,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/ArbiterNs.scala}}
 END
 
-[row.elastic_components.021]
+[row.elastic_components]
+anchor = elastic-components-e-demux-ns
 construct = `e.DemuxNs`
 intent <<END
 Route by a protected select function:
@@ -542,7 +572,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/DemuxNs.scala}}
 END
 
-[row.elastic_components.022]
+[row.elastic_components]
+anchor = elastic-components-e-count
 construct = `e.Count`
 intent <<END
 Stateful repeat/count primitive:
@@ -563,7 +594,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/Count.tb.scala}}
 END
 
-[row.elastic_components.023]
+[row.elastic_components]
+anchor = elastic-components-self-alias-form
 construct = Self-alias form
 intent <<END
 Useful when nesting components and you want a stable name for the outer anonymous instance:
@@ -581,7 +613,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/Count.tb.scala}}
 END
 
-[row.elastic_components.024]
+[row.elastic_components]
+anchor = elastic-components-e-once
 construct = `e.Once`
 intent <<END
 One-shot source, explicit component form:
@@ -599,7 +632,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Once.scala}}
 END
 
-[row.elastic_components.025]
+[row.elastic_components]
+anchor = elastic-components-e-once-2
 construct = `e.Once(value)`
 intent <<END
 Functional one-shot form:
@@ -614,7 +648,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Once.scala}}
 END
 
-[row.elastic_components.026]
+[row.elastic_components]
+anchor = elastic-components-e-counter
 construct = `e.Counter`
 intent <<END
 Explicit component form:
@@ -630,7 +665,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Counter.scala}}
 END
 
-[row.elastic_components.027]
+[row.elastic_components]
+anchor = elastic-components-e-counter-e-counter-from-width
 construct = `e.Counter(...)` / `e.Counter.fromWidth(...)`
 intent <<END
 Functional source form:
@@ -646,7 +682,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Counter.scala}}
 END
 
-[row.elastic_components.028]
+[row.elastic_components]
+anchor = elastic-components-e-wrap
 construct = `e.Wrap`
 intent <<END
 Wrap delayed logic:
@@ -668,7 +705,8 @@ END
 kind = table
 title = Elastic Containers
 
-[row.elastic_containers.001]
+[row.elastic_containers]
+anchor = elastic-containers-e-repeat
 construct = `e.Repeat`
 intent <<END
 Repeat one input token multiple times:
@@ -687,7 +725,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/Count.tb.scala}}
 END
 
-[row.elastic_containers.002]
+[row.elastic_containers]
+anchor = elastic-containers-e-fold
 construct = `e.Fold`
 intent <<END
 Reduce a stream using user-provided fold logic:
@@ -710,7 +749,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/elastic/src/Fold.tb.cpp}}
 END
 
-[row.elastic_containers.003]
+[row.elastic_containers]
+anchor = elastic-containers-e-loop
 construct = `e.Loop`
 intent <<END
 Iterative elastic loop with user-visible body endpoints:
@@ -729,7 +769,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Loop.scala}}
 END
 
-[row.elastic_containers.004]
+[row.elastic_containers]
+anchor = elastic-containers-e-scope
 construct = `e.Scope`
 intent <<END
 Begin/end scoped elastic region:
@@ -749,7 +790,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Scope.scala}}
 END
 
-[row.elastic_containers.005]
+[row.elastic_containers]
+anchor = elastic-containers-e-random-stall
 construct = `e.RandomStall`
 intent <<END
 Test/diagnostic random backpressure:
@@ -789,7 +831,8 @@ END
 kind = table
 title = AXI4 Interfaces and Connects
 
-[row.axi_connects.001]
+[row.axi_connects]
+anchor = axi-connects-axi4-config
 construct = `axi4.Config`
 intent <<END
 Configuration:
@@ -822,7 +865,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Interface.scala}}
 END
 
-[row.axi_connects.001_full_connect_config]
+[row.axi_connects]
+anchor = axi-connects-full-connect-config
 construct = `axi4f.ConnectConfig`
 intent <<END
 Configured full AXI connect diagnostics:
@@ -850,7 +894,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
 END
 
-[row.axi_connects.001_lite_connect_config]
+[row.axi_connects]
+anchor = axi-connects-lite-connect-config
 construct = `axi4l.ConnectConfig`
 intent <<END
 Configured AXI4-Lite connect diagnostics:
@@ -873,7 +918,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
 END
 
-[row.axi_connects.002]
+[row.axi_connects]
+anchor = axi-connects-full-slave-master
 construct = `axi4f.Slave` / `axi4f.Master`
 intent <<END
 Full AXI IO:
@@ -889,7 +935,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Interface.scala}}
 END
 
-[row.axi_connects.003]
+[row.axi_connects]
+anchor = axi-connects-lite-slave-master
 construct = `axi4l.Slave` / `axi4l.Master`
 intent <<END
 AXI4-Lite IO:
@@ -905,7 +952,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Interface.scala}}
 END
 
-[row.axi_connects.004]
+[row.axi_connects]
+anchor = axi-connects-full-single-connect
 construct = Full single connect
 intent <<END
 Connect one full AXI interface pair:
@@ -921,7 +969,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/Connect.tb.scala}}
 END
 
-[row.axi_connects.005]
+[row.axi_connects]
+anchor = axi-connects-full-configured-connect
 construct = Full configured connect
 intent <<END
 Same, with diagnostics/tie-off config:
@@ -936,7 +985,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
 END
 
-[row.axi_connects.006]
+[row.axi_connects]
+anchor = axi-connects-full-many-connect
 construct = Full many connect
 intent <<END
 Connect matching full AXI sequences:
@@ -951,7 +1001,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
 END
 
-[row.axi_connects.007]
+[row.axi_connects]
+anchor = axi-connects-lite-single-connect
 construct = Lite single connect
 intent <<END
 Connect one AXI4-Lite pair:
@@ -967,7 +1018,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/lite/Connect.tb.scala}}
 END
 
-[row.axi_connects.008]
+[row.axi_connects]
+anchor = axi-connects-lite-configured-connect
 construct = Lite configured connect
 intent <<END
 Same, with diagnostics/tie-off config:
@@ -983,7 +1035,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/lite/Connect.tb.scala}}
 END
 
-[row.axi_connects.009]
+[row.axi_connects]
+anchor = axi-connects-lite-many-connect
 construct = Lite many connect
 intent <<END
 Connect matching AXI4-Lite sequences:
@@ -998,7 +1051,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
 END
 
-[row.axi_connects.010]
+[row.axi_connects]
+anchor = axi-connects-raw-single-connect
 construct = Raw single connect
 intent <<END
 Connect raw AXI interfaces and dispatch to full/lite based on config:
@@ -1013,7 +1067,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Connect.scala}}
 END
 
-[row.axi_connects.011]
+[row.axi_connects]
+anchor = axi-connects-raw-many-connect
 construct = Raw many connect
 intent <<END
 Connect matching raw AXI sequences:
@@ -1035,7 +1090,8 @@ preface <<END
 AXI buffer naming follows the elastic convention: `SlaveBuffer`, `MasterBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used anonymously inside a connection expression. `SlaveBuffered` and `MasterBuffered` return an interface directly; bind them to a `val` when the buffered AXI side is reused.
 END
 
-[row.axi_buffers.000]
+[row.axi_buffers]
+anchor = axi-buffers-axi4-buffer-config
 construct = `axi4.BufferConfig`
 intent <<END
 Per-channel buffer depths:
@@ -1056,7 +1112,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Buffer.scala}}
 END
 
-[row.axi_buffers.001]
+[row.axi_buffers]
+anchor = axi-buffers-full-slave-master-buffer
 construct = `axi4f.SlaveBuffer` / `axi4f.MasterBuffer`
 intent <<END
 Buffer a full AXI side inline in a connection:
@@ -1072,7 +1129,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Buffer.scala}}
 END
 
-[row.axi_buffers.002]
+[row.axi_buffers]
+anchor = axi-buffers-full-slave-master-buffered
 construct = `axi4f.SlaveBuffered` / `axi4f.MasterBuffered`
 intent <<END
 Create a buffered full AXI side for reuse as a named value:
@@ -1088,7 +1146,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Buffer.scala}}
 END
 
-[row.axi_buffers.003]
+[row.axi_buffers]
+anchor = axi-buffers-lite-slave-master-buffer
 construct = `axi4l.SlaveBuffer` / `axi4l.MasterBuffer`
 intent <<END
 Buffer an AXI4-Lite side inline in a connection:
@@ -1104,7 +1163,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Buffer.scala}}
 END
 
-[row.axi_buffers.004]
+[row.axi_buffers]
+anchor = axi-buffers-lite-slave-master-buffered
 construct = `axi4l.SlaveBuffered` / `axi4l.MasterBuffered`
 intent <<END
 Create a buffered AXI4-Lite side for reuse as a named value:
@@ -1127,7 +1187,8 @@ preface <<END
 AXI4 full components are Chisel modules. They are not Chext components themselves; graph content comes from the elastic components they instantiate internally.
 END
 
-[row.axi4_full_components.000_demux_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-demux-config
 construct = `axi4f.components.DemuxConfig`
 intent <<END
 Fan-out configuration:
@@ -1154,7 +1215,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Demux.scala}}
 END
 
-[row.axi4_full_components.001]
+[row.axi4_full_components]
+anchor = axi4-full-components-demux
 construct = `axi4f.components.Demux`
 intent <<END
 Fan one full AXI slave-side port out to multiple master-side ports:
@@ -1171,7 +1233,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Interconnect.tb.cpp}}
 END
 
-[row.axi4_full_components.001_mux_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-mux-config
 construct = `axi4f.components.MuxConfig`
 intent <<END
 Fan-in configuration:
@@ -1192,7 +1255,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Mux.scala}}
 END
 
-[row.axi4_full_components.002]
+[row.axi4_full_components]
+anchor = axi4-full-components-mux
 construct = `axi4f.components.Mux`
 intent <<END
 Merge multiple full AXI slave-side ports into one master-side port:
@@ -1209,7 +1273,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Interconnect.tb.cpp}}
 END
 
-[row.axi4_full_components.002_id_demux_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-id-demux-config
 construct = `axi4f.components.IdDemuxConfig`
 intent <<END
 ID fan-out configuration:
@@ -1229,7 +1294,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdDemux.scala}}
 END
 
-[row.axi4_full_components.003]
+[row.axi4_full_components]
+anchor = axi4-full-components-id-demux
 construct = `axi4f.components.IdDemux`
 intent <<END
 Route full AXI traffic by transaction ID:
@@ -1244,7 +1310,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdDemux.scala}}
 END
 
-[row.axi4_full_components.003_id_mux_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-id-mux-config
 construct = `axi4f.components.IdMuxConfig`
 intent <<END
 ID fan-in configuration:
@@ -1263,7 +1330,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdMux.scala}}
 END
 
-[row.axi4_full_components.004]
+[row.axi4_full_components]
+anchor = axi4-full-components-id-mux
 construct = `axi4f.components.IdMux`
 intent <<END
 Merge full AXI traffic while preserving ID-based response routing:
@@ -1278,7 +1346,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdMux.scala}}
 END
 
-[row.axi4_full_components.004_id_serialize_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-id-serialize-config
 construct = `axi4f.components.IdSerializeConfig`
 intent <<END
 ID serialization configuration:
@@ -1298,7 +1367,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdSerialize.scala}}
 END
 
-[row.axi4_full_components.005]
+[row.axi4_full_components]
+anchor = axi4-full-components-id-serialize
 construct = `axi4f.components.IdSerialize`
 intent <<END
 Serialize transactions by ID:
@@ -1316,7 +1386,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/IdSerialize.tb.cpp}}
 END
 
-[row.axi4_full_components.005_id_parallelize_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-id-parallelize-config
 construct = `axi4f.components.IdParallelizeConfig`
 intent <<END
 ID parallelization configuration:
@@ -1337,7 +1408,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala}}
 END
 
-[row.axi4_full_components.006]
+[row.axi4_full_components]
+anchor = axi4-full-components-id-parallelize
 construct = `axi4f.components.IdParallelize`
 intent <<END
 Parallelize transactions by ID:
@@ -1355,7 +1427,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/IdParallelize.tb.cpp}}
 END
 
-[row.axi4_full_components.006_upscale_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-upscale-config
 construct = `axi4f.components.UpscaleConfig`
 intent <<END
 Width upscale configuration:
@@ -1375,7 +1448,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Upscale.scala}}
 END
 
-[row.axi4_full_components.007]
+[row.axi4_full_components]
+anchor = axi4-full-components-upscale
 construct = `axi4f.components.Upscale`
 intent <<END
 Adapt a narrower full AXI data bus to a wider one:
@@ -1392,7 +1466,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Upscale.tb.cpp}}
 END
 
-[row.axi4_full_components.007_downscale_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-downscale-config
 construct = `axi4f.components.DownscaleConfig`
 intent <<END
 Width downscale configuration:
@@ -1412,7 +1487,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Downscale.scala}}
 END
 
-[row.axi4_full_components.008]
+[row.axi4_full_components]
+anchor = axi4-full-components-downscale
 construct = `axi4f.components.Downscale`
 intent <<END
 Adapt a wider full AXI data bus to a narrower one:
@@ -1429,7 +1505,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Downscale.tb.cpp}}
 END
 
-[row.axi4_full_components.008_unburst_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-unburst-config
 construct = `axi4f.components.UnburstConfig`
 intent <<END
 Burst decomposition configuration:
@@ -1448,7 +1525,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Unburst.scala}}
 END
 
-[row.axi4_full_components.009]
+[row.axi4_full_components]
+anchor = axi4-full-components-unburst
 construct = `axi4f.components.Unburst`
 intent <<END
 Convert burst transactions into single-beat transactions:
@@ -1465,7 +1543,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Unburst.tb.cpp}}
 END
 
-[row.axi4_full_components.009_widen_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-widen-config
 construct = `axi4f.components.WidenConfig`
 intent <<END
 Narrow-transfer widening configuration:
@@ -1484,7 +1563,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Widen.scala}}
 END
 
-[row.axi4_full_components.010]
+[row.axi4_full_components]
+anchor = axi4-full-components-widen
 construct = `axi4f.components.Widen`
 intent <<END
 Bridge full AXI width differences with widening behavior:
@@ -1501,7 +1581,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Widen.tb.cpp}}
 END
 
-[row.axi4_full_components.010_credit_buffer_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-credit-buffer-config
 construct = `axi4f.components.CreditBufferConfig`
 intent <<END
 Response-aware full AXI buffering configuration:
@@ -1521,7 +1602,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/CreditBuffer.scala}}
 END
 
-[row.axi4_full_components.010_credit_buffer]
+[row.axi4_full_components]
+anchor = axi4-full-components-credit-buffer
 construct = `axi4f.components.CreditBuffer`
 intent <<END
 Add response-aware buffering for full AXI:
@@ -1537,7 +1619,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/CreditBuffer.scala}}
 END
 
-[row.axi4_full_components.010_protocol_converter_config]
+[row.axi4_full_components]
+anchor = axi4-full-components-protocol-converter-config
 construct = `axi4f.components.ProtocolConverterConfig`
 intent <<END
 Staged protocol conversion configuration:
@@ -1556,7 +1639,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala}}
 END
 
-[row.axi4_full_components.011]
+[row.axi4_full_components]
+anchor = axi4-full-components-protocol-converter
 construct = `axi4f.components.ProtocolConverter`
 intent <<END
 Convert between supported full AXI protocol shapes:
@@ -1579,7 +1663,8 @@ preface <<END
 AXI4-Lite components are Chisel modules. They are not Chext components themselves; graph content comes from the internal channel-level elastic components.
 END
 
-[row.axi4_lite_components.000_demux_config]
+[row.axi4_lite_components]
+anchor = axi4-lite-components-demux-config
 construct = `axi4l.components.DemuxConfig`
 intent <<END
 AXI4-Lite fan-out configuration:
@@ -1603,7 +1688,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Demux.scala}}
 END
 
-[row.axi4_lite_components.001]
+[row.axi4_lite_components]
+anchor = axi4-lite-components-demux
 construct = `axi4l.components.Demux`
 intent <<END
 Fan one AXI4-Lite slave-side port out to multiple master-side ports:
@@ -1618,7 +1704,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Demux.scala}}
 END
 
-[row.axi4_lite_components.001_mux_config]
+[row.axi4_lite_components]
+anchor = axi4-lite-components-mux-config
 construct = `axi4l.components.MuxConfig`
 intent <<END
 AXI4-Lite fan-in configuration:
@@ -1642,7 +1729,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Mux.scala}}
 END
 
-[row.axi4_lite_components.002]
+[row.axi4_lite_components]
+anchor = axi4-lite-components-mux
 construct = `axi4l.components.Mux`
 intent <<END
 Merge multiple AXI4-Lite slave-side ports into one master-side port:
@@ -1657,7 +1745,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Mux.scala}}
 END
 
-[row.axi4_lite_components.002_credit_buffer_config]
+[row.axi4_lite_components]
+anchor = axi4-lite-components-credit-buffer-config
 construct = `axi4l.components.CreditBufferConfig`
 intent <<END
 Response-aware buffering configuration:
@@ -1677,7 +1766,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/CreditBuffer.scala}}
 END
 
-[row.axi4_lite_components.003]
+[row.axi4_lite_components]
+anchor = axi4-lite-components-credit-buffer
 construct = `axi4l.components.CreditBuffer`
 intent <<END
 Add response-aware buffering for AXI4-Lite:
@@ -1693,7 +1783,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/CreditBuffer.scala}}
 END
 
-[row.axi4_lite_components.004]
+[row.axi4_lite_components]
+anchor = axi4-lite-components-mem-controller
 construct = `axi4l.components.MemController`
 intent <<END
 Expose a memory-like backend as AXI4-Lite:
@@ -1713,7 +1804,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/MemController.scala}}
 END
 
-[row.axi4_lite_components.005]
+[row.axi4_lite_components]
+anchor = axi4-lite-components-sync-read-mem-controller
 construct = `axi4l.components.SyncReadMemController`
 intent <<END
 Expose a synchronous-read memory backend as AXI4-Lite:
@@ -1733,7 +1825,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/SyncReadMemController.scala}}
 END
 
-[row.axi4_lite_components.006]
+[row.axi4_lite_components]
+anchor = axi4-lite-components-register-block
 construct = `axi4l.components.RegisterBlock`
 intent <<END
 Build an AXI4-Lite register block:
@@ -1763,7 +1856,8 @@ Memory interfaces are bundle-level protocols whose request/response fields are e
 Memory buffer naming follows the same convention as elastic and AXI: `SlaveBuffer` / `MasterBuffer` are the named-prefix inline forms, while `SlaveBuffered` / `MasterBuffered` are for binding the returned interface to a `val`.
 END
 
-[row.memory.001]
+[row.memory]
+anchor = memory-read-interface-memory-write-interface
 construct = `memory.ReadInterface`, `memory.WriteInterface`
 intent <<END
 Memory read/write protocol bundles.
@@ -1775,7 +1869,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/memory/Interfaces.scala}}
 END
 
-[row.memory.002]
+[row.memory]
+anchor = memory-connect-op-master-connect-slave
 construct = `memory.ConnectOp._` / `master :=> slave`
 intent <<END
 Connect memory interfaces or sequences.
@@ -1787,7 +1882,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/memory/Connect.scala}}
 END
 
-[row.memory.003]
+[row.memory]
+anchor = memory-buffer-config
 construct = `memory.BufferConfig`
 intent <<END
 Memory interface buffer depths:
@@ -1805,7 +1901,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/memory/Buffer.scala}}
 END
 
-[row.memory.004]
+[row.memory]
+anchor = memory-slave-buffer-memory-master-buffer
 construct = `memory.SlaveBuffer`, `memory.MasterBuffer`
 intent <<END
 Buffer memory interfaces inline:
@@ -1822,7 +1919,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/memory/Buffer.tb.scala}}
 END
 
-[row.memory.005]
+[row.memory]
+anchor = memory-slave-buffered-memory-master-buffered
 construct = `memory.SlaveBuffered`, `memory.MasterBuffered`
 intent <<END
 Create a buffered memory interface for reuse as a named value:
@@ -1840,7 +1938,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/memory/Buffer.tb.scala}}
 END
 
-[row.memory.006]
+[row.memory]
+anchor = memory-raw-mem-config-memory-port-config
 construct = `memory.RawMemConfig` / `memory.PortConfig`
 intent <<END
 RAM wrapper configuration:
@@ -1866,7 +1965,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/memory/RAM.scala}}
 END
 
-[row.memory.007]
+[row.memory]
+anchor = memory-single-port-ram-simple-dual-port-ram-true-dual-port-ram
 construct = `memory.SinglePortRAM`, `SimpleDualPortRAM`, `TrueDualPortRAM`
 intent <<END
 Memory wrappers around raw memory targets:
@@ -1889,7 +1989,8 @@ preface <<END
 Stream modules create AXI-facing work/result frontends. They are Chisel modules; graph visibility comes from their task/data/result elastic channels and internal elastic control components.
 END
 
-[row.stream.001]
+[row.stream]
+anchor = stream-chunk-config
 construct = `stream.ChunkConfig`
 intent <<END
 Chunking configuration:
@@ -1910,7 +2011,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/stream/Chunk.scala}}
 END
 
-[row.stream.002]
+[row.stream]
+anchor = stream-chunk
 construct = `stream.Chunk`
 intent <<END
 Split a variable-length stream request into AXI-sized chunks:
@@ -1925,7 +2027,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/stream/Chunk.scala}}
 END
 
-[row.stream.003]
+[row.stream]
+anchor = stream-read-config-stream-write-config
 construct = `stream.ReadConfig` / `stream.WriteConfig`
 intent <<END
 AXI stream frontend configuration:
@@ -1956,7 +2059,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/stream/Write.scala}}
 END
 
-[row.stream.004]
+[row.stream]
+anchor = stream-read-stream-write
 construct = `stream.Read`, `stream.Write`
 intent <<END
 AXI stream read/write frontends:
@@ -1981,7 +2085,8 @@ preface <<END
 Load/store modules are single-beat AXI full frontends. They expose elastic task/result interfaces and a full AXI master port, then build the necessary AXI channel traffic internally.
 END
 
-[row.load_store.001]
+[row.load_store]
+anchor = load-store-ldstr-load-config-ldstr-store-config
 construct = `ldstr.LoadConfig` / `ldstr.StoreConfig`
 intent <<END
 Single-beat load/store frontend configuration:
@@ -2006,7 +2111,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/ldstr/Store.scala}}
 END
 
-[row.load_store.002]
+[row.load_store]
+anchor = load-store-ldstr-load-ldstr-store
 construct = `ldstr.Load`, `ldstr.Store`
 intent <<END
 Load/store AXI frontends:
@@ -2029,7 +2135,8 @@ preface <<END
 Floating-point elastic modules wrap floating-point datapaths with elastic source/sink interfaces. Their graph participation comes from the wrapper queues, joins, and surrounding elastic wiring.
 END
 
-[row.float.001]
+[row.float]
+anchor = float-floating-point
 construct = `float.FloatingPoint`
 intent <<END
 Floating-point format configuration:
@@ -2048,7 +2155,8 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/float/FloatingPoint.scala}}
 END
 
-[row.float.002]
+[row.float]
+anchor = float-elastic-add-float-elastic-multiply
 construct = `float.ElasticAdd`, `float.ElasticMultiply`
 intent <<END
 Elastic floating-point operators:
