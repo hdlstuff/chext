@@ -1,9 +1,107 @@
-# AXI4 DataView Tracking Notes
+# Elastic Tracking Mechanism
 
-This note records the changes made around Chisel `DataView` usage for raw AXI4 and AXI4
-Stream interfaces.
+Chext elastic tracking records how ready/valid endpoints are declared, marked, connected, and
+emitted into `*.moduleGraph.json`. The generic tracking model is described in
+[tracking.md](tracking.md); this document focuses on the elastic layer and on the AXI4 DataView
+recovery built on top of it.
 
-## Background
+## Elastic Tracking Layer
+
+Elastic tracking is attached through `chext.elastic.tracking.Tag`. Components created from the
+elastic package call `trackingState(t.Tag)` and then register their protocol ports with names such
+as `source`, `sink`, `source_0`, `sink_1`, `sourceSelect`, or `sinkSelect`.
+
+Elastic interfaces extend `Tracked`, which provides:
+
+- source and sink markings through `markSource` and `markSink`;
+- endpoint role checks through `DeclaredRole`;
+- graph interface emission for root sources, root sinks, wires, and recoverable views;
+- sanity checks for unused, repeatedly used, or wrongly used endpoints.
+
+The generic graph layer does not know what an elastic source or sink means. It only stores
+components, containers, paths, child modules, and typed arguments. The elastic layer supplies the
+protocol-specific interface declarations and component port references.
+
+## Declared Roles
+
+An ordinary elastic IO endpoint derives its declared role from Chisel IO direction:
+
+```scala
+(DataInternals.isIO(this), DataMirror.directionOf(this.$valid)) match {
+  case (true, ActualDirection.Output) => DeclaredRole.Sink
+  case (true, ActualDirection.Input)  => DeclaredRole.Source
+  case _                              => DeclaredRole.None
+}
+```
+
+This means:
+
+- root `e.Source(...)` IO is expected to be marked and used as a source;
+- root `e.Sink(...)` IO is expected to be marked and used as a sink;
+- internal wires and other non-IO objects are role-neutral, but still tracked for duplicate or
+  missing use where possible.
+
+Viewed endpoints can carry an enforced role. See [Enforced Roles For Viewed Endpoints](#enforced-roles-for-viewed-endpoints).
+
+## Interface Classification
+
+During graph generation, elastic tracking classifies interfaces into:
+
+| Class | Meaning |
+|---|---|
+| `sources` | Elastic endpoints that produce tokens from the current module's perspective. |
+| `sinks` | Elastic endpoints that consume tokens from the current module's perspective. |
+| `wires` | Internal elastic interfaces that are neither root source nor root sink. |
+| viewed interfaces | Elastic DataView objects registered back to their raw hardware source. |
+
+If an interface cannot be resolved as IO, wire, or registered view, Chext keeps the diagnostic
+fallback path:
+
+```text
+/???/...
+```
+
+and reports that the interface is neither IO nor wire. Recoverable AXI4 and AXI4 Stream views
+avoid this fallback by registering their raw source.
+
+## Source and Sink Marking
+
+Each component marks the interfaces it uses. For example:
+
+- `Connect` marks one source and one sink;
+- `Fork` marks its input as a source and each branch output as a sink;
+- `Join` marks each joined input as a source and its output as a sink;
+- `Mux`, `Demux`, and `Arbiter` also mark select streams where applicable;
+- source-like components such as `Counter`, `Once`, and `Const` mark their output sink port.
+
+Tracking diagnostics can then report:
+
+- an endpoint that was declared but never marked;
+- a source used as a source more than once;
+- a sink used as a sink more than once;
+- a source/sink role mismatch;
+- an interface whose path cannot be recovered.
+
+## Component Port State
+
+Elastic component state is stored on each tracked component under `chext.elastic.tracking.Tag`.
+The state contains named source and sink port references. The graph records those references using
+the same path resolution as the interface declarations, so component ports and top-level
+interfaces agree on names.
+
+For example, a `Fork` may emit ports like:
+
+```text
+source -> /source
+sink_0 -> /sinkLo
+sink_1 -> /sinkHi
+```
+
+The component path itself is separate from the interface path. Component paths come from Chisel
+prefixing and Chext `uniquePrefix(...)`; interface paths come from the hardware object or from
+view recovery.
+
+## View Tracking Background
 
 Chext exposes raw AXI4 interfaces as ordinary Chisel bundles, and then provides ergonomic
 conversions such as `.asLite` and `.asFull` to view those raw bundles as Chext elastic
@@ -23,8 +121,8 @@ The intended safe pattern is:
 
 ## View Warnings
 
-AXI4 and AXI4 Stream raw interfaces now record view calls locally on the raw interface object.
-There is no global registry for this. Each recorded call stores:
+AXI4 and AXI4 Stream raw interfaces record view calls locally on the raw interface object. There is
+no global registry for this. Each recorded call stores:
 
 - the conversion name, such as `asLite` or `asFull`;
 - the `SourceInfo` of the call;
@@ -63,7 +161,7 @@ This avoids walking Chisel's internal aggregate view bindings. Chext knows a cha
 
 ## Module Graph Naming
 
-Before this change, module graph generation treated viewed elastic channels as neither IO nor
+Before view recovery, module graph generation treated viewed elastic channels as neither IO nor
 wire, which produced paths such as:
 
 ```text
@@ -77,8 +175,8 @@ Encountered an interface which is neither an IO or Wire.
 Maybe you used a view? Please do not use views.
 ```
 
-For recoverable views, module graph generation now resolves the raw interface and emits a stable
-view path:
+For recoverable views, module graph generation resolves the raw interface and emits a stable view
+path:
 
 ```text
 /s_axi$view.ar
@@ -164,21 +262,12 @@ instead of internal Chisel view names such as `_$$View$$_.s_view_view_1.r` or
 ## Enforced Roles For Viewed Endpoints
 
 Path recovery alone is not enough for viewed interfaces. A normal `chext.elastic.Interface`
-computes its declared role from actual IO direction:
-
-```scala
-(DataInternals.isIO(this), DataMirror.directionOf(this.$valid)) match {
-  case (true, ActualDirection.Output) => DeclaredRole.Sink
-  case (true, ActualDirection.Input)  => DeclaredRole.Source
-  case _                              => DeclaredRole.None
-}
-```
-
-That works for real elastic IO, but it deliberately returns `None` for wires and other non-IO
-objects. DataView-backed elastic channels fall into the awkward middle: they are not themselves
-ordinary IO objects, but they may represent channels of a raw AXI IO port. If Chext asks only the
-view child for its `declaredRole`, the checker loses the protocol role and wrong-role mistakes can
-fall through to Chisel/FIRRTL direction errors.
+computes its declared role from actual IO direction. That works for real elastic IO, but it
+deliberately returns `None` for wires and other non-IO objects. DataView-backed elastic channels
+fall into the awkward middle: they are not themselves ordinary IO objects, but they may represent
+channels of a raw AXI IO port. If Chext asks only the view child for its `declaredRole`, the
+checker loses the protocol role and wrong-role mistakes can fall through to Chisel/FIRRTL
+direction errors.
 
 Chext handles this by letting `Tracked` carry an optional enforced role:
 

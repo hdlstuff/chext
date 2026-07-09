@@ -1,0 +1,1589 @@
+# Source of truth for docs/synopsis.md. Edit this file, then run:
+#   python3 scripts/generate_synopsis.py
+
+[document]
+title = Chext Synopsis
+intro <<END
+This is a working synopsis of the main Chext constructions, their intended use, and how they appear in the tracking/module graph. For the underlying component model, see [tracking.md](tracking.md). For elastic-specific tracking and AXI4 DataView recovery, see [tracking-elastic.md](tracking-elastic.md).
+END
+
+[section.badges]
+kind = badges
+items = Component, Container, Module, Interface, Function, UniquePrefix, tpe, namePrefix, Scala, SysC
+text <<END
+`tpe` is the graph type. `namePrefix` is the construction's conceptual default prefix. Actual paths come from Chisel naming, `prefix(...)`, and `uniquePrefix(...)`.
+END
+
+[section.elastic_imports]
+kind = heading
+title = Elastic Imports
+
+[section.elastic_imports_text]
+kind = paragraph
+text <<END
+Elastic examples assume:
+END
+
+[section.elastic_imports_code]
+kind = code
+lang = scala
+text <<END
+import chext.{elastic => e}
+import e.ConnectOp._
+END
+
+[section.elastic_interfaces]
+kind = table
+title = Elastic Interfaces and Operators
+
+[row.elastic_interfaces.001]
+construct = `e.Interface(gen)`
+intent <<END
+For Chisel types:
+```scala
+val genElastic = e.Interface(UInt(32.W))
+```
+END
+details <<END
+{{badge:Interface}} Not a component. When materialized as hardware and tracked, appears as `chext.elastic.Interface[...]`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
+END
+
+[row.elastic_interfaces.002]
+construct = `e.Source(gen)`
+intent <<END
+Producer endpoint from the module's perspective:
+```scala
+val source = IO(e.Source(UInt(32.W)))
+```
+END
+details <<END
+{{badge:Interface}} Root IO appears under graph `sources`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
+END
+
+[row.elastic_interfaces.003]
+construct = `e.Sink(gen)`
+intent <<END
+Consumer endpoint from the module's perspective:
+```scala
+val sink = IO(e.Sink(UInt(32.W)))
+```
+END
+details <<END
+{{badge:Interface}} Root IO appears under graph `sinks`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
+END
+
+[row.elastic_interfaces.004]
+construct = `e.EWire(gen)`
+intent <<END
+Internal elastic wire:
+```scala
+val ewire0 = e.EWire(UInt(32.W))
+```
+END
+details <<END
+{{badge:Interface}} Usually emitted under graph `wires`; path follows the Chisel/Scala name, for example `/ewire0`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
+END
+
+[row.elastic_interfaces.005]
+construct = `e.Source.like`, `e.Sink.like`, `e.EWire.like`
+intent <<END
+Preserve the payload type of an existing elastic interface:
+```scala
+val ewire0 = e.EWire.like(source)
+```
+END
+details <<END
+{{badge:Interface}} Creates a typed elastic interface wire.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
+END
+
+[row.elastic_interfaces.006]
+construct = `e.Source.many`, `e.Sink.many`, `e.Interface.many`
+intent <<END
+Similar to the single-interface constructors, but returns `chext.util.NamedVec[e.Interface[T]]`:
+```scala
+val sources = IO(e.Source.many(4, UInt(32.W)))
+```
+END
+details <<END
+{{badge:Interface}} `NamedVec` naming strictly uses underscores, for example `/sources_0`, `/sources_1`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
+END
+
+[row.elastic_interfaces.007]
+construct = `source :=> sink`
+intent <<END
+Connect elastic interfaces:
+```scala
+source :=> sink
+```
+END
+details <<END
+Creates `Connect`; {{badge:Component}} {{badge:UniquePrefix:connect}}.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Connect.scala}}
+END
+
+[row.elastic_interfaces.008]
+construct = `sources :=> sinks`
+intent <<END
+Connect matching sequences:
+```scala
+sources :=> sinks
+```
+END
+details <<END
+Creates one `Connect` per pair; {{badge:Component}} {{badge:UniquePrefix:connectMany}} with per-index prefixes.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Connect.scala}}
+END
+
+[row.elastic_interfaces.009]
+construct = `e.Zip(...)`
+intent <<END
+Join sources into a bundle-valued elastic interface:
+```scala
+val zipped = e.Zip(sourceA, sourceB)
+```
+END
+details <<END
+{{badge:Function}} Not its own graph node; internally creates join-style wiring and a result wire.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Zip.scala}}
+END
+
+[section.elastic_components]
+kind = table
+title = Elastic Components
+preface <<END
+Many elastic components support `fire { ... }`, a protected hook that runs when the component's sink interface fires. The `Stall` row shows the pattern.
+
+Buffer naming convention: `SourceBuffer`, `SinkBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used inline in a connection expression. `SourceBuffered` and `SinkBuffered` return a buffered interface directly; bind them to a `val` when the buffered interface is the thing you want to keep using.
+END
+
+[row.elastic_components.001]
+construct = `e.Connect`
+intent <<END
+Direct pass-through connection. Prefer `source :=> sink` unless a named value is useful:
+```scala
+val connect0 = new e.Connect(source, sink)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Connect}} {{badge:namePrefix:connect}} Ports: `source`, `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Connect.scala}}
+END
+
+[row.elastic_components.002]
+construct = `e.Transform`
+intent <<END
+Combinational payload transform:
+```scala
+val transform0 = new e.Transform(source, sink) {
+  out := f(in)
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Transform}} {{badge:namePrefix:transform}} Ports: `source`, `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Transform.scala}}
+END
+
+[row.elastic_components.003]
+construct = `e.Stall`
+intent <<END
+Conditionally hold a token; supports `fire`:
+```scala
+val stall0 = new e.Stall(source, sink) {
+  out := in
+  cond { shouldStall }
+  fire { didPass := true.B }
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Stall}} {{badge:namePrefix:stall}} Ports: `source`, `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Stall.scala}}
+END
+
+[row.elastic_components.004]
+construct = `e.Drop`
+intent <<END
+Conditionally drop a token:
+```scala
+val drop0 = new e.Drop(source, sink) {
+  out := in
+  cond { shouldDrop }
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Drop}} {{badge:namePrefix:drop}} Ports: `source`, `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Drop.scala}}
+END
+
+[row.elastic_components.005]
+construct = `e.Transducer`
+intent <<END
+Stateful packet-level control:
+```scala
+val transducer0 = new e.Transducer(source, sink) {
+  packet {
+    when(done) {
+      consume { state := 0.U }
+    }.otherwise {
+      accept { out := in }
+    }
+  }
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Transducer}} {{badge:namePrefix:transducer}} Ports: `source`, `sink`. Actions: `stall`, `accept`, `consume`, `produce`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Transducer.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/Transducer.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/elastic/src/Transducer.tb.cpp}}
+END
+
+[row.elastic_components.006]
+construct = `e.Queue`
+intent <<END
+Explicit queue between existing endpoints:
+```scala
+val queue0 =
+  new e.Queue(source, sink, count = 2)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Queue}} {{badge:namePrefix:queue}} Ports: `source`, `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Queue.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/elastic/src/Queue.tb.cpp}}
+END
+
+[row.elastic_components.007]
+construct = `e.SourceBuffer`
+intent <<END
+Insert a queue after a source, usually inline in a connection:
+```scala
+e.SourceBuffer(source, count = 2) :=> sink
+```
+END
+details <<END
+{{badge:Function}} Creates a returned interface wrapped in {{badge:UniquePrefix:sourceBuffer}}. Hierarchy: source -> `Queue` -> returned interface. Underlying graph node is {{badge:tpe:Queue}}, often with a path like `/sourceBuffer0_queue0`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Buffer.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
+END
+
+[row.elastic_components.008]
+construct = `e.SinkBuffer`
+intent <<END
+Insert a queue before a sink, usually inline in a connection:
+```scala
+source :=> e.SinkBuffer(sink, count = 2)
+```
+END
+details <<END
+{{badge:Function}} Creates a returned interface wrapped in {{badge:UniquePrefix:sinkBuffer}}. Hierarchy: returned interface -> `Queue` -> sink. Underlying graph node is {{badge:tpe:Queue}}, often with a path like `/sinkBuffer0_queue0`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Buffer.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
+END
+
+[row.elastic_components.009]
+construct = `e.LeftBuffer` / `e.RightBuffer`
+intent <<END
+Generic aliases for source-side / sink-side buffering:
+```scala
+e.LeftBuffer(source) :=> sink
+source :=> e.RightBuffer(sink)
+```
+END
+details <<END
+{{badge:Function}} Same hierarchy as `SourceBuffer` / `SinkBuffer`; default prefixes are `leftBuffer` / `rightBuffer`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Buffer.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
+END
+
+[row.elastic_components.010]
+construct = `e.SourceBuffered`
+intent <<END
+Return a buffered source-side interface for reuse as a named value:
+```scala
+val sourceBuffered0 =
+  e.SourceBuffered(source, count = 2)
+```
+END
+details <<END
+{{badge:Function}} Creates a `Queue` but does not wrap the single-interface form in `uniquePrefix`; the Scala `val` name is the important handle. Sequence form uses {{badge:UniquePrefix:sourceBufferedMany}}.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Buffer.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
+END
+
+[row.elastic_components.011]
+construct = `e.SinkBuffered`
+intent <<END
+Return a buffered sink-side interface for reuse as a named value:
+```scala
+val sinkBuffered0 =
+  e.SinkBuffered(sink, count = 2)
+```
+END
+details <<END
+{{badge:Function}} Creates a `Queue` but does not wrap the single-interface form in `uniquePrefix`; the Scala `val` name is the important handle. Sequence form uses {{badge:UniquePrefix:sinkBufferedMany}}.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Buffer.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/BufferedNaming.tb.scala}}
+END
+
+[row.elastic_components.012]
+construct = `e.NullSink`
+intent <<END
+Consume/drop all tokens from a source:
+```scala
+val nullSink0 =
+  new e.NullSink(source)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:NullSink}} {{badge:namePrefix:nullSink}} Port: `source`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/NullSink.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/Null.tb.scala}}
+END
+
+[row.elastic_components.013]
+construct = `e.NullSource`
+intent <<END
+Drive a sink with no valid tokens:
+```scala
+val nullSource0 =
+  new e.NullSource(sink)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:NullSource}} {{badge:namePrefix:nullSource}} Port: `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/NullSource.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/Null.tb.scala}}
+END
+
+[row.elastic_components.014]
+construct = `e.Fork`
+intent <<END
+Branch one source to several sinks:
+```scala
+val fork0 = new e.Fork(source) {
+  fork(in.lo) :=> sinkLo
+  fork(in.hi) :=> sinkHi
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Fork}} {{badge:namePrefix:fork}} Ports: `source`, `sink_0`, `sink_1`, ... The current implementation is eager, but the construction does not have to be conceptually limited to eager implementations.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Fork.scala}}
+END
+
+[row.elastic_components.015]
+construct = `e.Join`
+intent <<END
+Join several sources into one sink:
+```scala
+val join0 = new e.Join(sink) {
+  out := join(sourceA) + join(sourceB)
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Join}} {{badge:namePrefix:join}} Ports: `source_0`, `source_1`, ..., `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Join.scala}}
+END
+
+[row.elastic_components.016]
+construct = `e.Merger`
+intent <<END
+Merge multiple sources into one sink:
+```scala
+val merger0 =
+  new e.Merger(Seq(source0, source1), sink)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Merger}} {{badge:namePrefix:merger}} Ports: `source_i`, `sink`. Requires a strong external guarantee that at most one input is active at a given time.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Merger.scala}}
+END
+
+[row.elastic_components.017]
+construct = `e.Mux`
+intent <<END
+Select one source by an elastic select stream:
+```scala
+val mux0 =
+  new e.Mux(sources, sink, sourceSelect)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Mux}} {{badge:namePrefix:mux}} Ports: `source_i`, `sourceSelect`, `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Mux.scala}}
+END
+
+[row.elastic_components.018]
+construct = `e.Demux`
+intent <<END
+Route one source to selected sink:
+```scala
+val demux0 =
+  new e.Demux(source, sinks, sourceSelect)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Demux}} {{badge:namePrefix:demux}} Ports: `source`, `sourceSelect`, `sink_i`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Demux.scala}}
+END
+
+[row.elastic_components.019]
+construct = `e.Arbiter`
+intent <<END
+Select among sources and emit the selected index:
+```scala
+val arbiter0 =
+  new e.Arbiter(sources, sink, sinkSelect, e.Chooser.rr)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Arbiter}} {{badge:namePrefix:arbiter}} Ports: `source_i`, `sink`, `sinkSelect`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Arbiter.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/Arbiter.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/elastic/src/Arbiter.tb.cpp}}
+END
+
+[row.elastic_components.020]
+construct = `e.ArbiterNs`
+intent <<END
+Select among sources without a selected-index stream:
+```scala
+val arbiter0 =
+  new e.ArbiterNs(sources, sink, e.Chooser.rr)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:ArbiterNs}} {{badge:namePrefix:arbiter}} Ports: `source_i`, `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/ArbiterNs.scala}}
+END
+
+[row.elastic_components.021]
+construct = `e.DemuxNs`
+intent <<END
+Route by a protected select function:
+```scala
+val demux0 = new e.DemuxNs(source, sinks) {
+  select { in => in.index }
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:DemuxNs}} {{badge:namePrefix:demuxNs}} Ports: `source`, `sink_i`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/DemuxNs.scala}}
+END
+
+[row.elastic_components.022]
+construct = `e.Count`
+intent <<END
+Stateful repeat/count primitive:
+```scala
+val count0 = new e.Count(source, sink, UInt(8.W)) {
+  init { in => 0.U }
+  cond { (in, state) => state =/= in.limit }
+  next { (in, state) => state + 1.U }
+  out { (in, state, first, last) => in }
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Count}} {{badge:namePrefix:count}} Ports: `source`, `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Count.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/Count.tb.scala}}
+END
+
+[row.elastic_components.023]
+construct = Self-alias form
+intent <<END
+Useful when nesting components and you want a stable name for the outer anonymous instance:
+```scala
+val count0 = new e.Count(source, sink, UInt(8.W)) { count0 =>
+  count0.init { in => 0.U }
+}
+```
+END
+details <<END
+Scala construction style only; graph behavior is unchanged.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Count.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/Count.tb.scala}}
+END
+
+[row.elastic_components.024]
+construct = `e.Once`
+intent <<END
+One-shot source, explicit component form:
+```scala
+val sinkOnce = e.EWire(UInt(8.W))
+val once0 = new e.Once(sinkOnce) {
+  out := value
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Once}} {{badge:namePrefix:once}} Port: `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Once.scala}}
+END
+
+[row.elastic_components.025]
+construct = `e.Once(value)`
+intent <<END
+Functional one-shot form:
+```scala
+val sourceOnce = e.Once(value)
+```
+END
+details <<END
+{{badge:Function}} Creates an internal `EWire` and a child `Once` component named `once0` by local val.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Once.scala}}
+END
+
+[row.elastic_components.026]
+construct = `e.Counter`
+intent <<END
+Explicit component form:
+```scala
+val sinkCounter = e.EWire(UInt(8.W))
+val counter0 = new e.Counter(sinkCounter)
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Counter}} {{badge:namePrefix:counter}} Port: `sink`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Counter.scala}}
+END
+
+[row.elastic_components.027]
+construct = `e.Counter(...)` / `e.Counter.fromWidth(...)`
+intent <<END
+Functional source form:
+```scala
+val sourceCounter =
+  e.Counter(maxValueExclusive = 16)
+```
+END
+details <<END
+{{badge:Function}} Creates an internal `EWire` and a child `Counter` component named `counter0` by local val.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Counter.scala}}
+END
+
+[row.elastic_components.028]
+construct = `e.Wrap`
+intent <<END
+Wrap delayed logic:
+```scala
+val wrap0 = new e.Wrap(source, sink) {
+  protected def delay = 2
+  out := f(in)
+}
+```
+END
+details <<END
+{{badge:Component}} {{badge:tpe:Wrap}} {{badge:namePrefix:wrap}} Nonzero delay internally creates `Counter`, `Queue`, and `Connect`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Wrap.scala}}
+END
+
+[section.elastic_containers]
+kind = table
+title = Elastic Containers
+
+[row.elastic_containers.001]
+construct = `e.Repeat`
+intent <<END
+Repeat one input token multiple times:
+```scala
+val repeat0 = new e.Repeat(source, sink, wIndex = 8) {
+  len { in => in.length }
+  out { (in, index, first, last) => in }
+}
+```
+END
+details <<END
+{{badge:Container}} {{badge:tpe:Repeat}} {{badge:namePrefix:repeat}}. Hierarchy: creates a child `Count` under `withContainer(this)`, with observed path shape `/repeat0` -> `/repeat0_count`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Repeat.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/Count.tb.scala}}
+END
+
+[row.elastic_containers.002]
+construct = `e.Fold`
+intent <<END
+Reduce a stream using user-provided fold logic:
+```scala
+val fold0 = new e.Fold(source, sourceInit, sink) {
+  operand { in => in.data }
+  last { in => in.last }
+  val join0 = new e.Join(sourceResult) {
+    out := join(sinkA) + join(sinkB)
+  }
+}
+```
+END
+details <<END
+{{badge:Container}} {{badge:tpe:Fold}} {{badge:namePrefix:fold}}. User-facing internal wires: `sinkA`, `sinkB`, `sourceResult`. Hierarchy: stage wiring under `stage0` and `stage1`; children include `Transducer` or `Transform`, `Join`, `Connect`, and buffers attached to the `Fold` container.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Fold.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/elastic/Fold.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/elastic/src/Fold.tb.cpp}}
+END
+
+[row.elastic_containers.003]
+construct = `e.Loop`
+intent <<END
+Iterative elastic loop with user-visible body endpoints:
+```scala
+val loop0 = new e.Loop(sourceInit, sinkExit) {
+  end { state => state.done }
+  sinkCurrent :=> loopBody.source
+  loopBody.sink :=> sourceNext
+}
+```
+END
+details <<END
+{{badge:Container}} {{badge:tpe:Loop}} {{badge:namePrefix:loop}}. User-facing internal wires: `sinkCurrent`, `sourceNext`. Hierarchy: creates `Stall`, `Connect`, `Fork`, `Demux`, `Merger`, and buffers attached to the `Loop` container.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Loop.scala}}
+END
+
+[row.elastic_containers.004]
+construct = `e.Scope`
+intent <<END
+Begin/end scoped elastic region:
+```scala
+val scope0 = new e.Scope(sourceInit, sinkExit) {
+  init { in => started := true.B }
+  exit { out => finished := true.B }
+  sinkBegin :=> body.source
+  body.sink :=> sourceEnd
+}
+```
+END
+details <<END
+{{badge:Container}} {{badge:tpe:Scope}} {{badge:namePrefix:scope}}. User-facing internal wires: `sinkBegin`, `sourceEnd`. Hierarchy: creates a `Stall`, a `Connect`, and sink buffers attached to the `Scope` container.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/Scope.scala}}
+END
+
+[row.elastic_containers.005]
+construct = `e.RandomStall`
+intent <<END
+Test/diagnostic random backpressure:
+```scala
+val randomStall0 =
+  new e.RandomStall(source, sink)
+```
+END
+details <<END
+{{badge:Container}} {{badge:tpe:RandomStall}} {{badge:namePrefix:randomStall}}. Hierarchy: creates `Stall` plus `SinkBuffer`; observed child paths include `/randomStall0_stall` and `/randomStall0_stall_sinkBuffer0_queue0`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/elastic/RandomStall.scala}}
+END
+
+[section.axi_imports]
+kind = heading
+title = AXI4 Imports
+
+[section.axi_imports_text]
+kind = paragraph
+text <<END
+AXI examples assume:
+END
+
+[section.axi_imports_code]
+kind = code
+lang = scala
+text <<END
+import chext.amba.axi4
+import axi4.{full => axi4f, lite => axi4l}
+import axi4.ConnectOp._
+END
+
+[section.axi_connects]
+kind = table
+title = AXI4 Interfaces and Connects
+
+[row.axi_connects.001]
+construct = `axi4.Config`
+intent <<END
+Configuration:
+```scala
+val axiCfg = axi4.Config(wAddr = 32, wData = 64)
+```
+END
+details <<END
+Configuration only.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Interface.scala}}
+END
+
+[row.axi_connects.002]
+construct = `axi4f.Slave` / `axi4f.Master`
+intent <<END
+Full AXI IO:
+```scala
+val s_axi = IO(axi4f.Slave(axiCfg))
+val m_axi = IO(axi4f.Master(axiCfg))
+```
+END
+details <<END
+{{badge:Interface}} Channel-level elastic interfaces: `ar`, `r`, `aw`, `w`, `b`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Interface.scala}}
+END
+
+[row.axi_connects.003]
+construct = `axi4l.Slave` / `axi4l.Master`
+intent <<END
+AXI4-Lite IO:
+```scala
+val s_axil = IO(axi4l.Slave(axiCfg))
+val m_axil = IO(axi4l.Master(axiCfg))
+```
+END
+details <<END
+{{badge:Interface}} Channel-level elastic interfaces: `ar`, `r`, `aw`, `w`, `b`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Interface.scala}}
+END
+
+[row.axi_connects.004]
+construct = Full single connect
+intent <<END
+Connect one full AXI interface pair:
+```scala
+s_axi :=> m_axi
+```
+END
+details <<END
+Creates `axi4f.Connect`; {{badge:UniquePrefix:axi4f_connect}}; graph `tpe` is `Axi4f_Connect`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/Connect.tb.scala}}
+END
+
+[row.axi_connects.005]
+construct = Full configured connect
+intent <<END
+Same, with diagnostics/tie-off config:
+```scala
+s_axi.connect(m_axi, axi4f.ConnectConfig())
+```
+END
+details <<END
+Same component and prefix as full single connect.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
+END
+
+[row.axi_connects.006]
+construct = Full many connect
+intent <<END
+Connect matching full AXI sequences:
+```scala
+s_axi_N :=> m_axi_N
+```
+END
+details <<END
+Creates one full connect per pair; {{badge:UniquePrefix:connectMany}} with per-index prefixes.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
+END
+
+[row.axi_connects.007]
+construct = Lite single connect
+intent <<END
+Connect one AXI4-Lite pair:
+```scala
+s_axil :=> m_axil
+```
+END
+details <<END
+Creates `axi4l.Connect`; {{badge:UniquePrefix:axi4l_connect}}; graph `tpe` is `Axi4l_Connect`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/lite/Connect.tb.scala}}
+END
+
+[row.axi_connects.008]
+construct = Lite configured connect
+intent <<END
+Same, with diagnostics/tie-off config:
+```scala
+s_axil.connect(m_axil, axi4l.ConnectConfig())
+```
+END
+details <<END
+Same component and prefix as lite single connect.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/lite/Connect.tb.scala}}
+END
+
+[row.axi_connects.009]
+construct = Lite many connect
+intent <<END
+Connect matching AXI4-Lite sequences:
+```scala
+s_axil_N :=> m_axil_N
+```
+END
+details <<END
+Creates one lite connect per pair; {{badge:UniquePrefix:connectMany}} with per-index prefixes.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
+END
+
+[row.axi_connects.010]
+construct = Raw single connect
+intent <<END
+Connect raw AXI interfaces and dispatch to full/lite based on config:
+```scala
+s_axi_raw :=> m_axi_raw
+```
+END
+details <<END
+Dispatch helper; creates full or lite connect components depending on interface config.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Connect.scala}}
+END
+
+[row.axi_connects.011]
+construct = Raw many connect
+intent <<END
+Connect matching raw AXI sequences:
+```scala
+s_axi_raw_N :=> m_axi_raw_N
+```
+END
+details <<END
+Dispatch helper; {{badge:UniquePrefix:connectMany}}.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Connect.scala}}
+END
+
+[section.axi_buffers]
+kind = table
+title = AXI4 Buffers
+preface <<END
+AXI buffer naming follows the elastic convention: `SlaveBuffer`, `MasterBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used anonymously inside a connection expression. `SlaveBuffered` and `MasterBuffered` return an interface directly; bind them to a `val` when the buffered AXI side is reused.
+END
+
+[row.axi_buffers.001]
+construct = `axi4f.SlaveBuffer` / `axi4f.MasterBuffer`
+intent <<END
+Buffer a full AXI side inline in a connection:
+```scala
+axi4f.SlaveBuffer(s_axi, bufferCfg) :=> m_axi
+s_axi :=> axi4f.MasterBuffer(m_axi, bufferCfg)
+```
+END
+details <<END
+{{badge:Function}} Uses `uniquePrefix`; internally creates channel-level `e.SourceBuffer` / `e.SinkBuffer`. Read channels use `arBuffer` / `rBuffer`; write channels use `awBuffer` / `wBuffer` / `bBuffer`; underlying graph nodes are elastic `Queue` and `Connect` components.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Buffer.scala}}
+END
+
+[row.axi_buffers.002]
+construct = `axi4f.SlaveBuffered` / `axi4f.MasterBuffered`
+intent <<END
+Create a buffered full AXI side for reuse as a named value:
+```scala
+val s_axi_buffered = axi4f.SlaveBuffered(s_axi, bufferCfg)
+val m_axi_buffered = axi4f.MasterBuffered(m_axi, bufferCfg)
+```
+END
+details <<END
+{{badge:Function}} Same channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface form does not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence forms use `slaveBufferedMany` / `masterBufferedMany`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Buffer.scala}}
+END
+
+[row.axi_buffers.003]
+construct = `axi4l.SlaveBuffer` / `axi4l.MasterBuffer`
+intent <<END
+Buffer an AXI4-Lite side inline in a connection:
+```scala
+axi4l.SlaveBuffer(s_axil, bufferCfg) :=> m_axil
+s_axil :=> axi4l.MasterBuffer(m_axil, bufferCfg)
+```
+END
+details <<END
+{{badge:Function}} Uses `uniquePrefix`; internally creates channel-level `e.SourceBuffer` / `e.SinkBuffer`. AXI4-Lite read channels use `arBuffer` / `rBuffer`; write channels use `awBuffer` / `wBuffer` / `bBuffer`; underlying graph nodes are elastic `Queue` and `Connect` components.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Buffer.scala}}
+END
+
+[row.axi_buffers.004]
+construct = `axi4l.SlaveBuffered` / `axi4l.MasterBuffered`
+intent <<END
+Create a buffered AXI4-Lite side for reuse as a named value:
+```scala
+val s_axil_buffered = axi4l.SlaveBuffered(s_axil, bufferCfg)
+val m_axil_buffered = axi4l.MasterBuffered(m_axil, bufferCfg)
+```
+END
+details <<END
+{{badge:Function}} Same channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface form does not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence forms use `slaveBufferedMany` / `masterBufferedMany`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Buffer.scala}}
+END
+
+[section.axi4_full_components]
+kind = table
+title = AXI4 Full Components
+preface <<END
+AXI4 full components are Chisel modules. They are not Chext components themselves; graph content comes from the elastic components they instantiate internally.
+
+Typical config shapes:
+```scala
+val fullCfg = axi4.Config(
+  wAddr = 32,        // byte address width
+  wData = 64,        // data bus width
+  wId = 4,           // ID width for full AXI
+  read = true,
+  write = true,
+  lite = false
+)
+
+val demuxCfg = axi4f.components.DemuxConfig(
+  axiSlaveCfg = fullCfg,
+  numMasters = 4,                // number of output ports
+  decodeFn = addr => addr(13, 12) // address-to-port mapping
+)
+
+val widthCfg = axi4f.components.DownscaleConfig(
+  axiSlaveCfg = fullCfg.copy(wId = 0),
+  wDataMaster = 32,              // output data width
+  numOutstandingRead = 32,
+  numOutstandingWrite = 32
+)
+```
+END
+
+[row.axi4_full_components.001]
+construct = `axi4f.components.Demux`
+intent <<END
+Fan one full AXI slave-side port out to multiple master-side ports:
+```scala
+Module(new axi4f.components.Demux(cfg))
+```
+END
+details <<END
+{{badge:Module}} Full AXI fan-out by address/routing selection. Internally uses channel-level elastic wiring around `ar`, `r`, `aw`, `w`, and `b`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Demux.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Interconnect.tb.cpp}}
+END
+
+[row.axi4_full_components.002]
+construct = `axi4f.components.Mux`
+intent <<END
+Merge multiple full AXI slave-side ports into one master-side port:
+```scala
+Module(new axi4f.components.Mux(cfg))
+```
+END
+details <<END
+{{badge:Module}} Full AXI fan-in. Internally creates arbitration and channel-level elastic wiring for read and write paths.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Mux.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Interconnect.tb.cpp}}
+END
+
+[row.axi4_full_components.003]
+construct = `axi4f.components.IdDemux`
+intent <<END
+Route full AXI traffic by transaction ID:
+```scala
+Module(new axi4f.components.IdDemux(cfg))
+```
+END
+details <<END
+{{badge:Module}} ID-based full AXI fan-out. Internally tracks transactions and expands to elastic channel components.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdDemux.scala}}
+END
+
+[row.axi4_full_components.004]
+construct = `axi4f.components.IdMux`
+intent <<END
+Merge full AXI traffic while preserving ID-based response routing:
+```scala
+Module(new axi4f.components.IdMux(cfg))
+```
+END
+details <<END
+{{badge:Module}} ID-aware full AXI fan-in. Internally uses transaction tracking and channel-level elastic components.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdMux.scala}}
+END
+
+[row.axi4_full_components.005]
+construct = `axi4f.components.IdSerialize`
+intent <<END
+Serialize transactions by ID:
+```scala
+Module(new axi4f.components.IdSerialize(cfg))
+```
+END
+details <<END
+{{badge:Module}} Full AXI ID serialization. Internally limits outstanding work and routes response channels through elastic control logic.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdSerialize.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/components/IdSerialize.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/IdSerialize.tb.cpp}}
+END
+
+[row.axi4_full_components.006]
+construct = `axi4f.components.IdParallelize`
+intent <<END
+Parallelize transactions by ID:
+```scala
+Module(new axi4f.components.IdParallelize(cfg))
+```
+END
+details <<END
+{{badge:Module}} Full AXI ID parallelization. Internally distributes requests and rejoins responses with elastic channel logic.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/components/IdParallelize.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/IdParallelize.tb.cpp}}
+END
+
+[row.axi4_full_components.007]
+construct = `axi4f.components.Upscale`
+intent <<END
+Adapt a narrower full AXI data bus to a wider one:
+```scala
+Module(new axi4f.components.Upscale(cfg))
+```
+END
+details <<END
+{{badge:Module}} Full AXI width upscaler. Internally adapts read/write data channels and keeps address/control channels aligned.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Upscale.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/components/Upscale.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Upscale.tb.cpp}}
+END
+
+[row.axi4_full_components.008]
+construct = `axi4f.components.Downscale`
+intent <<END
+Adapt a wider full AXI data bus to a narrower one:
+```scala
+Module(new axi4f.components.Downscale(cfg))
+```
+END
+details <<END
+{{badge:Module}} Full AXI width downscaler. Internally splits wider beats and coordinates read/write data flow through elastic logic.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Downscale.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/components/Downscale.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Downscale.tb.cpp}}
+END
+
+[row.axi4_full_components.009]
+construct = `axi4f.components.Unburst`
+intent <<END
+Convert burst transactions into single-beat transactions:
+```scala
+Module(new axi4f.components.Unburst(cfg))
+```
+END
+details <<END
+{{badge:Module}} Full AXI burst decomposition. Internally generates per-beat addresses and coordinates response/data channels.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Unburst.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/components/Unburst.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Unburst.tb.cpp}}
+END
+
+[row.axi4_full_components.010]
+construct = `axi4f.components.Widen`
+intent <<END
+Bridge full AXI width differences with widening behavior:
+```scala
+Module(new axi4f.components.Widen(cfg))
+```
+END
+details <<END
+{{badge:Module}} Full AXI data widening helper. Internally coordinates address, strobe, data, and response handling through channel logic.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Widen.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/components/Widen.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Widen.tb.cpp}}
+END
+
+[row.axi4_full_components.011]
+construct = `axi4f.components.ProtocolConverter`
+intent <<END
+Convert between supported full AXI protocol shapes:
+```scala
+Module(new axi4f.components.ProtocolConverter(cfg))
+```
+END
+details <<END
+{{badge:Module}} Staged full AXI protocol conversion. It composes lower-level full AXI component modules and their internal elastic channel components.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala}}
+END
+
+[section.axi4_lite_components]
+kind = table
+title = AXI4 Lite Components
+preface <<END
+AXI4-Lite components are Chisel modules. They are not Chext components themselves; graph content comes from the internal channel-level elastic components.
+
+Typical config shapes:
+```scala
+val liteCfg = axi4.Config(
+  wAddr = 32,   // byte address width
+  wData = 32,   // data bus width
+  lite = true,
+  read = true,
+  write = true
+)
+
+val demuxCfg = axi4l.components.DemuxConfig(
+  axiSlaveCfg = liteCfg,
+  numMasters = 4,                // number of output ports
+  decodeFn = addr => addr(13, 12) // address-to-port mapping
+)
+
+Module(new axi4l.components.MemController(
+  log2numElements = 10, // 1024 words
+  axiCfg = liteCfg,
+  debugEnabled = false
+))
+```
+END
+
+[row.axi4_lite_components.001]
+construct = `axi4l.components.Demux`
+intent <<END
+Fan one AXI4-Lite slave-side port out to multiple master-side ports:
+```scala
+Module(new axi4l.components.Demux(cfg))
+```
+END
+details <<END
+{{badge:Module}} AXI4-Lite fan-out for address/data/control channels.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Demux.scala}}
+END
+
+[row.axi4_lite_components.002]
+construct = `axi4l.components.Mux`
+intent <<END
+Merge multiple AXI4-Lite slave-side ports into one master-side port:
+```scala
+Module(new axi4l.components.Mux(cfg))
+```
+END
+details <<END
+{{badge:Module}} AXI4-Lite fan-in with channel-level elastic arbitration and routing.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Mux.scala}}
+END
+
+[row.axi4_lite_components.003]
+construct = `axi4l.components.CreditBuffer`
+intent <<END
+Add response-aware buffering for AXI4-Lite:
+```scala
+Module(new axi4l.components.CreditBuffer(cfg))
+```
+END
+details <<END
+{{badge:Module}} AXI4-Lite response buffering with credit-style control around read/write channels.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/CreditBuffer.scala}}
+END
+
+[row.axi4_lite_components.004]
+construct = `axi4l.components.MemController`
+intent <<END
+Expose a memory-like backend as AXI4-Lite:
+```scala
+Module(new axi4l.components.MemController(
+  log2numElements = 10, // 1024 words
+  axiCfg = liteCfg,
+  debugEnabled = false
+))
+```
+END
+details <<END
+{{badge:Module}} AXI4-Lite memory controller. Internally bridges AXI4-Lite channels to memory-style request and response paths.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/MemController.scala}}
+END
+
+[row.axi4_lite_components.005]
+construct = `axi4l.components.SyncReadMemController`
+intent <<END
+Expose a synchronous-read memory backend as AXI4-Lite:
+```scala
+Module(new axi4l.components.SyncReadMemController(
+  log2numElements = 10, // 1024 words
+  axiCfg = liteCfg,
+  debugEnabled = false
+))
+```
+END
+details <<END
+{{badge:Module}} AXI4-Lite controller variant for synchronous-read memories.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/SyncReadMemController.scala}}
+END
+
+[row.axi4_lite_components.006]
+construct = `axi4l.components.RegisterBlock`
+intent <<END
+Build an AXI4-Lite register block:
+```scala
+val regs = new axi4l.components.RegisterBlock(
+  wAddr = 32, // AXI4-Lite address width
+  wData = 32, // AXI4-Lite data width
+  wMask = 12  // register address-space mask
+)
+val s_axil = IO(axi4l.Slave(regs.cfgAxi))
+s_axil :=> regs.s_axil
+```
+END
+details <<END
+{{badge:Module}} AXI4-Lite register block module with generated read/write register access behavior.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/RegisterBlock.scala}}
+END
+
+[section.memory]
+kind = table
+title = Memory
+preface <<END
+Memory interfaces are bundle-level protocols whose request/response fields are elastic interfaces. RAM wrappers are Chisel modules; their graph visibility mostly comes from the elastic ports and components they instantiate or connect.
+
+Memory buffer naming follows the same convention as elastic and AXI: `SlaveBuffer` / `MasterBuffer` are the named-prefix inline forms, while `SlaveBuffered` / `MasterBuffered` are for binding the returned interface to a `val`.
+END
+
+[row.memory.001]
+construct = `memory.ReadInterface`, `memory.WriteInterface`
+intent <<END
+Memory read/write protocol bundles.
+END
+details <<END
+Request/response bundle interfaces for memory-like ports. Their `req`/`resp` fields are elastic interfaces and can appear in elastic graph layers.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/memory/Interfaces.scala}}
+END
+
+[row.memory.002]
+construct = `memory.ConnectOp._` / `master :=> slave`
+intent <<END
+Connect memory interfaces or sequences.
+END
+details <<END
+Creates elastic `Connect` components on request/response channels; sequence form uses `connectMany`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/memory/Connect.scala}}
+END
+
+[row.memory.003]
+construct = `memory.SlaveBuffer`, `memory.MasterBuffer`
+intent <<END
+Buffer memory interfaces inline:
+```scala
+val bufferCfg = memory.BufferConfig(
+  req = 2,  // request-channel queue depth
+  resp = 2  // response-channel queue depth
+)
+memory.SlaveBuffer(readMaster, bufferCfg) :=> readSlave
+writeMaster :=> memory.MasterBuffer(writeSlave, bufferCfg)
+```
+END
+details <<END
+{{badge:Function}} Uses `uniquePrefix`; internally creates elastic `SourceBuffer` and `SinkBuffer` on `req`/`resp` channels.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/memory/Buffer.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/memory/Buffer.tb.scala}}
+END
+
+[row.memory.004]
+construct = `memory.SlaveBuffered`, `memory.MasterBuffered`
+intent <<END
+Create a buffered memory interface for reuse as a named value:
+```scala
+val bufferCfg = memory.BufferConfig.all(2) // req and resp depth
+val readBuffered = memory.SlaveBuffered(readMaster, bufferCfg)
+val writeBuffered = memory.MasterBuffered(writeSlave, bufferCfg)
+```
+END
+details <<END
+{{badge:Function}} Same request/response buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface form does not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence forms use `leftBufferedMany` / `rightBufferedMany`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/memory/Buffer.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/memory/Buffer.tb.scala}}
+END
+
+[row.memory.005]
+construct = `memory.SinglePortRAM`, `SimpleDualPortRAM`, `TrueDualPortRAM`
+intent <<END
+Memory wrappers around raw memory targets:
+```scala
+val rawCfg = memory.RawMemConfig(
+  wAddr = 10,       // 1024 addressable elements
+  wData = 32,       // 32-bit data
+  latencyRead = 2,  // read response latency
+  latencyWrite = 1  // write response latency
+)
+val portCfg = memory.PortConfig(
+  numOutstandingRead = 8,
+  numOutstandingWrite = 8
+)
+Module(new memory.TrueDualPortRAM(rawCfg, portCfg, portCfg))
+```
+END
+details <<END
+{{badge:Module}} RAM wrappers with elastic read/write ports and raw memory bridges. Not tracking components; elastic ports participate when connected.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/memory/RAM.scala}}
+END
+
+[section.stream]
+kind = table
+title = Stream
+preface <<END
+Stream modules create AXI-facing work/result frontends. They are Chisel modules; graph visibility comes from their task/data/result elastic channels and internal elastic control components.
+END
+
+[row.stream.001]
+construct = `stream.Chunk`
+intent <<END
+Split a variable-length stream request into AXI-sized chunks:
+```scala
+val cfg = stream.ChunkConfig(
+  wAddress = axiCfg.wAddr, // address width
+  wLength = 32,            // request length width
+  wData = axiCfg.wData,    // data bus width
+  maxBurstLength = 256     // maximum AXI burst length
+)
+Module(new stream.Chunk(cfg))
+```
+END
+details <<END
+{{badge:Module}} Chunks stream requests/results by repeatedly emitting per-beat work. Internally creates an elastic `Count`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/stream/Chunk.scala}}
+END
+
+[row.stream.002]
+construct = `stream.Read`, `stream.Write`
+intent <<END
+AXI stream read/write frontends:
+```scala
+val readCfg = stream.ReadConfig(
+  axiCfg = axiCfg.copy(read = true, write = false),
+  resultMode = stream.ReadResultMode.LastAlwaysInvalid,
+  maxBurstLength = 256,
+  numOutstandingTasks = 8
+)
+val writeCfg = stream.WriteConfig(
+  axiCfg = axiCfg.copy(read = false, write = true),
+  resultMode = stream.WriteResultMode.KeepAll,
+  maxBurstLength = 256,
+  numOutstandingTasks = 8
+)
+Module(new stream.Read(readCfg))
+Module(new stream.Write(writeCfg))
+```
+END
+details <<END
+{{badge:Module}} AXI stream read/write engines. They create task/data/result elastic channels and internally use `Drop`, `Fork`, `Transform`, `Repeat`, `Join`, `Mux`, buffers, and null channel components.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/stream/Read.scala}}, {{src:src/main/scala/chext/stream/Write.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/stream/Read.tb.scala}}, {{src:src/test/scala/chext/stream/Write.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/stream/src/Read.tb.cpp}}, {{src:sysc_tb/chext/stream/src/Write.tb.cpp}}
+END
+
+[section.load_store]
+kind = table
+title = Load/Store
+preface <<END
+Load/store modules are single-beat AXI full frontends. They expose elastic task/result interfaces and a full AXI master port, then build the necessary AXI channel traffic internally.
+END
+
+[row.load_store.001]
+construct = `ldstr.Load`, `ldstr.Store`
+intent <<END
+Load/store AXI frontends:
+```scala
+val loadCfg = ldstr.LoadConfig(
+  axiCfg = axiCfg.copy(read = true, write = false),
+  numOutstandingTasks = 8 // read-side buffering
+)
+val storeCfg = ldstr.StoreConfig(
+  axiCfg = axiCfg.copy(read = false, write = true),
+  numOutstandingTasks = 8 // write response buffering
+)
+Module(new ldstr.Load(loadCfg))
+Module(new ldstr.Store(storeCfg))
+```
+END
+details <<END
+{{badge:Module}} Load/store frontends for AXI memory access. They internally use elastic `Fork`, `Transform`, `SinkBuffer`, `Join`, and null channel components around AXI `ar/r` or `aw/w/b` paths.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/ldstr/Load.scala}}, {{src:src/main/scala/chext/ldstr/Store.scala}}
+END
+
+[section.float]
+kind = table
+title = Float
+preface <<END
+Floating-point elastic modules wrap floating-point datapaths with elastic source/sink interfaces. Their graph participation comes from the wrapper queues, joins, and surrounding elastic wiring.
+END
+
+[row.float.001]
+construct = `float.ElasticAdd`, `float.ElasticMultiply`
+intent <<END
+Elastic floating-point operators:
+```scala
+val fp = float.FloatingPoint.ieee_fp32
+Module(new float.ElasticAdd(fp, combinational = false))
+Module(new float.ElasticMultiply(fp, combinational = false))
+```
+END
+details <<END
+{{badge:Module}} Elastic wrappers around floating-point add/multiply datapaths. They expose elastic input/output interfaces; graph participation comes through surrounding elastic wiring and transforms.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/float/Elastic.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/float/Elastic.tb.scala}}
+{{badge:SysC}} {{src:sysc_tb/chext/float/src/ElasticTop.tb.cpp}}
+END

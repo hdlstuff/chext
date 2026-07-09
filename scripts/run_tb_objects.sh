@@ -3,9 +3,9 @@ set -euo pipefail
 
 # Runs all objects that derive from chext.TestBench and emit SV used by SystemC sims.
 # Usage:
-#   ./generators/run_all_testbenches.sh
-#   ./generators/run_all_testbenches.sh --dry-run
-#   ./generators/run_all_testbenches.sh --log-file /tmp/tb.log
+#   ./scripts/run_tb_objects.sh
+#   ./scripts/run_tb_objects.sh --dry-run
+#   ./scripts/run_tb_objects.sh --log-file /tmp/tb.log
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
