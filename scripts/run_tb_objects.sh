@@ -35,9 +35,20 @@ TEST_TARGETS=(
   "chext.elastic.Fold_Tb"
   "chext.elastic.Transducer_Tb"
   "chext.elastic.Arbiter_Tb"
+  "chext.elastic.BufferedNaming_Tb"
+  "chext.elastic.BufferedNamingSeq_Tb"
+  "chext.elastic.SourceBufferedManyNaming_Tb"
+  "chext.elastic.Null_Tb"
   "chext.stream.Read_Tb"
   "chext.stream.Write_Tb"
   "chext.float.Elastic_Tb"
+  "chext.memory.Buffer_Tb"
+  "chext.memory.BufferOp_Tb"
+  "chext.memory.BufferedManyNaming_Tb"
+  "chext.memory.ConnectSeq_Tb"
+  "chext.amba.axi4.RawBufferedManyNaming_Tb"
+  "chext.amba.axi4.FullBufferedManyNaming_Tb"
+  "chext.amba.axi4.LiteBufferedManyNaming_Tb"
   "chext.amba.axi4.full.components.AddressGenerator_Tb"
   "chext.amba.axi4.full.components.AddressStrobeGenerator_Tb"
   "chext.amba.axi4.full.components.Downscale_Tb"
@@ -53,6 +64,12 @@ COMPILE_TARGETS=(
   "chext.elastic.Switch_Tb"
 )
 
+APP_TARGETS=(
+  "chext.amba.TrackingDiagnostics_Tb"
+  "chext.amba.axi4.full.ConnectDiag_Tb"
+  "chext.amba.axi4.lite.ConnectDiag_Tb"
+)
+
 sbt_args=()
 for t in "${TEST_TARGETS[@]}"; do
   sbt_args+=("Test / runMain ${t}")
@@ -60,9 +77,12 @@ done
 for t in "${COMPILE_TARGETS[@]}"; do
   sbt_args+=("Compile / runMain ${t}")
 done
+for t in "${APP_TARGETS[@]}"; do
+  sbt_args+=("Test / runMain ${t}")
+done
 
 echo "Repository: $ROOT_DIR"
-echo "Will run ${#TEST_TARGETS[@]} test-scope and ${#COMPILE_TARGETS[@]} compile-scope generators."
+echo "Will run ${#TEST_TARGETS[@]} test-scope generators, ${#COMPILE_TARGETS[@]} compile-scope generators, and ${#APP_TARGETS[@]} test-scope apps."
 
 if [[ $DRY_RUN -eq 1 ]]; then
   printf 'sbt'
