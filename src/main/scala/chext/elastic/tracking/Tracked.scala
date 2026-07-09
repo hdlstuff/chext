@@ -7,8 +7,8 @@ import chisel3.reflect.DataMirror
 
 import scala.collection.mutable.ArrayBuffer
 
-import chext.tracking.Logger
-import chext.tracking.util.sourceInfoToString
+import chext.util.Logger
+import chext.util.sourceInfoToString
 
 sealed abstract case class DeclaredRole(str: String)
 

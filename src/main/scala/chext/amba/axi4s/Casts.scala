@@ -11,8 +11,8 @@ import chisel3.hacks.ModuleInternals
 import chext.elastic
 import chext.elastic.{tracking => t}
 import chext.tracking
-import chext.tracking.Logger
-import chext.tracking.util.sourceInfoToString
+import chext.util.Logger
+import chext.util.sourceInfoToString
 
 private[axi4s] case class ViewCall(
     conversion: String,

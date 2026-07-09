@@ -8,7 +8,7 @@ import chisel3.hacks.deferred
 import chisel3.util.log2Ceil
 
 import chext.deadlock
-import chext.tracking.Component
+import chext.tracking.{Component, uniquePrefix}
 
 /** A small elastic counter that emits the current count on `sink`.
   *
@@ -70,15 +70,27 @@ final class Counter(
 }
 
 object Counter {
-  def apply(maxValueExclusive: Int = 0, start: Int = 0) = {
-    val sinkCounter = EWire(UInt(log2Ceil(maxValueExclusive).W))
-    val counter0 = new Counter(sinkCounter, maxValueExclusive, start)
-    sinkCounter
+  def apply(
+      maxValueExclusive: Int = 0,
+      start: Int = 0,
+      name: String = "counter"
+  )(implicit si: SourceInfo): Interface[UInt] = {
+    uniquePrefix(name) {
+      val sinkCounter = EWire(UInt(log2Ceil(maxValueExclusive).W))
+      val counter0 = new Counter(sinkCounter, maxValueExclusive, start)
+      sinkCounter
+    }
   }
 
-  def fromWidth(width: Int = 1, start: Int = 0) = {
-    val sinkCounter = EWire(UInt(width.W))
-    val counter0 = new Counter(sinkCounter, -1, start)
-    sinkCounter
+  def fromWidth(
+      width: Int = 1,
+      start: Int = 0,
+      name: String = "counter"
+  )(implicit si: SourceInfo): Interface[UInt] = {
+    uniquePrefix(name) {
+      val sinkCounter = EWire(UInt(width.W))
+      val counter0 = new Counter(sinkCounter, -1, start)
+      sinkCounter
+    }
   }
 }

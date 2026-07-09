@@ -6,6 +6,8 @@ import hdlinfo.TypedObject
 
 import scala.collection.mutable.ArrayBuffer
 
+import chext.util.sourceInfoToString
+
 sealed trait BaseComponent extends HasPath {
   final def isContainer: Boolean = this.isInstanceOf[Container]
   final def asContainer = this.asInstanceOf[Container]
@@ -21,6 +23,16 @@ sealed trait BaseComponent extends HasPath {
   }
 
   def children: Seq[BaseComponent]
+
+  override def toString(): String = {
+    assert(isComponent || isContainer)
+
+    val kind =
+      if (isComponent) "Component"
+      else "Container"
+
+    f"$kind[$tpe]: $pathStr @[${sourceInfoToString(sourceInfo)}]"
+  }
 
   private val args_ = ArrayBuffer.empty[(String, TypedObject)]
   protected final def addArgument(name: String, arg: TypedObject): Unit = {

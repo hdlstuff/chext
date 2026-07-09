@@ -28,7 +28,6 @@ abstract class Const[Tin <: Data, Tout <: Data](
   sink.$valid := true.B
 }
 
-// TODO make it sourceInfo aware and use macros
 object Const {
   def apply[T <: Data](
       constant: T,

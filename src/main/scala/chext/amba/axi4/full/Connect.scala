@@ -40,7 +40,7 @@ final class Connect(
   }
 
   private def sourceInfoString(interface: Interface): String =
-    chext.tracking.util.sourceInfoToString(interface.sourceInfo)
+    chext.util.sourceInfoToString(interface.sourceInfo)
 
   private def interfaceSourceLines: Seq[String] =
     Seq(

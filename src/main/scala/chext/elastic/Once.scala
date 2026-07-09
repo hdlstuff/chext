@@ -4,11 +4,11 @@ import chext.elastic.{tracking => t}
 
 import chisel3._
 import chisel3.experimental.SourceInfo
-import chisel3.experimental.requireIsHardware
+import chisel3.experimental.{requireIsChiselType, requireIsHardware}
 import chisel3.hacks.deferred
 
 import chext.deadlock
-import chext.tracking.Component
+import chext.tracking.{Component, uniquePrefix}
 
 /** Sends an elastic packet only once.
   *
@@ -51,10 +51,28 @@ class Once[T <: Data](val sink: Interface[T])(implicit si_ : SourceInfo)
 }
 
 object Once {
-  def apply[T <: Data](value: T) = {
+  def apply[T <: Data](
+      value: T,
+      name: String = "once"
+  )(implicit si: SourceInfo): Interface[T] = {
     requireIsHardware(value, "Once: value must be hardware, not a Chisel type!")
-    val sinkOnce = EWire(chiselTypeOf(value))
-    val once0 = new Once(sinkOnce) { out := value }
-    sinkOnce
+
+    uniquePrefix(name) {
+      val sinkOnce = EWire(chiselTypeOf(value))
+      val once0 = new Once(sinkOnce) { out := value }
+      sinkOnce
+    }
+  }
+
+  def explicit[T <: Data](gen: T, name: String = "once")(fn: => (T) => Unit)(implicit
+      si: SourceInfo
+  ): Interface[T] = {
+    requireIsChiselType(gen, "Once: gen must be a Chisel type.")
+
+    uniquePrefix(name) {
+      val sinkOnce = EWire(gen.cloneType)
+      val once0 = new Once(sinkOnce) { fn(out) }
+      sinkOnce
+    }
   }
 }

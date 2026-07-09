@@ -8,8 +8,8 @@ import chisel3.experimental.dataview._
 import chisel3.hacks.DataInternals
 import chisel3.hacks.ModuleInternals
 import chext.elastic.{tracking => t}
-import chext.tracking.Logger
-import chext.tracking.util.sourceInfoToString
+import chext.util.Logger
+import chext.util.sourceInfoToString
 
 private[axi4] case class ViewCall(
     conversion: String,

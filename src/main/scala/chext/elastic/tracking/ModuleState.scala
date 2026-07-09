@@ -8,8 +8,8 @@ import scala.collection.mutable.HashMap
 import scala.collection.mutable.HashSet
 
 import chext.tracking
-import chext.tracking.Logger
-import chext.tracking.util.sourceInfoToString
+import chext.util.Logger
+import chext.util.sourceInfoToString
 
 final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
     extends tracking.ModuleState {

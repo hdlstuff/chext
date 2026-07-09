@@ -9,6 +9,8 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.Stack
 
+import chext.util.Logger
+import chext.util.sourceInfoToString
 import hdlinfo.TypedObject
 
 private[chext] class ModuleInfo(
@@ -163,9 +165,9 @@ private[chext] class ModuleInfo(
               // format: off
               Seq(
                 msg,
-                f"Module: ${module.toString()} @[${util.sourceInfoToString(ModuleInternals.getSourceInfo(module))}]",
+                f"Module: ${module.toString()} @[${sourceInfoToString(ModuleInternals.getSourceInfo(module))}]",
                 f"Prefix: $pathStr"
-              ) ++ users.map { util.baseComponentToString(_) }: _*
+              ) ++ users.map { _.toString() }: _*
               // format: on
             )
 
