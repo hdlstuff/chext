@@ -244,35 +244,3 @@ private class ReadWriteInterface(implicit
 
   def sourceInfo: SourceInfo = si
 }
-
-private object main extends App {
-  import axi4.Ops._
-
-  class LiteInterfaceTestDevice extends Module {
-    private val cfg1 = axi4.Config(read = true, write = false, lite = true)
-    private val cfg2 = axi4.Config(lite = true)
-
-    val slave1 = IO(axi4.Slave(cfg1))
-    val master1 = IO(axi4.Master(cfg1))
-
-    val slave2 = IO(axi4.Slave(cfg2))
-    val master2 = IO(axi4.Master(cfg2))
-
-    val slave3 = IO(axi4.Slave(cfg2))
-    val master3 = IO(axi4.Master(cfg2))
-
-    slave1.asLite :=> master1.asLite
-    slave2.asLite :=> master2.asLite
-    slave2.asLite :=> master2.asLite
-    slave3.asLite :=> master3.asLite
-
-    // the following is not connected, so should fail with an error message
-    // sanity checks should also yell
-    // val wire0 = Wire(axi4.lite.Interface(cfg1))
-
-    // must fail
-    // master3.asLite :=> slave3.asLite
-  }
-
-  emitVerilog(new LiteInterfaceTestDevice, Array("--target-dir", "output/"))
-}

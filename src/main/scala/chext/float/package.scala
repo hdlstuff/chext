@@ -7,35 +7,35 @@ package object float {
   private val debug = false
 
   implicit class fixedPointHelpers(val fx: SInt) extends AnyVal {
-    def to_floating_point(gen_fp: FloatingPoint): FloatingPoint = {
-      val result = Wire(gen_fp)
-      val fixed_point_width = fx.getWidth
-      val mantissa_width = gen_fp.mantissa_width
+    def to_floating_point(genFp: FloatingPoint): FloatingPoint = {
+      val result = Wire(genFp)
+      val wFixedPoint = fx.getWidth
+      val wMantissa = genFp.wMantissa
 
       // by extending the mantissa, we automatically get rid of the preceding 1
       // which is not part of the floating point representation
-      val extended_mantissa = Wire(UInt((fixed_point_width + 1).W))
+      val extendedMantissa = Wire(UInt((wFixedPoint + 1).W))
 
-      val sign = fx(fixed_point_width - 1)
+      val sign = fx(wFixedPoint - 1)
 
       when(sign === 0.B) {
-        extended_mantissa := Cat(0.B, fx.asUInt)
+        extendedMantissa := Cat(0.B, fx.asUInt)
       }.otherwise {
-        extended_mantissa := Cat(0.B, (-fx).asUInt)
+        extendedMantissa := Cat(0.B, (-fx).asUInt)
       }
 
-      val shift = PriorityEncoder(Reverse(extended_mantissa))
-      val shifted = (extended_mantissa << shift)
+      val shift = PriorityEncoder(Reverse(extendedMantissa))
+      val shifted = (extendedMantissa << shift)
 
-      if (fixed_point_width >= mantissa_width) {
+      if (wFixedPoint >= wMantissa) {
         result.mantissa := shifted(
-          fixed_point_width - 1,
-          (fixed_point_width - 1) - mantissa_width + 1
+          wFixedPoint - 1,
+          (wFixedPoint - 1) - wMantissa + 1
         )
       } else {
         result.mantissa := Cat(
-          shifted(fixed_point_width - 1, 0),
-          0.U((mantissa_width - fixed_point_width).W)
+          shifted(wFixedPoint - 1, 0),
+          0.U((wMantissa - wFixedPoint).W)
         )
       }
 
@@ -43,18 +43,18 @@ package object float {
       when(fx === 0.S) {
         result.exponent := 0.U
       }.otherwise {
-        result.exponent := fixed_point_width.U +& result.exponent_offset.U -& shift
+        result.exponent := wFixedPoint.U +& result.exponentOffset.U -& shift
       }
 
       if (debug) {
-        dontTouch(extended_mantissa.suggestName("_D_extended_mantissa"))
+        dontTouch(extendedMantissa.suggestName("_D_extendedMantissa"))
         dontTouch(shift.suggestName("_D_shift"))
         dontTouch(shifted.suggestName("_D_shifted"))
         dontTouch(
-          shifted(fixed_point_width - 1, 0).suggestName("_D_shifted_slice")
+          shifted(wFixedPoint - 1, 0).suggestName("_D_shifted_slice")
         )
         dontTouch(result.mantissa.suggestName("_D_result_mantissa"))
-        println(s"padding = ${mantissa_width - fixed_point_width}")
+        println(s"padding = ${wMantissa - wFixedPoint}")
       }
 
       result
@@ -62,24 +62,24 @@ package object float {
   }
 
   implicit class fixedPointHelpersU(val fx: UInt) extends AnyVal {
-    def to_floating_point(gen_fp: FloatingPoint): FloatingPoint = {
-      val result = Wire(gen_fp)
-      val fixed_point_width = fx.getWidth
-      val mantissa_width = gen_fp.mantissa_width
-      val extended_mantissa = Cat(0.B, fx)
+    def to_floating_point(genFp: FloatingPoint): FloatingPoint = {
+      val result = Wire(genFp)
+      val wFixedPoint = fx.getWidth
+      val wMantissa = genFp.wMantissa
+      val extendedMantissa = Cat(0.B, fx)
 
-      val shift = PriorityEncoder(Reverse(extended_mantissa))
-      val shifted = (extended_mantissa << shift)
+      val shift = PriorityEncoder(Reverse(extendedMantissa))
+      val shifted = (extendedMantissa << shift)
 
-      if (fixed_point_width >= mantissa_width) {
+      if (wFixedPoint >= wMantissa) {
         result.mantissa := shifted(
-          fixed_point_width - 1,
-          (fixed_point_width - 1) - mantissa_width + 1
+          wFixedPoint - 1,
+          (wFixedPoint - 1) - wMantissa + 1
         )
       } else {
         result.mantissa := Cat(
-          shifted(fixed_point_width - 1, 0),
-          0.U((mantissa_width - fixed_point_width).W)
+          shifted(wFixedPoint - 1, 0),
+          0.U((wMantissa - wFixedPoint).W)
         )
       }
 
@@ -87,24 +87,24 @@ package object float {
       when(fx === 0.U) {
         result.exponent := 0.U
       }.otherwise {
-        result.exponent := fixed_point_width.U +& result.exponent_offset.U -& shift
+        result.exponent := wFixedPoint.U +& result.exponentOffset.U -& shift
       }
       result
     }
   }
 
   implicit class floatingPointHelpers(val fp: FloatingPoint) extends AnyVal {
-    def to_unsigned_fixed_point(gen_fx: UInt): UInt = {
-      val result = Wire(gen_fx)
-      val fixed_point_width = gen_fx.getWidth
-      val mantissa_width = fp.mantissa_width
-      val extended_mantissa = Cat(1.B, fp.mantissa)
-      val breakpt = fp.exponent_offset + fixed_point_width - 1
+    def to_unsigned_fixed_point(genFx: UInt): UInt = {
+      val result = Wire(genFx)
+      val wFixedPoint = genFx.getWidth
+      val wMantissa = fp.wMantissa
+      val extendedMantissa = Cat(1.B, fp.mantissa)
+      val breakpt = fp.exponentOffset + wFixedPoint - 1
 
-      val a = Wire(gen_fx)
+      val a = Wire(genFx)
 
-      if (fixed_point_width > mantissa_width) {
-        val constant_0 = fixed_point_width - mantissa_width - 1
+      if (wFixedPoint > wMantissa) {
+        val constant_0 = wFixedPoint - wMantissa - 1
         if (constant_0 > 0)
           a := Cat(1.B, fp.mantissa, 0.U(constant_0.W))
         else
@@ -113,8 +113,8 @@ package object float {
         a := Cat(
           1.B,
           fp.mantissa(
-            mantissa_width - 1,
-            (mantissa_width - 1) - (fixed_point_width - 1) + 1
+            wMantissa - 1,
+            (wMantissa - 1) - (wFixedPoint - 1) + 1
           )
         )
       }
@@ -122,7 +122,7 @@ package object float {
       when(fp.exponent === 0.U) {
         result := 0.U
       }.elsewhen(fp.exponent > breakpt.U) {
-        result := (-1).S(fixed_point_width.W).asUInt
+        result := (-1).S(wFixedPoint.W).asUInt
       }.otherwise /* floating_point.exponent <= breakpt.U */ {
         result := a >> (breakpt.U -% fp.exponent)
       }
@@ -130,27 +130,27 @@ package object float {
       result
     }
 
-    def to_fixed_point(gen_fx: SInt): SInt = {
-      val result = Wire(gen_fx)
-      val fixed_point_width = gen_fx.getWidth
+    def to_fixed_point(genFx: SInt): SInt = {
+      val result = Wire(genFx)
+      val wFixedPoint = genFx.getWidth
 
-      val a = Wire(gen_fx)
-      val a_neg = Wire(gen_fx)
+      val a = Wire(genFx)
+      val a_neg = Wire(genFx)
 
-      a := to_unsigned_fixed_point(UInt(fixed_point_width.W)).asSInt
+      a := to_unsigned_fixed_point(UInt(wFixedPoint.W)).asSInt
       a_neg := -a
 
       when(~fp.sign) {
-        when(a(fixed_point_width - 1)) {
+        when(a(wFixedPoint - 1)) {
           // overflow
-          result := Cat(0.B, (-1).S((fixed_point_width - 1).W)).asSInt
+          result := Cat(0.B, (-1).S((wFixedPoint - 1).W)).asSInt
         }.otherwise {
           result := a
         }
       }.otherwise {
-        when(~a_neg(fixed_point_width - 1)) {
+        when(~a_neg(wFixedPoint - 1)) {
           // overflow
-          result := Cat(1.B, (0).S((fixed_point_width - 1).W)).asSInt
+          result := Cat(1.B, (0).S((wFixedPoint - 1).W)).asSInt
         }.otherwise {
           result := a_neg
         }

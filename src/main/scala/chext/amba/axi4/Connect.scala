@@ -66,9 +66,9 @@ object connect {
     )
 
     if (master.cfg.lite)
-      axi4.lite.ConnectOp.connectImpl(master.asLite, slave.asLite, None)
+      new axi4.lite.Connect(master.asLite, slave.asLite, None)
     else
-      axi4.full.ConnectOp.connectImpl(master.asFull, slave.asFull, None)
+      new axi4.full.Connect(master.asFull, slave.asFull, None)
   }
 }
 
@@ -97,7 +97,7 @@ trait ConnectOp {
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )
 
-      uniquePrefix("connectMany") {
+      uniquePrefix("axi4ConnectMany") {
         masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
           prefix(index.toString) {
             connect.impl(master, slave)
@@ -105,7 +105,6 @@ trait ConnectOp {
         }
       }
     }
-
   }
 }
 

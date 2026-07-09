@@ -205,23 +205,3 @@ class Demux(val cfg: DemuxConfig) extends Module with chext.AnnotatedModule {
   if (axiSlaveCfg.read) implRead()
   if (axiSlaveCfg.write) implWrite()
 }
-
-private object DemuxEmitter extends App {
-  def demuxModule = new Demux(
-    DemuxConfig(
-      chext.amba.axi4.Config(
-        wId = 4,
-        wAddr = 32,
-        wData = 256,
-        read = true,
-        write = true,
-        lite = false
-      ),
-      8,
-      (_ >> 8),
-      masterBuffers = axi4.BufferConfig.all(8)
-    )
-  )
-
-  emitVerilog(demuxModule, Array("--target-dir", "output/"))
-}

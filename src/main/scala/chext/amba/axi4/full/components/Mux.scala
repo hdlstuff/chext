@@ -130,21 +130,3 @@ class Mux(val cfg: MuxConfig) extends Module with chext.AnnotatedModule {
   if (axiSlaveCfg.read) implRead()
   if (axiSlaveCfg.write) implWrite()
 }
-
-private object MuxEmitter extends App {
-  def muxModule = new Mux(
-    MuxConfig(
-      axi4.Config(
-        wId = 4,
-        wAddr = 32,
-        wData = 256,
-        read = true,
-        write = true,
-        lite = false
-      ),
-      numSlaves = 8
-    )
-  )
-
-  emitVerilog(muxModule, Array("--target-dir", "output/"))
-}

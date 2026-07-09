@@ -56,7 +56,7 @@ object ConnectOp {
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )
 
-      uniquePrefix("connectMany") {
+      uniquePrefix("memoryReadConnectMany") {
         masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
           prefix(index.toString) {
             connect(master, slave)
@@ -73,7 +73,7 @@ object ConnectOp {
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )
 
-      uniquePrefix("connectMany") {
+      uniquePrefix("memoryWriteConnectMany") {
         masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
           prefix(index.toString) {
             connect(master, slave)

@@ -101,28 +101,30 @@ hierarchy <<END
 END
 
 [row.elastic_interfaces]
-anchor = elastic-interfaces-e-source-like-e-sink-like-e-ewire-like
-construct = `e.Source.like`, `e.Sink.like`, `e.EWire.like`
+anchor = elastic-interfaces-e-source-like-e-sink-like-e-ewire-like-e-source-manylike-e-sink-manylike-e-ewire-manylike
+construct = `e.Source.like`, `e.Sink.like`, `e.EWire.like`, `e.Source.manyLike`, `e.Sink.manyLike`, `e.EWire.manyLike`
 intent <<END
 Preserve the payload type of an existing elastic interface:
 ```scala
 val ewire0 = e.EWire.like(source)
+val wires = e.EWire.manyLike(4, source)
 ```
 END
 details <<END
-{{badge:Interface}} Creates a typed elastic interface wire.
+{{badge:Interface}} Creates typed elastic interfaces from existing hardware. `e.EWire.like` and `e.EWire.manyLike` return internal wires.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Interface.scala}}
 END
 
 [row.elastic_interfaces]
-anchor = elastic-interfaces-e-source-many-e-sink-many-e-interface-many
-construct = `e.Source.many`, `e.Sink.many`, `e.Interface.many`
+anchor = elastic-interfaces-e-source-many-e-sink-many-e-interface-many-e-ewire-many
+construct = `e.Source.many`, `e.Sink.many`, `e.Interface.many`, `e.EWire.many`
 intent <<END
-Similar to the single-interface constructors, but returns `chext.util.NamedVec[e.Interface[T]]`:
+Similar to the single-interface constructors, but returns `chext.util.NamedVec[e.Interface[T]]`. `e.EWire.many` returns an internal `Wire` of that shape:
 ```scala
 val sources = IO(e.Source.many(4, UInt(32.W)))
+val wires = e.EWire.many(4, UInt(32.W))
 ```
 END
 details <<END
@@ -548,7 +550,7 @@ val arbiter0 =
 ```
 END
 details <<END
-{{badge:Component}} {{badge:tpe:ArbiterNs}} {{badge:namePrefix:arbiter}} Ports: `source_i`, `sink`.
+{{badge:Component}} {{badge:tpe:ArbiterNs}} {{badge:namePrefix:arbiterNs}} Ports: `source_i`, `sink`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/ArbiterNs.scala}}
@@ -962,7 +964,7 @@ s_axi :=> m_axi
 ```
 END
 details <<END
-Creates `axi4f.Connect`; {{badge:UniquePrefix:axi4f_connect}}; graph `tpe` is `Axi4f_Connect`.
+Creates `axi4f.Connect`; {{badge:UniquePrefix:axi4fConnect}}; graph `tpe` is `Axi4f_Connect`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
@@ -995,7 +997,7 @@ s_axi_N :=> m_axi_N
 ```
 END
 details <<END
-Creates one full connect per pair; {{badge:UniquePrefix:connectMany}} with per-index prefixes.
+Creates one full connect per pair; {{badge:UniquePrefix:axi4fConnectMany}} with per-index prefixes.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
@@ -1011,7 +1013,7 @@ s_axil :=> m_axil
 ```
 END
 details <<END
-Creates `axi4l.Connect`; {{badge:UniquePrefix:axi4l_connect}}; graph `tpe` is `Axi4l_Connect`.
+Creates `axi4l.Connect`; {{badge:UniquePrefix:axi4lConnect}}; graph `tpe` is `Axi4l_Connect`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
@@ -1045,7 +1047,7 @@ s_axil_N :=> m_axil_N
 ```
 END
 details <<END
-Creates one lite connect per pair; {{badge:UniquePrefix:connectMany}} with per-index prefixes.
+Creates one lite connect per pair; {{badge:UniquePrefix:axi4lConnectMany}} with per-index prefixes.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
@@ -1077,7 +1079,7 @@ s_axi_raw_N :=> m_axi_raw_N
 ```
 END
 details <<END
-Dispatch helper; {{badge:UniquePrefix:connectMany}}.
+Dispatch helper; {{badge:UniquePrefix:axi4ConnectMany}}.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Connect.scala}}
@@ -1876,7 +1878,7 @@ intent <<END
 Connect memory interfaces or sequences.
 END
 details <<END
-Creates elastic `Connect` components on request/response channels; sequence form uses `connectMany`.
+Creates elastic `Connect` components on request/response channels; sequence forms use prefixes `memoryReadConnectMany` or `memoryWriteConnectMany`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/memory/Connect.scala}}
@@ -2141,15 +2143,15 @@ construct = `float.FloatingPoint`
 intent <<END
 Floating-point format configuration:
 ```scala
-val fp = float.FloatingPoint.ieee_fp32
+val fp = float.FloatingPoint.ieeeFp32
 val custom = float.FloatingPoint(
-  exponent_width = 8,
-  mantissa_width = 23
+  wExponent = 8,
+  wMantissa = 23
 )
 ```
 END
 details <<END
-{{badge:Config}} Bundle/config object for floating-point datapaths. Common helpers include `ieee_fp16`, `ieee_fp32`, `ieee_fp64`, `fp18`, and `bfloat16`.
+{{badge:Config}} Bundle/config object for floating-point datapaths. Common helpers include `ieeeFp16`, `ieeeFp32`, `ieeeFp64`, `fp18`, and `bfloat16`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/float/FloatingPoint.scala}}

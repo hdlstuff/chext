@@ -90,30 +90,32 @@ val ewire0 = e.EWire(UInt(32.W))
 
 ---
 
-<a id="entry-elastic-interfaces-e-source-like-e-sink-like-e-ewire-like"></a>
+<a id="entry-elastic-interfaces-e-source-like-e-sink-like-e-ewire-like-e-source-manylike-e-sink-manylike-e-ewire-manylike"></a>
 
-### `e.Source.like`, `e.Sink.like`, `e.EWire.like` [#](#entry-elastic-interfaces-e-source-like-e-sink-like-e-ewire-like)
+### `e.Source.like`, `e.Sink.like`, `e.EWire.like`, `e.Source.manyLike`, `e.Sink.manyLike`, `e.EWire.manyLike` [#](#entry-elastic-interfaces-e-source-like-e-sink-like-e-ewire-like-e-source-manylike-e-sink-manylike-e-ewire-manylike)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Interface.scala)
 
 **Intent and Usage:** Preserve the payload type of an existing elastic interface:
 ```scala
 val ewire0 = e.EWire.like(source)
+val wires = e.EWire.manyLike(4, source)
 ```
 
-**Details:** Interface. Creates a typed elastic interface wire.
+**Details:** Interface. Creates typed elastic interfaces from existing hardware. `e.EWire.like` and `e.EWire.manyLike` return internal wires.
 
 ---
 
-<a id="entry-elastic-interfaces-e-source-many-e-sink-many-e-interface-many"></a>
+<a id="entry-elastic-interfaces-e-source-many-e-sink-many-e-interface-many-e-ewire-many"></a>
 
-### `e.Source.many`, `e.Sink.many`, `e.Interface.many` [#](#entry-elastic-interfaces-e-source-many-e-sink-many-e-interface-many)
+### `e.Source.many`, `e.Sink.many`, `e.Interface.many`, `e.EWire.many` [#](#entry-elastic-interfaces-e-source-many-e-sink-many-e-interface-many-e-ewire-many)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Interface.scala)
 
-**Intent and Usage:** Similar to the single-interface constructors, but returns `chext.util.NamedVec[e.Interface[T]]`:
+**Intent and Usage:** Similar to the single-interface constructors, but returns `chext.util.NamedVec[e.Interface[T]]`. `e.EWire.many` returns an internal `Wire` of that shape:
 ```scala
 val sources = IO(e.Source.many(4, UInt(32.W)))
+val wires = e.EWire.many(4, UInt(32.W))
 ```
 
 **Details:** Interface. `NamedVec` naming strictly uses underscores, for example `/sources_0`, `/sources_1`.
@@ -500,7 +502,7 @@ val arbiter0 =
   new e.ArbiterNs(sources, sink, e.Chooser.rr)
 ```
 
-**Details:** Component; tpe: ArbiterNs; namePrefix: arbiter. Ports: `source_i`, `sink`.
+**Details:** Component; tpe: ArbiterNs; namePrefix: arbiterNs. Ports: `source_i`, `sink`.
 
 ---
 
@@ -877,7 +879,7 @@ val m_axil = IO(axi4l.Master(axiCfg))
 s_axi :=> m_axi
 ```
 
-**Details:** Creates `axi4f.Connect`; UniquePrefix: axi4f_connect; graph `tpe` is `Axi4f_Connect`.
+**Details:** Creates `axi4f.Connect`; UniquePrefix: axi4fConnect; graph `tpe` is `Axi4f_Connect`.
 
 ---
 
@@ -907,7 +909,7 @@ s_axi.connect(m_axi, axi4f.ConnectConfig())
 s_axi_N :=> m_axi_N
 ```
 
-**Details:** Creates one full connect per pair; UniquePrefix: connectMany with per-index prefixes.
+**Details:** Creates one full connect per pair; UniquePrefix: axi4fConnectMany with per-index prefixes.
 
 ---
 
@@ -922,7 +924,7 @@ s_axi_N :=> m_axi_N
 s_axil :=> m_axil
 ```
 
-**Details:** Creates `axi4l.Connect`; UniquePrefix: axi4l_connect; graph `tpe` is `Axi4l_Connect`.
+**Details:** Creates `axi4l.Connect`; UniquePrefix: axi4lConnect; graph `tpe` is `Axi4l_Connect`.
 
 ---
 
@@ -952,7 +954,7 @@ s_axil.connect(m_axil, axi4l.ConnectConfig())
 s_axil_N :=> m_axil_N
 ```
 
-**Details:** Creates one lite connect per pair; UniquePrefix: connectMany with per-index prefixes.
+**Details:** Creates one lite connect per pair; UniquePrefix: axi4lConnectMany with per-index prefixes.
 
 ---
 
@@ -982,7 +984,7 @@ s_axi_raw :=> m_axi_raw
 s_axi_raw_N :=> m_axi_raw_N
 ```
 
-**Details:** Dispatch helper; UniquePrefix: connectMany.
+**Details:** Dispatch helper; UniquePrefix: axi4ConnectMany.
 
 ---
 
@@ -1713,7 +1715,7 @@ Memory buffer naming follows the same convention as elastic and AXI: `SlaveBuffe
 
 **Intent and Usage:** Connect memory interfaces or sequences.
 
-**Details:** Creates elastic `Connect` components on request/response channels; sequence form uses `connectMany`.
+**Details:** Creates elastic `Connect` components on request/response channels; sequence forms use prefixes `memoryReadConnectMany` or `memoryWriteConnectMany`.
 
 ---
 
@@ -1951,14 +1953,14 @@ Floating-point elastic modules wrap floating-point datapaths with elastic source
 
 **Intent and Usage:** Floating-point format configuration:
 ```scala
-val fp = float.FloatingPoint.ieee_fp32
+val fp = float.FloatingPoint.ieeeFp32
 val custom = float.FloatingPoint(
-  exponent_width = 8,
-  mantissa_width = 23
+  wExponent = 8,
+  wMantissa = 23
 )
 ```
 
-**Details:** Config. Bundle/config object for floating-point datapaths. Common helpers include `ieee_fp16`, `ieee_fp32`, `ieee_fp64`, `fp18`, and `bfloat16`.
+**Details:** Config. Bundle/config object for floating-point datapaths. Common helpers include `ieeeFp16`, `ieeeFp32`, `ieeeFp64`, `fp18`, and `bfloat16`.
 
 ---
 

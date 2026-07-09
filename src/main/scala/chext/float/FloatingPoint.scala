@@ -4,17 +4,17 @@ import chisel3._
 
 /** Floating point type.
   *
-  * @param exponent_width
+  * @param wExponent
   *   Exponent width.
-  * @param mantissa_width
+  * @param wMantissa
   *   Mantissa width (excluding the sign bit).
   */
-case class FloatingPoint(val exponent_width: Int, val mantissa_width: Int) extends Bundle {
+case class FloatingPoint(val wExponent: Int, val wMantissa: Int) extends Bundle {
   val sign = Bool()
-  val exponent = UInt(exponent_width.W)
-  val mantissa = UInt(mantissa_width.W)
+  val exponent = UInt(wExponent.W)
+  val mantissa = UInt(wMantissa.W)
 
-  val exponent_offset = (BigInt(1) << (exponent_width - 1)) - 1
+  val exponentOffset = (BigInt(1) << (wExponent - 1)) - 1
 
   def zero: FloatingPoint = {
     0.U.asTypeOf(this)
@@ -23,13 +23,13 @@ case class FloatingPoint(val exponent_width: Int, val mantissa_width: Int) exten
   /** @return
     *   A string representation of the bundle.
     */
-  override def toString(): String = s"fpe${exponent_width}m${mantissa_width}"
+  override def toString(): String = s"fpe${wExponent}m${wMantissa}"
 }
 
 object FloatingPoint {
-  def ieee_fp16 = FloatingPoint(5, 10)
-  def ieee_fp32 = FloatingPoint(8, 23)
-  def ieee_fp64 = FloatingPoint(11, 52)
+  def ieeeFp16 = FloatingPoint(5, 10)
+  def ieeeFp32 = FloatingPoint(8, 23)
+  def ieeeFp64 = FloatingPoint(11, 52)
   def fp18 = FloatingPoint(10, 7)
   def bfloat16 = FloatingPoint(8, 7)
 }

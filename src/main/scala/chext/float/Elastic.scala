@@ -36,8 +36,8 @@ class ElasticAdd(genFp: FloatingPoint, val combinational: Boolean = false)
 
   wrapper.sink :=> sinkOut
 
-  add.in_a := wrapper.moduleIn._1
-  add.in_b := wrapper.moduleIn._2
+  add.inA := wrapper.moduleIn._1
+  add.inB := wrapper.moduleIn._2
   wrapper.moduleOut := add.out
 }
 
@@ -66,12 +66,7 @@ class ElasticMultiply(genFp: FloatingPoint, val combinational: Boolean = false)
 
   wrapper.sink :=> sinkOut
 
-  multiply.in_a := wrapper.moduleIn._1
-  multiply.in_b := wrapper.moduleIn._2
+  multiply.inA := wrapper.moduleIn._1
+  multiply.inB := wrapper.moduleIn._2
   wrapper.moduleOut := multiply.out
-}
-
-private object EmitElastic extends App {
-  emitVerilog(new ElasticAdd(FloatingPoint.ieee_fp32), Array("--target-dir", "output/"))
-  emitVerilog(new ElasticMultiply(FloatingPoint.ieee_fp32), Array("--target-dir", "output/"))
 }

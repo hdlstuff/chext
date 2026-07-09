@@ -70,15 +70,15 @@ private trait PipelineHelper extends Module {
   */
 private class StupidModule extends Module with PipelineHelper {
   val io = IO(new Bundle {
-    val in_a = Input(UInt(32.W))
-    val in_b = Input(UInt(32.W))
+    val inA = Input(UInt(32.W))
+    val inB = Input(UInt(32.W))
     val in_c = Input(UInt(32.W))
     val in_d = Input(UInt(32.W))
     val out = Output(UInt(32.W))
   })
 
-  private val a = wrap(io.in_a, "a")
-  private val b = wrap(io.in_b, "b")
+  private val a = wrap(io.inA, "a")
+  private val b = wrap(io.inB, "b")
   private val c = wrap(io.in_c, "c")
   private val d = wrap(io.in_d, "d")
 
@@ -94,10 +94,6 @@ private class StupidModule extends Module with PipelineHelper {
   newStage()
 
   io.out := abcd.get
-}
-
-private object EmitStupidModule extends App {
-  emitVerilog(new StupidModule, Array("--target-dir", "output/"))
 }
 
 import hardfloat.{
@@ -273,54 +269,54 @@ private class AddRecFN_Pipelined(expWidth: Int, sigWidth: Int) extends Module wi
   io.exceptionFlags := roundRawFNToRecFN_exceptionFlags.get
 }
 
-private class AddFp_Pipelined(gen_fp: FloatingPoint) extends Module {
-  override val desiredName = f"AddFp_Pipelined_${gen_fp.exponent_width}_${gen_fp.mantissa_width}"
+private class AddFp_Pipelined(genFp: FloatingPoint) extends Module {
+  override val desiredName = f"AddFp_Pipelined_${genFp.wExponent}_${genFp.wMantissa}"
 
   val io = IO(new Bundle {
-    val in_a = Input(gen_fp)
-    val in_b = Input(gen_fp)
-    val out = Output(gen_fp)
+    val inA = Input(genFp)
+    val inB = Input(genFp)
+    val out = Output(genFp)
   })
 
-  private val in_a = io.in_a
-  private val in_b = io.in_b
+  private val inA = io.inA
+  private val inB = io.inB
   private val out = io.out
 
-  private val expWidth = gen_fp.exponent_width
-  private val sigWidth = gen_fp.mantissa_width + 1
+  private val expWidth = genFp.wExponent
+  private val sigWidth = genFp.wMantissa + 1
 
   private val addRecFN = Module(new AddRecFN_Pipelined(expWidth, sigWidth))
 
   addRecFN.io.subOp := false.B
-  addRecFN.io.a := recFNFromFN(expWidth, sigWidth, in_a.asUInt)
-  addRecFN.io.b := recFNFromFN(expWidth, sigWidth, in_b.asUInt)
+  addRecFN.io.a := recFNFromFN(expWidth, sigWidth, inA.asUInt)
+  addRecFN.io.b := recFNFromFN(expWidth, sigWidth, inB.asUInt)
   addRecFN.io.roundingMode := round_near_even
   addRecFN.io.detectTininess := true.B
 
   out := fNFromRecFN(expWidth, sigWidth, addRecFN.io.out).asTypeOf(out)
 }
 
-private class AddFp_Combinational(gen_fp: FloatingPoint) extends RawModule {
-  override val desiredName = f"AddFp_Combinational_${gen_fp.exponent_width}_${gen_fp.mantissa_width}"
+private class AddFp_Combinational(genFp: FloatingPoint) extends RawModule {
+  override val desiredName = f"AddFp_Combinational_${genFp.wExponent}_${genFp.wMantissa}"
 
   val io = IO(new Bundle {
-    val in_a = Input(gen_fp)
-    val in_b = Input(gen_fp)
-    val out = Output(gen_fp)
+    val inA = Input(genFp)
+    val inB = Input(genFp)
+    val out = Output(genFp)
   })
 
-  private val in_a = io.in_a
-  private val in_b = io.in_b
+  private val inA = io.inA
+  private val inB = io.inB
   private val out = io.out
 
-  private val expWidth = gen_fp.exponent_width
-  private val sigWidth = gen_fp.mantissa_width + 1
+  private val expWidth = genFp.wExponent
+  private val sigWidth = genFp.wMantissa + 1
 
   private val addRecFN = Module(new AddRecFN(expWidth, sigWidth))
 
   addRecFN.io.subOp := false.B
-  addRecFN.io.a := recFNFromFN(expWidth, sigWidth, in_a.asUInt)
-  addRecFN.io.b := recFNFromFN(expWidth, sigWidth, in_b.asUInt)
+  addRecFN.io.a := recFNFromFN(expWidth, sigWidth, inA.asUInt)
+  addRecFN.io.b := recFNFromFN(expWidth, sigWidth, inB.asUInt)
   addRecFN.io.roundingMode := round_near_even
   addRecFN.io.detectTininess := true.B
 
@@ -375,52 +371,52 @@ private class MulRecFN_Pipelined(expWidth: Int, sigWidth: Int) extends Module wi
   io.exceptionFlags := roundRawFNToRecFN_exceptionFlags.get
 }
 
-private class MulFp_Pipelined(gen_fp: FloatingPoint) extends Module {
-  override val desiredName = f"MulFp_Pipelined_${gen_fp.exponent_width}_${gen_fp.mantissa_width}"
+private class MulFp_Pipelined(genFp: FloatingPoint) extends Module {
+  override val desiredName = f"MulFp_Pipelined_${genFp.wExponent}_${genFp.wMantissa}"
 
   val io = IO(new Bundle {
-    val in_a = Input(gen_fp)
-    val in_b = Input(gen_fp)
-    val out = Output(gen_fp)
+    val inA = Input(genFp)
+    val inB = Input(genFp)
+    val out = Output(genFp)
   })
 
-  private val in_a = io.in_a
-  private val in_b = io.in_b
+  private val inA = io.inA
+  private val inB = io.inB
   private val out = io.out
 
-  private val expWidth = gen_fp.exponent_width
-  private val sigWidth = gen_fp.mantissa_width + 1
+  private val expWidth = genFp.wExponent
+  private val sigWidth = genFp.wMantissa + 1
 
   private val mulRecFn = Module(new MulRecFN_Pipelined(expWidth, sigWidth))
 
-  mulRecFn.io.a := recFNFromFN(expWidth, sigWidth, in_a.asUInt)
-  mulRecFn.io.b := recFNFromFN(expWidth, sigWidth, in_b.asUInt)
+  mulRecFn.io.a := recFNFromFN(expWidth, sigWidth, inA.asUInt)
+  mulRecFn.io.b := recFNFromFN(expWidth, sigWidth, inB.asUInt)
   mulRecFn.io.roundingMode := round_near_even
   mulRecFn.io.detectTininess := true.B
 
   out := fNFromRecFN(expWidth, sigWidth, mulRecFn.io.out).asTypeOf(out)
 }
 
-private class MulFp_Combinational(gen_fp: FloatingPoint) extends RawModule {
-  override val desiredName = f"MulFp_Combinational_${gen_fp.exponent_width}_${gen_fp.mantissa_width}"
+private class MulFp_Combinational(genFp: FloatingPoint) extends RawModule {
+  override val desiredName = f"MulFp_Combinational_${genFp.wExponent}_${genFp.wMantissa}"
 
   val io = IO(new Bundle {
-    val in_a = Input(gen_fp)
-    val in_b = Input(gen_fp)
-    val out = Output(gen_fp)
+    val inA = Input(genFp)
+    val inB = Input(genFp)
+    val out = Output(genFp)
   })
 
-  private val in_a = io.in_a
-  private val in_b = io.in_b
+  private val inA = io.inA
+  private val inB = io.inB
   private val out = io.out
 
-  private val expWidth = gen_fp.exponent_width
-  private val sigWidth = gen_fp.mantissa_width + 1
+  private val expWidth = genFp.wExponent
+  private val sigWidth = genFp.wMantissa + 1
 
   private val mulRecFn = Module(new MulRecFN(expWidth, sigWidth))
 
-  mulRecFn.io.a := recFNFromFN(expWidth, sigWidth, in_a.asUInt)
-  mulRecFn.io.b := recFNFromFN(expWidth, sigWidth, in_b.asUInt)
+  mulRecFn.io.a := recFNFromFN(expWidth, sigWidth, inA.asUInt)
+  mulRecFn.io.b := recFNFromFN(expWidth, sigWidth, inB.asUInt)
   mulRecFn.io.roundingMode := round_near_even
   mulRecFn.io.detectTininess := true.B
 

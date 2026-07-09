@@ -15,11 +15,11 @@ final class Connect(
     master: Interface,
     slave: Interface,
     cfgOption: Option[ConnectConfig]
-)(si_ : SourceInfo)
+)(implicit si_ : SourceInfo)
     extends tracking.Container {
   val sourceInfo: SourceInfo = si_
   def tpe: String = "Axi4l_Connect"
-  def namePrefix: String = "connect"
+  def namePrefix: String = "axi4lConnect"
 
   private def error(message: String, lines: Seq[String] = Seq()): Diagnostic =
     Diagnostic.error(message, lines)
@@ -88,34 +88,34 @@ final class Connect(
     ).flatten
   }
 
-  private def tieOffReadMaster(master: Interface)(implicit si: SourceInfo): Unit = {
+  private def tieOffReadMaster(master: Interface): Unit = {
     val nullSinkAr = new elastic.NullSink(master.ar)
     val nullSourceR = new elastic.NullSource(master.r)
   }
 
-  private def tieOffReadSlave(slave: Interface)(implicit si: SourceInfo): Unit = {
+  private def tieOffReadSlave(slave: Interface): Unit = {
     val nullSourceAr = new elastic.NullSource(slave.ar)
     val nullSinkR = new elastic.NullSink(slave.r)
   }
 
-  private def tieOffWriteMaster(master: Interface)(implicit si: SourceInfo): Unit = {
+  private def tieOffWriteMaster(master: Interface): Unit = {
     val nullSinkAw = new elastic.NullSink(master.aw)
     val nullSinkW = new elastic.NullSink(master.w)
     val nullSourceB = new elastic.NullSource(master.b)
   }
 
-  private def tieOffWriteSlave(slave: Interface)(implicit si: SourceInfo): Unit = {
+  private def tieOffWriteSlave(slave: Interface): Unit = {
     val nullSourceAw = new elastic.NullSource(slave.aw)
     val nullSourceW = new elastic.NullSource(slave.w)
     val nullSinkB = new elastic.NullSink(slave.b)
   }
 
-  private def connectRead(master: Interface, slave: Interface)(implicit si: SourceInfo): Unit = {
+  private def connectRead(master: Interface, slave: Interface): Unit = {
     val connectAr = new elastic.Connect(master.ar, slave.ar)
     val connectR = new elastic.Connect(slave.r, master.r)
   }
 
-  private def connectWrite(master: Interface, slave: Interface)(implicit si: SourceInfo): Unit = {
+  private def connectWrite(master: Interface, slave: Interface): Unit = {
     val connectAw = new elastic.Connect(master.aw, slave.aw)
     val connectW = new elastic.Connect(master.w, slave.w)
     val connectB = new elastic.Connect(slave.b, master.b)
@@ -180,7 +180,7 @@ final class Connect(
     else Seq.empty
   }
 
-  private def implStrict()(implicit si: SourceInfo): Unit = {
+  private def implStrict(): Unit = {
     val diagnostics =
       strictDiagnostics(master, slave) ++
         commonChannelDiagnostics(master, slave, tieOffMaster = true, tieOffSlave = true)
@@ -259,7 +259,7 @@ final class Connect(
       ).flatten
   }
 
-  private def implConfigured(cfg: ConnectConfig)(implicit si: SourceInfo): Unit = {
+  private def implConfigured(cfg: ConnectConfig): Unit = {
     val readCommon = master.cfg.read && slave.cfg.read
     val writeCommon = master.cfg.write && slave.cfg.write
 
@@ -286,7 +286,6 @@ final class Connect(
 
   private def impl(): Unit =
     tracking.withContainer(this) {
-      implicit val si: SourceInfo = sourceInfo
       cfgOption match {
         case Some(cfg) => implConfigured(cfg)
         case None      => implStrict()
@@ -312,27 +311,19 @@ case class ConnectConfig(
 trait ConnectOp {
   private val require_ = chext.util.Require.inferred()
 
-  private[axi4] def connectImpl(
-      master: Interface,
-      slave: Interface,
-      cfgOption: Option[ConnectConfig]
-  )(implicit si: SourceInfo): Unit = {
-    new Connect(master, slave, cfgOption)(si)
-  }
-
   /* implicit class names should be different, otherwise shadowed */
   implicit class axi4_lite_connect_op(master: Interface) {
     def :=>(slave: Interface)(implicit si: SourceInfo): Unit = {
-      uniquePrefix("axi4l_connect") {
-        connectImpl(master, slave, None)
+      uniquePrefix("axi4lConnect") {
+        new Connect(master, slave, None)
       }
     }
 
     def connect(slave: Interface, cfg: ConnectConfig = ConnectConfig())(implicit
         si: SourceInfo
     ): Unit = {
-      uniquePrefix("axi4l_connect") {
-        connectImpl(master, slave, Some(cfg))
+      uniquePrefix("axi4lConnect") {
+        new Connect(master, slave, Some(cfg))
       }
     }
   }
@@ -344,10 +335,10 @@ trait ConnectOp {
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )
 
-      uniquePrefix("connectMany") {
+      uniquePrefix("axi4lConnectMany") {
         masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
           prefix(index.toString) {
-            connectImpl(master, slave, None)
+            new Connect(master, slave, None)
           }
         }
       }
@@ -359,17 +350,14 @@ trait ConnectOp {
         f"master/slave sequence length mismatch: ${masters.length} != ${slaves.length}"
       )
 
-      uniquePrefix("connectMany") {
+      uniquePrefix("axi4lConnectMany") {
         masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
           prefix(index.toString) {
-            connectImpl(master, slave, Some(cfg))
+            new Connect(master, slave, Some(cfg))
           }
         }
       }
     }
-
-    def connect(slaves: Seq[Interface])(implicit si: SourceInfo): Unit =
-      connect(slaves, ConnectConfig())
   }
 }
 

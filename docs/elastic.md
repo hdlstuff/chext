@@ -40,8 +40,10 @@ Useful helpers:
 |---|---|
 | `e.Source.io(gen)` | `IO(e.Source(gen))`. |
 | `e.Source.like(x)` / `e.Sink.like(x)` / `e.EWire.like(x)` | Clone the payload type of another elastic interface. |
+| `e.Source.manyLike(n, x)` / `e.Sink.manyLike(n, x)` / `e.EWire.manyLike(n, x)` | Clone the payload type of another elastic interface multiple times. |
 | `e.Source.ioLike(x)` | `IO(e.Source.like(x))`. |
-| `e.Interface.many(n, gen)` / `e.Source.many(n, gen)` / `e.Sink.many(n, gen)` | Build a `chext.util.NamedVec` of interfaces. |
+| `e.Interface.many(n, gen)` / `e.Source.many(n, gen)` / `e.Sink.many(n, gen)` | Build a `chext.util.NamedVec` type of interfaces. |
+| `e.EWire.many(n, gen)` | Build an internal `dontTouch` hardware wire containing a `chext.util.NamedVec` of interfaces. |
 | `interface.fire` | True when `$ready && $valid`. |
 | `interface.enq(value)` / `interface.noenq()` | Drive a producer side. |
 | `interface.deq()` / `interface.nodeq()` | Drive a consumer side. |

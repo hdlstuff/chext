@@ -12,7 +12,7 @@ trait UnaryOp[T <: Data] {
 }
 
 trait BinaryOp[T <: Data] {
-  def in_a: T
-  def in_b: T
+  def inA: T
+  def inB: T
   def out: T
 }

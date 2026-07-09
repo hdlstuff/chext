@@ -288,29 +288,3 @@ class ProtocolConverter(val cfg: ProtocolConverterConfig) extends Module with ch
     stages.connectAll()
   }
 }
-
-private object EmitProtocolConverter extends App {
-  val cfg1 = ProtocolConverterConfig(
-    axi4.Config(wAddr = 32, wData = 32, wId = 8),
-    axi4.Config(wAddr = 32, wData = 128, wId = 2)
-  )
-  emitVerilog(new ProtocolConverter(cfg1), Array("--target-dir", "output/"))
-
-  val cfg2 = ProtocolConverterConfig(
-    axi4.Config(wAddr = 32, wData = 128, wId = 0),
-    axi4.Config(wAddr = 32, wData = 32, wId = 0)
-  )
-  emitVerilog(new ProtocolConverter(cfg2), Array("--target-dir", "output/"))
-
-  val cfg3 = ProtocolConverterConfig(
-    axi4.Config(wAddr = 32, wData = 128, wId = 2),
-    axi4.Config(wAddr = 32, wData = 128, wId = 4)
-  )
-  emitVerilog(new ProtocolConverter(cfg3), Array("--target-dir", "output/"))
-
-  val cfg4 = ProtocolConverterConfig(
-    axi4.Config(wAddr = 32, wData = 128, wId = 4),
-    axi4.Config(wAddr = 32, wData = 128, wId = 2)
-  )
-  emitVerilog(new ProtocolConverter(cfg4), Array("--target-dir", "output/"))
-}

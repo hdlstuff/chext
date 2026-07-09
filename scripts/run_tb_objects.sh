@@ -39,6 +39,7 @@ TEST_TARGETS=(
   "chext.elastic.BufferedNamingSeq_Tb"
   "chext.elastic.SourceBufferedManyNaming_Tb"
   "chext.elastic.Null_Tb"
+  "chext.elastic.Switch_Tb"
   "chext.stream.Read_Tb"
   "chext.stream.Write_Tb"
   "chext.float.Elastic_Tb"
@@ -60,9 +61,7 @@ TEST_TARGETS=(
   "chext.amba.axi4.full.components.IdSerialize_Tb"
 )
 
-COMPILE_TARGETS=(
-  "chext.elastic.Switch_Tb"
-)
+COMPILE_TARGETS=()
 
 APP_TARGETS=(
   "chext.amba.TrackingDiagnostics_Tb"

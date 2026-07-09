@@ -146,10 +146,3 @@ class SimpleDualPortRawMem(
 
   def getPorts: Seq[memory.RawInterface] = Seq(interfaceW, interfaceR)
 }
-
-private object xpm_memory_sdpram_Emit extends App {
-  emitVerilog(
-    new SimpleDualPortRawMem(memory.RawMemConfig(20, 32, 4, 1)),
-    Array("--target-dir", "output/")
-  )
-}
