@@ -9,7 +9,7 @@ END
 
 [section.badges]
 kind = badges
-items = Component, Container, Module, Interface, Function, UniquePrefix, tpe, namePrefix, Scala, SysC
+items = Component, Container, Module, Config, Interface, Function, UniquePrefix, tpe, namePrefix, Scala, Scala TB, SysC TB
 text <<END
 `tpe` is the graph type. `namePrefix` is the construction's conceptual default prefix. Actual paths come from Chisel naming, `prefix(...)`, and `uniquePrefix(...)`.
 END
@@ -782,6 +782,7 @@ text <<END
 import chext.amba.axi4
 import axi4.{full => axi4f, lite => axi4l}
 import axi4.ConnectOp._
+import chext.{elastic => e}
 END
 
 [section.axi_connects]
@@ -793,14 +794,83 @@ construct = `axi4.Config`
 intent <<END
 Configuration:
 ```scala
-val axiCfg = axi4.Config(wAddr = 32, wData = 64)
+val axiCfg = axi4.Config(
+  wId = 4,    // ID width; 0 is common for lite
+  wAddr = 32, // byte address width
+  wData = 64, // data bus width
+  read = true,
+  write = true,
+  lite = false,
+  hasLock = true,
+  hasCache = true,
+  hasProt = true,
+  hasQos = true,
+  hasRegion = true,
+  axi3Compat = false,
+  wUserAR = 0,
+  wUserR = 0,
+  wUserAW = 0,
+  wUserW = 0,
+  wUserB = 0
+)
 ```
 END
 details <<END
-Configuration only.
+{{badge:Config}} Configuration for raw, full, and lite AXI interfaces. `lite = true` selects AXI4-Lite behavior; full AXI keeps `lite = false`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Interface.scala}}
+END
+
+[row.axi_connects.001_full_connect_config]
+construct = `axi4f.ConnectConfig`
+intent <<END
+Configured full AXI connect diagnostics:
+```scala
+val cfg = axi4f.ConnectConfig(
+  tieOffMaster = true,
+  tieOffSlave = true,
+  warnReadWriteMismatch = true,
+  warnAxi3Compat = true,
+  warnIdWidth = true,
+  warnAddrWidth = true,
+  warnSideband = true,
+  // SimulationCheck: Default, None, Printf, Assert.
+  // Default resolves to the process-wide policy.
+  simCheckAxi3Compat = chext.util.SimulationCheck.Default,
+  simCheckIdWidth = chext.util.SimulationCheck.Default,
+  simCheckAddrWidth = chext.util.SimulationCheck.Default
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `s_axi.connect(m_axi, cfg)`: controls tie-offs, warnings, and simulation checks for full AXI connections.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
+END
+
+[row.axi_connects.001_lite_connect_config]
+construct = `axi4l.ConnectConfig`
+intent <<END
+Configured AXI4-Lite connect diagnostics:
+```scala
+val cfg = axi4l.ConnectConfig(
+  tieOffMaster = true,
+  tieOffSlave = true,
+  warnReadWriteMismatch = true,
+  warnAddrWidth = true,
+  // SimulationCheck: Default, None, Printf, Assert.
+  // Default resolves to the process-wide policy.
+  simCheckAddrWidth = chext.util.SimulationCheck.Default
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `s_axil.connect(m_axil, cfg)`: controls tie-offs, warnings, and address-width simulation checks for AXI4-Lite connections.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
 END
 
 [row.axi_connects.002]
@@ -965,6 +1035,27 @@ preface <<END
 AXI buffer naming follows the elastic convention: `SlaveBuffer`, `MasterBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used anonymously inside a connection expression. `SlaveBuffered` and `MasterBuffered` return an interface directly; bind them to a `val` when the buffered AXI side is reused.
 END
 
+[row.axi_buffers.000]
+construct = `axi4.BufferConfig`
+intent <<END
+Per-channel buffer depths:
+```scala
+val bufferCfg = axi4.BufferConfig(
+  aw = 2, // write address
+  w = 2,  // write data
+  b = 2,  // write response
+  ar = 2, // read address
+  r = 2   // read data
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration shared by full and lite AXI buffer helpers. `axi4.BufferConfig.all(2)` applies the same depth to all five channels.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Buffer.scala}}
+END
+
 [row.axi_buffers.001]
 construct = `axi4f.SlaveBuffer` / `axi4f.MasterBuffer`
 intent <<END
@@ -1034,31 +1125,33 @@ kind = table
 title = AXI4 Full Components
 preface <<END
 AXI4 full components are Chisel modules. They are not Chext components themselves; graph content comes from the elastic components they instantiate internally.
+END
 
-Typical config shapes:
+[row.axi4_full_components.000_demux_config]
+construct = `axi4f.components.DemuxConfig`
+intent <<END
+Fan-out configuration:
 ```scala
-val fullCfg = axi4.Config(
-  wAddr = 32,        // byte address width
-  wData = 64,        // data bus width
-  wId = 4,           // ID width for full AXI
-  read = true,
-  write = true,
-  lite = false
-)
-
-val demuxCfg = axi4f.components.DemuxConfig(
+val cfg = axi4f.components.DemuxConfig(
   axiSlaveCfg = fullCfg,
-  numMasters = 4,                // number of output ports
-  decodeFn = addr => addr(13, 12) // address-to-port mapping
-)
-
-val widthCfg = axi4f.components.DownscaleConfig(
-  axiSlaveCfg = fullCfg.copy(wId = 0),
-  wDataMaster = 32,              // output data width
-  numOutstandingRead = 32,
-  numOutstandingWrite = 32
+  numMasters = 4, // output ports
+  decodeFn = addr => addr(13, 12),
+  numIdsTrackedRead = 4,
+  numIdsTrackedWrite = 4,
+  numOutstandingRead = 16,
+  numOutstandingWrite = 16,
+  capacityPortQueueW = 8,
+  slaveBuffers = axi4.BufferConfig.all(2),
+  masterBuffers = axi4.BufferConfig.all(0),
+  arbiterPolicy = e.Chooser.rr
 )
 ```
+END
+details <<END
+{{badge:Config}} Configuration for `Demux`; `decodeFn` maps each address to an output port.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Demux.scala}}
 END
 
 [row.axi4_full_components.001]
@@ -1066,7 +1159,7 @@ construct = `axi4f.components.Demux`
 intent <<END
 Fan one full AXI slave-side port out to multiple master-side ports:
 ```scala
-Module(new axi4f.components.Demux(cfg))
+val demux0 = Module(new axi4f.components.Demux(cfg))
 ```
 END
 details <<END
@@ -1078,12 +1171,33 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Interconnect.tb.cpp}}
 END
 
+[row.axi4_full_components.001_mux_config]
+construct = `axi4f.components.MuxConfig`
+intent <<END
+Fan-in configuration:
+```scala
+val cfg = axi4f.components.MuxConfig(
+  axiSlaveCfg = fullCfg,
+  numSlaves = 4, // input ports
+  slaveBuffers = axi4.BufferConfig.all(0),
+  masterBuffers = axi4.BufferConfig.all(2),
+  arbiterPolicy = e.Chooser.rr
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `Mux`; output IDs are widened to include the selected input port.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Mux.scala}}
+END
+
 [row.axi4_full_components.002]
 construct = `axi4f.components.Mux`
 intent <<END
 Merge multiple full AXI slave-side ports into one master-side port:
 ```scala
-Module(new axi4f.components.Mux(cfg))
+val mux0 = Module(new axi4f.components.Mux(cfg))
 ```
 END
 details <<END
@@ -1095,12 +1209,32 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Interconnect.tb.cpp}}
 END
 
+[row.axi4_full_components.002_id_demux_config]
+construct = `axi4f.components.IdDemuxConfig`
+intent <<END
+ID fan-out configuration:
+```scala
+val cfg = axi4f.components.IdDemuxConfig(
+  axiSlaveCfg = fullCfg,
+  wIdSel = 2, // routes by 2 ID bits
+  capacityPortQueueW = 8,
+  arbiterPolicy = e.Chooser.rr
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `IdDemux`; `wIdSel` determines the number of output ports as `1 << wIdSel`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdDemux.scala}}
+END
+
 [row.axi4_full_components.003]
 construct = `axi4f.components.IdDemux`
 intent <<END
 Route full AXI traffic by transaction ID:
 ```scala
-Module(new axi4f.components.IdDemux(cfg))
+val idDemux0 = Module(new axi4f.components.IdDemux(cfg))
 ```
 END
 details <<END
@@ -1110,12 +1244,31 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdDemux.scala}}
 END
 
+[row.axi4_full_components.003_id_mux_config]
+construct = `axi4f.components.IdMuxConfig`
+intent <<END
+ID fan-in configuration:
+```scala
+val cfg = axi4f.components.IdMuxConfig(
+  axiSlaveCfg = fullCfg,
+  wIdSel = 2, // input port bits in ID
+  arbiterPolicy = e.Chooser.rr
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `IdMux`; response routing uses ID bits to recover the input port.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdMux.scala}}
+END
+
 [row.axi4_full_components.004]
 construct = `axi4f.components.IdMux`
 intent <<END
 Merge full AXI traffic while preserving ID-based response routing:
 ```scala
-Module(new axi4f.components.IdMux(cfg))
+val idMux0 = Module(new axi4f.components.IdMux(cfg))
 ```
 END
 details <<END
@@ -1125,12 +1278,33 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdMux.scala}}
 END
 
+[row.axi4_full_components.004_id_serialize_config]
+construct = `axi4f.components.IdSerializeConfig`
+intent <<END
+ID serialization configuration:
+```scala
+val cfg = axi4f.components.IdSerializeConfig(
+  axiSlaveCfg = fullCfg,
+  numOutstandingRead = 4,
+  numOutstandingWrite = 4,
+  wIdSelect = 0
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `IdSerialize`; output ID width becomes zero.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdSerialize.scala}}
+END
+
 [row.axi4_full_components.005]
 construct = `axi4f.components.IdSerialize`
 intent <<END
 Serialize transactions by ID:
 ```scala
-Module(new axi4f.components.IdSerialize(cfg))
+val idSerialize0 =
+  Module(new axi4f.components.IdSerialize(cfg))
 ```
 END
 details <<END
@@ -1142,12 +1316,34 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/IdSerialize.tb.cpp}}
 END
 
+[row.axi4_full_components.005_id_parallelize_config]
+construct = `axi4f.components.IdParallelizeConfig`
+intent <<END
+ID parallelization configuration:
+```scala
+val cfg = axi4f.components.IdParallelizeConfig(
+  axiSlaveCfg = fullCfg.copy(wId = 0),
+  wIdMaster = 3,
+  wBufferIndex = 10,
+  readUseSyncMem = true,
+  writeUseSyncMem = true
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `IdParallelize`; creates a wider-ID master side from a zero-ID slave side.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/IdParallelize.scala}}
+END
+
 [row.axi4_full_components.006]
 construct = `axi4f.components.IdParallelize`
 intent <<END
 Parallelize transactions by ID:
 ```scala
-Module(new axi4f.components.IdParallelize(cfg))
+val idParallelize0 =
+  Module(new axi4f.components.IdParallelize(cfg))
 ```
 END
 details <<END
@@ -1159,12 +1355,32 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/IdParallelize.tb.cpp}}
 END
 
+[row.axi4_full_components.006_upscale_config]
+construct = `axi4f.components.UpscaleConfig`
+intent <<END
+Width upscale configuration:
+```scala
+val cfg = axi4f.components.UpscaleConfig(
+  axiSlaveCfg = fullCfg.copy(wId = 0, wData = 32),
+  wDataMaster = 64,
+  numOutstandingRead = 32,
+  numOutstandingWrite = 32
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `Upscale`; master data width must be wider than the slave data width.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Upscale.scala}}
+END
+
 [row.axi4_full_components.007]
 construct = `axi4f.components.Upscale`
 intent <<END
 Adapt a narrower full AXI data bus to a wider one:
 ```scala
-Module(new axi4f.components.Upscale(cfg))
+val upscale0 = Module(new axi4f.components.Upscale(cfg))
 ```
 END
 details <<END
@@ -1176,12 +1392,32 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Upscale.tb.cpp}}
 END
 
+[row.axi4_full_components.007_downscale_config]
+construct = `axi4f.components.DownscaleConfig`
+intent <<END
+Width downscale configuration:
+```scala
+val cfg = axi4f.components.DownscaleConfig(
+  axiSlaveCfg = fullCfg.copy(wId = 0, wData = 64),
+  wDataMaster = 32,
+  numOutstandingRead = 32,
+  numOutstandingWrite = 32
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `Downscale`; master data width must be narrower than the slave data width.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Downscale.scala}}
+END
+
 [row.axi4_full_components.008]
 construct = `axi4f.components.Downscale`
 intent <<END
 Adapt a wider full AXI data bus to a narrower one:
 ```scala
-Module(new axi4f.components.Downscale(cfg))
+val downscale0 = Module(new axi4f.components.Downscale(cfg))
 ```
 END
 details <<END
@@ -1193,12 +1429,31 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Downscale.tb.cpp}}
 END
 
+[row.axi4_full_components.008_unburst_config]
+construct = `axi4f.components.UnburstConfig`
+intent <<END
+Burst decomposition configuration:
+```scala
+val cfg = axi4f.components.UnburstConfig(
+  axiCfg = fullCfg.copy(wId = 0),
+  numOutstandingRead = 32,
+  numOutstandingWrite = 32
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `Unburst`; input and output AXI configs are the same, but bursts are decomposed internally.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Unburst.scala}}
+END
+
 [row.axi4_full_components.009]
 construct = `axi4f.components.Unburst`
 intent <<END
 Convert burst transactions into single-beat transactions:
 ```scala
-Module(new axi4f.components.Unburst(cfg))
+val unburst0 = Module(new axi4f.components.Unburst(cfg))
 ```
 END
 details <<END
@@ -1210,12 +1465,31 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Unburst.tb.cpp}}
 END
 
+[row.axi4_full_components.009_widen_config]
+construct = `axi4f.components.WidenConfig`
+intent <<END
+Narrow-transfer widening configuration:
+```scala
+val cfg = axi4f.components.WidenConfig(
+  axiCfg = fullCfg.copy(wId = 0),
+  numOutstandingRead = 32,
+  numOutstandingWrite = 32
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `Widen`; converts narrow transfers to full-sized transfers on the same AXI data width.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/Widen.scala}}
+END
+
 [row.axi4_full_components.010]
 construct = `axi4f.components.Widen`
 intent <<END
 Bridge full AXI width differences with widening behavior:
 ```scala
-Module(new axi4f.components.Widen(cfg))
+val widen0 = Module(new axi4f.components.Widen(cfg))
 ```
 END
 details <<END
@@ -1227,12 +1501,68 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/amba/axi4/full/components/src/Widen.tb.cpp}}
 END
 
+[row.axi4_full_components.010_credit_buffer_config]
+construct = `axi4f.components.CreditBufferConfig`
+intent <<END
+Response-aware full AXI buffering configuration:
+```scala
+val cfg = axi4f.components.CreditBufferConfig(
+  axiCfg = fullCfg,
+  rBuffer = 32, // read response credits
+  wBuffer = 8,  // write payload credits
+  bBuffer = 32  // write response credits
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for full AXI `CreditBuffer`; address channels wait until local response/payload buffering has capacity.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/CreditBuffer.scala}}
+END
+
+[row.axi4_full_components.010_credit_buffer]
+construct = `axi4f.components.CreditBuffer`
+intent <<END
+Add response-aware buffering for full AXI:
+```scala
+val creditBuffer0 =
+  Module(new axi4f.components.CreditBuffer(cfg))
+```
+END
+details <<END
+{{badge:Module}} Full AXI credit-style response buffering around read/write channels.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/CreditBuffer.scala}}
+END
+
+[row.axi4_full_components.010_protocol_converter_config]
+construct = `axi4f.components.ProtocolConverterConfig`
+intent <<END
+Staged protocol conversion configuration:
+```scala
+val cfg = axi4f.components.ProtocolConverterConfig(
+  axiSlaveCfg = fullCfg.copy(wId = 4, wData = 32),
+  axiMasterCfg = fullCfg.copy(wId = 2, wData = 64),
+  slaveNeverBursts = false
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `ProtocolConverter`; internally selects ID, burst, and width conversion stages.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/components/ProtocolConverter.scala}}
+END
+
 [row.axi4_full_components.011]
 construct = `axi4f.components.ProtocolConverter`
 intent <<END
 Convert between supported full AXI protocol shapes:
 ```scala
-Module(new axi4f.components.ProtocolConverter(cfg))
+val protocolConverter0 =
+  Module(new axi4f.components.ProtocolConverter(cfg))
 ```
 END
 details <<END
@@ -1247,29 +1577,30 @@ kind = table
 title = AXI4 Lite Components
 preface <<END
 AXI4-Lite components are Chisel modules. They are not Chext components themselves; graph content comes from the internal channel-level elastic components.
+END
 
-Typical config shapes:
+[row.axi4_lite_components.000_demux_config]
+construct = `axi4l.components.DemuxConfig`
+intent <<END
+AXI4-Lite fan-out configuration:
 ```scala
-val liteCfg = axi4.Config(
-  wAddr = 32,   // byte address width
-  wData = 32,   // data bus width
-  lite = true,
-  read = true,
-  write = true
-)
-
-val demuxCfg = axi4l.components.DemuxConfig(
+val cfg = axi4l.components.DemuxConfig(
   axiSlaveCfg = liteCfg,
-  numMasters = 4,                // number of output ports
-  decodeFn = addr => addr(13, 12) // address-to-port mapping
+  numMasters = 4, // output ports
+  decodeFn = addr => addr(13, 12),
+  capacityPortQueueR = 8,
+  capacityPortQueueW = 8,
+  capacityPortQueueB = 8,
+  slaveBuffers = axi4.BufferConfig.all(2),
+  masterBuffers = axi4.BufferConfig.all(0)
 )
-
-Module(new axi4l.components.MemController(
-  log2numElements = 10, // 1024 words
-  axiCfg = liteCfg,
-  debugEnabled = false
-))
 ```
+END
+details <<END
+{{badge:Config}} Configuration for AXI4-Lite `Demux`; `decodeFn` maps each address to an output port.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Demux.scala}}
 END
 
 [row.axi4_lite_components.001]
@@ -1277,7 +1608,7 @@ construct = `axi4l.components.Demux`
 intent <<END
 Fan one AXI4-Lite slave-side port out to multiple master-side ports:
 ```scala
-Module(new axi4l.components.Demux(cfg))
+val demux0 = Module(new axi4l.components.Demux(cfg))
 ```
 END
 details <<END
@@ -1287,12 +1618,36 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Demux.scala}}
 END
 
+[row.axi4_lite_components.001_mux_config]
+construct = `axi4l.components.MuxConfig`
+intent <<END
+AXI4-Lite fan-in configuration:
+```scala
+val cfg = axi4l.components.MuxConfig(
+  axiSlaveCfg = liteCfg,
+  numSlaves = 4, // input ports
+  capacityPortQueueR = 8,
+  capacityPortQueueW = 8,
+  capacityPortQueueB = 8,
+  slaveBuffers = axi4.BufferConfig.all(0),
+  masterBuffers = axi4.BufferConfig.all(2),
+  arbiterPolicy = e.Chooser.rr
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for AXI4-Lite `Mux`; queue capacities tune per-channel port tracking.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Mux.scala}}
+END
+
 [row.axi4_lite_components.002]
 construct = `axi4l.components.Mux`
 intent <<END
 Merge multiple AXI4-Lite slave-side ports into one master-side port:
 ```scala
-Module(new axi4l.components.Mux(cfg))
+val mux0 = Module(new axi4l.components.Mux(cfg))
 ```
 END
 details <<END
@@ -1302,12 +1657,33 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/Mux.scala}}
 END
 
+[row.axi4_lite_components.002_credit_buffer_config]
+construct = `axi4l.components.CreditBufferConfig`
+intent <<END
+Response-aware buffering configuration:
+```scala
+val cfg = axi4l.components.CreditBufferConfig(
+  axiCfg = liteCfg,
+  rBuffer = 8, // read response credits
+  wBuffer = 8, // write payload credits
+  bBuffer = 8  // write response credits
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `CreditBuffer`; address channels are delayed until local response/payload buffering has capacity.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/components/CreditBuffer.scala}}
+END
+
 [row.axi4_lite_components.003]
 construct = `axi4l.components.CreditBuffer`
 intent <<END
 Add response-aware buffering for AXI4-Lite:
 ```scala
-Module(new axi4l.components.CreditBuffer(cfg))
+val creditBuffer0 =
+  Module(new axi4l.components.CreditBuffer(cfg))
 ```
 END
 details <<END
@@ -1322,11 +1698,12 @@ construct = `axi4l.components.MemController`
 intent <<END
 Expose a memory-like backend as AXI4-Lite:
 ```scala
-Module(new axi4l.components.MemController(
-  log2numElements = 10, // 1024 words
-  axiCfg = liteCfg,
-  debugEnabled = false
-))
+val memController0 =
+  Module(new axi4l.components.MemController(
+    log2numElements = 10, // 1024 words
+    axiCfg = liteCfg,
+    debugEnabled = false
+  ))
 ```
 END
 details <<END
@@ -1341,11 +1718,12 @@ construct = `axi4l.components.SyncReadMemController`
 intent <<END
 Expose a synchronous-read memory backend as AXI4-Lite:
 ```scala
-Module(new axi4l.components.SyncReadMemController(
-  log2numElements = 10, // 1024 words
-  axiCfg = liteCfg,
-  debugEnabled = false
-))
+val syncReadMemController0 =
+  Module(new axi4l.components.SyncReadMemController(
+    log2numElements = 10, // 1024 words
+    axiCfg = liteCfg,
+    debugEnabled = false
+  ))
 ```
 END
 details <<END
@@ -1410,14 +1788,28 @@ hierarchy <<END
 END
 
 [row.memory.003]
-construct = `memory.SlaveBuffer`, `memory.MasterBuffer`
+construct = `memory.BufferConfig`
 intent <<END
-Buffer memory interfaces inline:
+Memory interface buffer depths:
 ```scala
 val bufferCfg = memory.BufferConfig(
   req = 2,  // request-channel queue depth
   resp = 2  // response-channel queue depth
 )
+```
+END
+details <<END
+{{badge:Config}} Configuration for memory `SlaveBuffer`, `MasterBuffer`, `SlaveBuffered`, and `MasterBuffered`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/memory/Buffer.scala}}
+END
+
+[row.memory.004]
+construct = `memory.SlaveBuffer`, `memory.MasterBuffer`
+intent <<END
+Buffer memory interfaces inline:
+```scala
 memory.SlaveBuffer(readMaster, bufferCfg) :=> readSlave
 writeMaster :=> memory.MasterBuffer(writeSlave, bufferCfg)
 ```
@@ -1430,7 +1822,7 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/memory/Buffer.tb.scala}}
 END
 
-[row.memory.004]
+[row.memory.005]
 construct = `memory.SlaveBuffered`, `memory.MasterBuffered`
 intent <<END
 Create a buffered memory interface for reuse as a named value:
@@ -1448,22 +1840,39 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/memory/Buffer.tb.scala}}
 END
 
-[row.memory.005]
+[row.memory.006]
+construct = `memory.RawMemConfig` / `memory.PortConfig`
+intent <<END
+RAM wrapper configuration:
+```scala
+val rawCfg = memory.RawMemConfig(
+  wAddr = 10,       // 1024 elements
+  wData = 32,       // data width
+  latencyRead = 2,
+  latencyWrite = 1
+)
+val portCfg = memory.PortConfig(
+  numOutstandingRead = 8,
+  numOutstandingWrite = 8,
+  arbiterFunc = memory.ReadWriteArbiter.defaultFunc
+)
+```
+END
+details <<END
+{{badge:Config}} `RawMemConfig` describes the target memory shape and latency. `PortConfig` sets elastic buffering around RAM read/write ports.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/memory/RawMem.scala}}
+{{badge:Scala}} {{src:src/main/scala/chext/memory/RAM.scala}}
+END
+
+[row.memory.007]
 construct = `memory.SinglePortRAM`, `SimpleDualPortRAM`, `TrueDualPortRAM`
 intent <<END
 Memory wrappers around raw memory targets:
 ```scala
-val rawCfg = memory.RawMemConfig(
-  wAddr = 10,       // 1024 addressable elements
-  wData = 32,       // 32-bit data
-  latencyRead = 2,  // read response latency
-  latencyWrite = 1  // write response latency
-)
-val portCfg = memory.PortConfig(
-  numOutstandingRead = 8,
-  numOutstandingWrite = 8
-)
-Module(new memory.TrueDualPortRAM(rawCfg, portCfg, portCfg))
+val ram0 =
+  Module(new memory.TrueDualPortRAM(rawCfg, portCfg, portCfg))
 ```
 END
 details <<END
@@ -1481,17 +1890,32 @@ Stream modules create AXI-facing work/result frontends. They are Chisel modules;
 END
 
 [row.stream.001]
+construct = `stream.ChunkConfig`
+intent <<END
+Chunking configuration:
+```scala
+val cfg = stream.ChunkConfig(
+  wAddress = axiCfg.wAddr,
+  wLength = 32,        // request length width
+  wData = axiCfg.wData,
+  maxBurstLength = 256,
+  genUser = UInt(0.W)
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `stream.Chunk`; controls address width, length width, data width, and maximum emitted burst length.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/stream/Chunk.scala}}
+END
+
+[row.stream.002]
 construct = `stream.Chunk`
 intent <<END
 Split a variable-length stream request into AXI-sized chunks:
 ```scala
-val cfg = stream.ChunkConfig(
-  wAddress = axiCfg.wAddr, // address width
-  wLength = 32,            // request length width
-  wData = axiCfg.wData,    // data bus width
-  maxBurstLength = 256     // maximum AXI burst length
-)
-Module(new stream.Chunk(cfg))
+val chunk0 = Module(new stream.Chunk(cfg))
 ```
 END
 details <<END
@@ -1501,25 +1925,44 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/stream/Chunk.scala}}
 END
 
-[row.stream.002]
-construct = `stream.Read`, `stream.Write`
+[row.stream.003]
+construct = `stream.ReadConfig` / `stream.WriteConfig`
 intent <<END
-AXI stream read/write frontends:
+AXI stream frontend configuration:
 ```scala
 val readCfg = stream.ReadConfig(
   axiCfg = axiCfg.copy(read = true, write = false),
+  genUser = UInt(0.W),
   resultMode = stream.ReadResultMode.LastAlwaysInvalid,
   maxBurstLength = 256,
+  wLength = 32,
   numOutstandingTasks = 8
 )
 val writeCfg = stream.WriteConfig(
   axiCfg = axiCfg.copy(read = false, write = true),
+  genUser = UInt(0.W),
   resultMode = stream.WriteResultMode.KeepAll,
   maxBurstLength = 256,
+  wLength = 32,
   numOutstandingTasks = 8
 )
-Module(new stream.Read(readCfg))
-Module(new stream.Write(writeCfg))
+```
+END
+details <<END
+{{badge:Config}} `ReadConfig` controls read result mode and outstanding task buffering. `WriteConfig` controls write result mode and outstanding task buffering.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/stream/Read.scala}}
+{{badge:Scala}} {{src:src/main/scala/chext/stream/Write.scala}}
+END
+
+[row.stream.004]
+construct = `stream.Read`, `stream.Write`
+intent <<END
+AXI stream read/write frontends:
+```scala
+val read0 = Module(new stream.Read(readCfg))
+val write0 = Module(new stream.Write(writeCfg))
 ```
 END
 details <<END
@@ -1539,20 +1982,37 @@ Load/store modules are single-beat AXI full frontends. They expose elastic task/
 END
 
 [row.load_store.001]
+construct = `ldstr.LoadConfig` / `ldstr.StoreConfig`
+intent <<END
+Single-beat load/store frontend configuration:
+```scala
+val loadCfg = ldstr.LoadConfig(
+  axiCfg = axiCfg.copy(read = true, write = false),
+  genUser = UInt(0.W),
+  numOutstandingTasks = 8
+)
+val storeCfg = ldstr.StoreConfig(
+  axiCfg = axiCfg.copy(read = false, write = true),
+  genUser = UInt(0.W),
+  numOutstandingTasks = 8
+)
+```
+END
+details <<END
+{{badge:Config}} Configuration for `ldstr.Load` and `ldstr.Store`; `numOutstandingTasks` sizes the buffering around AXI read/write response paths.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/ldstr/Load.scala}}
+{{badge:Scala}} {{src:src/main/scala/chext/ldstr/Store.scala}}
+END
+
+[row.load_store.002]
 construct = `ldstr.Load`, `ldstr.Store`
 intent <<END
 Load/store AXI frontends:
 ```scala
-val loadCfg = ldstr.LoadConfig(
-  axiCfg = axiCfg.copy(read = true, write = false),
-  numOutstandingTasks = 8 // read-side buffering
-)
-val storeCfg = ldstr.StoreConfig(
-  axiCfg = axiCfg.copy(read = false, write = true),
-  numOutstandingTasks = 8 // write response buffering
-)
-Module(new ldstr.Load(loadCfg))
-Module(new ldstr.Store(storeCfg))
+val load0 = Module(new ldstr.Load(loadCfg))
+val store0 = Module(new ldstr.Store(storeCfg))
 ```
 END
 details <<END
@@ -1570,13 +2030,33 @@ Floating-point elastic modules wrap floating-point datapaths with elastic source
 END
 
 [row.float.001]
+construct = `float.FloatingPoint`
+intent <<END
+Floating-point format configuration:
+```scala
+val fp = float.FloatingPoint.ieee_fp32
+val custom = float.FloatingPoint(
+  exponent_width = 8,
+  mantissa_width = 23
+)
+```
+END
+details <<END
+{{badge:Config}} Bundle/config object for floating-point datapaths. Common helpers include `ieee_fp16`, `ieee_fp32`, `ieee_fp64`, `fp18`, and `bfloat16`.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/float/FloatingPoint.scala}}
+END
+
+[row.float.002]
 construct = `float.ElasticAdd`, `float.ElasticMultiply`
 intent <<END
 Elastic floating-point operators:
 ```scala
-val fp = float.FloatingPoint.ieee_fp32
-Module(new float.ElasticAdd(fp, combinational = false))
-Module(new float.ElasticMultiply(fp, combinational = false))
+val add0 =
+  Module(new float.ElasticAdd(fp, combinational = false))
+val mul0 =
+  Module(new float.ElasticMultiply(fp, combinational = false))
 ```
 END
 details <<END

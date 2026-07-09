@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate docs/synopsis.md from docs/synopsis.txt.
+"""Generate synopsis Markdown files from docs/synopsis.txt.
 
 The input format is intentionally small and INI-like:
 
@@ -39,12 +39,14 @@ ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 SRC = DOCS / "synopsis.txt"
 DST = DOCS / "synopsis.md"
+GH_DST = DOCS / "synopsis-gh.md"
 
 
 BADGE_STYLES = {
     "Component": ("#e8f1ff", "#174ea6"),
     "Container": ("#eaf7ea", "#137333"),
     "Module": ("#fff4d6", "#8a5a00"),
+    "Config": ("#e6f4ea", "#0d652d"),
     "Interface": ("#f3e8ff", "#6b21a8"),
     "Function": ("#ffe8ef", "#a50e38"),
     "UniquePrefix": ("#f1f3f4", "#3c4043"),
@@ -122,6 +124,13 @@ def badge(kind: str, text: str | None = None) -> str:
     )
 
 
+def badge_text(body: str) -> str:
+    if ":" in body:
+        kind, label = body.split(":", 1)
+        return f"{kind}: {label}"
+    return body
+
+
 def expand_badges(text: str) -> str:
     def repl(match: re.Match[str]) -> str:
         body = match.group(1)
@@ -133,12 +142,34 @@ def expand_badges(text: str) -> str:
     return re.sub(r"\{\{badge:([^}]+)\}\}", repl, text)
 
 
+def expand_badges_plain(text: str) -> str:
+    def repl(match: re.Match[str]) -> str:
+        badges = re.findall(r"\{\{badge:([^}]+)\}\}", match.group(0))
+        line_start = match.start() == 0 or text[match.start() - 1] == "\n"
+        if line_start and match.group(0)[-1].isspace():
+            suffix = ". "
+        else:
+            suffix = " " if match.group(0)[-1].isspace() else ""
+        return "; ".join(badge_text(badge) for badge in badges) + suffix
+
+    return re.sub(r"(?:\{\{badge:[^}]+\}\}\s*)+", repl, text)
+
+
 def expand_refs(text: str) -> str:
     def repl(match: re.Match[str]) -> str:
         path = match.group(1)
         href = "../" + path
         label = Path(path).name
         return f'<a href="{html.escape(href)}"><code>{html.escape(label)}</code></a>'
+
+    return re.sub(r"\{\{src:([^}]+)\}\}", repl, text)
+
+
+def expand_refs_markdown(text: str) -> str:
+    def repl(match: re.Match[str]) -> str:
+        path = match.group(1)
+        label = Path(path).name
+        return f"[`{label}`](../{path})"
 
     return re.sub(r"\{\{src:([^}]+)\}\}", repl, text)
 
@@ -177,6 +208,42 @@ def render_source_links(text: str) -> str:
     return f'<div style="margin-top:6px;font-size:0.92em;">{items}</div>'
 
 
+def render_source_links_markdown(text: str) -> str:
+    entries: list[str] = []
+    for raw in text.splitlines():
+        kind_match = re.search(r"\{\{badge:(Scala|SysC)\}\}", raw)
+        if kind_match is None:
+            continue
+        kind = kind_match.group(1)
+        for path in re.findall(r"\{\{src:([^}]+)\}\}", raw):
+            label = source_kind(kind, path)
+            entries.append(f"[{label}](../{path})")
+
+    if not entries:
+        return ""
+
+    return "**Sources:** " + "; ".join(entries)
+
+
+def prefix_first_line(text: str, prefix: str) -> str:
+    if not text:
+        return prefix.rstrip()
+    first, sep, rest = text.partition("\n")
+    return f"{prefix}{first}{sep}{rest}"
+
+
+def render_construct_badges(text: str) -> str:
+    badges: list[str] = []
+    if "Config" in text:
+        badges.append(badge("Config"))
+
+    if not badges:
+        return ""
+
+    items = "".join(f"<div>{item}</div>" for item in badges)
+    return f'<div style="margin-top:6px;font-size:0.92em;">{items}</div>'
+
+
 def expand_inline_code(text: str) -> str:
     return re.sub(
         r"`([^`\n]+)`",
@@ -193,7 +260,7 @@ def code_block(code: str, lang: str = "") -> str:
     escaped = html.escape(code)
     cls = f' class="language-{html.escape(lang)}"' if lang else ""
     style = (
-        "white-space:pre;overflow-x:auto;margin:6px 0 0;padding:8px;"
+        "white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;"
         "background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;"
         "line-height:1.45;"
     )
@@ -221,6 +288,10 @@ def render_text(text: str) -> str:
     return "".join(rendered)
 
 
+def render_text_markdown(text: str) -> str:
+    return expand_refs_markdown(expand_badges_plain(text))
+
+
 def paragraphize(text: str) -> str:
     rendered = render_text(text)
     pieces = re.split(r"(<pre\b.*?</pre>)", rendered, flags=re.DOTALL)
@@ -228,6 +299,10 @@ def paragraphize(text: str) -> str:
         piece if piece.startswith("<pre") else piece.replace("\n", "<br>")
         for piece in pieces
     )
+
+
+def paragraphize_markdown(text: str) -> str:
+    return render_text_markdown(text).strip()
 
 
 def slug(title: str) -> str:
@@ -244,6 +319,14 @@ def row_table_id(block_name: str) -> str:
     if len(parts) < 3 or parts[0] != "row":
         raise ValueError(f"bad row name: {block_name}")
     return parts[1]
+
+
+def entry_id(block_name: str) -> str:
+    parts = block_name.split(".")
+    if len(parts) < 3 or parts[0] != "row":
+        raise ValueError(f"bad row name: {block_name}")
+    raw = "-".join(parts[1:])
+    return "entry-" + re.sub(r"[^a-zA-Z0-9]+", "-", raw).strip("-").lower()
 
 
 def generate(blocks: list[Block]) -> str:
@@ -305,7 +388,12 @@ def generate(blocks: list[Block]) -> str:
                 out.append("")
                 out.append(render_text(preface))
             out.append("")
-            out.append("<table>")
+            out.append('<table style="table-layout:fixed;width:100%;">')
+            out.append("  <colgroup>")
+            out.append('    <col style="width:24%;">')
+            out.append('    <col style="width:42%;">')
+            out.append('    <col style="width:34%;">')
+            out.append("  </colgroup>")
             out.append("  <thead>")
             out.append("    <tr>")
             out.append("      <th>Construct</th>")
@@ -315,16 +403,24 @@ def generate(blocks: list[Block]) -> str:
             out.append("  </thead>")
             out.append("  <tbody>")
             for row in rows.get(tid, []):
+                eid = entry_id(row.name)
                 construct = render_text(row.fields["construct"])
+                construct = construct + (
+                    f' <a href="#{eid}" style="text-decoration:none;" '
+                    f'aria-label="Permalink to {eid}">#</a>'
+                )
+                construct_badges = render_construct_badges(row.fields["construct"])
                 source_links = render_source_links(row.fields.get("hierarchy", ""))
+                if construct_badges:
+                    construct = construct + construct_badges
                 if source_links:
                     construct = construct + source_links
                 intent = paragraphize(row.fields.get("intent", ""))
                 details = paragraphize(row.fields.get("details", row.fields.get("naming", "")))
-                out.append("    <tr>")
-                out.append(f"      <td>{construct}</td>")
-                out.append(f"      <td>{intent}</td>")
-                out.append(f"      <td>{details}</td>")
+                out.append(f'    <tr id="{eid}">')
+                out.append(f'      <td style="vertical-align:top;">{construct}</td>')
+                out.append(f'      <td style="vertical-align:top;">{intent}</td>')
+                out.append(f'      <td style="vertical-align:top;">{details}</td>')
                 out.append("    </tr>")
             out.append("  </tbody>")
             out.append("</table>")
@@ -334,10 +430,103 @@ def generate(blocks: list[Block]) -> str:
     return "\n".join(out).rstrip() + "\n"
 
 
+def generate_github(blocks: list[Block]) -> str:
+    rows: dict[str, list[Block]] = {}
+    for block in blocks:
+        if block.name.startswith("row."):
+            rows.setdefault(row_table_id(block.name), []).append(block)
+
+    out: list[str] = [
+        "<!-- Generated from docs/synopsis.txt by scripts/generate_synopsis.py. Do not edit by hand. -->"
+    ]
+    toc_items = [
+        block.fields["title"]
+        for block in blocks
+        if block.fields.get("kind") in {"heading", "table"}
+    ]
+    for block in blocks:
+        if block.name.startswith("row."):
+            continue
+
+        kind = block.fields.get("kind", "")
+        if block.name == "document":
+            out.append(f"# {block.fields['title']} for GitHub")
+            if text := block.fields.get("intro", ""):
+                out.append("")
+                out.append(render_text_markdown(text))
+            if toc_items:
+                out.append("")
+                out.append("## Contents")
+                out.append("")
+                for title in toc_items:
+                    out.append(f"- [{title}](#{slug(title)})")
+            continue
+
+        if kind == "heading":
+            out.append("")
+            out.append(f"## {block.fields['title']}")
+        elif kind == "paragraph":
+            out.append("")
+            out.append(render_text_markdown(block.fields["text"]))
+        elif kind == "code":
+            out.append("")
+            lang = block.fields.get("lang", "")
+            out.append(f"```{lang}")
+            out.append(block.fields["text"])
+            out.append("```")
+        elif kind == "badges":
+            continue
+        elif kind == "table":
+            tid = table_id(block.name)
+            out.append("")
+            out.append(f"## {block.fields['title']}")
+            if preface := block.fields.get("preface", ""):
+                out.append("")
+                out.append(render_text_markdown(preface))
+            for index, row in enumerate(rows.get(tid, [])):
+                out.append("")
+                if index:
+                    out.append("---")
+                    out.append("")
+                eid = entry_id(row.name)
+                out.append(f'<a id="{eid}"></a>')
+                out.append("")
+                out.append(
+                    f"### {render_text_markdown(row.fields['construct'])} "
+                    f"[#](#{eid})"
+                )
+                source_links = render_source_links_markdown(row.fields.get("hierarchy", ""))
+                if source_links:
+                    out.append("")
+                    out.append(source_links)
+                out.append("")
+                out.append(prefix_first_line(
+                    paragraphize_markdown(row.fields.get("intent", "")),
+                    "**Intent and Usage:** ",
+                ))
+                out.append("")
+                out.append(prefix_first_line(
+                    paragraphize_markdown(row.fields.get("details", row.fields.get("naming", ""))),
+                    "**Details:** ",
+                ))
+            if rows.get(tid):
+                out.append("")
+                out.append("---")
+        else:
+            raise ValueError(f"unknown block kind for [{block.name}]: {kind}")
+
+    return "\n".join(out).rstrip() + "\n"
+
+
 def main() -> int:
     src = Path(sys.argv[1]) if len(sys.argv) > 1 else SRC
-    dst = Path(sys.argv[2]) if len(sys.argv) > 2 else DST
-    dst.write_text(generate(parse(src)))
+    blocks = parse(src)
+    if len(sys.argv) > 2:
+        dst = Path(sys.argv[2])
+        dst.write_text(generate(blocks))
+    else:
+        DST.write_text(generate(blocks))
+        GH_DST.write_text(generate_github(blocks))
     return 0
 
 
