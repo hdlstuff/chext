@@ -34,23 +34,13 @@ module Switch_Tbtop(
   assign switch0_fork0_result_bits = switch0_fork0_select;
   wire             switch0_queueIndex_source_valid = switch0_fork0_result_valid;
   wire [1:0]       switch0_queueIndex_source_bits = switch0_fork0_result_bits;
-  reg  [1:0]       switch0_queueIndex_enqPtr_value;
-  reg  [1:0]       switch0_queueIndex_deqPtr_value;
-  reg              switch0_queueIndex_maybeFull;
-  wire             switch0_queueIndex_ptrMatch =
-    switch0_queueIndex_enqPtr_value == switch0_queueIndex_deqPtr_value;
-  wire             switch0_queueIndex_doEnq =
-    switch0_queueIndex_source_ready & switch0_queueIndex_source_valid;
-  wire             switch0_queueIndex_sink_valid =
-    ~(switch0_queueIndex_ptrMatch & ~switch0_queueIndex_maybeFull);
-  assign switch0_queueIndex_source_ready =
-    ~(switch0_queueIndex_ptrMatch & switch0_queueIndex_maybeFull);
   wire [3:0]       _GEN_1 =
     {{switch0_wireRvMuxN_0_valid},
      {switch0_wireRvMuxN_2_valid},
      {switch0_wireRvMuxN_1_valid},
      {switch0_wireRvMuxN_0_valid}};
   wire [1:0]       switch0_queueIndex_sink_bits;
+  wire             switch0_queueIndex_sink_valid;
   wire             wire0_valid =
     switch0_queueIndex_sink_valid & _GEN_1[switch0_queueIndex_sink_bits];
   wire             switch0_mux0_fire = wire0_valid & wire0_ready;
@@ -83,8 +73,27 @@ module Switch_Tbtop(
     switch0_x2_repeat0_count_valid
       ? _switch0_x2_repeat0_count_T_2
       : _switch0_x2_repeat0_count_T_8;
-  wire             switch0_fork0_demux0_result_valid;
-  wire             switch0_fork0_demux0_result_1_valid;
+  reg              switch0_fork0_regs_0;
+  reg              switch0_fork0_regs_1;
+  reg              switch0_fork0_regs_2;
+  wire             switch0_fork0_demux0_result_ready;
+  wire             switch0_fork0_ready_qual1_0 =
+    switch0_fork0_demux0_result_ready | switch0_fork0_regs_0;
+  wire             switch0_fork0_demux0_result_1_ready;
+  wire             switch0_fork0_ready_qual1_1 =
+    switch0_fork0_demux0_result_1_ready | switch0_fork0_regs_1;
+  wire             switch0_fork0_ready_qual1_2 =
+    switch0_fork0_result_ready | switch0_fork0_regs_2;
+  wire             source_ready_0 =
+    switch0_fork0_ready_qual1_0 & switch0_fork0_ready_qual1_1
+    & switch0_fork0_ready_qual1_2;
+  wire             switch0_fork0_demux0_result_valid =
+    source_valid & ~switch0_fork0_regs_0;
+  wire             switch0_fork0_demux0_result_1_valid =
+    source_valid & ~switch0_fork0_regs_1;
+  assign switch0_fork0_result_valid = source_valid & ~switch0_fork0_regs_2;
+  wire             switch0_queueIndex_doEnq =
+    switch0_queueIndex_source_ready & switch0_queueIndex_source_valid;
   wire             switch0_fork0_demux0_valid =
     switch0_fork0_demux0_result_1_valid & switch0_fork0_demux0_result_valid;
   wire [3:0]       _GEN_5 =
@@ -98,9 +107,7 @@ module Switch_Tbtop(
      {switch0_wireRvMuxN_0_ready}};
   wire             switch0_fork0_demux0_fire =
     switch0_fork0_demux0_valid & _GEN_5[switch0_fork0_demux0_result_1_bits];
-  wire             switch0_fork0_demux0_result_ready;
   assign switch0_fork0_demux0_result_ready = switch0_fork0_demux0_fire;
-  wire             switch0_fork0_demux0_result_1_ready;
   assign switch0_fork0_demux0_result_1_ready = switch0_fork0_demux0_fire;
   assign switch0_wireRvMuxN_0_valid =
     switch0_fork0_demux0_valid & switch0_fork0_demux0_result_1_bits == 2'h0;
@@ -108,48 +115,41 @@ module Switch_Tbtop(
     switch0_fork0_demux0_valid & switch0_fork0_demux0_result_1_bits == 2'h1;
   assign switch0_wireRvDemuxN_2_valid =
     switch0_fork0_demux0_valid & switch0_fork0_demux0_result_1_bits == 2'h2;
-  reg              switch0_fork0_regs_0;
-  reg              switch0_fork0_regs_1;
-  reg              switch0_fork0_regs_2;
-  wire             switch0_fork0_ready_qual1_0 =
-    switch0_fork0_demux0_result_ready | switch0_fork0_regs_0;
-  wire             switch0_fork0_ready_qual1_1 =
-    switch0_fork0_demux0_result_1_ready | switch0_fork0_regs_1;
-  wire             switch0_fork0_ready_qual1_2 =
-    switch0_fork0_result_ready | switch0_fork0_regs_2;
-  wire             source_ready_0 =
-    switch0_fork0_ready_qual1_0 & switch0_fork0_ready_qual1_1
-    & switch0_fork0_ready_qual1_2;
-  assign switch0_fork0_demux0_result_valid = source_valid & ~switch0_fork0_regs_0;
-  assign switch0_fork0_demux0_result_1_valid = source_valid & ~switch0_fork0_regs_1;
-  assign switch0_fork0_result_valid = source_valid & ~switch0_fork0_regs_2;
+  reg  [1:0]       switch0_queueIndex_enqPtr_value;
+  reg  [1:0]       switch0_queueIndex_deqPtr_value;
+  reg              switch0_queueIndex_maybeFull;
+  wire             switch0_queueIndex_ptrMatch =
+    switch0_queueIndex_enqPtr_value == switch0_queueIndex_deqPtr_value;
+  assign switch0_queueIndex_sink_valid =
+    ~(switch0_queueIndex_ptrMatch & ~switch0_queueIndex_maybeFull);
+  assign switch0_queueIndex_source_ready =
+    ~(switch0_queueIndex_ptrMatch & switch0_queueIndex_maybeFull);
   always @(posedge clock) begin
     automatic logic _GEN_6;
     _GEN_6 = ~(|_switch0_x2_repeat0_count_T_6) | _switch0_x2_repeat0_count_T_8;
+    if (switch0_wireRvDemuxN_2_valid) begin
+      if (switch0_x2_repeat0_count_valid) begin
+        if (switch0_wireRvMuxN_2_ready)
+          switch0_x2_repeat0_count_state <=
+            _switch0_x2_repeat0_count_T_2 ? 32'h0 : _switch0_x2_repeat0_count_nextState_T;
+      end
+      else if (_GEN_6 | ~switch0_wireRvMuxN_2_ready) begin
+      end
+      else
+        switch0_x2_repeat0_count_state <= 32'h1;
+    end
     if (reset) begin
-      switch0_queueIndex_enqPtr_value <= 2'h0;
-      switch0_queueIndex_deqPtr_value <= 2'h0;
-      switch0_queueIndex_maybeFull <= 1'h0;
       switch0_x2_repeat0_count_valid <= 1'h0;
       switch0_fork0_regs_0 <= 1'h0;
       switch0_fork0_regs_1 <= 1'h0;
       switch0_fork0_regs_2 <= 1'h0;
+      switch0_queueIndex_enqPtr_value <= 2'h0;
+      switch0_queueIndex_deqPtr_value <= 2'h0;
+      switch0_queueIndex_maybeFull <= 1'h0;
     end
     else begin
       automatic logic switch0_queueIndex_doDeq =
         switch0_queueIndex_sink_ready & switch0_queueIndex_sink_valid;
-      if (switch0_queueIndex_doEnq)
-        switch0_queueIndex_enqPtr_value <=
-          switch0_queueIndex_enqPtr_value == 2'h2
-            ? 2'h0
-            : switch0_queueIndex_enqPtr_value + 2'h1;
-      if (switch0_queueIndex_doDeq)
-        switch0_queueIndex_deqPtr_value <=
-          switch0_queueIndex_deqPtr_value == 2'h2
-            ? 2'h0
-            : switch0_queueIndex_deqPtr_value + 2'h1;
-      if (switch0_queueIndex_doEnq != switch0_queueIndex_doDeq)
-        switch0_queueIndex_maybeFull <= switch0_queueIndex_doEnq;
       if (switch0_wireRvDemuxN_2_valid) begin
         if (switch0_x2_repeat0_count_valid)
           switch0_x2_repeat0_count_valid <=
@@ -163,17 +163,18 @@ module Switch_Tbtop(
         switch0_fork0_ready_qual1_1 & source_valid & ~source_ready_0;
       switch0_fork0_regs_2 <=
         switch0_fork0_ready_qual1_2 & source_valid & ~source_ready_0;
-    end
-    if (switch0_wireRvDemuxN_2_valid) begin
-      if (switch0_x2_repeat0_count_valid) begin
-        if (switch0_wireRvMuxN_2_ready)
-          switch0_x2_repeat0_count_state <=
-            _switch0_x2_repeat0_count_T_2 ? 32'h0 : _switch0_x2_repeat0_count_nextState_T;
-      end
-      else if (_GEN_6 | ~switch0_wireRvMuxN_2_ready) begin
-      end
-      else
-        switch0_x2_repeat0_count_state <= 32'h1;
+      if (switch0_queueIndex_doEnq)
+        switch0_queueIndex_enqPtr_value <=
+          switch0_queueIndex_enqPtr_value == 2'h2
+            ? 2'h0
+            : switch0_queueIndex_enqPtr_value + 2'h1;
+      if (switch0_queueIndex_doDeq)
+        switch0_queueIndex_deqPtr_value <=
+          switch0_queueIndex_deqPtr_value == 2'h2
+            ? 2'h0
+            : switch0_queueIndex_deqPtr_value + 2'h1;
+      if (switch0_queueIndex_doEnq != switch0_queueIndex_doDeq)
+        switch0_queueIndex_maybeFull <= switch0_queueIndex_doEnq;
     end
   end // always @(posedge)
   chext_mem_1w1r #(

@@ -21,10 +21,9 @@ module Fold_Tbtop(
   input         sink_ready
 );
 
-  wire        fold0_stage1_opB_ready;
-  wire        fold0_stage1_fork0_transform0_sourceBuffer0_queueSink_valid;
   wire        fold0_stage1_fork0_transform0_sourceBuffer0_queueSink_bits_zero;
   wire [63:0] fold0_stage1_fork0_transform0_sourceBuffer0_queueSink_bits_operand;
+  wire        fold0_stage0_result_valid;
   wire        fold0_stage0_init_ready;
   wire [63:0] fold0_stage0_bits_operand;
   wire        fold0_stage0_bits_first;
@@ -39,7 +38,6 @@ module Fold_Tbtop(
   wire        fold0_const0_interface_valid = 1'h1;
   wire        fold0_stage2_fork0_disposed_ready = 1'h1;
   wire [63:0] fold0_stage0_result_bits;
-  wire        fold0_stage0_result_valid;
   wire        fold0_stage0_result_ready = wire0_ready;
   wire        fold0_stage0_init_valid = fold0_const0_interface_valid;
   wire [63:0] fold0_stage2_fork0_demux0_result_bits;
@@ -49,17 +47,6 @@ module Fold_Tbtop(
   wire [63:0] fold0_sourceResult_bits = fold0_sinkA_bits + fold0_sinkB_bits;
   reg  [31:0] fold0_count;
   wire [63:0] wire0_bits;
-  wire        wire0_valid;
-  wire        _fold0_T = wire0_ready & wire0_valid;
-  wire        fold0_sinkA_valid;
-  wire        fold0_sinkB_valid;
-  wire        fold0_sourceResult_ready;
-  wire        fold0_sourceResult_valid = fold0_sinkA_valid & fold0_sinkB_valid;
-  wire        fold0_join0_fire = fold0_sourceResult_ready & fold0_sourceResult_valid;
-  wire        fold0_sinkA_ready;
-  assign fold0_sinkA_ready = fold0_join0_fire;
-  wire        fold0_sinkB_ready;
-  assign fold0_sinkB_ready = fold0_join0_fire;
   wire [63:0] fold0_stage1_fork0_transform0_x1_bits_operand = fold0_stage0_bits_operand;
   wire        fold0_stage1_fork0_transform0_x1_bits_first = fold0_stage0_bits_first;
   wire        fold0_stage1_fork0_mux0_x11_bits = fold0_stage0_bits_first;
@@ -69,11 +56,10 @@ module Fold_Tbtop(
   wire        fold0_const0_interface_ready = fold0_stage0_init_ready;
   wire [63:0] fold0_stage1_result_bits;
   assign wire0_bits = fold0_stage0_result_bits;
-  assign wire0_valid = fold0_stage0_result_valid;
+  wire        wire0_valid = fold0_stage0_result_valid;
   assign fold0_sinkB_bits = fold0_stage1_opA_bits;
   wire [63:0] fold0_stage2_fork0_temp_bits = fold0_stage1_opA_bits;
-  wire        fold0_stage1_fork0_transform0_sourceBuffer0_queueSink_ready =
-    fold0_stage1_opB_ready;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_queueSink_valid;
   reg         fold0_stage0_transducerFirstLogic_state;
   assign fold0_stage0_bits_first = fold0_stage0_transducerFirstLogic_state;
   assign fold0_stage0_bits_operand = {{32{source_bits_data[31]}}, source_bits_data};
@@ -90,6 +76,7 @@ module Fold_Tbtop(
   wire        fold0_stage2_fork0_mux0_result_bits = fold0_stage1_opB_bits_zero;
   assign fold0_sinkA_bits = fold0_stage2_fork0_demux0_result_bits;
   wire [63:0] fold0_stage2_fork0_disposed_bits = fold0_stage2_fork0_demux0_result_bits;
+  wire        fold0_sourceResult_valid;
   wire        fold0_stage2_fork0_temp_valid;
   wire        fold0_stage2_fork0_mux0_result_valid;
   wire        fold0_stage1_result_ready;
@@ -100,7 +87,7 @@ module Fold_Tbtop(
          : fold0_sourceResult_valid);
   wire        fold0_stage2_fork0_mux0_result_ready =
     fold0_stage1_result_valid & fold0_stage1_result_ready;
-  assign fold0_sourceResult_ready =
+  wire        fold0_sourceResult_ready =
     fold0_stage2_fork0_mux0_result_ready & ~fold0_stage2_fork0_mux0_result_bits;
   wire        fold0_stage2_fork0_temp_ready =
     fold0_stage2_fork0_mux0_result_ready & fold0_stage2_fork0_mux0_result_bits;
@@ -109,55 +96,13 @@ module Fold_Tbtop(
       ? fold0_stage2_fork0_temp_bits
       : fold0_sourceResult_bits;
   assign fold0_stage0_result_bits = fold0_stage1_result_bits;
-  wire [63:0] fold0_stage1_fork0_demux0_sinkBuffer0_queueSource_bits =
-    fold0_stage1_result_bits;
-  wire        _GEN = source_valid & fold0_stage0_transducerFirstLogic_state;
-  wire        _fold0_stage0_transducerFirstLogic_cond_WIRE_0 = _GEN & source_bits_last;
-  wire        _fold0_stage0_transducerFirstLogic_cond_WIRE_1 = _GEN & ~source_bits_last;
-  wire        _fold0_stage0_transducerFirstLogic_cond_WIRE_2 =
-    source_valid & ~fold0_stage0_transducerFirstLogic_state;
-  wire        fold0_stage0_ready;
-  wire [2:0]  fold0_stage0_transducerFirstLogic_cond =
-    {_fold0_stage0_transducerFirstLogic_cond_WIRE_2,
-     _fold0_stage0_transducerFirstLogic_cond_WIRE_1,
-     _fold0_stage0_transducerFirstLogic_cond_WIRE_0};
-  wire        fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions =
-    source_valid
-    & (|(fold0_stage0_transducerFirstLogic_cond
-         & {_fold0_stage0_transducerFirstLogic_cond_WIRE_2,
-            _fold0_stage0_transducerFirstLogic_cond_WIRE_1,
-            _fold0_stage0_transducerFirstLogic_cond_WIRE_0} - 3'h1));
-  wire        fold0_stage0_transducerFirstLogic_errorNoAction =
-    source_valid & fold0_stage0_transducerFirstLogic_cond == 3'h0;
-  `ifndef SYNTHESIS
-    always @(posedge clock) begin
-      if ((`PRINTF_COND_) & _fold0_T & ~reset)
-        $fwrite(32'h80000002, "reduction complete. count = %d\n", fold0_count);
-      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
-          & ~reset)
-        $fwrite(32'h80000002,
-                "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");
-      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
-          & _fold0_stage0_transducerFirstLogic_cond_WIRE_0 & ~reset)
-        $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
-      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
-          & _fold0_stage0_transducerFirstLogic_cond_WIRE_1 & ~reset)
-        $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
-      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
-          & _fold0_stage0_transducerFirstLogic_cond_WIRE_2 & ~reset)
-        $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
-      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorNoAction & ~reset)
-        $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
-    end // always @(posedge)
-  `endif // not def SYNTHESIS
   wire        fold0_stage1_opA_valid;
   wire        fold0_stage2_fork0_demux1_result_valid;
+  wire [63:0] fold0_stage1_fork0_demux0_sinkBuffer0_queueSource_bits =
+    fold0_stage1_result_bits;
   wire        fold0_stage2_fork0_demux1_valid =
     fold0_stage2_fork0_demux1_result_valid & fold0_stage1_opA_valid;
+  wire        fold0_sinkB_ready;
   wire        fold0_stage2_fork0_demux1_fire =
     fold0_stage2_fork0_demux1_valid
     & (fold0_stage2_fork0_demux1_result_bits
@@ -167,7 +112,7 @@ module Fold_Tbtop(
   assign fold0_stage1_opA_ready = fold0_stage2_fork0_demux1_fire;
   wire        fold0_stage2_fork0_demux1_result_ready;
   assign fold0_stage2_fork0_demux1_result_ready = fold0_stage2_fork0_demux1_fire;
-  assign fold0_sinkB_valid =
+  wire        fold0_sinkB_valid =
     fold0_stage2_fork0_demux1_valid & ~fold0_stage2_fork0_demux1_result_bits;
   assign fold0_stage2_fork0_temp_valid =
     fold0_stage2_fork0_demux1_valid & fold0_stage2_fork0_demux1_result_bits;
@@ -175,6 +120,7 @@ module Fold_Tbtop(
   wire        fold0_stage2_fork0_demux0_result_1_valid;
   wire        fold0_stage2_fork0_demux0_valid =
     fold0_stage2_fork0_demux0_result_1_valid & fold0_stage2_fork0_demux0_result_valid;
+  wire        fold0_sinkA_ready;
   wire        fold0_stage2_fork0_demux0_fire =
     fold0_stage2_fork0_demux0_valid
     & (fold0_stage2_fork0_demux0_result_1_bits
@@ -184,7 +130,7 @@ module Fold_Tbtop(
   assign fold0_stage2_fork0_demux0_result_ready = fold0_stage2_fork0_demux0_fire;
   wire        fold0_stage2_fork0_demux0_result_1_ready;
   assign fold0_stage2_fork0_demux0_result_1_ready = fold0_stage2_fork0_demux0_fire;
-  assign fold0_sinkA_valid =
+  wire        fold0_sinkA_valid =
     fold0_stage2_fork0_demux0_valid & ~fold0_stage2_fork0_demux0_result_1_bits;
   wire        fold0_stage2_fork0_disposed_valid =
     fold0_stage2_fork0_demux0_valid & fold0_stage2_fork0_demux0_result_1_bits;
@@ -200,9 +146,11 @@ module Fold_Tbtop(
     fold0_stage2_fork0_demux1_result_ready | fold0_stage2_fork0_regs_2;
   wire        fold0_stage2_fork0_ready_qual1_3 =
     fold0_stage2_fork0_mux0_result_ready | fold0_stage2_fork0_regs_3;
-  assign fold0_stage1_opB_ready =
+  wire        fold0_stage1_opB_ready =
     fold0_stage2_fork0_ready_qual1_0 & fold0_stage2_fork0_ready_qual1_1
     & fold0_stage2_fork0_ready_qual1_2 & fold0_stage2_fork0_ready_qual1_3;
+  wire        fold0_stage1_fork0_transform0_sourceBuffer0_queueSink_ready =
+    fold0_stage1_opB_ready;
   assign fold0_stage2_fork0_demux0_result_valid =
     fold0_stage1_opB_valid & ~fold0_stage2_fork0_regs_0;
   assign fold0_stage2_fork0_demux0_result_1_valid =
@@ -311,6 +259,24 @@ module Fold_Tbtop(
     ~(fold0_stage1_fork0_mux0_sourceBuffer0_queue0_empty
       & fold0_stage1_fork0_mux0_sourceBuffer0_queueSink_ready)
     & fold0_stage1_fork0_mux0_x11_ready & fold0_stage1_fork0_mux0_x11_valid;
+  wire        _GEN = source_valid & fold0_stage0_transducerFirstLogic_state;
+  wire        _fold0_stage0_transducerFirstLogic_cond_WIRE_0 = _GEN & source_bits_last;
+  wire        _fold0_stage0_transducerFirstLogic_cond_WIRE_1 = _GEN & ~source_bits_last;
+  wire        _fold0_stage0_transducerFirstLogic_cond_WIRE_2 =
+    source_valid & ~fold0_stage0_transducerFirstLogic_state;
+  wire        fold0_stage0_ready;
+  wire [2:0]  fold0_stage0_transducerFirstLogic_cond =
+    {_fold0_stage0_transducerFirstLogic_cond_WIRE_2,
+     _fold0_stage0_transducerFirstLogic_cond_WIRE_1,
+     _fold0_stage0_transducerFirstLogic_cond_WIRE_0};
+  wire        fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions =
+    source_valid
+    & (|(fold0_stage0_transducerFirstLogic_cond
+         & {_fold0_stage0_transducerFirstLogic_cond_WIRE_2,
+            _fold0_stage0_transducerFirstLogic_cond_WIRE_1,
+            _fold0_stage0_transducerFirstLogic_cond_WIRE_0} - 3'h1));
+  wire        fold0_stage0_transducerFirstLogic_errorNoAction =
+    source_valid & fold0_stage0_transducerFirstLogic_cond == 3'h0;
   reg         fold0_stage1_fork0_transform0_sourceBuffer0_queue0_enqPtr_value;
   reg         fold0_stage1_fork0_transform0_sourceBuffer0_queue0_deqPtr_value;
   reg         fold0_stage1_fork0_transform0_sourceBuffer0_queue0_maybeFull;
@@ -364,6 +330,36 @@ module Fold_Tbtop(
     fold0_stage0_valid & ~fold0_stage1_fork0_regs_1;
   assign fold0_stage1_fork0_demux0_x16_valid =
     fold0_stage0_valid & ~fold0_stage1_fork0_regs_2;
+  wire        _fold0_T = wire0_ready & wire0_valid;
+  assign fold0_sourceResult_valid = fold0_sinkA_valid & fold0_sinkB_valid;
+  wire        fold0_join0_fire = fold0_sourceResult_ready & fold0_sourceResult_valid;
+  assign fold0_sinkA_ready = fold0_join0_fire;
+  assign fold0_sinkB_ready = fold0_join0_fire;
+  `ifndef SYNTHESIS
+    always @(posedge clock) begin
+      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
+          & ~reset)
+        $fwrite(32'h80000002,
+                "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");
+      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
+          & _fold0_stage0_transducerFirstLogic_cond_WIRE_0 & ~reset)
+        $fwrite(32'h80000002,
+                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
+      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
+          & _fold0_stage0_transducerFirstLogic_cond_WIRE_1 & ~reset)
+        $fwrite(32'h80000002,
+                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
+      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorAtLeastTwoActions
+          & _fold0_stage0_transducerFirstLogic_cond_WIRE_2 & ~reset)
+        $fwrite(32'h80000002,
+                "elastic.Transducer: action 'accept' @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
+      if ((`PRINTF_COND_) & fold0_stage0_transducerFirstLogic_errorNoAction & ~reset)
+        $fwrite(32'h80000002,
+                "elastic.Transducer: no action was taken! @[src/test/scala/chext/elastic/Fold.tb.scala:21:21]\n");
+      if ((`PRINTF_COND_) & _fold0_T & ~reset)
+        $fwrite(32'h80000002, "reduction complete. count = %d\n", fold0_count);
+    end // always @(posedge)
+  `endif // not def SYNTHESIS
   always @(posedge clock) begin
     if (reset) begin
       fold0_count <= 32'h0;

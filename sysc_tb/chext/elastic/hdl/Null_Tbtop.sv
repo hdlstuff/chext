@@ -10,7 +10,7 @@ module Null_Tbtop(
   input         sink_ready
 );
 
-  assign source_ready = 1'h0;
+  assign source_ready = 1'h1;
   assign sink_bits = 32'h0;
   assign sink_valid = 1'h0;
 endmodule

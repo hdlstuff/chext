@@ -2938,19 +2938,6 @@ module Elastic_Tbtop(
   wire [10:0] fork3_result_1_bits_exponent = fork3_sourceBuffer0_queueSink_bits[62:52];
   wire        fork3_result_bits_sign = fork3_sourceBuffer0_queueSink_bits[63];
   wire        fork3_result_1_bits_sign = fork3_sourceBuffer0_queueSink_bits[63];
-  reg  [4:0]  transform0_sinkBuffer0_queue0_enqPtr_value;
-  reg  [4:0]  transform0_sinkBuffer0_queue0_deqPtr_value;
-  reg         transform0_sinkBuffer0_queue0_maybeFull;
-  wire        transform0_sinkBuffer0_queue0_ptrMatch =
-    transform0_sinkBuffer0_queue0_enqPtr_value == transform0_sinkBuffer0_queue0_deqPtr_value;
-  wire        transform0_sinkBuffer0_queue0_empty =
-    transform0_sinkBuffer0_queue0_ptrMatch & ~transform0_sinkBuffer0_queue0_maybeFull;
-  wire        transform0_sinkBuffer0_queueSource_valid;
-  wire        transform0_sinkBuffer0_queueSource_ready;
-  wire        transform0_sinkBuffer0_queue0_doEnq =
-    transform0_sinkBuffer0_queueSource_ready & transform0_sinkBuffer0_queueSource_valid;
-  assign transform0_sinkBuffer0_queueSource_ready =
-    ~(transform0_sinkBuffer0_queue0_ptrMatch & transform0_sinkBuffer0_queue0_maybeFull);
   reg         fork3_regs_0;
   reg         fork3_regs_1;
   wire        fork3_result_ready;
@@ -2971,8 +2958,12 @@ module Elastic_Tbtop(
     fork3_sourceBuffer0_queue0_ptrMatch & fork3_sourceBuffer0_queue0_maybeFull;
   wire        fork3_sourceBuffer0_queue0_doEnq =
     ~fork3_sourceBuffer0_queue0_full & fp64_inB_valid;
+  wire        transform0_sinkBuffer0_queueSource_valid;
+  wire        transform0_sinkBuffer0_queueSource_ready;
   assign fork3_sourceBuffer0_queueSink_valid =
     ~(fork3_sourceBuffer0_queue0_ptrMatch & ~fork3_sourceBuffer0_queue0_maybeFull);
+  wire        transform0_sinkBuffer0_queue0_doEnq =
+    transform0_sinkBuffer0_queueSource_ready & transform0_sinkBuffer0_queueSource_valid;
   reg         fork2_regs_0;
   reg         fork2_regs_1;
   wire        fork2_result_ready;
@@ -3006,6 +2997,17 @@ module Elastic_Tbtop(
   wire        fork1_sourceBuffer0_queueSink_valid;
   wire        fork1_result_valid = fork1_sourceBuffer0_queueSink_valid & ~fork1_regs_0;
   wire        fork1_result_1_valid = fork1_sourceBuffer0_queueSink_valid & ~fork1_regs_1;
+  reg  [4:0]  fork1_sourceBuffer0_queue0_enqPtr_value;
+  reg  [4:0]  fork1_sourceBuffer0_queue0_deqPtr_value;
+  reg         fork1_sourceBuffer0_queue0_maybeFull;
+  wire        fork1_sourceBuffer0_queue0_ptrMatch =
+    fork1_sourceBuffer0_queue0_enqPtr_value == fork1_sourceBuffer0_queue0_deqPtr_value;
+  wire        fork1_sourceBuffer0_queue0_full =
+    fork1_sourceBuffer0_queue0_ptrMatch & fork1_sourceBuffer0_queue0_maybeFull;
+  wire        fork1_sourceBuffer0_queue0_doEnq =
+    ~fork1_sourceBuffer0_queue0_full & fp32_inB_valid;
+  assign fork1_sourceBuffer0_queueSink_valid =
+    ~(fork1_sourceBuffer0_queue0_ptrMatch & ~fork1_sourceBuffer0_queue0_maybeFull);
   reg         fork0_regs_0;
   reg         fork0_regs_1;
   wire        fork0_result_ready;
@@ -3028,6 +3030,10 @@ module Elastic_Tbtop(
     ~fork0_sourceBuffer0_queue0_full & fp32_inA_valid;
   assign fork0_sourceBuffer0_queueSink_valid =
     ~(fork0_sourceBuffer0_queue0_ptrMatch & ~fork0_sourceBuffer0_queue0_maybeFull);
+  wire        transform1_sinkBuffer0_queueSource_valid;
+  wire        transform1_sinkBuffer0_queueSource_ready;
+  wire        transform1_sinkBuffer0_queue0_doEnq =
+    transform1_sinkBuffer0_queueSource_ready & transform1_sinkBuffer0_queueSource_valid;
   wire        transform3_sinkBuffer0_queueSource_ready;
   wire        transform3_sinkBuffer0_queueSource_valid;
   wire        transform3_sinkBuffer0_queue0_doEnq =
@@ -3054,10 +3060,6 @@ module Elastic_Tbtop(
     transform2_sinkBuffer0_queue0_ptrMatch & ~transform2_sinkBuffer0_queue0_maybeFull;
   assign transform2_sinkBuffer0_queueSource_ready =
     ~(transform2_sinkBuffer0_queue0_ptrMatch & transform2_sinkBuffer0_queue0_maybeFull);
-  wire        transform1_sinkBuffer0_queueSource_ready;
-  wire        transform1_sinkBuffer0_queueSource_valid;
-  wire        transform1_sinkBuffer0_queue0_doEnq =
-    transform1_sinkBuffer0_queueSource_ready & transform1_sinkBuffer0_queueSource_valid;
   reg  [4:0]  transform1_sinkBuffer0_queue0_enqPtr_value;
   reg  [4:0]  transform1_sinkBuffer0_queue0_deqPtr_value;
   reg         transform1_sinkBuffer0_queue0_maybeFull;
@@ -3067,22 +3069,17 @@ module Elastic_Tbtop(
     transform1_sinkBuffer0_queue0_ptrMatch & ~transform1_sinkBuffer0_queue0_maybeFull;
   assign transform1_sinkBuffer0_queueSource_ready =
     ~(transform1_sinkBuffer0_queue0_ptrMatch & transform1_sinkBuffer0_queue0_maybeFull);
-  reg  [4:0]  fork1_sourceBuffer0_queue0_enqPtr_value;
-  reg  [4:0]  fork1_sourceBuffer0_queue0_deqPtr_value;
-  reg         fork1_sourceBuffer0_queue0_maybeFull;
-  wire        fork1_sourceBuffer0_queue0_ptrMatch =
-    fork1_sourceBuffer0_queue0_enqPtr_value == fork1_sourceBuffer0_queue0_deqPtr_value;
-  wire        fork1_sourceBuffer0_queue0_full =
-    fork1_sourceBuffer0_queue0_ptrMatch & fork1_sourceBuffer0_queue0_maybeFull;
-  wire        fork1_sourceBuffer0_queue0_doEnq =
-    ~fork1_sourceBuffer0_queue0_full & fp32_inB_valid;
-  assign fork1_sourceBuffer0_queueSink_valid =
-    ~(fork1_sourceBuffer0_queue0_ptrMatch & ~fork1_sourceBuffer0_queue0_maybeFull);
+  reg  [4:0]  transform0_sinkBuffer0_queue0_enqPtr_value;
+  reg  [4:0]  transform0_sinkBuffer0_queue0_deqPtr_value;
+  reg         transform0_sinkBuffer0_queue0_maybeFull;
+  wire        transform0_sinkBuffer0_queue0_ptrMatch =
+    transform0_sinkBuffer0_queue0_enqPtr_value == transform0_sinkBuffer0_queue0_deqPtr_value;
+  wire        transform0_sinkBuffer0_queue0_empty =
+    transform0_sinkBuffer0_queue0_ptrMatch & ~transform0_sinkBuffer0_queue0_maybeFull;
+  assign transform0_sinkBuffer0_queueSource_ready =
+    ~(transform0_sinkBuffer0_queue0_ptrMatch & transform0_sinkBuffer0_queue0_maybeFull);
   always @(posedge clock) begin
     if (reset) begin
-      transform0_sinkBuffer0_queue0_enqPtr_value <= 5'h0;
-      transform0_sinkBuffer0_queue0_deqPtr_value <= 5'h0;
-      transform0_sinkBuffer0_queue0_maybeFull <= 1'h0;
       fork3_regs_0 <= 1'h0;
       fork3_regs_1 <= 1'h0;
       fork3_sourceBuffer0_queue0_enqPtr_value <= 5'h0;
@@ -3095,6 +3092,9 @@ module Elastic_Tbtop(
       fork2_sourceBuffer0_queue0_maybeFull <= 1'h0;
       fork1_regs_0 <= 1'h0;
       fork1_regs_1 <= 1'h0;
+      fork1_sourceBuffer0_queue0_enqPtr_value <= 5'h0;
+      fork1_sourceBuffer0_queue0_deqPtr_value <= 5'h0;
+      fork1_sourceBuffer0_queue0_maybeFull <= 1'h0;
       fork0_regs_0 <= 1'h0;
       fork0_regs_1 <= 1'h0;
       fork0_sourceBuffer0_queue0_enqPtr_value <= 5'h0;
@@ -3109,9 +3109,9 @@ module Elastic_Tbtop(
       transform1_sinkBuffer0_queue0_enqPtr_value <= 5'h0;
       transform1_sinkBuffer0_queue0_deqPtr_value <= 5'h0;
       transform1_sinkBuffer0_queue0_maybeFull <= 1'h0;
-      fork1_sourceBuffer0_queue0_enqPtr_value <= 5'h0;
-      fork1_sourceBuffer0_queue0_deqPtr_value <= 5'h0;
-      fork1_sourceBuffer0_queue0_maybeFull <= 1'h0;
+      transform0_sinkBuffer0_queue0_enqPtr_value <= 5'h0;
+      transform0_sinkBuffer0_queue0_deqPtr_value <= 5'h0;
+      transform0_sinkBuffer0_queue0_maybeFull <= 1'h0;
     end
     else begin
       automatic logic transform0_sinkBuffer0_queue0_doDeq =
@@ -3120,6 +3120,8 @@ module Elastic_Tbtop(
         fork3_sourceBuffer0_queueSink_ready & fork3_sourceBuffer0_queueSink_valid;
       automatic logic fork2_sourceBuffer0_queue0_doDeq =
         fork2_sourceBuffer0_queueSink_ready & fork2_sourceBuffer0_queueSink_valid;
+      automatic logic fork1_sourceBuffer0_queue0_doDeq =
+        fork1_sourceBuffer0_queueSink_ready & fork1_sourceBuffer0_queueSink_valid;
       automatic logic fork0_sourceBuffer0_queue0_doDeq =
         fork0_sourceBuffer0_queueSink_ready & fork0_sourceBuffer0_queueSink_valid;
       automatic logic transform3_sinkBuffer0_queue0_doDeq =
@@ -3128,16 +3130,6 @@ module Elastic_Tbtop(
         fp32_multiplyOut_ready & ~transform2_sinkBuffer0_queue0_empty;
       automatic logic transform1_sinkBuffer0_queue0_doDeq =
         fp64_addOut_ready & ~transform1_sinkBuffer0_queue0_empty;
-      automatic logic fork1_sourceBuffer0_queue0_doDeq =
-        fork1_sourceBuffer0_queueSink_ready & fork1_sourceBuffer0_queueSink_valid;
-      if (transform0_sinkBuffer0_queue0_doEnq)
-        transform0_sinkBuffer0_queue0_enqPtr_value <=
-          transform0_sinkBuffer0_queue0_enqPtr_value + 5'h1;
-      if (transform0_sinkBuffer0_queue0_doDeq)
-        transform0_sinkBuffer0_queue0_deqPtr_value <=
-          transform0_sinkBuffer0_queue0_deqPtr_value + 5'h1;
-      if (transform0_sinkBuffer0_queue0_doEnq != transform0_sinkBuffer0_queue0_doDeq)
-        transform0_sinkBuffer0_queue0_maybeFull <= transform0_sinkBuffer0_queue0_doEnq;
       fork3_regs_0 <=
         fork3_ready_qual1_0 & fork3_sourceBuffer0_queueSink_valid
         & ~fork3_sourceBuffer0_queueSink_ready;
@@ -3172,6 +3164,14 @@ module Elastic_Tbtop(
       fork1_regs_1 <=
         fork1_ready_qual1_1 & fork1_sourceBuffer0_queueSink_valid
         & ~fork1_sourceBuffer0_queueSink_ready;
+      if (fork1_sourceBuffer0_queue0_doEnq)
+        fork1_sourceBuffer0_queue0_enqPtr_value <=
+          fork1_sourceBuffer0_queue0_enqPtr_value + 5'h1;
+      if (fork1_sourceBuffer0_queue0_doDeq)
+        fork1_sourceBuffer0_queue0_deqPtr_value <=
+          fork1_sourceBuffer0_queue0_deqPtr_value + 5'h1;
+      if (fork1_sourceBuffer0_queue0_doEnq != fork1_sourceBuffer0_queue0_doDeq)
+        fork1_sourceBuffer0_queue0_maybeFull <= fork1_sourceBuffer0_queue0_doEnq;
       fork0_regs_0 <=
         fork0_ready_qual1_0 & fork0_sourceBuffer0_queueSink_valid
         & ~fork0_sourceBuffer0_queueSink_ready;
@@ -3210,14 +3210,14 @@ module Elastic_Tbtop(
           transform1_sinkBuffer0_queue0_deqPtr_value + 5'h1;
       if (transform1_sinkBuffer0_queue0_doEnq != transform1_sinkBuffer0_queue0_doDeq)
         transform1_sinkBuffer0_queue0_maybeFull <= transform1_sinkBuffer0_queue0_doEnq;
-      if (fork1_sourceBuffer0_queue0_doEnq)
-        fork1_sourceBuffer0_queue0_enqPtr_value <=
-          fork1_sourceBuffer0_queue0_enqPtr_value + 5'h1;
-      if (fork1_sourceBuffer0_queue0_doDeq)
-        fork1_sourceBuffer0_queue0_deqPtr_value <=
-          fork1_sourceBuffer0_queue0_deqPtr_value + 5'h1;
-      if (fork1_sourceBuffer0_queue0_doEnq != fork1_sourceBuffer0_queue0_doDeq)
-        fork1_sourceBuffer0_queue0_maybeFull <= fork1_sourceBuffer0_queue0_doEnq;
+      if (transform0_sinkBuffer0_queue0_doEnq)
+        transform0_sinkBuffer0_queue0_enqPtr_value <=
+          transform0_sinkBuffer0_queue0_enqPtr_value + 5'h1;
+      if (transform0_sinkBuffer0_queue0_doDeq)
+        transform0_sinkBuffer0_queue0_deqPtr_value <=
+          transform0_sinkBuffer0_queue0_deqPtr_value + 5'h1;
+      if (transform0_sinkBuffer0_queue0_doEnq != transform0_sinkBuffer0_queue0_doDeq)
+        transform0_sinkBuffer0_queue0_maybeFull <= transform0_sinkBuffer0_queue0_doEnq;
     end
   end // always @(posedge)
   ElasticAdd fp32_add (
@@ -3299,18 +3299,6 @@ module Elastic_Tbtop(
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
     .COUNT(32),
-    .DATA_WIDTH(32)
-  ) transform0_sinkBuffer0_queue0_ram (
-    .clock    (clock),
-    .addrA    (transform0_sinkBuffer0_queue0_enqPtr_value),
-    .writeEnA (transform0_sinkBuffer0_queue0_doEnq),
-    .dataInA  (transform0_sinkBuffer0_queueSource_bits),
-    .addrB    (transform0_sinkBuffer0_queue0_deqPtr_value),
-    .dataOutB (fp32_addOut_bits)
-  );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(5),
-    .COUNT(32),
     .DATA_WIDTH(64)
   ) fork3_sourceBuffer0_queue0_ram (
     .clock    (clock),
@@ -3331,6 +3319,18 @@ module Elastic_Tbtop(
     .dataInA  (fp64_inA_bits),
     .addrB    (fork2_sourceBuffer0_queue0_deqPtr_value),
     .dataOutB (fork2_sourceBuffer0_queueSink_bits)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(5),
+    .COUNT(32),
+    .DATA_WIDTH(32)
+  ) fork1_sourceBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (fork1_sourceBuffer0_queue0_enqPtr_value),
+    .writeEnA (fork1_sourceBuffer0_queue0_doEnq),
+    .dataInA  (fp32_inB_bits),
+    .addrB    (fork1_sourceBuffer0_queue0_deqPtr_value),
+    .dataOutB (fork1_sourceBuffer0_queueSink_bits)
   );
   chext_mem_1w1r #(
     .ADDR_WIDTH(5),
@@ -3384,13 +3384,13 @@ module Elastic_Tbtop(
     .ADDR_WIDTH(5),
     .COUNT(32),
     .DATA_WIDTH(32)
-  ) fork1_sourceBuffer0_queue0_ram (
+  ) transform0_sinkBuffer0_queue0_ram (
     .clock    (clock),
-    .addrA    (fork1_sourceBuffer0_queue0_enqPtr_value),
-    .writeEnA (fork1_sourceBuffer0_queue0_doEnq),
-    .dataInA  (fp32_inB_bits),
-    .addrB    (fork1_sourceBuffer0_queue0_deqPtr_value),
-    .dataOutB (fork1_sourceBuffer0_queueSink_bits)
+    .addrA    (transform0_sinkBuffer0_queue0_enqPtr_value),
+    .writeEnA (transform0_sinkBuffer0_queue0_doEnq),
+    .dataInA  (transform0_sinkBuffer0_queueSource_bits),
+    .addrB    (transform0_sinkBuffer0_queue0_deqPtr_value),
+    .dataOutB (fp32_addOut_bits)
   );
   assign fp32_inA_ready = ~fork0_sourceBuffer0_queue0_full;
   assign fp32_inB_ready = ~fork1_sourceBuffer0_queue0_full;

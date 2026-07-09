@@ -1,5 +1,5 @@
 {
-  "name" : "BufferedNamingSeq_Tbtop",
+  "name" : "SourceBufferedManyNaming_Tbtop",
   "ports" : [
     {
       "name" : "clock",

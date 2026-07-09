@@ -55,7 +55,7 @@ module Transducer_Tbtop(
   input         sink_ready
 );
 
-  wire [31:0] sink__bits;
+  wire [31:0] source__bits_data;
   wire [41:0] _randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB;
   wire        _randomStall1_rand_prng_io_out_0;
   wire        _randomStall1_rand_prng_io_out_1;
@@ -70,34 +70,14 @@ module Transducer_Tbtop(
   wire        randomStall0_stall_sinkBuffer0_queueSource_bits_bad = source_bits_bad;
   wire        randomStall0_stall_sinkBuffer0_queueSource_bits_stallForever =
     source_bits_stallForever;
-  wire [31:0] source__bits_data;
+  wire [31:0] sink__bits = source__bits_data;
   wire [31:0] randomStall1_stall_sinkBuffer0_queueSource_bits = sink__bits;
   reg  [7:0]  transducer0_state;
-  reg         randomStall0_stall_sinkBuffer0_queue0_enqPtr_value;
-  reg         randomStall0_stall_sinkBuffer0_queue0_deqPtr_value;
-  reg         randomStall0_stall_sinkBuffer0_queue0_maybeFull;
-  wire        randomStall0_stall_sinkBuffer0_queue0_ptrMatch =
-    randomStall0_stall_sinkBuffer0_queue0_enqPtr_value == randomStall0_stall_sinkBuffer0_queue0_deqPtr_value;
-  wire        randomStall0_stall_sinkBuffer0_queueSource_valid;
-  wire        randomStall0_stall_sinkBuffer0_queueSource_ready;
-  wire        randomStall0_stall_sinkBuffer0_queue0_doEnq =
-    randomStall0_stall_sinkBuffer0_queueSource_ready
-    & randomStall0_stall_sinkBuffer0_queueSource_valid;
-  wire        source__valid =
-    ~(randomStall0_stall_sinkBuffer0_queue0_ptrMatch
-      & ~randomStall0_stall_sinkBuffer0_queue0_maybeFull);
-  assign randomStall0_stall_sinkBuffer0_queueSource_ready =
-    ~(randomStall0_stall_sinkBuffer0_queue0_ptrMatch
-      & randomStall0_stall_sinkBuffer0_queue0_maybeFull);
-  wire        source__bits_stallForever =
-    _randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB[0];
-  wire        source__bits_bad = _randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB[1];
-  assign source__bits_data = _randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB[33:2];
-  wire [7:0]  source__bits_skip =
-    _randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB[41:34];
-  assign sink__bits = source__bits_data;
+  wire        source__bits_stallForever;
+  wire        source__valid;
   wire        _transducer0_cond_WIRE_0 =
     source__valid & ~source__bits_stallForever & ~(|transducer0_state);
+  wire        source__bits_bad;
   wire        _transducer0_cond_WIRE_1 =
     source__valid & ~source__bits_stallForever & ~(|transducer0_state) & source__bits_bad;
   wire        _transducer0_cond_WIRE_2 =
@@ -151,13 +131,6 @@ module Transducer_Tbtop(
                 "elastic.Transducer: no action was taken! @[src/test/scala/chext/elastic/Transducer.tb.scala:20:25]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
-  wire        _randomStall0_stall_queueSource_valid_T =
-    {_randomStall0_rand_prng_io_out_3,
-     _randomStall0_rand_prng_io_out_2,
-     _randomStall0_rand_prng_io_out_1,
-     _randomStall0_rand_prng_io_out_0} < 4'h9;
-  assign randomStall0_stall_sinkBuffer0_queueSource_valid =
-    _randomStall0_stall_queueSource_valid_T & source_valid;
   wire        _randomStall1_stall_queueSource_valid_T =
     {_randomStall1_rand_prng_io_out_3,
      _randomStall1_rand_prng_io_out_2,
@@ -169,9 +142,11 @@ module Transducer_Tbtop(
     & randomStall1_stall_sinkBuffer0_queueSource_ready;
   wire        randomStall1_stall_sinkBuffer0_queueSource_valid =
     _randomStall1_stall_queueSource_valid_T & sink__valid;
-  wire        randomStall1_stall_sinkBuffer0_queue0_doEnq =
-    randomStall1_stall_sinkBuffer0_queueSource_ready
-    & randomStall1_stall_sinkBuffer0_queueSource_valid;
+  wire        randomStall0_stall_sinkBuffer0_queueSource_valid;
+  wire        randomStall0_stall_sinkBuffer0_queueSource_ready;
+  wire        randomStall0_stall_sinkBuffer0_queue0_doEnq =
+    randomStall0_stall_sinkBuffer0_queueSource_ready
+    & randomStall0_stall_sinkBuffer0_queueSource_valid;
   reg         randomStall1_stall_sinkBuffer0_queue0_enqPtr_value;
   reg         randomStall1_stall_sinkBuffer0_queue0_deqPtr_value;
   reg         randomStall1_stall_sinkBuffer0_queue0_maybeFull;
@@ -180,18 +155,45 @@ module Transducer_Tbtop(
   wire        randomStall1_stall_sinkBuffer0_queue0_empty =
     randomStall1_stall_sinkBuffer0_queue0_ptrMatch
     & ~randomStall1_stall_sinkBuffer0_queue0_maybeFull;
+  wire        randomStall1_stall_sinkBuffer0_queue0_doEnq =
+    randomStall1_stall_sinkBuffer0_queueSource_ready
+    & randomStall1_stall_sinkBuffer0_queueSource_valid;
   assign randomStall1_stall_sinkBuffer0_queueSource_ready =
     ~(randomStall1_stall_sinkBuffer0_queue0_ptrMatch
       & randomStall1_stall_sinkBuffer0_queue0_maybeFull);
+  wire        _randomStall0_stall_queueSource_valid_T =
+    {_randomStall0_rand_prng_io_out_3,
+     _randomStall0_rand_prng_io_out_2,
+     _randomStall0_rand_prng_io_out_1,
+     _randomStall0_rand_prng_io_out_0} < 4'h9;
+  assign randomStall0_stall_sinkBuffer0_queueSource_valid =
+    _randomStall0_stall_queueSource_valid_T & source_valid;
+  reg         randomStall0_stall_sinkBuffer0_queue0_enqPtr_value;
+  reg         randomStall0_stall_sinkBuffer0_queue0_deqPtr_value;
+  reg         randomStall0_stall_sinkBuffer0_queue0_maybeFull;
+  wire        randomStall0_stall_sinkBuffer0_queue0_ptrMatch =
+    randomStall0_stall_sinkBuffer0_queue0_enqPtr_value == randomStall0_stall_sinkBuffer0_queue0_deqPtr_value;
+  assign source__valid =
+    ~(randomStall0_stall_sinkBuffer0_queue0_ptrMatch
+      & ~randomStall0_stall_sinkBuffer0_queue0_maybeFull);
+  assign randomStall0_stall_sinkBuffer0_queueSource_ready =
+    ~(randomStall0_stall_sinkBuffer0_queue0_ptrMatch
+      & randomStall0_stall_sinkBuffer0_queue0_maybeFull);
+  assign source__bits_stallForever =
+    _randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB[0];
+  assign source__bits_bad = _randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB[1];
+  assign source__bits_data = _randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB[33:2];
+  wire [7:0]  source__bits_skip =
+    _randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB[41:34];
   always @(posedge clock) begin
     if (reset) begin
       transducer0_state <= 8'h0;
-      randomStall0_stall_sinkBuffer0_queue0_enqPtr_value <= 1'h0;
-      randomStall0_stall_sinkBuffer0_queue0_deqPtr_value <= 1'h0;
-      randomStall0_stall_sinkBuffer0_queue0_maybeFull <= 1'h0;
       randomStall1_stall_sinkBuffer0_queue0_enqPtr_value <= 1'h0;
       randomStall1_stall_sinkBuffer0_queue0_deqPtr_value <= 1'h0;
       randomStall1_stall_sinkBuffer0_queue0_maybeFull <= 1'h0;
+      randomStall0_stall_sinkBuffer0_queue0_enqPtr_value <= 1'h0;
+      randomStall0_stall_sinkBuffer0_queue0_deqPtr_value <= 1'h0;
+      randomStall0_stall_sinkBuffer0_queue0_maybeFull <= 1'h0;
     end
     else begin
       automatic logic randomStall0_stall_sinkBuffer0_queue0_doDeq =
@@ -207,15 +209,6 @@ module Transducer_Tbtop(
           (|transducer0_state)
             ? transducer0_state - 8'h1
             : sink__ready ? source__bits_skip : transducer0_state;
-      if (randomStall0_stall_sinkBuffer0_queue0_doEnq)
-        randomStall0_stall_sinkBuffer0_queue0_enqPtr_value <=
-          randomStall0_stall_sinkBuffer0_queue0_enqPtr_value - 1'h1;
-      if (randomStall0_stall_sinkBuffer0_queue0_doDeq)
-        randomStall0_stall_sinkBuffer0_queue0_deqPtr_value <=
-          randomStall0_stall_sinkBuffer0_queue0_deqPtr_value - 1'h1;
-      if (randomStall0_stall_sinkBuffer0_queue0_doEnq != randomStall0_stall_sinkBuffer0_queue0_doDeq)
-        randomStall0_stall_sinkBuffer0_queue0_maybeFull <=
-          randomStall0_stall_sinkBuffer0_queue0_doEnq;
       if (randomStall1_stall_sinkBuffer0_queue0_doEnq)
         randomStall1_stall_sinkBuffer0_queue0_enqPtr_value <=
           randomStall1_stall_sinkBuffer0_queue0_enqPtr_value - 1'h1;
@@ -225,6 +218,15 @@ module Transducer_Tbtop(
       if (randomStall1_stall_sinkBuffer0_queue0_doEnq != randomStall1_stall_sinkBuffer0_queue0_doDeq)
         randomStall1_stall_sinkBuffer0_queue0_maybeFull <=
           randomStall1_stall_sinkBuffer0_queue0_doEnq;
+      if (randomStall0_stall_sinkBuffer0_queue0_doEnq)
+        randomStall0_stall_sinkBuffer0_queue0_enqPtr_value <=
+          randomStall0_stall_sinkBuffer0_queue0_enqPtr_value - 1'h1;
+      if (randomStall0_stall_sinkBuffer0_queue0_doDeq)
+        randomStall0_stall_sinkBuffer0_queue0_deqPtr_value <=
+          randomStall0_stall_sinkBuffer0_queue0_deqPtr_value - 1'h1;
+      if (randomStall0_stall_sinkBuffer0_queue0_doEnq != randomStall0_stall_sinkBuffer0_queue0_doDeq)
+        randomStall0_stall_sinkBuffer0_queue0_maybeFull <=
+          randomStall0_stall_sinkBuffer0_queue0_doEnq;
     end
   end // always @(posedge)
   MaxPeriodFibonacciLFSR randomStall0_rand_prng (
@@ -246,6 +248,18 @@ module Transducer_Tbtop(
   chext_mem_1w1r #(
     .ADDR_WIDTH(1),
     .COUNT(2),
+    .DATA_WIDTH(32)
+  ) randomStall1_stall_sinkBuffer0_queue0_ram (
+    .clock    (clock),
+    .addrA    (randomStall1_stall_sinkBuffer0_queue0_enqPtr_value),
+    .writeEnA (randomStall1_stall_sinkBuffer0_queue0_doEnq),
+    .dataInA  (randomStall1_stall_sinkBuffer0_queueSource_bits),
+    .addrB    (randomStall1_stall_sinkBuffer0_queue0_deqPtr_value),
+    .dataOutB (sink_bits)
+  );
+  chext_mem_1w1r #(
+    .ADDR_WIDTH(1),
+    .COUNT(2),
     .DATA_WIDTH(42)
   ) randomStall0_stall_sinkBuffer0_queue0_ram (
     .clock    (clock),
@@ -258,18 +272,6 @@ module Transducer_Tbtop(
         randomStall0_stall_sinkBuffer0_queueSource_bits_stallForever}),
     .addrB    (randomStall0_stall_sinkBuffer0_queue0_deqPtr_value),
     .dataOutB (_randomStall0_stall_sinkBuffer0_queue0_ram_dataOutB)
-  );
-  chext_mem_1w1r #(
-    .ADDR_WIDTH(1),
-    .COUNT(2),
-    .DATA_WIDTH(32)
-  ) randomStall1_stall_sinkBuffer0_queue0_ram (
-    .clock    (clock),
-    .addrA    (randomStall1_stall_sinkBuffer0_queue0_enqPtr_value),
-    .writeEnA (randomStall1_stall_sinkBuffer0_queue0_doEnq),
-    .dataInA  (randomStall1_stall_sinkBuffer0_queueSource_bits),
-    .addrB    (randomStall1_stall_sinkBuffer0_queue0_deqPtr_value),
-    .dataOutB (sink_bits)
   );
   assign source_ready =
     _randomStall0_stall_queueSource_valid_T
