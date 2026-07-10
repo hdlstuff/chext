@@ -63,6 +63,11 @@ class EndpointExample extends Module {
 
 ## Defining Elastic Components
 
+A Chisel `Module` owns hardware IO at an elaboration boundary. An Elastic Chext
+`Component` does not introduce an IO boundary or create new interfaces. It
+operates on the interfaces provided to it and registers them as logical source
+and sink ports in the tracking graph.
+
 An elastic component extends `chext.tracking.Component` and registers every
 elastic interface that it consumes or produces with its elastic tracking state.
 Use `addSource` for an interface that supplies tokens to the component and
