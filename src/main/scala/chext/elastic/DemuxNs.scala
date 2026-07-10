@@ -35,7 +35,7 @@ class DemuxNs[Tin <: Data, Tout <: Data](
   private var outFn_ = Option.empty[OutFn]
 
   override def tpe: String = "DemuxNs"
-  override def namePrefix: String = "demuxNs"
+  override def namePrefix: String = "demux"
   override val sourceInfo: SourceInfo = si_
 
   private val require_ = chext.util.Require.inferred(sourceInfo)

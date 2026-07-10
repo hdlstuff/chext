@@ -7,16 +7,16 @@ import chisel3.experimental.{SourceInfo, prefix}
 
 import chext.tracking.{Component, uniquePrefix}
 
-/** `Connect` connects two elastic interfaces, with an optional combinational transformation given
-  * by:
-  * {{{
-  * out := in // the user can choose whichever transformation
-  * }}}
+/** Connects two elastic interfaces without transforming the payload.
+  *
+  * The payload is connected with Chisel's standard `:=` connection (`sink.bits := source.bits`).
+  * Consequently, compatible aggregate types use Chisel's normal name-based field matching. Use
+  * [[Transform]] when the payload needs an explicit combinational transformation.
   *
   * @param source
   *   The upstream interface providing tokens.
   * @param sink
-  *   The downstream interface accepting tokens which are optionally modified.
+  *   The downstream interface accepting tokens connected from `source`.
   * @tparam Tin
   *   Type of the input token.
   * @tparam Tout
@@ -53,18 +53,12 @@ class Connect[Tin <: Data, Tout <: Data](
 object ConnectOp {
   private val require_ = chext.util.Require.inferred()
 
-  private def connectImpl[T <: Data](
-      source: Interface[T],
-      sink: Interface[T]
-  )(implicit sourceInfo: SourceInfo): Connect[T, T] =
-    new Connect(source, sink)
-
   private def connect_[T <: Data](
       source: Interface[T],
       sink: Interface[T]
   )(implicit sourceInfo: SourceInfo): Connect[T, T] =
     uniquePrefix("connect") {
-      connectImpl(source, sink)
+      new Connect(source, sink)
     }
 
   implicit class elastic_connect_op[T <: Data](val source: Interface[T]) extends AnyVal {
@@ -83,7 +77,7 @@ object ConnectOp {
       uniquePrefix("connectMany") {
         sources.zip(sinks).zipWithIndex.foreach { case ((source, sink), index) =>
           prefix(index.toString) {
-            connectImpl(source, sink)
+            val connect0 = new Connect(source, sink)
           }
         }
       }

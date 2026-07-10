@@ -133,7 +133,7 @@ val wires = e.EWire.many(4, UInt(32.W))
 source :=> sink
 ```
 
-**Details:** Creates `Connect`; Component; UniquePrefix: connect.
+**Details:** Creates `Connect`; payload uses Chisel's standard `:=` connection and name-based aggregate field matching; no user-defined transformation is applied. Component; UniquePrefix: connect.
 
 ---
 
@@ -148,7 +148,7 @@ source :=> sink
 sources :=> sinks
 ```
 
-**Details:** Creates one `Connect` per pair; Component; UniquePrefix: connectMany with per-index prefixes.
+**Details:** Creates one `Connect` per pair; Component; UniquePrefix: connectMany with per-index prefixes and an innermost `connect0` value prefix, for example `connectMany0_0_connect0`.
 
 ---
 
@@ -179,12 +179,12 @@ Buffer naming convention: `SourceBuffer`, `SinkBuffer`, `LeftBuffer`, and `Right
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Connect.scala)
 
-**Intent and Usage:** Direct pass-through connection. Prefer `source :=> sink` unless a named value is useful:
+**Intent and Usage:** Standard Chisel payload connection with no user-defined transformation. Prefer `source :=> sink` unless a named value is useful:
 ```scala
 val connect0 = new e.Connect(source, sink)
 ```
 
-**Details:** Component; tpe: Connect; namePrefix: connect. Ports: `source`, `sink`.
+**Details:** Uses `sink.bits := source.bits`, including Chisel's name-based matching for compatible aggregates. Component; tpe: Connect; namePrefix: connect Ports: `source`, `sink`.
 
 ---
 
@@ -194,14 +194,14 @@ val connect0 = new e.Connect(source, sink)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Transform.scala)
 
-**Intent and Usage:** Combinational payload transform:
+**Intent and Usage:** Explicit combinational payload transformation:
 ```scala
 val transform0 = new e.Transform(source, sink) {
   out := f(in)
 }
 ```
 
-**Details:** Component; tpe: Transform; namePrefix: transform. Ports: `source`, `sink`.
+**Details:** Forwards ready/valid but does not connect the payload automatically; the body must assign protected `out` from protected `in`. Component; tpe: Transform; namePrefix: transform Ports: `source`, `sink`.
 
 ---
 
@@ -502,7 +502,7 @@ val arbiter0 =
   new e.ArbiterNs(sources, sink, e.Chooser.rr)
 ```
 
-**Details:** Component; tpe: ArbiterNs; namePrefix: arbiterNs. Ports: `source_i`, `sink`.
+**Details:** Component; tpe: ArbiterNs; namePrefix: arbiter. Ports: `source_i`, `sink`. The no-select implementation shares the `arbiter` naming family.
 
 ---
 
@@ -519,7 +519,7 @@ val demux0 = new e.DemuxNs(source, sinks) {
 }
 ```
 
-**Details:** Component; tpe: DemuxNs; namePrefix: demuxNs. Ports: `source`, `sink_i`.
+**Details:** Component; tpe: DemuxNs; namePrefix: demux. Ports: `source`, `sink_i`. The no-select implementation shares the `demux` naming family.
 
 ---
 
@@ -909,7 +909,7 @@ s_axi.connect(m_axi, axi4f.ConnectConfig())
 s_axi_N :=> m_axi_N
 ```
 
-**Details:** Creates one full connect per pair; UniquePrefix: axi4fConnectMany with per-index prefixes.
+**Details:** Creates one full connect per pair; UniquePrefix: axi4fConnectMany with per-index prefixes and an innermost `axi4fConnect0` value prefix, for example `axi4fConnectMany0_0_axi4fConnect0`.
 
 ---
 
@@ -954,7 +954,7 @@ s_axil.connect(m_axil, axi4l.ConnectConfig())
 s_axil_N :=> m_axil_N
 ```
 
-**Details:** Creates one lite connect per pair; UniquePrefix: axi4lConnectMany with per-index prefixes.
+**Details:** Creates one lite connect per pair; UniquePrefix: axi4lConnectMany with per-index prefixes and an innermost `axi4lConnect0` value prefix, for example `axi4lConnectMany0_0_axi4lConnect0`.
 
 ---
 
@@ -984,7 +984,7 @@ s_axi_raw :=> m_axi_raw
 s_axi_raw_N :=> m_axi_raw_N
 ```
 
-**Details:** Dispatch helper; UniquePrefix: axi4ConnectMany.
+**Details:** Dispatch helper; UniquePrefix: axi4ConnectMany. Each element receives an innermost `axi4fConnect0` or `axi4lConnect0` value prefix according to its interface configuration.
 
 ---
 

@@ -63,13 +63,15 @@ class EndpointExample extends Module {
 
 ### `Connect` and `ConnectOp`
 
-`new e.Connect(source, sink)` passes tokens through unchanged: sink valid follows
-source valid, source ready follows sink ready, and bits are assigned from input
-to output. It is tracked as a `Connect` component and supports `fire { ... }`
-hooks through the sink-side handshake.
+`new e.Connect(source, sink)` connects the payload with Chisel's standard `:=`
+connection (`sink.bits := source.bits`), so compatible aggregates use Chisel's
+normal name-based field matching. It does not apply a user-defined transformation.
+Sink valid follows source valid, source ready follows sink ready, and the component
+supports `fire { ... }` hooks through the sink-side handshake.
 
 `e.ConnectOp._` adds `source :=> sink`. For sequences, `sources :=> sinks`
-creates one `Connect` per pair and requires equal sequence lengths.
+creates one `Connect` per pair and requires equal sequence lengths. Sequence graph paths have an
+outer `connectMany` scope, a numeric element scope, and an innermost `connect0` value prefix.
 
 ```scala
 source :=> sink
@@ -132,8 +134,10 @@ e.Queue.useVerilogMem(enabled = false)
 
 ### `Transform`
 
-`Transform` preserves the ready/valid handshake and lets the body assign a
-combinational output from `in` to `out`.
+`Transform` preserves the ready/valid handshake and lets the body define an
+explicit combinational payload transformation by assigning the protected `out`
+from the protected `in`. Unlike `Connect`, it does not connect the payload
+automatically; the body must drive `out`.
 
 ```scala
 val transform0 = new e.Transform(source, sink) {

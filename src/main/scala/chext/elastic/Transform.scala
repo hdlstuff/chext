@@ -9,6 +9,22 @@ import chisel3.hacks.deferred
 import chext.deadlock
 import chext.tracking.Component
 
+/** Applies a user-defined combinational transformation between two elastic interfaces.
+  *
+  * `Transform` forwards the ready/valid handshake and exposes the source payload as protected
+  * [[in]] and the sink payload as protected [[out]]. The subclass body must drive `out`, typically
+  * with an assignment such as `out := f(in)`. Unlike [[Connect]], no payload connection is added
+  * automatically.
+  *
+  * @param source
+  *   The upstream interface providing input tokens.
+  * @param sink
+  *   The downstream interface accepting transformed tokens.
+  * @tparam Tin
+  *   Type of the input token.
+  * @tparam Tout
+  *   Type of the transformed output token.
+  */
 abstract class Transform[Tin <: Data, Tout <: Data](
     source: Interface[Tin],
     sink: Interface[Tout]

@@ -184,10 +184,39 @@ private[chext] class ModuleInfo(
           }
         }
       }
+    }
 
+    /** Name-prefix convention checks.
+      */
+    def namePrefixChecks() = {
+      baseComponents_.foreach { baseComponent =>
+        baseComponent.path.headOption.foreach { latestPrefix =>
+          val expectedPrefix = baseComponent.namePrefix
+          val suffix = latestPrefix.stripPrefix(expectedPrefix)
+          val startsWithExpectedPrefix =
+            expectedPrefix.nonEmpty &&
+              latestPrefix.startsWith(expectedPrefix) &&
+              suffix.headOption.forall { c =>
+                c.isDigit || c.isUpper || c == '_'
+              }
+
+          if (!startsWithExpectedPrefix) {
+            logger.warn(
+              "namePrefixChecks",
+              "Component or container path does not start with its expected namePrefix",
+              f"Module: ${module.toString()} @[${sourceInfoToString(ModuleInternals.getSourceInfo(module))}]",
+              f"Expected namePrefix: $expectedPrefix",
+              f"Latest prefix: $latestPrefix",
+              f"Path: ${baseComponent.pathStr}",
+              baseComponent.toString()
+            )
+          }
+        }
+      }
     }
 
     pathChecks()
+    namePrefixChecks()
     TagRegistry.tags.foreach { tag =>
       trackingState(tag).onComplete()
     }

@@ -38,7 +38,7 @@ final class ArbiterNs[Tin <: Data, Tout <: Data](
   private var outFn_ = Option.empty[OutFn]
 
   override def tpe: String = "ArbiterNs"
-  override def namePrefix: String = "arbiterNs"
+  override def namePrefix: String = "arbiter"
   override val sourceInfo: SourceInfo = si_
 
   private val require_ = chext.util.Require.inferred(sourceInfo)

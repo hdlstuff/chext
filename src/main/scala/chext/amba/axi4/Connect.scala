@@ -65,10 +65,11 @@ object connect {
       Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
     )
 
-    if (master.cfg.lite)
-      new axi4.lite.Connect(master.asLite, slave.asLite, None)
-    else
-      new axi4.full.Connect(master.asFull, slave.asFull, None)
+    if (master.cfg.lite) {
+      val axi4lConnect0 = new axi4.lite.Connect(master.asLite, slave.asLite, None)
+    } else {
+      val axi4fConnect0 = new axi4.full.Connect(master.asFull, slave.asFull, None)
+    }
   }
 }
 

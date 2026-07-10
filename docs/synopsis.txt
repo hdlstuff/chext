@@ -11,7 +11,7 @@ END
 kind = badges
 items = Component, Container, Module, Config, Interface, Function, UniquePrefix, tpe, namePrefix, Scala, Scala TB, SysC TB
 text <<END
-`tpe` is the graph type. `namePrefix` is the construction's conceptual default prefix. Actual paths come from Chisel naming, `prefix(...)`, and `uniquePrefix(...)`.
+`tpe` is the graph type. `namePrefix` is the construction family's conceptual default prefix. Actual paths come from Chisel naming, `prefix(...)`, and `uniquePrefix(...)`; tracking warns when the latest prefix does not recognizably start with `namePrefix`.
 END
 
 [section.elastic_imports]
@@ -144,7 +144,7 @@ source :=> sink
 ```
 END
 details <<END
-Creates `Connect`; {{badge:Component}} {{badge:UniquePrefix:connect}}.
+Creates `Connect`; payload uses Chisel's standard `:=` connection and name-based aggregate field matching; no user-defined transformation is applied. {{badge:Component}} {{badge:UniquePrefix:connect}}.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Connect.scala}}
@@ -160,7 +160,7 @@ sources :=> sinks
 ```
 END
 details <<END
-Creates one `Connect` per pair; {{badge:Component}} {{badge:UniquePrefix:connectMany}} with per-index prefixes.
+Creates one `Connect` per pair; {{badge:Component}} {{badge:UniquePrefix:connectMany}} with per-index prefixes and an innermost `connect0` value prefix, for example `connectMany0_0_connect0`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Connect.scala}}
@@ -195,13 +195,13 @@ END
 anchor = elastic-components-e-connect
 construct = `e.Connect`
 intent <<END
-Direct pass-through connection. Prefer `source :=> sink` unless a named value is useful:
+Standard Chisel payload connection with no user-defined transformation. Prefer `source :=> sink` unless a named value is useful:
 ```scala
 val connect0 = new e.Connect(source, sink)
 ```
 END
 details <<END
-{{badge:Component}} {{badge:tpe:Connect}} {{badge:namePrefix:connect}} Ports: `source`, `sink`.
+Uses `sink.bits := source.bits`, including Chisel's name-based matching for compatible aggregates. {{badge:Component}} {{badge:tpe:Connect}} {{badge:namePrefix:connect}} Ports: `source`, `sink`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Connect.scala}}
@@ -211,7 +211,7 @@ END
 anchor = elastic-components-e-transform
 construct = `e.Transform`
 intent <<END
-Combinational payload transform:
+Explicit combinational payload transformation:
 ```scala
 val transform0 = new e.Transform(source, sink) {
   out := f(in)
@@ -219,7 +219,7 @@ val transform0 = new e.Transform(source, sink) {
 ```
 END
 details <<END
-{{badge:Component}} {{badge:tpe:Transform}} {{badge:namePrefix:transform}} Ports: `source`, `sink`.
+Forwards ready/valid but does not connect the payload automatically; the body must assign protected `out` from protected `in`. {{badge:Component}} {{badge:tpe:Transform}} {{badge:namePrefix:transform}} Ports: `source`, `sink`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Transform.scala}}
@@ -550,7 +550,7 @@ val arbiter0 =
 ```
 END
 details <<END
-{{badge:Component}} {{badge:tpe:ArbiterNs}} {{badge:namePrefix:arbiterNs}} Ports: `source_i`, `sink`.
+{{badge:Component}} {{badge:tpe:ArbiterNs}} {{badge:namePrefix:arbiter}} Ports: `source_i`, `sink`. The no-select implementation shares the `arbiter` naming family.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/ArbiterNs.scala}}
@@ -568,7 +568,7 @@ val demux0 = new e.DemuxNs(source, sinks) {
 ```
 END
 details <<END
-{{badge:Component}} {{badge:tpe:DemuxNs}} {{badge:namePrefix:demuxNs}} Ports: `source`, `sink_i`.
+{{badge:Component}} {{badge:tpe:DemuxNs}} {{badge:namePrefix:demux}} Ports: `source`, `sink_i`. The no-select implementation shares the `demux` naming family.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/DemuxNs.scala}}
@@ -997,7 +997,7 @@ s_axi_N :=> m_axi_N
 ```
 END
 details <<END
-Creates one full connect per pair; {{badge:UniquePrefix:axi4fConnectMany}} with per-index prefixes.
+Creates one full connect per pair; {{badge:UniquePrefix:axi4fConnectMany}} with per-index prefixes and an innermost `axi4fConnect0` value prefix, for example `axi4fConnectMany0_0_axi4fConnect0`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
@@ -1047,7 +1047,7 @@ s_axil_N :=> m_axil_N
 ```
 END
 details <<END
-Creates one lite connect per pair; {{badge:UniquePrefix:axi4lConnectMany}} with per-index prefixes.
+Creates one lite connect per pair; {{badge:UniquePrefix:axi4lConnectMany}} with per-index prefixes and an innermost `axi4lConnect0` value prefix, for example `axi4lConnectMany0_0_axi4lConnect0`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
@@ -1079,7 +1079,7 @@ s_axi_raw_N :=> m_axi_raw_N
 ```
 END
 details <<END
-Dispatch helper; {{badge:UniquePrefix:axi4ConnectMany}}.
+Dispatch helper; {{badge:UniquePrefix:axi4ConnectMany}}. Each element receives an innermost `axi4fConnect0` or `axi4lConnect0` value prefix according to its interface configuration.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/Connect.scala}}

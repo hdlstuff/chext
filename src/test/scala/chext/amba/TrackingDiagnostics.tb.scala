@@ -1,7 +1,7 @@
 package chext.amba
 
 import chisel3._
-import chisel3.experimental.prefix
+import chisel3.experimental.{prefix, SourceInfo}
 import circt.stage.ChiselStage
 
 import java.io.{ByteArrayOutputStream, PrintStream, PrintWriter, StringWriter}
@@ -17,6 +17,7 @@ import chext.amba.axi4.Casts._
 import chext.amba.axi4.ConnectOp._
 import chext.amba.axi4.full.{ConnectOp => Axi4FullConnectOp}
 import chext.amba.axi4s.Casts._
+import chext.tracking.{Component, Container}
 import io.circe.generic.auto._
 import io.circe.syntax._
 
@@ -297,6 +298,65 @@ private class ElasticPathWarningTop extends Module {
   prefix("same_path") {
     val transform0 = new e.Transform(source, sink) {
       out := in
+    }
+  }
+}
+
+private final class NamingTestComponent(expectedPrefix: String)(implicit
+    val sourceInfo: SourceInfo
+) extends Component {
+  def tpe: String = "NamingTestComponent"
+  def namePrefix: String = expectedPrefix
+}
+
+private final class NamingTestContainer(expectedPrefix: String)(implicit
+    val sourceInfo: SourceInfo
+) extends Container {
+  def tpe: String = "NamingTestContainer"
+  def namePrefix: String = expectedPrefix
+}
+
+private class NamePrefixAcceptedTop extends Module {
+  Seq(
+    "queue",
+    "queue0",
+    "queue0_",
+    "queue0_1",
+    "queue_0_1",
+    "queueRd",
+    "queueABC",
+    "queue_x0",
+    "queue_abc",
+    "queue_a",
+    "queue_b",
+    "queue_c"
+  ).foreach { name =>
+    prefix(name) {
+      new NamingTestComponent("queue")
+    }
+  }
+
+  prefix("scope0") {
+    new NamingTestContainer("scope")
+  }
+
+  prefix("sourceBuffer0") {
+    prefix("queueNested") {
+      new NamingTestComponent("queue")
+    }
+  }
+}
+
+private class NamePrefixWarningTop extends Module {
+  Seq("queueing0", "myQueue0", "rightBuffer0", "readConnectMany0").foreach { name =>
+    prefix(name) {
+      new NamingTestComponent("queue")
+    }
+  }
+
+  prefix("queue0") {
+    prefix("rightBufferNested") {
+      new NamingTestComponent("queue")
     }
   }
 }
@@ -679,7 +739,8 @@ object TrackingDiagnostics_Tb extends App {
       logContains: Seq[String] = Seq.empty,
       logExcludes: Seq[String] = Seq.empty,
       failureContains: Seq[String] = Seq.empty,
-      allowPathWarnings: Boolean = false
+      allowPathWarnings: Boolean = false,
+      allowNamePrefixWarnings: Boolean = false
   )
 
   case class CaseResult(
@@ -705,6 +766,9 @@ object TrackingDiagnostics_Tb extends App {
 
     if (!testCase.allowPathWarnings && log.contains("[ WARN ] tracking/pathChecks"))
       issues.addOne("log unexpectedly contained tracking path warning")
+
+    if (!testCase.allowNamePrefixWarnings && log.contains("[ WARN ] tracking/namePrefixChecks"))
+      issues.addOne("log unexpectedly contained tracking namePrefix warning")
 
     testCase.svContains.foreach { needle =>
       if (!sv.contains(needle))
@@ -793,10 +857,10 @@ object TrackingDiagnostics_Tb extends App {
       gen = () => new ElasticConnectManyTop,
       svContains = Seq("module ElasticConnectManyTop"),
       graphContains = Seq(
-        """"path" : "/connectMany0_0"""",
-        """"path" : "/connectMany0_1"""",
-        """"/connectMany0_0"""",
-        """"/connectMany0_1""""
+        """"path" : "/connectMany0_0_connect0"""",
+        """"path" : "/connectMany0_1_connect0"""",
+        """"/connectMany0_0_connect0"""",
+        """"/connectMany0_1_connect0""""
       ),
       logExcludes = Seq("Interface never marked!", "more than 1 times")
     ),
@@ -819,6 +883,32 @@ object TrackingDiagnostics_Tb extends App {
         "[ WARN ] tracking/pathChecks : Multiple components or containers use the same path, which should be avoided"
       ),
       allowPathWarnings = true
+    ),
+    TestCase(
+      name = "tracking_name_prefix_accepted",
+      description = "Components and containers accept numeric, camel-case, and underscore suffixes after their expected namePrefix.",
+      shouldPass = true,
+      gen = () => new NamePrefixAcceptedTop,
+      svContains = Seq("module NamePrefixAcceptedTop"),
+      logExcludes = Seq("[ WARN ] tracking/namePrefixChecks")
+    ),
+    TestCase(
+      name = "tracking_name_prefix_warning",
+      description = "A component warns when its latest prefix does not recognizably start with its expected namePrefix.",
+      shouldPass = true,
+      gen = () => new NamePrefixWarningTop,
+      svContains = Seq("module NamePrefixWarningTop"),
+      logContains = Seq(
+        "[ WARN ] tracking/namePrefixChecks : Component or container path does not start with its expected namePrefix",
+        "Expected namePrefix: queue",
+        "Latest prefix: queueing0",
+        "Latest prefix: myQueue0",
+        "Latest prefix: rightBuffer0",
+        "Latest prefix: readConnectMany0",
+        "Latest prefix: rightBufferNested",
+        "Path: queue0_rightBufferNested"
+      ),
+      allowNamePrefixWarnings = true
     ),
     TestCase(
       name = "elastic_unused",

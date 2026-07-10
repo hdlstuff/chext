@@ -46,7 +46,7 @@ In practice:
 | Concept | What it means | Naming / graph behavior |
 |---|---|---|
 | `tpe` | User-facing component/container type name. | Emitted as `"tpe"` in module graph JSON, for example `"Queue"`, `"Transducer"`, `"Repeat"`. |
-| `namePrefix` | Default conceptual prefix for a construction. | Mostly advisory today. Actual graph path comes from Chisel prefix/variable names and helper prefixes; most classes still define it consistently. |
+| `namePrefix` | Conceptual family prefix for a construction. | At tracking completion, the latest Chisel prefix must start with `namePrefix`, followed by the end of the name, a digit, an uppercase letter, or an underscore. A mismatch emits a `tracking/namePrefixChecks` warning. Actual graph paths still come from Chisel prefix/variable names and helper prefixes. |
 | `uniquePrefix(name) { ... }` | Generates a Chisel prefix unique in the current module for a base name. | Produces names like `connect0`, `elasticConnectMany0`, `sourceBuffer0`, `sinkBuffer0`; nested prefixes concatenate with underscores. `Buffered` helpers deliberately rely on the assigned Scala `val` name, and their sequence overloads add only numeric element prefixes. |
 | `prefix("x") { ... }` | Chisel prefix scope. | Components created inside receive paths such as `/x_transform0`, `/read_ar_transform0`, etc. |
 | Sequence helper prefixes | Helpers over `Seq` usually wrap each element in a unique domain-specific `...Many` prefix and then `prefix(index.toString)`. | Example: `sources :=> sinks` creates `Connect` components under `/connectMany0_0_connect0`, `/connectMany0_1_connect0`, unless surrounding Scala names/prefixes alter the path. |

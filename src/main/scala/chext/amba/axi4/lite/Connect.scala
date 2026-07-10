@@ -338,7 +338,7 @@ trait ConnectOp {
       uniquePrefix("axi4lConnectMany") {
         masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
           prefix(index.toString) {
-            new Connect(master, slave, None)
+            val axi4lConnect0 = new Connect(master, slave, None)
           }
         }
       }
@@ -353,7 +353,7 @@ trait ConnectOp {
       uniquePrefix("axi4lConnectMany") {
         masters.zip(slaves).zipWithIndex.foreach { case ((master, slave), index) =>
           prefix(index.toString) {
-            new Connect(master, slave, Some(cfg))
+            val axi4lConnect0 = new Connect(master, slave, Some(cfg))
           }
         }
       }
