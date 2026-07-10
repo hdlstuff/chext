@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
-import chext.tracking.{Container, withContainer}
+import chext.tracking.{Component, withComponent}
 
 /** `Repeat` replicates each input token multiple times at the output.
   *
@@ -39,7 +39,7 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
     sink: Interface[Tout],
     wIndex: Int
 )(implicit si_ : SourceInfo)
-    extends Container
+    extends Component
     with Fire[Tout] {
   protected def fireSink: Interface[Tout] = sink
 
@@ -114,7 +114,7 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
     val lenFn = lenFn_.get
     val outFn = outFn_.get
 
-    withContainer(this) {
+    withComponent(this) {
       val count = new Count(source, sink, UInt(wIndex.W)) { count =>
         count.init { (_) => 0.U }
 

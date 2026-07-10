@@ -8,7 +8,7 @@ This is a working synopsis of the main Chext constructions, their intended use, 
 - [Elastic Imports](#elastic-imports)
 - [Elastic Interfaces and Operators](#elastic-interfaces-and-operators)
 - [Elastic Components](#elastic-components)
-- [Elastic Containers](#elastic-containers)
+- [Elastic Composite Components](#elastic-composite-components)
 - [AXI4 Imports](#axi4-imports)
 - [AXI4 Interfaces and Connects](#axi4-interfaces-and-connects)
 - [AXI4 Buffers](#axi4-buffers)
@@ -20,7 +20,6 @@ This is a working synopsis of the main Chext constructions, their intended use, 
 - [Float](#float)
 
 <span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span>
-<span style="background:#eaf7ea;color:#137333;padding:2px 6px;border-radius:4px;">Container</span>
 <span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span>
 <span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span>
 <span style="background:#f3e8ff;color:#6b21a8;padding:2px 6px;border-radius:4px;">Interface</span>
@@ -322,7 +321,7 @@ val counter0 = new e.Counter(sinkCounter)</code></pre></td>
   </tbody>
 </table>
 
-## Elastic Containers
+## Elastic Composite Components
 
 <table style="table-layout:fixed;width:100%;">
   <colgroup>
@@ -338,16 +337,16 @@ val counter0 = new e.Counter(sinkCounter)</code></pre></td>
     </tr>
   </thead>
   <tbody>
-    <tr id="entry-elastic-containers-e-repeat">
-      <td style="vertical-align:top;"><code>e.Repeat</code> <a href="#entry-elastic-containers-e-repeat" style="text-decoration:none;" aria-label="Permalink to entry-elastic-containers-e-repeat">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Repeat.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/test/scala/chext/elastic/Count.tb.scala" style="text-decoration:none;"><span style="background:#edf2ff;color:#364fc7;padding:2px 6px;border-radius:4px;">Scala TB</span></a></div></div></td>
+    <tr id="entry-elastic-composite-components-e-repeat">
+      <td style="vertical-align:top;"><code>e.Repeat</code> <a href="#entry-elastic-composite-components-e-repeat" style="text-decoration:none;" aria-label="Permalink to entry-elastic-composite-components-e-repeat">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Repeat.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/test/scala/chext/elastic/Count.tb.scala" style="text-decoration:none;"><span style="background:#edf2ff;color:#364fc7;padding:2px 6px;border-radius:4px;">Scala TB</span></a></div></div></td>
       <td style="vertical-align:top;">Repeat one input token multiple times:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val repeat0 = new e.Repeat(source, sink, wIndex = 8) {
   len { in =&gt; in.length }
   out { (in, index, first, last) =&gt; in }
 }</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#eaf7ea;color:#137333;padding:2px 6px;border-radius:4px;">Container</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: Repeat</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: repeat</span>. Hierarchy: creates a child <code>Count</code> under <code>withContainer(this)</code>, with observed path shape <code>/repeat0</code> -> <code>/repeat0_count</code>.</td>
+      <td style="vertical-align:top;"><span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: Repeat</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: repeat</span>. Hierarchy: creates a child <code>Count</code> under <code>withComponent(this)</code>, with observed path shape <code>/repeat0</code> -> <code>/repeat0_count</code>.</td>
     </tr>
-    <tr id="entry-elastic-containers-e-fold">
-      <td style="vertical-align:top;"><code>e.Fold</code> <a href="#entry-elastic-containers-e-fold" style="text-decoration:none;" aria-label="Permalink to entry-elastic-containers-e-fold">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Fold.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/test/scala/chext/elastic/Fold.tb.scala" style="text-decoration:none;"><span style="background:#edf2ff;color:#364fc7;padding:2px 6px;border-radius:4px;">Scala TB</span></a></div><div><a href="../sysc_tb/chext/elastic/src/Fold.tb.cpp" style="text-decoration:none;"><span style="background:#e6fcf5;color:#087f5b;padding:2px 6px;border-radius:4px;">SysC TB</span></a></div></div></td>
+    <tr id="entry-elastic-composite-components-e-fold">
+      <td style="vertical-align:top;"><code>e.Fold</code> <a href="#entry-elastic-composite-components-e-fold" style="text-decoration:none;" aria-label="Permalink to entry-elastic-composite-components-e-fold">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Fold.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/test/scala/chext/elastic/Fold.tb.scala" style="text-decoration:none;"><span style="background:#edf2ff;color:#364fc7;padding:2px 6px;border-radius:4px;">Scala TB</span></a></div><div><a href="../sysc_tb/chext/elastic/src/Fold.tb.cpp" style="text-decoration:none;"><span style="background:#e6fcf5;color:#087f5b;padding:2px 6px;border-radius:4px;">SysC TB</span></a></div></div></td>
       <td style="vertical-align:top;">Reduce a stream using user-provided fold logic:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val fold0 = new e.Fold(source, sourceInit, sink) {
   operand { in =&gt; in.data }
   last { in =&gt; in.last }
@@ -355,32 +354,32 @@ val counter0 = new e.Counter(sinkCounter)</code></pre></td>
     out := join(sinkA) + join(sinkB)
   }
 }</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#eaf7ea;color:#137333;padding:2px 6px;border-radius:4px;">Container</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: Fold</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: fold</span>. User-facing internal wires: <code>sinkA</code>, <code>sinkB</code>, <code>sourceResult</code>. Hierarchy: stage wiring under <code>stage0</code> and <code>stage1</code>; children include <code>Transducer</code> or <code>Transform</code>, <code>Join</code>, <code>Connect</code>, and buffers attached to the <code>Fold</code> container.</td>
+      <td style="vertical-align:top;"><span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: Fold</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: fold</span>. User-facing internal wires: <code>sinkA</code>, <code>sinkB</code>, <code>sourceResult</code>. Hierarchy: stage wiring under <code>stage0</code> and <code>stage1</code>; children include <code>Transducer</code> or <code>Transform</code>, <code>Join</code>, <code>Connect</code>, and buffers attached to the <code>Fold</code> component.</td>
     </tr>
-    <tr id="entry-elastic-containers-e-loop">
-      <td style="vertical-align:top;"><code>e.Loop</code> <a href="#entry-elastic-containers-e-loop" style="text-decoration:none;" aria-label="Permalink to entry-elastic-containers-e-loop">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Loop.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+    <tr id="entry-elastic-composite-components-e-loop">
+      <td style="vertical-align:top;"><code>e.Loop</code> <a href="#entry-elastic-composite-components-e-loop" style="text-decoration:none;" aria-label="Permalink to entry-elastic-composite-components-e-loop">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Loop.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
       <td style="vertical-align:top;">Iterative elastic loop with user-visible body endpoints:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val loop0 = new e.Loop(sourceInit, sinkExit) {
   end { state =&gt; state.done }
   sinkCurrent :=&gt; loopBody.source
   loopBody.sink :=&gt; sourceNext
 }</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#eaf7ea;color:#137333;padding:2px 6px;border-radius:4px;">Container</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: Loop</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: loop</span>. User-facing internal wires: <code>sinkCurrent</code>, <code>sourceNext</code>. Hierarchy: creates <code>Stall</code>, <code>Connect</code>, <code>Fork</code>, <code>Demux</code>, <code>Merger</code>, and buffers attached to the <code>Loop</code> container.</td>
+      <td style="vertical-align:top;"><span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: Loop</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: loop</span>. User-facing internal wires: <code>sinkCurrent</code>, <code>sourceNext</code>. Hierarchy: creates <code>Stall</code>, <code>Connect</code>, <code>Fork</code>, <code>Demux</code>, <code>Merger</code>, and buffers attached to the <code>Loop</code> component.</td>
     </tr>
-    <tr id="entry-elastic-containers-e-scope">
-      <td style="vertical-align:top;"><code>e.Scope</code> <a href="#entry-elastic-containers-e-scope" style="text-decoration:none;" aria-label="Permalink to entry-elastic-containers-e-scope">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Scope.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+    <tr id="entry-elastic-composite-components-e-scope">
+      <td style="vertical-align:top;"><code>e.Scope</code> <a href="#entry-elastic-composite-components-e-scope" style="text-decoration:none;" aria-label="Permalink to entry-elastic-composite-components-e-scope">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Scope.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
       <td style="vertical-align:top;">Begin/end scoped elastic region:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val scope0 = new e.Scope(sourceInit, sinkExit) {
   init { in =&gt; started := true.B }
   exit { out =&gt; finished := true.B }
   sinkBegin :=&gt; body.source
   body.sink :=&gt; sourceEnd
 }</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#eaf7ea;color:#137333;padding:2px 6px;border-radius:4px;">Container</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: Scope</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: scope</span>. User-facing internal wires: <code>sinkBegin</code>, <code>sourceEnd</code>. Hierarchy: creates a <code>Stall</code>, a <code>Connect</code>, and sink buffers attached to the <code>Scope</code> container.</td>
+      <td style="vertical-align:top;"><span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: Scope</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: scope</span>. User-facing internal wires: <code>sinkBegin</code>, <code>sourceEnd</code>. Hierarchy: creates a <code>Stall</code>, a <code>Connect</code>, and sink buffers attached to the <code>Scope</code> component.</td>
     </tr>
-    <tr id="entry-elastic-containers-e-random-stall">
-      <td style="vertical-align:top;"><code>e.RandomStall</code> <a href="#entry-elastic-containers-e-random-stall" style="text-decoration:none;" aria-label="Permalink to entry-elastic-containers-e-random-stall">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/RandomStall.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+    <tr id="entry-elastic-composite-components-e-random-stall">
+      <td style="vertical-align:top;"><code>e.RandomStall</code> <a href="#entry-elastic-composite-components-e-random-stall" style="text-decoration:none;" aria-label="Permalink to entry-elastic-composite-components-e-random-stall">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/RandomStall.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
       <td style="vertical-align:top;">Test/diagnostic random backpressure:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val randomStall0 =
   new e.RandomStall(source, sink)</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#eaf7ea;color:#137333;padding:2px 6px;border-radius:4px;">Container</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: RandomStall</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: randomStall</span>. Hierarchy: creates <code>Stall</code> plus <code>SinkBuffer</code>; observed child paths include <code>/randomStall0_stall</code> and <code>/randomStall0_stall_sinkBuffer0_queue0</code>.</td>
+      <td style="vertical-align:top;"><span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: RandomStall</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: randomStall</span>. Hierarchy: creates <code>Stall</code> plus <code>SinkBuffer</code>; observed child paths include <code>/randomStall0_stall</code> and <code>/randomStall0_stall_sinkBuffer0_queue0</code>.</td>
     </tr>
   </tbody>
 </table>

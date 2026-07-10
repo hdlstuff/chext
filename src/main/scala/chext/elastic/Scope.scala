@@ -4,13 +4,13 @@ import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
-import chext.tracking.{Container, withContainer}
+import chext.tracking.{Component, withComponent}
 
 class Scope[Tinit <: Data, Texit <: Data](
     sourceInit: Interface[Tinit],
     sinkExit: Interface[Texit]
 )(implicit si_ : SourceInfo)
-    extends Container {
+    extends Component {
   def tpe: String = "Scope"
   val sourceInfo: SourceInfo = si_
   def namePrefix: String = "scope"
@@ -43,7 +43,7 @@ class Scope[Tinit <: Data, Texit <: Data](
   }
 
   deferred {
-    withContainer(this) {
+    withComponent(this) {
       val stall = RegInit(false.B)
 
       val stall0 = new Stall(sourceInit, SinkBuffer(sinkBegin)) {

@@ -7,7 +7,7 @@ import chisel3.hacks.deferred
 // To avoid confusion with chisel Mux
 import chext.elastic.ConnectOp._
 import chext.elastic.{Mux => EMux}
-import chext.tracking.{Container, suggestInstanceName, withContainer}
+import chext.tracking.{Component, suggestInstanceName, withComponent}
 
 /** Elastic fold (i.e., reduction) primitive.
   *
@@ -44,7 +44,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
     sourceInit: Interface[Tout],
     sink: Interface[Tout]
 )(implicit si_ : SourceInfo)
-    extends Container
+    extends Component
     with Fire[Tout] {
   protected def fireSink: Interface[Tout] = sink
 
@@ -156,7 +156,7 @@ abstract class Fold[Tin <: Data, Tout <: Data](
   }
 
   deferred {
-    withContainer(this) {
+    withComponent(this) {
       require_(operandFn_.nonEmpty, "Missing required 'op' function!")
       require_(lastFn_.nonEmpty, "Missing required 'last' function!")
 

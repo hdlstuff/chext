@@ -17,7 +17,7 @@ import chext.amba.axi4.Casts._
 import chext.amba.axi4.ConnectOp._
 import chext.amba.axi4.full.{ConnectOp => Axi4FullConnectOp}
 import chext.amba.axi4s.Casts._
-import chext.tracking.{Component, Container}
+import chext.tracking.{Component, withComponent}
 import io.circe.generic.auto._
 import io.circe.syntax._
 
@@ -309,10 +309,10 @@ private final class NamingTestComponent(expectedPrefix: String)(implicit
   def namePrefix: String = expectedPrefix
 }
 
-private final class NamingTestContainer(expectedPrefix: String)(implicit
+private final class NamingTestParent(expectedPrefix: String)(implicit
     val sourceInfo: SourceInfo
-) extends Container {
-  def tpe: String = "NamingTestContainer"
+) extends Component {
+  def tpe: String = "NamingTestParent"
   def namePrefix: String = expectedPrefix
 }
 
@@ -337,7 +337,7 @@ private class NamePrefixAcceptedTop extends Module {
   }
 
   prefix("scope0") {
-    new NamingTestContainer("scope")
+    new NamingTestParent("scope")
   }
 
   prefix("sourceBuffer0") {
@@ -345,6 +345,50 @@ private class NamePrefixAcceptedTop extends Module {
       new NamingTestComponent("queue")
     }
   }
+}
+
+private final class HierarchyTestComponent(
+    source: e.Interface[UInt],
+    sink: e.Interface[UInt]
+)(implicit val sourceInfo: SourceInfo)
+    extends Component {
+  def tpe: String = "HierarchyTest"
+  def namePrefix: String = "hierarchyTest"
+
+  withComponent(this) {
+    val connect0 = new e.Connect(source, sink)
+  }
+}
+
+private class ComponentHierarchyTop extends Module {
+  val source = IO(e.Source(UInt(8.W)))
+  val sink = IO(e.Sink(UInt(8.W)))
+
+  val hierarchyTest0 = new HierarchyTestComponent(source, sink)
+}
+
+private final class InvalidCompositeComponent(
+    source: e.Interface[UInt],
+    sink: e.Interface[UInt]
+)(implicit val sourceInfo: SourceInfo)
+    extends Component {
+  def tpe: String = "InvalidComposite"
+  def namePrefix: String = "invalidComposite"
+
+  private val elasticState = trackingState(e.tracking.Tag)
+  elasticState.addSource("source", source)
+  elasticState.addSink("sink", sink)
+
+  withComponent(this) {
+    val connect0 = new e.Connect(source, sink)
+  }
+}
+
+private class InvalidCompositeTop extends Module {
+  val source = IO(e.Source(UInt(8.W)))
+  val sink = IO(e.Sink(UInt(8.W)))
+
+  val invalidComposite0 = new InvalidCompositeComponent(source, sink)
 }
 
 private class NamePrefixWarningTop extends Module {
@@ -880,13 +924,13 @@ object TrackingDiagnostics_Tb extends App {
       gen = () => new ElasticPathWarningTop,
       svContains = Seq("module ElasticPathWarningTop"),
       logContains = Seq(
-        "[ WARN ] tracking/pathChecks : Multiple components or containers use the same path, which should be avoided"
+        "[ WARN ] tracking/pathChecks : Multiple components use the same path, which should be avoided"
       ),
       allowPathWarnings = true
     ),
     TestCase(
       name = "tracking_name_prefix_accepted",
-      description = "Components and containers accept numeric, camel-case, and underscore suffixes after their expected namePrefix.",
+      description = "Components accept numeric, camel-case, and underscore suffixes after their expected namePrefix.",
       shouldPass = true,
       gen = () => new NamePrefixAcceptedTop,
       svContains = Seq("module NamePrefixAcceptedTop"),
@@ -899,7 +943,7 @@ object TrackingDiagnostics_Tb extends App {
       gen = () => new NamePrefixWarningTop,
       svContains = Seq("module NamePrefixWarningTop"),
       logContains = Seq(
-        "[ WARN ] tracking/namePrefixChecks : Component or container path does not start with its expected namePrefix",
+        "[ WARN ] tracking/namePrefixChecks : Component path does not start with its expected namePrefix",
         "Expected namePrefix: queue",
         "Latest prefix: queueing0",
         "Latest prefix: myQueue0",
@@ -909,6 +953,32 @@ object TrackingDiagnostics_Tb extends App {
         "Path: queue0_rightBufferNested"
       ),
       allowNamePrefixWarnings = true
+    ),
+    TestCase(
+      name = "component_hierarchy",
+      description = "A unified component records both its children and each child's parent in the module graph.",
+      shouldPass = true,
+      gen = () => new ComponentHierarchyTop,
+      graphContains = Seq(
+        "\"tpe\" : \"HierarchyTest\"",
+        "\"children\" : [",
+        "\"/hierarchyTest0_connect0\"",
+        "\"parent\" : \"/hierarchyTest0\""
+      ),
+      graphExcludes = Seq(
+        "\"containers\"",
+        "Encountered an interface which is neither an IO or Wire."
+      )
+    ),
+    TestCase(
+      name = "component_children_with_elastic_ports",
+      description = "Elastic tracking rejects a component that owns both child components and Elastic ports.",
+      shouldPass = false,
+      gen = () => new InvalidCompositeTop,
+      failureContains = Seq(
+        "A component with children must not define Elastic source or sink interfaces.",
+        "InvalidComposite"
+      )
     ),
     TestCase(
       name = "elastic_unused",

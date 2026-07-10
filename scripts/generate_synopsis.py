@@ -47,7 +47,6 @@ GH_DST = DOCS / "synopsis-gh.md"
 
 BADGE_STYLES = {
     "Component": ("#e8f1ff", "#174ea6"),
-    "Container": ("#eaf7ea", "#137333"),
     "Module": ("#fff4d6", "#8a5a00"),
     "Config": ("#e6f4ea", "#0d652d"),
     "Interface": ("#f3e8ff", "#6b21a8"),

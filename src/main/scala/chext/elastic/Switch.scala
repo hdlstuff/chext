@@ -7,7 +7,7 @@ import chisel3.util._
 
 import chext.elastic
 import chext.elastic.ConnectOp._
-import chext.tracking.{Container, withContainer}
+import chext.tracking.{Component, withComponent}
 
 /** `Switch` conditionally routes tokens to one of multiple branches.
   *
@@ -48,7 +48,7 @@ abstract class Switch[Tin <: Data, Tout <: Data](
     val sink: elastic.Interface[Tout],
     val numOutstanding: Int = -1
 )(implicit si_ : SourceInfo)
-    extends Container
+    extends Component
     with Fire[Tout] {
   protected def fireSink: Interface[Tout] = sink
 
@@ -158,7 +158,7 @@ abstract class Switch[Tin <: Data, Tout <: Data](
   }
 
   deferred {
-    withContainer(this) {
+    withComponent(this) {
       val branches = branchBuffer.toSeq
 
       val wireRvDemuxN = Wire(Vec(branches.length, elastic.Interface(genIn)))

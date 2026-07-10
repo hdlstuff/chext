@@ -1,7 +1,7 @@
 # Prefixing Tracked Constructions
 
-Chext components and containers capture the active Chisel prefix when they are
-constructed. That prefix becomes their path in the module graph. The graph type
+Chext components capture the active Chisel prefix when they are constructed.
+That prefix becomes their path in the module graph. The graph type
 (`tpe`) describes what was constructed; it does not provide the graph object's
 identity.
 

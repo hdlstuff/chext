@@ -18,7 +18,7 @@ final class Connect(
     slave: Interface,
     cfgOption: Option[ConnectConfig]
 )(implicit si_ : SourceInfo)
-    extends tracking.Container {
+    extends tracking.Component {
   val sourceInfo: SourceInfo = si_
   def tpe: String = "Axi4f_Connect"
   def namePrefix: String = "axi4fConnect"
@@ -414,7 +414,7 @@ final class Connect(
   }
 
   private def impl(): Unit =
-    tracking.withContainer(this) {
+    tracking.withComponent(this) {
       cfgOption match {
         case Some(cfg) => implConfigured(cfg)
         case None      => implStrict()

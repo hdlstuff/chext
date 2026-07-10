@@ -6,10 +6,8 @@ Chext's tracking model is separate from Chisel's hardware module hierarchy. A Ch
 
 | Model object | Role | Important behavior |
 |---|---|---|
-| `BaseComponent` | Common base for graph objects. | Captures the current Chisel prefix as its graph path, registers with the current module's `ModuleInfo`, stores typed arguments, and optionally attaches to the current container. |
-| `Component` | A leaf graph object. | Represents one protocol construction such as `Queue`, `Transducer`, `Fork`, `Join`, or `Connect`. It has no tracked children, but layer-specific state can attach ports and metadata to it. |
-| `Container` | A hierarchical graph object. | Represents a logical construction made of other components, such as `Repeat`, `Fold`, `Loop`, `Scope`, or `RandomStall`. Components created inside `withContainer(this)` become its children. |
-| `ModuleInfo` | Per-Chisel-module tracking record. | Owns the module's components, containers, child modules, unique-prefix counters, arguments, and completion hooks. |
+| `Component` | Unified protocol graph object. | Captures the current Chisel prefix as its graph path, stores typed arguments and layer-specific state, and may own child components created inside `withComponent(this)`. |
+| `ModuleInfo` | Per-Chisel-module tracking record. | Owns the module's components, child modules, active component-parent stack, unique-prefix counters, arguments, and completion hooks. |
 | `HasPath` | Path-bearing mix-in used by graph objects. | Captures `path` / `pathStr` from the active Chisel prefix when the construction is created. |
 
 The generic model deliberately does not know what an elastic source or sink is. Elastic-specific data is attached through a tracking tag/layer.
@@ -31,13 +29,15 @@ The graph can be read at three levels.
 | Level | Meaning |
 |---|---|
 | Chisel module hierarchy | Hardware instance boundaries, including child modules flattened into graph paths when requested. |
-| Chext component/container hierarchy | Protocol-level constructions and logical groupings inside a module. |
+| Chext component hierarchy | Protocol-level constructions and logical groupings inside a module. |
 | Tracking layer payload | Domain-specific facts, currently mostly elastic facts: source/sink interfaces, wires, component ports, and role/sanity diagnostics. |
 
 In practice:
 
-- Use `Component` when the construction is a single graph operation with named ports.
-- Use `Container` when the construction is a reusable macro-structure that instantiates child components.
+- Use `Component` for both individual graph operations and reusable macro-structures.
+- Wrap child construction in `withComponent(this)` when a component represents a logical grouping.
+- Elastic components with children must not also register Elastic source or sink ports; their leaf
+  descendants own the actual protocol boundary.
 - Use ordinary Chisel `Module` when the construction is a hardware boundary. It may contain tracked Chext components, but it is not automatically a Chext `Component`.
 - Use helper functions/objects such as `e.SourceBuffer`, `e.SinkBuffer`, `e.Zip`, and `:=>` operators when the API is meant to create underlying components anonymously or as part of a larger expression.
 
@@ -50,7 +50,7 @@ helpers, see [Prefixing Tracked Constructions](prefixes.md).
 
 | Concept | What it means | Naming / graph behavior |
 |---|---|---|
-| `tpe` | User-facing component/container type name. | Emitted as `"tpe"` in module graph JSON, for example `"Queue"`, `"Transducer"`, `"Repeat"`. |
+| `tpe` | User-facing component type name. | Emitted as `"tpe"` in module graph JSON, for example `"Queue"`, `"Transducer"`, `"Repeat"`. |
 | `namePrefix` | Conceptual family prefix for a construction. | At tracking completion, the latest Chisel prefix must start with `namePrefix`, followed by the end of the name, a digit, an uppercase letter, or an underscore. A mismatch emits a `tracking/namePrefixChecks` warning. Actual graph paths still come from Chisel prefix/variable names and helper prefixes. |
 | `uniquePrefix(name) { ... }` | Generates a Chisel prefix unique in the current module for a base name. | Produces names like `connect0`, `elasticConnectMany0`, `sourceBuffer0`, `sinkBuffer0`; nested prefixes concatenate with underscores. `Buffered` helpers deliberately rely on the assigned Scala `val` name, and their sequence overloads add only numeric element prefixes. |
 | `prefix("x") { ... }` | Chisel prefix scope. | Components created inside receive paths such as `/x_transform0`, `/read_ar_transform0`, etc. |

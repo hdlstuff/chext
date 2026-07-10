@@ -1,38 +1,41 @@
 package chext.tracking
 
-import chisel3.experimental.SourceInfo
-
 import hdlinfo.TypedObject
 
 import scala.collection.mutable.ArrayBuffer
 
 import chext.util.sourceInfoToString
 
-sealed trait BaseComponent extends HasPath {
-  final def isContainer: Boolean = this.isInstanceOf[Container]
-  final def asContainer = this.asInstanceOf[Container]
+/** A tracked construction.
+  *
+  * Components form a hierarchy independently of Chisel's module hierarchy. A component may own
+  * layer-specific state, such as Elastic source/sink ports, or it may own child components. The
+  * Elastic layer requires components with children to have no Elastic ports.
+  */
+trait Component extends HasPath {
+  private val require_ = chext.util.Require.inferred()
 
-  def isComponent: Boolean = this.isInstanceOf[Component]
-  final def asComponent = this.asInstanceOf[Component]
-
-  private var parentOption_ = Option.empty[Container]
-  final def parentOption = parentOption_
-  final def parent = parentOption_.get
-  private[tracking] final def setParent(c: Container): Unit = {
-    parentOption_ = Some(c)
+  private var parentOption_ = Option.empty[Component]
+  final def parentOption: Option[Component] = parentOption_
+  final def parent: Component = parentOption_.get
+  private[tracking] final def setParent(component: Component): Unit = {
+    parentOption_ = Some(component)
   }
 
-  def children: Seq[BaseComponent]
+  private val children_ = ArrayBuffer.empty[Component]
 
-  override def toString(): String = {
-    assert(isComponent || isContainer)
+  /** Adds a child to this component. */
+  final def addChild(component: Component): Unit = {
+    require_(
+      component.parentOption.isEmpty,
+      "Component.addChild: the component must not have a parent already!"
+    )
 
-    val kind =
-      if (isComponent) "Component"
-      else "Container"
-
-    f"$kind[$tpe]: $pathStr @[${sourceInfoToString(sourceInfo)}]"
+    children_.addOne(component)
+    component.setParent(this)
   }
+
+  final def children: Seq[Component] = children_.toSeq
 
   private val args_ = ArrayBuffer.empty[(String, TypedObject)]
   protected final def addArgument(name: String, arg: TypedObject): Unit = {
@@ -40,37 +43,11 @@ sealed trait BaseComponent extends HasPath {
   }
   private[chext] final def args = args_.toSeq
 
-  // addChild(...) calls parentOption_, which must initialized
-  // for this reason, we have init code here.
+  // addChild(...) reads parentOption_, so hierarchy fields must be initialized before registration.
   private[tracking] final val moduleInfo = Manager.registerCurrentModule()
   moduleInfo.addComponent(this)
-  moduleInfo.lastContainerOption.foreach { _.addChild(this) }
-}
+  moduleInfo.lastComponentOption.foreach { _.addChild(this) }
 
-trait Container extends BaseComponent {
-  private val require_ = chext.util.Require.inferred()
-
-  private val components_ = ArrayBuffer.empty[BaseComponent]
-
-  /** Adds a child to this container.
-    *
-    * @param baseComponent
-    */
-  final def addChild(baseComponent: BaseComponent): Unit = {
-    require_(
-      baseComponent.parentOption.isEmpty,
-      "Container.addChild: the baseComponent must not have a parent already!"
-    )
-
-    components_.addOne(baseComponent)
-    baseComponent.setParent(this)
-  }
-
-  def children: Seq[BaseComponent] = components_.toSeq
-}
-
-// A component cannot have other components declared inside, though I am not going to enforce this
-trait Component extends BaseComponent {
   private val trackingStates_ = ArrayBuffer.empty[ComponentState]
 
   TagRegistry.tags.foreach { tag =>
@@ -94,17 +71,17 @@ trait Component extends BaseComponent {
     }
   }
 
-  def children: Seq[BaseComponent] = Seq.empty
+  override def toString(): String =
+    f"Component[$tpe]: $pathStr @[${sourceInfoToString(sourceInfo)}]"
 }
 
-object withContainer {
-  def apply[T](container: Container)(fn: => T): T = {
+/** Evaluates `fn` with `component` as the parent of newly created tracked components. */
+object withComponent {
+  def apply[T](component: Component)(fn: => T): T = {
     val moduleInfo = Manager.registerCurrentModule()
 
-    moduleInfo.pushContainer(container)
-    val result = fn
-    moduleInfo.popContainer()
-
-    result
+    moduleInfo.pushComponent(component)
+    try fn
+    finally moduleInfo.popComponent()
   }
 }

@@ -31,6 +31,7 @@ object Graph {
       val tpe: String,
       val sources: Seq[(String, InterfaceRef)],
       val sinks: Seq[(String, InterfaceRef)],
+      val children: Seq[String],
       val parent: String,
       val args: Map[String, TypedObject] = Map.empty
   ) {
@@ -40,25 +41,7 @@ object Graph {
       path = f"$x$path",
       sources = sources.map { case (name, interfaceRef) => (name, interfaceRef.pathPrepended(x)) },
       sinks = sinks.map { case (name, interfaceRef) => (name, interfaceRef.pathPrepended(x)) },
-      parent = {
-        if (parent.nonEmpty) f"$x$parent"
-        else ""
-      }
-    )
-  }
-
-  case class Container(
-      val path: String,
-      val tpe: String,
-      val children: Seq[String],
-      val parent: String,
-      val args: Map[String, TypedObject] = Map.empty
-  ) {
-    require_(path.length > 0 && path.head == '/', "path should start with '/'!")
-
-    private[Graph] def pathPrepended(x: String) = copy(
-      path = f"$x$path",
-      children = children.map { case (path) => f"$x$path" },
+      children = children.map { path => f"$x$path" },
       parent = {
         if (parent.nonEmpty) f"$x$parent"
         else ""
@@ -73,7 +56,6 @@ object Graph {
       val sinks: Seq[Interface],
       val wires: Seq[Interface],
       val components: Seq[Component],
-      val containers: Seq[Container],
       val children: Seq[Module],
       val args: Map[String, TypedObject] = Map.empty
   ) {
@@ -85,7 +67,6 @@ object Graph {
       sinks = sinks.map { _.pathPrepended(x) },
       wires = wires.map { _.pathPrepended(x) },
       components = components.map { _.pathPrepended(x) },
-      containers = containers.map { _.pathPrepended(x) },
       children = children.map { child => child.copy(path = f"$x${child.path}") }
     )
 
@@ -114,12 +95,6 @@ object Graph {
           Seq(
             components,
             childrenPrepended.map { _.components }.flatten
-          ).flatten
-        },
-        containers = {
-          Seq(
-            containers,
-            childrenPrepended.map { _.containers }.flatten
           ).flatten
         },
         children = {

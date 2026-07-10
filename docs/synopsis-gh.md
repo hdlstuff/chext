@@ -8,7 +8,7 @@ This is a working synopsis of the main Chext constructions, their intended use, 
 - [Elastic Imports](#elastic-imports)
 - [Elastic Interfaces and Operators](#elastic-interfaces-and-operators)
 - [Elastic Components](#elastic-components)
-- [Elastic Containers](#elastic-containers)
+- [Elastic Composite Components](#elastic-composite-components)
 - [AXI4 Imports](#axi4-imports)
 - [AXI4 Interfaces and Connects](#axi4-interfaces-and-connects)
 - [AXI4 Buffers](#axi4-buffers)
@@ -643,11 +643,11 @@ val wrap0 = new e.Wrap(source, sink) {
 
 ---
 
-## Elastic Containers
+## Elastic Composite Components
 
-<a id="entry-elastic-containers-e-repeat"></a>
+<a id="entry-elastic-composite-components-e-repeat"></a>
 
-### `e.Repeat` [#](#entry-elastic-containers-e-repeat)
+### `e.Repeat` [#](#entry-elastic-composite-components-e-repeat)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Repeat.scala); [Scala TB](../src/test/scala/chext/elastic/Count.tb.scala)
 
@@ -659,13 +659,13 @@ val repeat0 = new e.Repeat(source, sink, wIndex = 8) {
 }
 ```
 
-**Details:** Container; tpe: Repeat; namePrefix: repeat. Hierarchy: creates a child `Count` under `withContainer(this)`, with observed path shape `/repeat0` -> `/repeat0_count`.
+**Details:** Component; tpe: Repeat; namePrefix: repeat. Hierarchy: creates a child `Count` under `withComponent(this)`, with observed path shape `/repeat0` -> `/repeat0_count`.
 
 ---
 
-<a id="entry-elastic-containers-e-fold"></a>
+<a id="entry-elastic-composite-components-e-fold"></a>
 
-### `e.Fold` [#](#entry-elastic-containers-e-fold)
+### `e.Fold` [#](#entry-elastic-composite-components-e-fold)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Fold.scala); [Scala TB](../src/test/scala/chext/elastic/Fold.tb.scala); [SysC TB](../sysc_tb/chext/elastic/src/Fold.tb.cpp)
 
@@ -680,13 +680,13 @@ val fold0 = new e.Fold(source, sourceInit, sink) {
 }
 ```
 
-**Details:** Container; tpe: Fold; namePrefix: fold. User-facing internal wires: `sinkA`, `sinkB`, `sourceResult`. Hierarchy: stage wiring under `stage0` and `stage1`; children include `Transducer` or `Transform`, `Join`, `Connect`, and buffers attached to the `Fold` container.
+**Details:** Component; tpe: Fold; namePrefix: fold. User-facing internal wires: `sinkA`, `sinkB`, `sourceResult`. Hierarchy: stage wiring under `stage0` and `stage1`; children include `Transducer` or `Transform`, `Join`, `Connect`, and buffers attached to the `Fold` component.
 
 ---
 
-<a id="entry-elastic-containers-e-loop"></a>
+<a id="entry-elastic-composite-components-e-loop"></a>
 
-### `e.Loop` [#](#entry-elastic-containers-e-loop)
+### `e.Loop` [#](#entry-elastic-composite-components-e-loop)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Loop.scala)
 
@@ -699,13 +699,13 @@ val loop0 = new e.Loop(sourceInit, sinkExit) {
 }
 ```
 
-**Details:** Container; tpe: Loop; namePrefix: loop. User-facing internal wires: `sinkCurrent`, `sourceNext`. Hierarchy: creates `Stall`, `Connect`, `Fork`, `Demux`, `Merger`, and buffers attached to the `Loop` container.
+**Details:** Component; tpe: Loop; namePrefix: loop. User-facing internal wires: `sinkCurrent`, `sourceNext`. Hierarchy: creates `Stall`, `Connect`, `Fork`, `Demux`, `Merger`, and buffers attached to the `Loop` component.
 
 ---
 
-<a id="entry-elastic-containers-e-scope"></a>
+<a id="entry-elastic-composite-components-e-scope"></a>
 
-### `e.Scope` [#](#entry-elastic-containers-e-scope)
+### `e.Scope` [#](#entry-elastic-composite-components-e-scope)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/Scope.scala)
 
@@ -719,13 +719,13 @@ val scope0 = new e.Scope(sourceInit, sinkExit) {
 }
 ```
 
-**Details:** Container; tpe: Scope; namePrefix: scope. User-facing internal wires: `sinkBegin`, `sourceEnd`. Hierarchy: creates a `Stall`, a `Connect`, and sink buffers attached to the `Scope` container.
+**Details:** Component; tpe: Scope; namePrefix: scope. User-facing internal wires: `sinkBegin`, `sourceEnd`. Hierarchy: creates a `Stall`, a `Connect`, and sink buffers attached to the `Scope` component.
 
 ---
 
-<a id="entry-elastic-containers-e-random-stall"></a>
+<a id="entry-elastic-composite-components-e-random-stall"></a>
 
-### `e.RandomStall` [#](#entry-elastic-containers-e-random-stall)
+### `e.RandomStall` [#](#entry-elastic-composite-components-e-random-stall)
 
 **Sources:** [Scala](../src/main/scala/chext/elastic/RandomStall.scala)
 
@@ -735,7 +735,7 @@ val randomStall0 =
   new e.RandomStall(source, sink)
 ```
 
-**Details:** Container; tpe: RandomStall; namePrefix: randomStall. Hierarchy: creates `Stall` plus `SinkBuffer`; observed child paths include `/randomStall0_stall` and `/randomStall0_stall_sinkBuffer0_queue0`.
+**Details:** Component; tpe: RandomStall; namePrefix: randomStall. Hierarchy: creates `Stall` plus `SinkBuffer`; observed child paths include `/randomStall0_stall` and `/randomStall0_stall_sinkBuffer0_queue0`.
 
 ---
 

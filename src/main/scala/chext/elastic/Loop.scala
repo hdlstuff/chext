@@ -4,13 +4,13 @@ import chisel3._
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 
-import chext.tracking.{Container, withContainer}
+import chext.tracking.{Component, withComponent}
 
 class Loop[Tstate <: Data](
     sourceInit: Interface[Tstate],
     sinkExit: Interface[Tstate]
 )(implicit si_ : SourceInfo)
-    extends Container {
+    extends Component {
   def tpe: String = "Loop"
   val sourceInfo: SourceInfo = si_
   def namePrefix: String = "loop"
@@ -40,7 +40,7 @@ class Loop[Tstate <: Data](
   }
 
   deferred {
-    withContainer(this) {
+    withComponent(this) {
       require_(
         endFn_.nonEmpty,
         "'end { (state) => ... }' must be called at least once!"

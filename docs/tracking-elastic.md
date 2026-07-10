@@ -19,8 +19,13 @@ Elastic interfaces extend `Tracked`, which provides:
 - sanity checks for unused, repeatedly used, or wrongly used endpoints.
 
 The generic graph layer does not know what an elastic source or sink means. It only stores
-components, containers, paths, child modules, and typed arguments. The elastic layer supplies the
-protocol-specific interface declarations and component port references.
+components, component ancestry, paths, child modules, and typed arguments. The elastic layer
+supplies the protocol-specific interface declarations and component port references.
+
+Components are also the only hierarchy node type. Elastic tracking checks after deferred
+elaboration that a component with children has no registered source or sink interfaces. Composite
+components therefore provide ancestry, while their leaf descendants own the observable protocol
+ports.
 
 ## Declared Roles
 
@@ -85,9 +90,28 @@ Tracking diagnostics can then report:
 ## Component Port State
 
 Elastic component state is stored on each tracked component under `chext.elastic.tracking.Tag`.
-The state contains named source and sink port references. The graph records those references using
-the same path resolution as the interface declarations, so component ports and top-level
-interfaces agree on names.
+When a component registers an interface with `addSource(...)` or `addSink(...)`, it assigns that
+interface a local port name. The registration therefore associates two separate names:
+
+- the local port name describes the interface's role within that component, such as `source`,
+  `sink`, `source_0`, or `sinkSelect`;
+- the interface reference points to the actual Chisel object—an IO, wire, child IO, or registered
+  view—which has its own graph path.
+
+For example, a component at `/fork0` might register its input using the local name `source`, while
+the referenced IO object has the path `/input`. The component's JSON entry records both values:
+
+```json
+[
+  "source",
+  { "path": "/input", "desc": "IO" }
+]
+```
+
+The local name is meaningful inside the component type; it does not rename the interface object.
+Interface references use the same path-resolution code as top-level interface declarations, so a
+component port and the corresponding entry in `sources`, `sinks`, or `wires` identify the same
+object.
 
 For example, a `Fork` may emit ports like:
 
@@ -100,6 +124,17 @@ sink_1 -> /sinkHi
 The component path itself is separate from the interface path. Component paths come from Chisel
 prefixing and Chext `uniquePrefix(...)`; interface paths come from the hardware object or from
 view recovery.
+
+## JSON Ancestry
+
+Elastic module-graph JSON has one `components` collection. Every component entry contains both
+`parent` and `children`, in addition to `sources` and `sinks`. Top-level components use an empty
+`parent`, and leaf components use an empty `children` list. Keeping both directions makes the
+serialized hierarchy convenient to traverse and lets consumers validate that the two
+representations agree.
+
+The module-level `children` field remains separate: it contains child Chisel modules, while a
+component's `children` contains child Chext components.
 
 ## View Tracking Background
 

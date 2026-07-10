@@ -14,6 +14,7 @@ import chext.util.sourceInfoToString
 final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
     extends tracking.ModuleState {
   private val logger = new Logger("tracking")
+  private val require_ = chext.util.Require.inferred()
 
   private var moduleGraph_ = Option.empty[Graph.Module]
 
@@ -181,13 +182,7 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
   }
 
   private def constructModuleGraph(): Unit = {
-    val components = moduleInfo.baseComponents
-      .filter { _.isComponent }
-      .map { _.asComponent }
-
-    val containers = moduleInfo.baseComponents
-      .filter { _.isContainer }
-      .map { _.asContainer }
+    val components = moduleInfo.components
 
     val interfaceSet = HashSet.empty[Tracked]
     components.foreach { component =>
@@ -272,23 +267,11 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
               sinks = elasticState.sinks.map {
                 case (name, interface) => (name, interfaceRefs(interface))
               },
+              children = component.children.map { child => f"/${child.pathStr}" },
               parent = {
                 component.parentOption.map { parent => f"/${parent.pathStr}" }.getOrElse("")
               },
               args = component.args.toMap
-            )
-          }.toSeq
-        },
-        containers = {
-          containers.map { container =>
-            Graph.Container(
-              path = f"/${container.pathStr}",
-              tpe = container.tpe,
-              children = container.children.map { child => f"/${child.pathStr}" },
-              parent = {
-                container.parentOption.map { parent => f"/${parent.pathStr}" }.getOrElse("")
-              },
-              args = container.args.toMap
             )
           }.toSeq
         },
@@ -308,7 +291,20 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
     )
   }
 
+  private def componentHierarchyChecks(): Unit = {
+    moduleInfo.components.foreach { component =>
+      val elasticState = component.trackingState(Tag)
+      require_(
+        component.children.isEmpty ||
+          (elasticState.sources.isEmpty && elasticState.sinks.isEmpty),
+        "A component with children must not define Elastic source or sink interfaces.",
+        Seq(f"Component: ${component.toString()}")
+      )(component.sourceInfo)
+    }
+  }
+
   def onComplete(): Unit = {
+    componentHierarchyChecks()
     sanityChecks()
     constructModuleGraph()
   }

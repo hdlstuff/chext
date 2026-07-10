@@ -5,7 +5,7 @@ import chisel3.experimental.SourceInfo
 import chisel3.hacks.deferred
 import chisel3.util._
 
-import chext.tracking.{Container, withContainer}
+import chext.tracking.{Component, withComponent}
 
 /** Applies a random stall the elastic interface.
   *
@@ -25,7 +25,7 @@ final class RandomStall[T <: Data](
     lfsrBits: Int = 4,
     threshold: Int = 8
 )(implicit si_ : SourceInfo)
-    extends Container {
+    extends Component {
   private val require_ = chext.util.Require.inferred()
 
   val sourceInfo: SourceInfo = si_
@@ -37,7 +37,7 @@ final class RandomStall[T <: Data](
 
   private val rand = random.LFSR(lfsrBits)
 
-  withContainer(this) {
+  withComponent(this) {
     val stall = new Stall(source, SinkBuffer(sink)) {
       out := in
 

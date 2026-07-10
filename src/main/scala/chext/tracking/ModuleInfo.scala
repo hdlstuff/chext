@@ -24,9 +24,9 @@ private[chext] class ModuleInfo(
 
   private val children_ = HashMap.empty[BaseModule, ModuleInfo]
 
-  private val baseComponents_ = ArrayBuffer.empty[BaseComponent]
+  private val components_ = ArrayBuffer.empty[Component]
 
-  private val containerStack_ = Stack.empty[Container]
+  private val componentStack_ = Stack.empty[Component]
 
   private val uniquePrefix_ = HashMap.empty[String, Int]
 
@@ -44,7 +44,7 @@ private[chext] class ModuleInfo(
   /** @return
     *   Components used by the module.
     */
-  def baseComponents = baseComponents_.toSeq
+  def components = components_.toSeq
 
   /** Suggests a name for this instance.
     *
@@ -83,21 +83,21 @@ private[chext] class ModuleInfo(
     *
     * @param component
     */
-  def addComponent(component: BaseComponent): Unit = {
-    baseComponents_.addOne(component)
+  def addComponent(component: Component): Unit = {
+    components_.addOne(component)
   }
 
-  def pushContainer(container: Container): Unit = {
-    containerStack_.push(container)
+  def pushComponent(component: Component): Unit = {
+    componentStack_.push(component)
   }
 
-  def popContainer(): Unit = {
-    containerStack_.pop()
+  def popComponent(): Unit = {
+    componentStack_.pop()
   }
 
-  def lastContainerOption: Option[Container] =
-    if (containerStack_.length > 0)
-      Some(containerStack_.top)
+  def lastComponentOption: Option[Component] =
+    if (componentStack_.length > 0)
+      Some(componentStack_.top)
     else
       None
 
@@ -155,7 +155,7 @@ private[chext] class ModuleInfo(
     /** Path checks.
       */
     def pathChecks() = {
-      val usedPaths = baseComponents_.groupBy(_.pathStr)
+      val usedPaths = components_.groupBy(_.pathStr)
 
       usedPaths.foreach {
         case (pathStr, users) => {
@@ -172,13 +172,13 @@ private[chext] class ModuleInfo(
             )
 
           if (pathStr.isEmpty) {
-            warn("Multiple components or containers use an empty path, which should be avoided")
+            warn("Multiple components use an empty path, which should be avoided")
           } else {
             if (users.length == 1) {
               // this is OK, the prefix has a single user
             } else {
               warn(
-                "Multiple components or containers use the same path, which should be avoided"
+                "Multiple components use the same path, which should be avoided"
               )
             }
           }
@@ -189,9 +189,9 @@ private[chext] class ModuleInfo(
     /** Name-prefix convention checks.
       */
     def namePrefixChecks() = {
-      baseComponents_.foreach { baseComponent =>
-        baseComponent.path.headOption.foreach { latestPrefix =>
-          val expectedPrefix = baseComponent.namePrefix
+      components_.foreach { component =>
+        component.path.headOption.foreach { latestPrefix =>
+          val expectedPrefix = component.namePrefix
           val suffix = latestPrefix.stripPrefix(expectedPrefix)
           val startsWithExpectedPrefix =
             expectedPrefix.nonEmpty &&
@@ -203,12 +203,12 @@ private[chext] class ModuleInfo(
           if (!startsWithExpectedPrefix) {
             logger.warn(
               "namePrefixChecks",
-              "Component or container path does not start with its expected namePrefix",
+              "Component path does not start with its expected namePrefix",
               f"Module: ${module.toString()} @[${sourceInfoToString(ModuleInternals.getSourceInfo(module))}]",
               f"Expected namePrefix: $expectedPrefix",
               f"Latest prefix: $latestPrefix",
-              f"Path: ${baseComponent.pathStr}",
-              baseComponent.toString()
+              f"Path: ${component.pathStr}",
+              component.toString()
             )
           }
         }

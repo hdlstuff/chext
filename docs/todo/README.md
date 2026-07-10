@@ -21,6 +21,12 @@ superseded AI handoff prompts are retained only in the [archive](archive/).
   C++-side deadlock-detection code, and make the Elastic coupling explicit where
   it is inherent in the model.
 
+## C++ deadlock detector migration
+
+- Port the Arteris Interview C++ tracking loader and deadlock detector to the
+  unified component hierarchy using the detailed
+  [migration checklist](cpp-deadlock-unified-components.md).
+
 ## Requirement checks
 
 - Preserve important `require`/`Require` invariants during refactors. Audit

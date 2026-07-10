@@ -173,9 +173,9 @@ val queue0 = new e.Queue(source, sink, count = 8, pipe = true, flow = false) {
   out { in => in + 1.U }
 }
 
-val q = e.Queue(UInt(16.W), count = 4)
-producer :=> q.source
-q.sink :=> consumer
+val queue1 = e.Queue(UInt(16.W), count = 4)
+producer :=> queue1.source
+queue1.sink :=> consumer
 
 e.Queue.useVerilogMem(enabled = false)
 ```
@@ -729,8 +729,9 @@ when(source.hasData) {
 
 ## Tracking Summary
 
-Most concrete elastic constructions are tracked as either `Component` or
-`Container` entries in the module graph:
+Concrete elastic constructions are tracked as unified `Component` entries in
+the module graph. Leaf components own protocol ports, while composite
+components own children:
 
 | Graph type | Typical constructors | Ports |
 |---|---|---|
@@ -741,7 +742,7 @@ Most concrete elastic constructions are tracked as either `Component` or
 | `Fork` | `new e.Fork(source)` | `source`, `sink_0`, `sink_1`, ... |
 | `Join` | `new e.Join(sink)` | `source_0`, `source_1`, ..., `sink` |
 | `Merger`, `Mux`, `Demux`, `Arbiter`, `ArbiterNs`, `DemuxNs` | Routing components | Indexed source/sink/select ports |
-| `Repeat`, `Fold`, `Loop`, `Scope`, `Switch`, `RandomStall` | Containers | Child components appear under the container |
+| `Repeat`, `Fold`, `Loop`, `Scope`, `Switch`, `RandomStall` | Composite components | `sources` and `sinks` are empty; child components appear under `children` |
 | `ResponseBuffer`, `ShareD`, `ShareNd` | Chisel modules with declared elastic IO | Module graph includes the declared interfaces and contained components |
 
 Actual graph paths come from Chisel naming, `prefix(...)`, and Chext

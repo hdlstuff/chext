@@ -9,7 +9,7 @@ END
 
 [section.badges]
 kind = badges
-items = Component, Container, Module, Config, Interface, Function, UniquePrefix, tpe, namePrefix, Scala, Scala TB, SysC TB
+items = Component, Module, Config, Interface, Function, UniquePrefix, tpe, namePrefix, Scala, Scala TB, SysC TB
 text <<END
 `tpe` is the graph type. `namePrefix` is the construction family's conceptual default prefix. Actual paths come from Chisel naming, `prefix(...)`, and `uniquePrefix(...)`; tracking warns when the latest prefix does not recognizably start with `namePrefix`.
 END
@@ -703,12 +703,12 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Wrap.scala}}
 END
 
-[section.elastic_containers]
+[section.elastic_composite_components]
 kind = table
-title = Elastic Containers
+title = Elastic Composite Components
 
-[row.elastic_containers]
-anchor = elastic-containers-e-repeat
+[row.elastic_composite_components]
+anchor = elastic-composite-components-e-repeat
 construct = `e.Repeat`
 intent <<END
 Repeat one input token multiple times:
@@ -720,15 +720,15 @@ val repeat0 = new e.Repeat(source, sink, wIndex = 8) {
 ```
 END
 details <<END
-{{badge:Container}} {{badge:tpe:Repeat}} {{badge:namePrefix:repeat}}. Hierarchy: creates a child `Count` under `withContainer(this)`, with observed path shape `/repeat0` -> `/repeat0_count`.
+{{badge:Component}} {{badge:tpe:Repeat}} {{badge:namePrefix:repeat}}. Hierarchy: creates a child `Count` under `withComponent(this)`, with observed path shape `/repeat0` -> `/repeat0_count`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Repeat.scala}}
 {{badge:Scala}} {{src:src/test/scala/chext/elastic/Count.tb.scala}}
 END
 
-[row.elastic_containers]
-anchor = elastic-containers-e-fold
+[row.elastic_composite_components]
+anchor = elastic-composite-components-e-fold
 construct = `e.Fold`
 intent <<END
 Reduce a stream using user-provided fold logic:
@@ -743,7 +743,7 @@ val fold0 = new e.Fold(source, sourceInit, sink) {
 ```
 END
 details <<END
-{{badge:Container}} {{badge:tpe:Fold}} {{badge:namePrefix:fold}}. User-facing internal wires: `sinkA`, `sinkB`, `sourceResult`. Hierarchy: stage wiring under `stage0` and `stage1`; children include `Transducer` or `Transform`, `Join`, `Connect`, and buffers attached to the `Fold` container.
+{{badge:Component}} {{badge:tpe:Fold}} {{badge:namePrefix:fold}}. User-facing internal wires: `sinkA`, `sinkB`, `sourceResult`. Hierarchy: stage wiring under `stage0` and `stage1`; children include `Transducer` or `Transform`, `Join`, `Connect`, and buffers attached to the `Fold` component.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Fold.scala}}
@@ -751,8 +751,8 @@ hierarchy <<END
 {{badge:SysC}} {{src:sysc_tb/chext/elastic/src/Fold.tb.cpp}}
 END
 
-[row.elastic_containers]
-anchor = elastic-containers-e-loop
+[row.elastic_composite_components]
+anchor = elastic-composite-components-e-loop
 construct = `e.Loop`
 intent <<END
 Iterative elastic loop with user-visible body endpoints:
@@ -765,14 +765,14 @@ val loop0 = new e.Loop(sourceInit, sinkExit) {
 ```
 END
 details <<END
-{{badge:Container}} {{badge:tpe:Loop}} {{badge:namePrefix:loop}}. User-facing internal wires: `sinkCurrent`, `sourceNext`. Hierarchy: creates `Stall`, `Connect`, `Fork`, `Demux`, `Merger`, and buffers attached to the `Loop` container.
+{{badge:Component}} {{badge:tpe:Loop}} {{badge:namePrefix:loop}}. User-facing internal wires: `sinkCurrent`, `sourceNext`. Hierarchy: creates `Stall`, `Connect`, `Fork`, `Demux`, `Merger`, and buffers attached to the `Loop` component.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Loop.scala}}
 END
 
-[row.elastic_containers]
-anchor = elastic-containers-e-scope
+[row.elastic_composite_components]
+anchor = elastic-composite-components-e-scope
 construct = `e.Scope`
 intent <<END
 Begin/end scoped elastic region:
@@ -786,14 +786,14 @@ val scope0 = new e.Scope(sourceInit, sinkExit) {
 ```
 END
 details <<END
-{{badge:Container}} {{badge:tpe:Scope}} {{badge:namePrefix:scope}}. User-facing internal wires: `sinkBegin`, `sourceEnd`. Hierarchy: creates a `Stall`, a `Connect`, and sink buffers attached to the `Scope` container.
+{{badge:Component}} {{badge:tpe:Scope}} {{badge:namePrefix:scope}}. User-facing internal wires: `sinkBegin`, `sourceEnd`. Hierarchy: creates a `Stall`, a `Connect`, and sink buffers attached to the `Scope` component.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/Scope.scala}}
 END
 
-[row.elastic_containers]
-anchor = elastic-containers-e-random-stall
+[row.elastic_composite_components]
+anchor = elastic-composite-components-e-random-stall
 construct = `e.RandomStall`
 intent <<END
 Test/diagnostic random backpressure:
@@ -803,7 +803,7 @@ val randomStall0 =
 ```
 END
 details <<END
-{{badge:Container}} {{badge:tpe:RandomStall}} {{badge:namePrefix:randomStall}}. Hierarchy: creates `Stall` plus `SinkBuffer`; observed child paths include `/randomStall0_stall` and `/randomStall0_stall_sinkBuffer0_queue0`.
+{{badge:Component}} {{badge:tpe:RandomStall}} {{badge:namePrefix:randomStall}}. Hierarchy: creates `Stall` plus `SinkBuffer`; observed child paths include `/randomStall0_stall` and `/randomStall0_stall_sinkBuffer0_queue0`.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/elastic/RandomStall.scala}}
