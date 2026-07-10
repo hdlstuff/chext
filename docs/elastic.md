@@ -6,9 +6,11 @@ backpressure with `$ready`. The package also marks ports and components for
 Chext's elastic tracking graph.
 
 For graph and diagnostic details, see [tracking.md](tracking.md) and
-[tracking-elastic.md](tracking-elastic.md). For a compact source-linked catalog,
-see [synopsis.md](synopsis.md). AXI4 components are documented separately in
-[axi4-full.md](axi4-full.md) and [axi4-lite.md](axi4-lite.md).
+[tracking-elastic.md](tracking-elastic.md). The project-wide
+[naming conventions](naming.md) cover interfaces, components, helpers,
+testbenches, emitters, and configuration objects. For a compact source-linked
+catalog, see [synopsis.md](synopsis.md). AXI4 components are documented
+separately in [axi4-full.md](axi4-full.md) and [axi4-lite.md](axi4-lite.md).
 
 ## Imports
 

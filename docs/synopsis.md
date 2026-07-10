@@ -1,7 +1,7 @@
 <!-- Generated from docs/synopsis.txt by scripts/generate_synopsis.py. Do not edit by hand. -->
 # Chext Synopsis
 
-This is a working synopsis of the main Chext constructions, their intended use, and how they appear in the tracking/module graph. For the underlying component model, see [tracking.md](tracking.md). For elastic-specific tracking and AXI4 DataView recovery, see [tracking-elastic.md](tracking-elastic.md). For detailed AXI4 component guides, see [axi4-full.md](axi4-full.md) and [axi4-lite.md](axi4-lite.md).
+This is a working synopsis of the main Chext constructions, their intended use, and how they appear in the tracking/module graph. For project-wide naming guidance, see [naming.md](naming.md). For the underlying component model, see [tracking.md](tracking.md). For guidance on choosing <code>prefix(&hellip;)</code> and <code>uniquePrefix(&hellip;)</code>, see [prefixes.md](prefixes.md). For elastic-specific tracking and AXI4 DataView recovery, see [tracking-elastic.md](tracking-elastic.md). For detailed AXI4 component guides, see [axi4-full.md](axi4-full.md) and [axi4-lite.md](axi4-lite.md).
 
 ## Contents
 

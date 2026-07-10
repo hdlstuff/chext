@@ -1,0 +1,38 @@
+# Active TODOs
+
+This directory holds project-level follow-up work. Source-local TODO comments
+remain next to the code they describe. Completed work is removed from this list;
+superseded AI handoff prompts are retained only in the [archive](archive/).
+
+## Tracking diagnostics
+
+- Improve the tracking diagnostics testbench output so failures are easier to
+  connect to the originating Chisel source.
+- Make tracking, logger, and requirement failure messages follow a consistent
+  shape while preserving the information specific to each subsystem.
+
+## Elastic tracking type coupling
+
+- Consider removing `tpe` from `chext.elastic.tracking.Tracked`. The Elastic
+  module graph is deliberately coupled to `chext.elastic.Interface`, so the
+  interface type can be derived and serialized directly instead of making
+  `Tracked` appear more generic than its closed-world use.
+- Audit the same artificial genericity in related consumers, including the
+  C++-side deadlock-detection code, and make the Elastic coupling explicit where
+  it is inherent in the model.
+
+## Requirement checks
+
+- Preserve important `require`/`Require` invariants during refactors. Audit
+  touched construction and connection APIs for checks that should remain or be
+  made clearer rather than silently weakening them.
+
+## Design investigations
+
+The remaining pipelining and connection-API questions are collected in
+[design-issues.md](design-issues.md).
+
+## Archived prompts
+
+- [Tracking refactor prompt](archive/tracking-refactor-prompt.md)
+- [Elastic interface and wire naming prompt](archive/wire-naming-prompt.md)

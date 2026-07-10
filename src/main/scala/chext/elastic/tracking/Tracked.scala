@@ -70,7 +70,14 @@ object Tracked {
   * interfaces.
   */
 trait Tracked extends Data {
+  /** @todo
+    *   Consider removing `tpe` from `Tracked`. Elastic module-graph generation is deliberately
+    *   coupled to `chext.elastic.Interface`, so the graph type can be derived from that concrete
+    *   interface instead of making `Tracked` look more generic than it is. Apply the same
+    *   closed-world reasoning to downstream consumers such as the C++ deadlock-detection code.
+    */
   def tpe: String
+
   def declaredRole: DeclaredRole
 
   def sourceInfo: SourceInfo

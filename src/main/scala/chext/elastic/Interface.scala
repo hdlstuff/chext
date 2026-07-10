@@ -21,6 +21,12 @@ class Interface[+T <: Data](gen: T)(implicit si_ : SourceInfo)
 
   def sourceInfo: SourceInfo = si_
 
+  /** @todo
+    *   When `tpe` is removed from `tracking.Tracked`, move this Elastic-specific graph-type
+    *   derivation into the module-graph serializer or another explicitly Elastic helper. The
+    *   module graph and downstream consumers such as C++ deadlock detection already know they are
+    *   handling Elastic interfaces.
+    */
   val tpe: String = f"chext.elastic.Interface[${gen.toString()}]"
 
   lazy val declaredRole: t.DeclaredRole = {

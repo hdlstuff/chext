@@ -43,6 +43,11 @@ In practice:
 
 ## Naming Model
 
+For the overall project vocabulary and naming shapes, see
+[Naming Conventions](naming.md). For practical guidance on when explicit naming
+scopes are necessary, including recommended patterns for reusable and inline
+helpers, see [Prefixing Tracked Constructions](prefixes.md).
+
 | Concept | What it means | Naming / graph behavior |
 |---|---|---|
 | `tpe` | User-facing component/container type name. | Emitted as `"tpe"` in module graph JSON, for example `"Queue"`, `"Transducer"`, `"Repeat"`. |
