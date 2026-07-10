@@ -86,6 +86,56 @@ sBuffered :=> mBuffered
 `MasterBuffered` rely on the assigned Scala `val` name instead; their sequence overloads add only
 per-element index prefixes.
 
+At the channel level, use `SinkBuffer(..., name = ...)` when inserting a buffer inline and use
+`SinkBuffered(...)` when assigning the result to a named `val`. The latter uses that value for
+naming and defaults to a two-entry queue, so no explicit `name` or depth is needed:
+
+```scala
+val rBuffered = elastic.SinkBuffered(s_axi.r)
+```
+
+## Constant-response slaves
+
+`ConstantSlave` accepts AXI transactions, discards writes, and returns a configured constant for
+every read beat. It first applies `SlaveBuffered` to the complete interface, then retains request IDs
+and generates the requested number of read burst beats. Its implementation is visible in the Chext
+graph as two-entry channel buffers, joins, and transducers.
+
+```scala
+val constantSlave = Module(
+  new axi4f.components.ConstantSlave(
+    axiCfg = cfg,
+    readData = "h1234".U,
+    response = axi4.ResponseFlag.OKAY
+  )
+)
+
+s_axi :=> constantSlave.s_axi
+```
+
+`ZeroSlave` and `ErrorSlave` derive from `ConstantSlave`. `ZeroSlave` returns zero data and `OKAY`;
+`ErrorSlave` returns zero data and defaults to `DECERR`; pass `ResponseFlag.SLVERR` when the mapped
+slave exists but cannot complete the transaction.
+
+```scala
+val zeroSlave = Module(new axi4f.components.ZeroSlave(cfg))
+val errorSlave0 = Module(new axi4f.components.ErrorSlave(cfg))
+val errorSlave1 = Module(
+  new axi4f.components.ErrorSlave(cfg, axi4.ResponseFlag.SLVERR)
+)
+```
+
+`StallSlave` accepts no requests and produces no responses. `IdleMaster` issues no requests and
+keeps its response channels ready. Both use tracked elastic termination components internally.
+
+```scala
+val stallSlave = Module(new axi4f.components.StallSlave(cfg))
+val idleMaster = Module(new axi4f.components.IdleMaster(cfg))
+
+s_axi :=> stallSlave.s_axi
+idleMaster.m_axi :=> m_axi
+```
+
 ## Routing Components
 
 ### `axi4f.components.Demux`

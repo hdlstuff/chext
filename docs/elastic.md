@@ -312,6 +312,15 @@ val nullSink0 = new e.NullSink(unusedSource)
 val nullSource0 = new e.NullSource(idleSink)
 ```
 
+### `StallSink`
+
+`StallSink` permanently backpressures a source without consuming its tokens. It is useful for
+explicitly representing an intentionally blocked endpoint in the component graph.
+
+```scala
+val stallSink0 = new e.StallSink(blockedSource)
+```
+
 ### `Once`
 
 `Once` emits one token and then holds valid low forever. The class form lets the

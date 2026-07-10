@@ -391,6 +391,22 @@ val nullSource0 =
 
 ---
 
+<a id="entry-elastic-components-e-stall-sink"></a>
+
+### `e.StallSink` [#](#entry-elastic-components-e-stall-sink)
+
+**Sources:** [Scala](../src/main/scala/chext/elastic/StallSink.scala)
+
+**Intent and Usage:** Permanently backpressure a source:
+```scala
+val stallSink0 =
+  new e.StallSink(source)
+```
+
+**Details:** Component; tpe: StallSink; namePrefix: stallSink. Port: `source`.
+
+---
+
 <a id="entry-elastic-components-e-fork"></a>
 
 ### `e.Fork` [#](#entry-elastic-components-e-fork)
@@ -1510,9 +1526,91 @@ val protocolConverter0 =
 
 ---
 
+<a id="entry-axi4-full-components-constant-slaves"></a>
+
+### `axi4f.components.ConstantSlave` / `ZeroSlave` / `ErrorSlave` [#](#entry-axi4-full-components-constant-slaves)
+
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Termination.scala)
+
+**Intent and Usage:** Terminate a full AXI master with constant responses:
+```scala
+val constantSlave = Module(new axi4f.components.ConstantSlave(
+  axiCfg = fullCfg,
+  readData = "h1234".U,
+  response = axi4.ResponseFlag.OKAY
+))
+val zeroSlave = Module(new axi4f.components.ZeroSlave(fullCfg))
+val errorSlave0 = Module(new axi4f.components.ErrorSlave(fullCfg))
+val errorSlave1 = Module(new axi4f.components.ErrorSlave(
+  fullCfg,
+  axi4.ResponseFlag.SLVERR
+))
+```
+
+**Details:** Module. `ConstantSlave` applies `SlaveBuffered` to its complete interface, preserves IDs and read burst length, discards writes, and returns constant read data and responses. `ZeroSlave` derives from it with zero/`OKAY`; `ErrorSlave` derives from it with zero and a selectable `SLVERR` or `DECERR` response (default `DECERR`). Internal two-entry channel buffers, transducers, and joins are tracked elastic components.
+
+---
+
+<a id="entry-axi4-full-components-stall-slave-idle-master"></a>
+
+### `axi4f.components.StallSlave` / `IdleMaster` [#](#entry-axi4-full-components-stall-slave-idle-master)
+
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/Termination.scala)
+
+**Intent and Usage:** Attach explicit inactive full AXI endpoints:
+```scala
+val stallSlave = Module(new axi4f.components.StallSlave(fullCfg))
+val idleMaster = Module(new axi4f.components.IdleMaster(fullCfg))
+```
+
+**Details:** Module. `StallSlave` permanently backpressures requests and produces no responses. `IdleMaster` issues no requests and consumes any responses. Both expose their behavior through tracked elastic termination components.
+
+---
+
 ## AXI4 Lite Components
 
 AXI4-Lite components are Chisel modules. They are not Chext components themselves; graph content comes from the internal channel-level elastic components. For the detailed guide and examples for every Lite AXI component/helper, see [axi4-lite.md](axi4-lite.md).
+
+<a id="entry-axi4-lite-components-constant-slaves"></a>
+
+### `axi4l.components.ConstantSlave` / `ZeroSlave` / `ErrorSlave` [#](#entry-axi4-lite-components-constant-slaves)
+
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/Termination.scala)
+
+**Intent and Usage:** Terminate an AXI4-Lite master with constant responses:
+```scala
+val constantSlave = Module(new axi4l.components.ConstantSlave(
+  axiCfg = liteCfg,
+  readData = "h1234".U,
+  response = axi4.ResponseFlag.OKAY
+))
+val zeroSlave = Module(new axi4l.components.ZeroSlave(liteCfg))
+val errorSlave0 = Module(new axi4l.components.ErrorSlave(liteCfg))
+val errorSlave1 = Module(new axi4l.components.ErrorSlave(
+  liteCfg,
+  axi4.ResponseFlag.SLVERR
+))
+```
+
+**Details:** Module. `ConstantSlave` applies `SlaveBuffered` to its complete interface, accepts AW and W in either order, discards writes, and returns constant read data and responses. `ZeroSlave` derives from it with zero/`OKAY`; `ErrorSlave` derives from it with zero and a selectable `SLVERR` or `DECERR` response (default `DECERR`). Internal two-entry channel buffers, transforms, and joins are tracked elastic components.
+
+---
+
+<a id="entry-axi4-lite-components-stall-slave-idle-master"></a>
+
+### `axi4l.components.StallSlave` / `IdleMaster` [#](#entry-axi4-lite-components-stall-slave-idle-master)
+
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/components/Termination.scala)
+
+**Intent and Usage:** Attach explicit inactive AXI4-Lite endpoints:
+```scala
+val stallSlave = Module(new axi4l.components.StallSlave(liteCfg))
+val idleMaster = Module(new axi4l.components.IdleMaster(liteCfg))
+```
+
+**Details:** Module. `StallSlave` permanently backpressures requests and produces no responses. `IdleMaster` issues no requests and consumes any responses. Both expose their behavior through tracked elastic termination components.
+
+---
 
 <a id="entry-axi4-lite-components-demux-config"></a>
 

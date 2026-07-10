@@ -76,6 +76,55 @@ sBuffered :=> mBuffered
 `MasterBuffered` rely on the assigned Scala `val` name instead; their sequence overloads add only
 per-element index prefixes.
 
+At the channel level, use `SinkBuffer(..., name = ...)` for inline insertion and
+`SinkBuffered(...)` when assigning the result to a named `val`. `SinkBuffered` uses that value for
+naming and defaults to a two-entry queue:
+
+```scala
+val rBuffered = elastic.SinkBuffered(s_axil.r)
+```
+
+## Constant-response slaves
+
+`ConstantSlave` accepts AXI4-Lite transactions, discards writes, and returns a configured constant
+for reads. AW and W may arrive in either order. It applies `SlaveBuffered` to the complete interface,
+so its two-entry channel buffers, read transform, and write join are visible in the Chext component
+graph.
+
+```scala
+val constantSlave = Module(
+  new axi4l.components.ConstantSlave(
+    axiCfg = cfg,
+    readData = "h1234".U,
+    response = axi4.ResponseFlag.OKAY
+  )
+)
+
+s_axil :=> constantSlave.s_axil
+```
+
+`ZeroSlave` returns zero data with `OKAY`. `ErrorSlave` returns zero data and defaults to `DECERR`;
+pass `ResponseFlag.SLVERR` when the mapped slave exists but cannot complete the transaction.
+
+```scala
+val zeroSlave = Module(new axi4l.components.ZeroSlave(cfg))
+val errorSlave0 = Module(new axi4l.components.ErrorSlave(cfg))
+val errorSlave1 = Module(
+  new axi4l.components.ErrorSlave(cfg, axi4.ResponseFlag.SLVERR)
+)
+```
+
+`StallSlave` accepts no requests and produces no responses. `IdleMaster` issues no requests and
+keeps its response channels ready. Both use tracked elastic termination components internally.
+
+```scala
+val stallSlave = Module(new axi4l.components.StallSlave(cfg))
+val idleMaster = Module(new axi4l.components.IdleMaster(cfg))
+
+s_axil :=> stallSlave.s_axil
+idleMaster.m_axil :=> m_axil
+```
+
 ## Routing Components
 
 ### `axi4l.components.Demux`

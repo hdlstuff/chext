@@ -216,6 +216,12 @@ source :=&gt; e.RightBuffer(sink)</code></pre></td>
   new e.NullSource(sink)</code></pre></td>
       <td style="vertical-align:top;"><span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: NullSource</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: nullSource</span> Port: <code>sink</code>.</td>
     </tr>
+    <tr id="entry-elastic-components-e-stall-sink">
+      <td style="vertical-align:top;"><code>e.StallSink</code> <a href="#entry-elastic-components-e-stall-sink" style="text-decoration:none;" aria-label="Permalink to entry-elastic-components-e-stall-sink">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/StallSink.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+      <td style="vertical-align:top;">Permanently backpressure a source:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val stallSink0 =
+  new e.StallSink(source)</code></pre></td>
+      <td style="vertical-align:top;"><span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span> <span style="background:#fff0e6;color:#a14200;padding:2px 6px;border-radius:4px;">tpe: StallSink</span> <span style="background:#eef0ff;color:#3730a3;padding:2px 6px;border-radius:4px;">namePrefix: stallSink</span> Port: <code>source</code>.</td>
+    </tr>
     <tr id="entry-elastic-components-e-fork">
       <td style="vertical-align:top;"><code>e.Fork</code> <a href="#entry-elastic-components-e-fork" style="text-decoration:none;" aria-label="Permalink to entry-elastic-components-e-fork">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/elastic/Fork.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
       <td style="vertical-align:top;">Branch one source to several sinks:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val fork0 = new e.Fork(source) {
@@ -783,6 +789,27 @@ AXI4 full components are Chisel modules. They are not Chext components themselve
   Module(new axi4f.components.ProtocolConverter(cfg))</code></pre></td>
       <td style="vertical-align:top;"><span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span> Staged full AXI protocol conversion. It composes lower-level full AXI component modules and their internal elastic channel components.</td>
     </tr>
+    <tr id="entry-axi4-full-components-constant-slaves">
+      <td style="vertical-align:top;"><code>axi4f.components.ConstantSlave</code> / <code>ZeroSlave</code> / <code>ErrorSlave</code> <a href="#entry-axi4-full-components-constant-slaves" style="text-decoration:none;" aria-label="Permalink to entry-axi4-full-components-constant-slaves">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/full/components/Termination.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+      <td style="vertical-align:top;">Terminate a full AXI master with constant responses:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val constantSlave = Module(new axi4f.components.ConstantSlave(
+  axiCfg = fullCfg,
+  readData = &quot;h1234&quot;.U,
+  response = axi4.ResponseFlag.OKAY
+))
+val zeroSlave = Module(new axi4f.components.ZeroSlave(fullCfg))
+val errorSlave0 = Module(new axi4f.components.ErrorSlave(fullCfg))
+val errorSlave1 = Module(new axi4f.components.ErrorSlave(
+  fullCfg,
+  axi4.ResponseFlag.SLVERR
+))</code></pre></td>
+      <td style="vertical-align:top;"><span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span> <code>ConstantSlave</code> applies <code>SlaveBuffered</code> to its complete interface, preserves IDs and read burst length, discards writes, and returns constant read data and responses. <code>ZeroSlave</code> derives from it with zero/<code>OKAY</code>; <code>ErrorSlave</code> derives from it with zero and a selectable <code>SLVERR</code> or <code>DECERR</code> response (default <code>DECERR</code>). Internal two-entry channel buffers, transducers, and joins are tracked elastic components.</td>
+    </tr>
+    <tr id="entry-axi4-full-components-stall-slave-idle-master">
+      <td style="vertical-align:top;"><code>axi4f.components.StallSlave</code> / <code>IdleMaster</code> <a href="#entry-axi4-full-components-stall-slave-idle-master" style="text-decoration:none;" aria-label="Permalink to entry-axi4-full-components-stall-slave-idle-master">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/full/components/Termination.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+      <td style="vertical-align:top;">Attach explicit inactive full AXI endpoints:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val stallSlave = Module(new axi4f.components.StallSlave(fullCfg))
+val idleMaster = Module(new axi4f.components.IdleMaster(fullCfg))</code></pre></td>
+      <td style="vertical-align:top;"><span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span> <code>StallSlave</code> permanently backpressures requests and produces no responses. <code>IdleMaster</code> issues no requests and consumes any responses. Both expose their behavior through tracked elastic termination components.</td>
+    </tr>
   </tbody>
 </table>
 
@@ -804,6 +831,27 @@ AXI4-Lite components are Chisel modules. They are not Chext components themselve
     </tr>
   </thead>
   <tbody>
+    <tr id="entry-axi4-lite-components-constant-slaves">
+      <td style="vertical-align:top;"><code>axi4l.components.ConstantSlave</code> / <code>ZeroSlave</code> / <code>ErrorSlave</code> <a href="#entry-axi4-lite-components-constant-slaves" style="text-decoration:none;" aria-label="Permalink to entry-axi4-lite-components-constant-slaves">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/lite/components/Termination.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+      <td style="vertical-align:top;">Terminate an AXI4-Lite master with constant responses:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val constantSlave = Module(new axi4l.components.ConstantSlave(
+  axiCfg = liteCfg,
+  readData = &quot;h1234&quot;.U,
+  response = axi4.ResponseFlag.OKAY
+))
+val zeroSlave = Module(new axi4l.components.ZeroSlave(liteCfg))
+val errorSlave0 = Module(new axi4l.components.ErrorSlave(liteCfg))
+val errorSlave1 = Module(new axi4l.components.ErrorSlave(
+  liteCfg,
+  axi4.ResponseFlag.SLVERR
+))</code></pre></td>
+      <td style="vertical-align:top;"><span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span> <code>ConstantSlave</code> applies <code>SlaveBuffered</code> to its complete interface, accepts AW and W in either order, discards writes, and returns constant read data and responses. <code>ZeroSlave</code> derives from it with zero/<code>OKAY</code>; <code>ErrorSlave</code> derives from it with zero and a selectable <code>SLVERR</code> or <code>DECERR</code> response (default <code>DECERR</code>). Internal two-entry channel buffers, transforms, and joins are tracked elastic components.</td>
+    </tr>
+    <tr id="entry-axi4-lite-components-stall-slave-idle-master">
+      <td style="vertical-align:top;"><code>axi4l.components.StallSlave</code> / <code>IdleMaster</code> <a href="#entry-axi4-lite-components-stall-slave-idle-master" style="text-decoration:none;" aria-label="Permalink to entry-axi4-lite-components-stall-slave-idle-master">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/lite/components/Termination.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+      <td style="vertical-align:top;">Attach explicit inactive AXI4-Lite endpoints:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val stallSlave = Module(new axi4l.components.StallSlave(liteCfg))
+val idleMaster = Module(new axi4l.components.IdleMaster(liteCfg))</code></pre></td>
+      <td style="vertical-align:top;"><span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span> <code>StallSlave</code> permanently backpressures requests and produces no responses. <code>IdleMaster</code> issues no requests and consumes any responses. Both expose their behavior through tracked elastic termination components.</td>
+    </tr>
     <tr id="entry-axi4-lite-components-demux-config">
       <td style="vertical-align:top;"><code>axi4l.components.DemuxConfig</code> <a href="#entry-axi4-lite-components-demux-config" style="text-decoration:none;" aria-label="Permalink to entry-axi4-lite-components-demux-config">#</a><div style="margin-top:6px;font-size:0.92em;"><div><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span></div></div><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/lite/components/Demux.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
       <td style="vertical-align:top;">AXI4-Lite fan-out configuration:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val cfg = axi4l.components.DemuxConfig(
