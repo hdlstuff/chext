@@ -39,12 +39,12 @@ final class Merger[T <: Data](
   private val genIn = chiselTypeOf(sources.head.$bits)
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
   sources.zipWithIndex.foreach { //
-    case (source, i) => addSourcePort(s"source_$i", source)
+    case (source, i) => addSource(s"source_$i", source)
   }
-  addSinkPort("sink", sink)
+  addSink("sink", sink)
 
   deferred {
     sources.zipWithIndex.foreach { //

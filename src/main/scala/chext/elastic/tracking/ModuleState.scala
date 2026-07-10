@@ -189,15 +189,14 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
       .filter { _.isContainer }
       .map { _.asContainer }
 
-    val interfaces = HashSet
-      .from(
-        components
-          .map { component =>
-            val elasticState = component.trackingState(Tag)
-            elasticState.sourcePorts.map { _._2 } ++ elasticState.sinkPorts.map { _._2 }
-          }
-          .flatten
-      )
+    val interfaceSet = HashSet.empty[Tracked]
+    components.foreach { component =>
+      val elasticState = component.trackingState(Tag)
+      elasticState.sources.foreach { case (_, interface) => interfaceSet.add(interface) }
+      elasticState.sinks.foreach { case (_, interface) => interfaceSet.add(interface) }
+    }
+
+    val interfaces = interfaceSet
       .toSeq
       .sortBy(graphName)
 
@@ -267,10 +266,10 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
             Graph.Component(
               path = f"/${component.pathStr}",
               tpe = component.tpe,
-              sources = elasticState.sourcePorts.map {
+              sources = elasticState.sources.map {
                 case (name, interface) => (name, interfaceRefs(interface))
               },
-              sinks = elasticState.sinkPorts.map {
+              sinks = elasticState.sinks.map {
                 case (name, interface) => (name, interfaceRefs(interface))
               },
               parent = {

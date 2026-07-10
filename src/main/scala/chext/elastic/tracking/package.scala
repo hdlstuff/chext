@@ -3,21 +3,8 @@ package chext.elastic
 import chisel3.Data
 import chisel3.experimental.BaseModule
 import chisel3.experimental.SourceInfo
-import chext.{elastic => e}
 
 package object tracking {
-  implicit class ComponentOps(val component: chext.tracking.Component) extends AnyVal {
-    def getSourceInterfaces(): Seq[(String, e.Interface[_])] = {
-      val elasticState = component.trackingState(Tag)
-      elasticState.sourcePorts.asInstanceOf[Seq[(String, e.Interface[_])]]
-    }
-
-    def getSinkInterfaces(): Seq[(String, e.Interface[_])] = {
-      val elasticState = component.trackingState(Tag)
-      elasticState.sinkPorts.asInstanceOf[Seq[(String, e.Interface[_])]]
-    }
-  }
-
   def registerView(
       view: Data,
       source: Data,

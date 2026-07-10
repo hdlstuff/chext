@@ -61,6 +61,54 @@ class EndpointExample extends Module {
 }
 ```
 
+## Defining Elastic Components
+
+An elastic component extends `chext.tracking.Component` and registers every
+elastic interface that it consumes or produces with its elastic tracking state.
+Use `addSource` for an interface that supplies tokens to the component and
+`addSink` for an interface that accepts tokens from the component. These calls
+both add the named interface to the component graph and apply the corresponding
+tracking mark.
+
+Import only the registration methods from the state. In particular, avoid a
+wildcard import because the state also exposes `sources` and `sinks`, names that
+components commonly use for their own interface collections.
+
+```scala
+import chisel3._
+import chisel3.experimental.SourceInfo
+import chext.{elastic => e}
+import chext.elastic.{tracking => et}
+import chext.tracking.Component
+
+final class PassThrough[T <: Data](
+    val source: e.Interface[T],
+    val sink: e.Interface[T]
+)(implicit si_ : SourceInfo)
+    extends Component {
+  override val sourceInfo: SourceInfo = si_
+  override def tpe: String = "PassThrough"
+  override def namePrefix: String = "passThrough"
+
+  private val elasticState = trackingState(et.Tag)
+  import elasticState.{addSource, addSink}
+
+  addSource("source", source)
+  addSink("sink", sink)
+
+  source.$ready := sink.$ready
+  sink.$valid := source.$valid
+  sink.$bits := source.$bits
+}
+```
+
+Register each component interface exactly once. Give multiple interfaces stable,
+unique names such as `source_0`, `source_1`, `sink_0`, and `sink_1`; register
+control streams such as a selector according to the direction in which their
+tokens flow. Do not also call `markSource()` or `markSink()` for an interface
+registered this way, because `addSource` and `addSink` already perform those
+marks.
+
 ## Connections
 
 ### `Connect` and `ConnectOp`

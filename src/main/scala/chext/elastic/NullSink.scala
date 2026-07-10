@@ -14,9 +14,9 @@ final class NullSink[T <: Data](
   protected def fireSink: Interface[T] = source
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
-  addSourcePort("source", source)
+  addSource("source", source)
 
   val sourceInfo: SourceInfo = si_
   def tpe: String = "NullSink"

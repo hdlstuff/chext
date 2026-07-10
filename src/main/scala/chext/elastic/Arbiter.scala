@@ -61,13 +61,13 @@ final class Arbiter[Tin <: Data, Tout <: Data](
   private val genOut = chiselTypeOf(sink.$bits)
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
   sources.zipWithIndex.foreach { //
-    case (source, i) => addSourcePort(s"source_$i", source)
+    case (source, i) => addSource(s"source_$i", source)
   }
-  addSinkPort("sink", sink)
-  addSinkPort("sinkSelect", sinkSelect)
+  addSink("sink", sink)
+  addSink("sinkSelect", sinkSelect)
 
   /** Sets a pure functional transformation for the value driven on the sink.
     * The function takes the arbitrated input data and returns the transformed

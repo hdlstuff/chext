@@ -17,7 +17,7 @@ The generic model deliberately does not know what an elastic source or sink is. 
 | Layer concept | Role |
 |---|---|
 | `chext.elastic.tracking.Tag` | Identifies the elastic tracking state attached to modules and components. |
-| `component.trackingState(t.Tag)` | Returns the elastic component state for a component. Elastic components use this state to call `addSourcePort(...)` and `addSinkPort(...)`. |
+| `component.trackingState(t.Tag)` | Returns the elastic component state for a component. Elastic components use this state to call `addSource(...)` and `addSink(...)`. |
 | `Tracked` elastic interfaces | Elastic `Interface` extends `Tracked`, enabling `markSource`, `markSink`, role checks, and graph interface emission. |
 | `DeclaredRole` | Records whether an interface is declared as `Source`, `Sink`, or role-neutral from the current module's perspective. |
 | Elastic module graph state | Collects interface declarations, wires, view sources, sanity-check data, and component port references for graph generation. |
@@ -55,5 +55,5 @@ helpers, see [Prefixing Tracked Constructions](prefixes.md).
 | `uniquePrefix(name) { ... }` | Generates a Chisel prefix unique in the current module for a base name. | Produces names like `connect0`, `elasticConnectMany0`, `sourceBuffer0`, `sinkBuffer0`; nested prefixes concatenate with underscores. `Buffered` helpers deliberately rely on the assigned Scala `val` name, and their sequence overloads add only numeric element prefixes. |
 | `prefix("x") { ... }` | Chisel prefix scope. | Components created inside receive paths such as `/x_transform0`, `/read_ar_transform0`, etc. |
 | Sequence helper prefixes | Helpers over `Seq` usually wrap each element in a unique domain-specific `...Many` prefix and then `prefix(index.toString)`. | Example: `sources :=> sinks` creates `Connect` components under `/connectMany0_0_connect0`, `/connectMany0_1_connect0`, unless surrounding Scala names/prefixes alter the path. |
-| Elastic graph ports | Elastic components call `addSourcePort` / `addSinkPort` through `trackingState(t.Tag)`. | Component entries include named ports such as `source`, `sink`, `source_0`, `sink_1`, `sourceSelect`, `sinkSelect`. |
+| Elastic graph ports | Elastic components call `addSource` / `addSink` through `trackingState(t.Tag)`. | Component entries include named ports such as `source`, `sink`, `source_0`, `sink_1`, `sourceSelect`, `sinkSelect`. |
 | Interfaces | `e.Source`, `e.Sink`, `e.EWire`, and generated bridge wires are graph interfaces. | Emitted in module graph `sources`, `sinks`, or `wires` with type like `chext.elastic.Interface[UInt<16>]`. |

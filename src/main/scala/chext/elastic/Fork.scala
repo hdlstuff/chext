@@ -17,9 +17,9 @@ abstract class Fork[T <: Data](
 )(implicit si_ : SourceInfo)
     extends Component {
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
-  addSourcePort("source", source)
+  addSource("source", source)
 
   val sourceInfo: SourceInfo = si_
   def tpe: String = "Fork"
@@ -41,7 +41,7 @@ abstract class Fork[T <: Data](
   protected final def fork[TT <: Data](tt: TT = in): Interface[TT] = {
     val result = EWire(chiselTypeOf(tt))
     result.$bits := tt
-    addSinkPort(f"sink_${sinkList.length}", result)
+    addSink(f"sink_${sinkList.length}", result)
     sinkList.addOne(result)
     result
   }

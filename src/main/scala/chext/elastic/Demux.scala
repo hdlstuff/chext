@@ -59,13 +59,13 @@ class Demux[Tin <: Data, Tout <: Data](
   private val genOut = chiselTypeOf(sinks.head.$bits)
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
-  addSourcePort("source", source)
+  addSource("source", source)
   sinks.zipWithIndex.foreach { //
-    case (sink, i) => addSinkPort(s"sink_$i", sink)
+    case (sink, i) => addSink(s"sink_$i", sink)
   }
-  addSourcePort("sourceSelect", sourceSelect)
+  addSource("sourceSelect", sourceSelect)
 
   /** Sets the predicate that marks the current token as the last one.
     *

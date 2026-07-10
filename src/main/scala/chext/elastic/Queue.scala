@@ -326,10 +326,10 @@ class Queue[Tin <: Data, Tout <: Data](
   private val genOut = chiselTypeOf(sink.$bits)
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
-  addSourcePort("source", source)
-  addSinkPort("sink", sink)
+  addSource("source", source)
+  addSink("sink", sink)
 
   val sourceInfo: SourceInfo = si_
   def tpe: String = "Queue"

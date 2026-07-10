@@ -19,9 +19,9 @@ abstract class Join[T <: Data](
   protected def fireSink: Interface[T] = sink
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
-  addSinkPort("sink", sink)
+  addSink("sink", sink)
 
   val sourceInfo: SourceInfo = si_
   def tpe: String = "Join"
@@ -41,7 +41,7 @@ abstract class Join[T <: Data](
     * @return
     */
   def join[TT <: Data](source: Interface[TT]): TT = {
-    addSourcePort(f"source_${sourceList.length}", source)
+    addSource(f"source_${sourceList.length}", source)
     sourceList.addOne(source)
     source.$bits
   }

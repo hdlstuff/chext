@@ -5,7 +5,7 @@ import chisel3._
 import chext.{elastic => e}
 
 import chext.tracking.Component
-import chext.elastic.tracking._
+import chext.elastic.tracking.Tag
 
 import scala.collection.mutable.HashMap
 import chisel3.hacks.deferred
@@ -44,8 +44,9 @@ object Monitor {
 class Monitor(val component: Component) {
   private val require_ = chext.util.Require.inferred()
 
-  private val sourceInterfaces = component.getSourceInterfaces()
-  private val sinkInterfaces = component.getSinkInterfaces()
+  private val elasticState = component.trackingState(Tag)
+  private val sourceInterfaces = elasticState.sources
+  private val sinkInterfaces = elasticState.sinks
 
   private val sourceInterfaceSet =
     sourceInterfaces

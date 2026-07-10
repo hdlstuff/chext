@@ -62,13 +62,13 @@ class Mux[Tin <: Data, Tout <: Data](
   private val genOut = chiselTypeOf(sink.$bits)
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
   sources.zipWithIndex.foreach { //
-    case (source, i) => addSourcePort(s"source_$i", source)
+    case (source, i) => addSource(s"source_$i", source)
   }
-  addSinkPort("sink", sink)
-  addSourcePort("sourceSelect", sourceSelect)
+  addSink("sink", sink)
+  addSource("sourceSelect", sourceSelect)
 
   /** Sets the predicate that marks the current token as the last one.
     *

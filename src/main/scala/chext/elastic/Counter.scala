@@ -48,9 +48,9 @@ final class Counter(
   require_(start < maxValueExclusive_)
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
-  addSinkPort("sink", sink)
+  addSink("sink", sink)
 
   deferred {
     val counter = RegInit(start.U(sink.$bits.getWidth.W))

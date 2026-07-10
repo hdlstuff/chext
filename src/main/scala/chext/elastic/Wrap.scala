@@ -17,10 +17,10 @@ abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interfa
   protected def fireSink: Interface[T2] = sink
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState._
+  import elasticState.{addSource, addSink}
 
-  addSourcePort("source", source)
-  addSinkPort("sink", sink)
+  addSource("source", source)
+  addSink("sink", sink)
 
   def tpe: String = "Wrap"
   def namePrefix: String = "wrap"
