@@ -20,6 +20,7 @@ practice, iterating faster and more safely.
 
 - Paper (PDF in this repo): “Chext: A Domain-specific Language for Safe and Agile Elastic Dataflow Accelerators”
 - Examples: https://github.com/hdlstuff/chext-examples
+- Documentation: [package synopsis](docs/synopsis.md), [Elastic API](docs/elastic.md), [tracking model](docs/tracking.md), [naming conventions](docs/naming.md), and [active TODOs](docs/todo/README.md)
 - Contact: canberk.sonmez@epfl.ch
 
 ---

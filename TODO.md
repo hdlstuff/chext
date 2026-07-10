@@ -1,3 +1,0 @@
-- The testbench for tracking diagnostics shall be improved a little bit, maybe the output shall also include the Chisel source cde for sake of readability
-- We have now Logger and Require classes. Maybe we should collect them under the same package, like util, logging, or diagnostics. That would have made the code base a lot nicer.
-- Make sure that the error messages are somewhat uniform, this is closely related to the item above
