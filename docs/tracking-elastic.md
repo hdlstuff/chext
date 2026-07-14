@@ -173,6 +173,11 @@ representations agree.
 The module-level `children` field remains separate: it contains child Chisel modules, while a
 component's `children` contains child Chext components.
 
+Module-graph collections preserve declaration and construction order. Interfaces retain their port
+declaration or first component-use order, components retain call order, and child modules retain
+instantiation order. Consequently, constructions created by a loop appear as `loop0` through
+`loop10` rather than being lexically reordered with `loop10` before `loop9`.
+
 ## View Tracking Background
 
 Chext exposes raw AXI4 interfaces as ordinary Chisel bundles, and then provides ergonomic

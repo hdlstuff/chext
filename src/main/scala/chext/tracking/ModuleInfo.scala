@@ -6,7 +6,7 @@ import chisel3.hacks.ModuleInternals
 import chisel3.hacks.PrefixManager
 
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.HashMap
+import scala.collection.mutable.{HashMap, LinkedHashMap}
 import scala.collection.mutable.Stack
 
 import chext.util.Logger
@@ -22,7 +22,7 @@ private[chext] class ModuleInfo(
   private var atModuleBodyEndCalled_ = false
   private val logger = new Logger("tracking")
 
-  private val children_ = HashMap.empty[BaseModule, ModuleInfo]
+  private val children_ = LinkedHashMap.empty[BaseModule, ModuleInfo]
 
   private val components_ = ArrayBuffer.empty[Component]
 
@@ -39,7 +39,7 @@ private[chext] class ModuleInfo(
   /** @return
     *   Children `ModuleInfo`s.
     */
-  def children = children_.toMap
+  def children = children_.toSeq
 
   /** @return
     *   Components used by the module.

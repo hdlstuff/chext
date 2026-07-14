@@ -5,7 +5,7 @@ import chisel3.experimental.{BaseModule, SourceInfo}
 import chisel3.hacks.{DataInternals, ModuleInternals}
 
 import scala.collection.mutable.HashMap
-import scala.collection.mutable.HashSet
+import scala.collection.mutable.LinkedHashSet
 
 import chext.tracking
 import chext.util.Logger
@@ -66,6 +66,8 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
         DataInternals.getChildrenOfType[Tracked](data).map { (_, si) }
       }
       .flatten
+      // Chisel exposes ports and aggregate children in reverse declaration order.
+      .reverse
 
   private def viewSuffix(interface: Tracked): String =
     DataInternals
@@ -184,16 +186,15 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
   private def constructModuleGraph(): Unit = {
     val components = moduleInfo.components
 
-    val interfaceSet = HashSet.empty[Tracked]
+    // Keep the first-use order established by component registration and component port order.
+    val interfaceSet = LinkedHashSet.empty[Tracked]
     components.foreach { component =>
       val elasticState = component.trackingState(Tag)
       elasticState.sources.foreach { port => interfaceSet.add(port.interface) }
       elasticState.sinks.foreach { port => interfaceSet.add(port.interface) }
     }
 
-    val interfaces = interfaceSet
-      .toSeq
-      .sortBy(graphName)
+    val interfaces = interfaceSet.toSeq
 
     val interfaceRefs = interfaces.map { interface =>
       val name = graphName(interface)
@@ -221,7 +222,6 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
           ports
             .map { _._1 }
             .filter { _.declaredRole == DeclaredRole.Source }
-            .sortBy(graphName)
             .map { interface =>
               Graph.Interface(
                 path = f"/${graphName(interface)}",
@@ -234,7 +234,6 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
           ports
             .map { _._1 }
             .filter { _.declaredRole == DeclaredRole.Sink }
-            .sortBy(graphName)
             .map { interface =>
               Graph.Interface(
                 path = f"/${graphName(interface)}",
@@ -284,7 +283,6 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
               )
             }
             .toSeq
-            .sortBy(_.name)
         },
         args = moduleInfo.args.toMap
       )
