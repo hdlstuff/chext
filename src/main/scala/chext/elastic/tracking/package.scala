@@ -5,6 +5,16 @@ import chisel3.experimental.BaseModule
 import chisel3.experimental.SourceInfo
 
 package object tracking {
+  /** Manually initializes Elastic tracking for the current module.
+    *
+    * This is needed when a module exposes Elastic interfaces but contains no
+    * Elastic components that would otherwise initialize tracking.
+    */
+  def register(): Unit = {
+    Tag.initialize()
+    chext.tracking.register()
+  }
+
   def registerView(
       view: Data,
       source: Data,

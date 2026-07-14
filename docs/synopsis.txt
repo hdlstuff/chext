@@ -101,6 +101,23 @@ hierarchy <<END
 END
 
 [row.elastic_interfaces]
+anchor = elastic-interfaces-declare-elastic-interface
+construct = `declareElasticInterface`
+intent <<END
+Declare Elastic IO on an `AnnotatedModule`:
+```scala
+declareElasticInterface(source, "Task")
+declareElasticInterface(sink, "Result")
+```
+END
+details <<END
+{{badge:Interface}} Adds hdlinfo metadata. If a module has Elastic interfaces but no Elastic components, manually initialize tracking in its module body with `chext.elastic.tracking.register()` so parent graph components can reference its child IO.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/AnnotatedModule.scala}}
+END
+
+[row.elastic_interfaces]
 anchor = elastic-interfaces-e-source-like-e-sink-like-e-ewire-like-e-source-manylike-e-sink-manylike-e-ewire-manylike
 construct = `e.Source.like`, `e.Sink.like`, `e.EWire.like`, `e.Source.manyLike`, `e.Sink.manyLike`, `e.EWire.manyLike`
 intent <<END

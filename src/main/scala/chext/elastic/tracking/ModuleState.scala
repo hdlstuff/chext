@@ -95,6 +95,13 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
       .replace('.', '_')
       .replaceAll("\\[([^\\]]+)\\]", "_$1")
 
+  private def missingChildGraph(childModule: BaseModule): Nothing =
+    throw new IllegalStateException(
+      s"Child module '$childModule' has no Elastic tracking graph. " +
+        "If it has Elastic interfaces but no Elastic components, call " +
+        "chext.elastic.tracking.register() in its module body."
+    )
+
   /** Resolves Elastic interfaces that are real hardware objects.
     *
     * Wires are local to this module. IO can either belong to this module or to a child module,
@@ -113,7 +120,9 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
       if (owningModule == moduleInfo.module)
         Some(Graph.InterfaceRef(path = f"/$name", desc = "IO"))
       else {
-        val instanceName = moduleInfo.childInstanceName(owningModule)
+        val instanceName = moduleInfo
+          .childInstanceName(owningModule)
+          .getOrElse(missingChildGraph(owningModule))
 
         Some(Graph.InterfaceRef(path = f"/$instanceName/$name", desc = "ChildIO"))
       }
@@ -278,7 +287,10 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
           moduleInfo.children
             .map { _._2 }
             .map { childInfo =>
-              childInfo.trackingState(Tag).moduleGraph.copy(
+              val childGraph = childInfo.trackingState(Tag).moduleGraphOption.getOrElse {
+                missingChildGraph(childInfo.module)
+              }
+              childGraph.copy(
                 path = f"/${childInfo.instanceName}"
               )
             }

@@ -76,8 +76,8 @@ private[chext] class ModuleInfo(
       }
   }
 
-  private[chext] def childInstanceName(childModule: BaseModule) =
-    children_(childModule).instanceName
+  private[chext] def childInstanceName(childModule: BaseModule): Option[String] =
+    children_.get(childModule).map(_.instanceName)
 
   /** Registers a new component.
     *

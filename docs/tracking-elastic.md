@@ -27,6 +27,24 @@ elaboration that a component with children has no operational source or sink int
 components may register hierarchy-only boundary ports for display, while their leaf descendants
 own and mark the observable protocol ports.
 
+### Manual initialization for interface-only modules
+
+Elastic components initialize tracking automatically. If a module has Elastic interfaces but no
+Elastic components, manually initialize tracking in the module body:
+
+```scala
+class PassiveEndpoint extends Module with chext.AnnotatedModule {
+  chext.elastic.tracking.register()
+
+  val source = IO(chext.elastic.Source(UInt(32.W)))
+  // Direct ready/valid implementation with no Chext Elastic component.
+}
+```
+
+This must happen while the module body is active. It ensures the module's Elastic graph is built
+before a parent component references its child IO. Missing-child diagnostics point to
+`chext.elastic.tracking.register()` when this initialization was omitted.
+
 ## Declared Roles
 
 An ordinary elastic IO endpoint derives its declared role from Chisel IO direction:

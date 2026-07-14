@@ -90,6 +90,22 @@ val ewire0 = e.EWire(UInt(32.W))
 
 ---
 
+<a id="entry-elastic-interfaces-declare-elastic-interface"></a>
+
+### `declareElasticInterface` [#](#entry-elastic-interfaces-declare-elastic-interface)
+
+**Sources:** [Scala](../src/main/scala/chext/AnnotatedModule.scala)
+
+**Intent and Usage:** Declare Elastic IO on an `AnnotatedModule`:
+```scala
+declareElasticInterface(source, "Task")
+declareElasticInterface(sink, "Result")
+```
+
+**Details:** Interface. Adds hdlinfo metadata. If a module has Elastic interfaces but no Elastic components, manually initialize tracking in its module body with `chext.elastic.tracking.register()` so parent graph components can reference its child IO.
+
+---
+
 <a id="entry-elastic-interfaces-e-source-like-e-sink-like-e-ewire-like-e-source-manylike-e-sink-manylike-e-ewire-manylike"></a>
 
 ### `e.Source.like`, `e.Sink.like`, `e.EWire.like`, `e.Source.manyLike`, `e.Sink.manyLike`, `e.EWire.manyLike` [#](#entry-elastic-interfaces-e-source-like-e-sink-like-e-ewire-like-e-source-manylike-e-sink-manylike-e-ewire-manylike)
