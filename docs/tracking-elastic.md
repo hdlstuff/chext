@@ -23,9 +23,9 @@ components, component ancestry, paths, child modules, and typed arguments. The e
 supplies the protocol-specific interface declarations and component port references.
 
 Components are also the only hierarchy node type. Elastic tracking checks after deferred
-elaboration that a component with children has no registered source or sink interfaces. Composite
-components therefore provide ancestry, while their leaf descendants own the observable protocol
-ports.
+elaboration that a component with children has no operational source or sink interfaces. Composite
+components may register hierarchy-only boundary ports for display, while their leaf descendants
+own and mark the observable protocol ports.
 
 ## Declared Roles
 
@@ -87,7 +87,7 @@ Tracking diagnostics can then report:
 - a source/sink role mismatch;
 - an interface whose path cannot be recovered.
 
-## Component Port State
+## Component Interface State
 
 Elastic component state is stored on each tracked component under `chext.elastic.tracking.Tag`.
 When a component registers an interface with `addSource(...)` or `addSink(...)`, it assigns that
@@ -112,6 +112,32 @@ The local name is meaningful inside the component type; it does not rename the i
 Interface references use the same path-resolution code as top-level interface declarations, so a
 component port and the corresponding entry in `sources`, `sinks`, or `wires` identify the same
 object.
+
+Each `ComponentInterface` reference also has a `boundary` flag. It records the component-local
+name, the Elastic interface, and whether the reference is hierarchy-only. The default,
+`boundary = false`, is operational: registration marks the interface and makes it available to the
+component's deadlock monitor. Passing `boundary = true` records and serializes the reference without calling
+`markSource()` or `markSink()`. In its deferred block, `deadlock.Monitor` verifies that every port
+registered on its component is non-boundary; a component exposing boundary ports therefore cannot
+own a deadlock monitor. This lets a composite component expose its logical boundary while its leaf
+descendants retain operational ownership.
+
+For example:
+
+```scala
+val elasticState = trackingState(chext.elastic.tracking.Tag)
+elasticState.addSource("source", source, boundary = true)
+elasticState.addSink("sink", sink, boundary = true)
+```
+
+The corresponding reference carries the flag in JSON:
+
+```json
+["source", { "path": "/input", "desc": "IO", "boundary": true }]
+```
+
+A component with children may contain only boundary ports. Ordinary operational ports remain
+valid only on components with no children.
 
 For example, a `Fork` may emit ports like:
 

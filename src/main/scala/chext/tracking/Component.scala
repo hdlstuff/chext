@@ -10,7 +10,8 @@ import chext.util.sourceInfoToString
   *
   * Components form a hierarchy independently of Chisel's module hierarchy. A component may own
   * layer-specific state, such as Elastic source/sink ports, or it may own child components. The
-  * Elastic layer requires components with children to have no Elastic ports.
+  * Elastic layer requires components with children to have no operational Elastic ports, though
+  * they may expose hierarchy-only boundary ports.
   */
 trait Component extends HasPath {
   private val require_ = chext.util.Require.inferred()

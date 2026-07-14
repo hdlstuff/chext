@@ -355,6 +355,10 @@ private final class HierarchyTestComponent(
   def tpe: String = "HierarchyTest"
   def namePrefix: String = "hierarchyTest"
 
+  private val elasticState = trackingState(e.tracking.Tag)
+  elasticState.addSource("source", source, boundary = true)
+  elasticState.addSink("sink", sink, boundary = true)
+
   withComponent(this) {
     val connect0 = new e.Connect(source, sink)
   }
@@ -389,6 +393,32 @@ private class InvalidCompositeTop extends Module {
   val sink = IO(e.Sink(UInt(8.W)))
 
   val invalidComposite0 = new InvalidCompositeComponent(source, sink)
+}
+
+private final class InvalidBoundaryMonitorComponent(
+    source: e.Interface[UInt],
+    sink: e.Interface[UInt]
+)(implicit val sourceInfo: SourceInfo)
+    extends Component {
+  def tpe: String = "InvalidBoundaryMonitor"
+  def namePrefix: String = "invalidBoundaryMonitor"
+
+  private val elasticState = trackingState(e.tracking.Tag)
+  elasticState.addSource("source", source, boundary = true)
+  elasticState.addSink("sink", sink, boundary = true)
+
+  source.$ready := sink.$ready
+  sink.$valid := source.$valid
+  sink.$bits := source.$bits
+
+  val monitor0 = new chext.deadlock.Monitor(this)
+}
+
+private class InvalidBoundaryMonitorTop extends Module {
+  val source = IO(e.Source(UInt(8.W)))
+  val sink = IO(e.Sink(UInt(8.W)))
+
+  val invalidBoundaryMonitor0 = new InvalidBoundaryMonitorComponent(source, sink)
 }
 
 private class NamePrefixWarningTop extends Module {
@@ -956,19 +986,25 @@ object TrackingDiagnostics_Tb extends App {
     ),
     TestCase(
       name = "component_hierarchy",
-      description = "A unified component records both its children and each child's parent in the module graph.",
+      description = "A unified component records hierarchy-only boundary ports without marking them as operational endpoints.",
       shouldPass = true,
       gen = () => new ComponentHierarchyTop,
       graphContains = Seq(
         "\"tpe\" : \"HierarchyTest\"",
+        "\"boundary\" : true",
         "\"children\" : [",
         "\"/hierarchyTest0_connect0\"",
         "\"parent\" : \"/hierarchyTest0\""
       ),
+      graphOccurrences = Seq(
+        "\"boundary\" : true" -> 2,
+        "\"boundary\" : false" -> 2
+      ),
       graphExcludes = Seq(
         "\"containers\"",
         "Encountered an interface which is neither an IO or Wire."
-      )
+      ),
+      logExcludes = Seq("marked as source more than 1 times", "marked as sink more than 1 times")
     ),
     TestCase(
       name = "component_children_with_elastic_ports",
@@ -976,8 +1012,17 @@ object TrackingDiagnostics_Tb extends App {
       shouldPass = false,
       gen = () => new InvalidCompositeTop,
       failureContains = Seq(
-        "A component with children must not define Elastic source or sink interfaces.",
+        "A component with children must not define operational Elastic source or sink interfaces.",
         "InvalidComposite"
+      )
+    ),
+    TestCase(
+      name = "component_boundary_ports_with_deadlock_monitor",
+      description = "Deadlock monitors reject components whose registered interfaces include boundary ports.",
+      shouldPass = false,
+      gen = () => new InvalidBoundaryMonitorTop,
+      failureContains = Seq(
+        "A deadlock monitor must not be attached to a component with boundary interfaces."
       )
     ),
     TestCase(

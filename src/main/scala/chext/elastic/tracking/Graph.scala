@@ -19,7 +19,8 @@ object Graph {
 
   case class InterfaceRef(
       val path: String,
-      val desc: String = ""
+      val desc: String = "",
+      val boundary: Boolean = false
   ) {
     require_(path.length > 0 && path.head == '/', "path should start with '/'!")
 

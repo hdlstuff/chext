@@ -329,6 +329,8 @@ val counter0 = new e.Counter(sinkCounter)</code></pre></td>
 
 ## Elastic Composite Components
 
+Composite components may expose hierarchy-only Elastic ports with <code>addSource(&hellip;, boundary = true)</code> and <code>addSink(&hellip;, boundary = true)</code>. Boundary ports appear in the module graph without marking the interface or participating in deadlock monitors; operational ports remain on leaf descendants.
+
 <table style="table-layout:fixed;width:100%;">
   <colgroup>
     <col style="width:24%;">

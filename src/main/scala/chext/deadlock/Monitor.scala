@@ -45,8 +45,8 @@ class Monitor(val component: Component) {
   private val require_ = chext.util.Require.inferred()
 
   private val elasticState = component.trackingState(Tag)
-  private val sourceInterfaces = elasticState.sources
-  private val sinkInterfaces = elasticState.sinks
+  private val sourceInterfaces = elasticState.sources.map { port => port.name -> port.interface }
+  private val sinkInterfaces = elasticState.sinks.map { port => port.name -> port.interface }
 
   private val sourceInterfaceSet =
     sourceInterfaces
@@ -82,6 +82,11 @@ class Monitor(val component: Component) {
   }
 
   deferred {
+    require_(
+      elasticState.sources.forall(!_.boundary) && elasticState.sinks.forall(!_.boundary),
+      "A deadlock monitor must not be attached to a component with boundary interfaces."
+    )
+
     if (Monitor.enabled) {
       val chext_dlm = Module(
         new chext_deadlock_monitor(

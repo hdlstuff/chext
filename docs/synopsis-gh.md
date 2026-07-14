@@ -661,6 +661,8 @@ val wrap0 = new e.Wrap(source, sink) {
 
 ## Elastic Composite Components
 
+Composite components may expose hierarchy-only Elastic ports with `addSource(..., boundary = true)` and `addSink(..., boundary = true)`. Boundary ports appear in the module graph without marking the interface or participating in deadlock monitors; operational ports remain on leaf descendants.
+
 <a id="entry-elastic-composite-components-e-repeat"></a>
 
 ### `e.Repeat` [#](#entry-elastic-composite-components-e-repeat)

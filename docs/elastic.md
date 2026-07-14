@@ -75,6 +75,13 @@ Use `addSource` for an interface that supplies tokens to the component and
 both add the named interface to the component graph and apply the corresponding
 tracking mark.
 
+For a composite component, pass `boundary = true` to expose an interface at the component's
+logical boundary without marking it as an operational endpoint. Boundary ports are emitted in the
+module graph for hierarchy and visualization, but they do not participate in interface-use sanity
+counts. A deadlock monitor rejects boundary ports during deferred elaboration. Components with
+children may contain only boundary ports; their leaf descendants register the operational ports
+and own the monitors.
+
 Import only the registration methods from the state. In particular, avoid a
 wildcard import because the state also exposes `sources` and `sinks`, names that
 components commonly use for their own interface collections.
@@ -112,7 +119,7 @@ unique names such as `source_0`, `source_1`, `sink_0`, and `sink_1`; register
 control streams such as a selector according to the direction in which their
 tokens flow. Do not also call `markSource()` or `markSink()` for an interface
 registered this way, because `addSource` and `addSink` already perform those
-marks.
+marks unless `boundary = true`.
 
 ## Connections
 
@@ -756,7 +763,7 @@ components own children:
 | `Fork` | `new e.Fork(source)` | `source`, `sink_0`, `sink_1`, ... |
 | `Join` | `new e.Join(sink)` | `source_0`, `source_1`, ..., `sink` |
 | `Merger`, `Mux`, `Demux`, `Arbiter`, `ArbiterNs`, `DemuxNs` | Routing components | Indexed source/sink/select ports |
-| `Repeat`, `Fold`, `Loop`, `Scope`, `Switch`, `RandomStall` | Composite components | `sources` and `sinks` are empty; child components appear under `children` |
+| `Repeat`, `Fold`, `Loop`, `Scope`, `Switch`, `RandomStall` | Composite components | May expose hierarchy-only boundary ports; operational ports belong to components under `children` |
 | `ResponseBuffer`, `ShareD`, `ShareNd` | Chisel modules with declared elastic IO | Module graph includes the declared interfaces and contained components |
 
 Actual graph paths come from Chisel naming, `prefix(...)`, and Chext

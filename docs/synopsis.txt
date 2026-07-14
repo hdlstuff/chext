@@ -723,6 +723,9 @@ END
 [section.elastic_composite_components]
 kind = table
 title = Elastic Composite Components
+preface <<END
+Composite components may expose hierarchy-only Elastic ports with `addSource(..., boundary = true)` and `addSink(..., boundary = true)`. Boundary ports appear in the module graph without marking the interface or participating in deadlock monitors; operational ports remain on leaf descendants.
+END
 
 [row.elastic_composite_components]
 anchor = elastic-composite-components-e-repeat

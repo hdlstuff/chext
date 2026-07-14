@@ -17,25 +17,38 @@ The `*.hdlinfo.json` schema is unrelated and does not change. This migration app
 Every tracked construction is a component with:
 
 - `path`, `tpe`, `args`, and an optional `parent`;
-- named Elastic `sources` and `sinks`;
+- named Elastic `sources` and `sinks`, whose interface references carry a `boundary` flag;
 - zero or more component `children`.
 
 Elastic tracking enforces this invariant after deferred elaboration has completed:
 
 ```text
-children.nonEmpty => sources.isEmpty && sinks.isEmpty
+children.nonEmpty => every source and sink reference has boundary == true
 ```
 
 Consequently:
 
-- a leaf component may own Elastic interfaces;
-- a composite component owns children and does not also claim its children's boundary interfaces;
+- a leaf component may own operational Elastic interfaces;
+- a composite component may expose hierarchy-only boundary interfaces but does not claim
+  operational ownership of them;
 - an empty component with no interfaces and no children is allowed for configuration-dependent or
   diagnostic-only constructions;
 - source-only and sink-only leaves remain valid and must participate in deadlock analysis.
 
-The implication is intentionally one-way. A component with no interfaces is not necessarily a
-composite because it may also have no children.
+An operational reference has `boundary == false`. Registering it marks the Elastic interface and
+makes it available to a Scala deadlock monitor. A boundary reference has `boundary == true`; it is
+serialized for hierarchy and visualization without marking the interface or entering a deadlock
+monitor. Multiple nested composites may therefore refer to the same interface while the innermost
+leaf retains operational ownership.
+
+On the Scala side, each registration is represented by `ComponentInterface`, which contains the
+component-local `name`, referenced Elastic `interface`, and `boundary` flag. There is no separate
+`operationalSources` or `operationalSinks` collection. A deadlock monitor reads the component's
+registered `sources` and `sinks` directly and, during deferred elaboration, rejects the component if
+any registered interface is a boundary reference.
+
+The children implication is intentionally one-way. A component with no interfaces is not
+necessarily a composite because it may also have no children.
 
 ## JSON schema
 
@@ -54,8 +67,12 @@ also has `children`.
     {
       "path": "/loop0",
       "tpe": "Loop",
-      "sources": [],
-      "sinks": [],
+      "sources": [
+        ["source", { "path": "/source", "desc": "IO", "boundary": true }]
+      ],
+      "sinks": [
+        ["sink", { "path": "/sink", "desc": "IO", "boundary": true }]
+      ],
       "children": [
         "/loop0_scope0",
         "/loop0_connect0"
@@ -78,10 +95,10 @@ also has `children`.
       "path": "/loop0_scope0_stall0",
       "tpe": "Stall",
       "sources": [
-        ["source", { "path": "/source", "desc": "IO" }]
+        ["source", { "path": "/source", "desc": "IO", "boundary": false }]
       ],
       "sinks": [
-        ["sink", { "path": "/loop0_current", "desc": "Wire" }]
+        ["sink", { "path": "/loop0_current", "desc": "Wire", "boundary": false }]
       ],
       "children": [],
       "parent": "/loop0_scope0",
@@ -105,10 +122,21 @@ empty string for `parent`, matching the existing module-graph convention.
 
 In `common/include/chext_test/tracking/json.hpp`:
 
-1. Add `std::vector<std::string> children` to `json::Component`.
-2. Add `children` to `BOOST_DESCRIBE_STRUCT(Component, ...)`.
-3. Remove `json::Container` and its Boost description.
-4. Remove `containers` from `json::Module` and its Boost description.
+1. Add `bool boundary` to `json::InterfaceRef` and its Boost description.
+2. Add `std::vector<std::string> children` to `json::Component`.
+3. Add `children` to `BOOST_DESCRIBE_STRUCT(Component, ...)`.
+4. Remove `json::Container` and its Boost description.
+5. Remove `containers` from `json::Module` and its Boost description.
+
+The resulting reference shape is:
+
+```cpp
+struct InterfaceRef {
+    std::string path;
+    std::string desc;
+    bool boundary;
+};
+```
 
 The resulting component shape is:
 
@@ -137,8 +165,11 @@ In `common/include/chext_test/tracking/tracking.hpp` and
 5. Keep every JSON component in `componentStore_` and `componentByPath_`, including components with
    no sources or sinks. They are required for ancestry, lookup, diagnostics, and visualization.
 6. Build all component objects before resolving any links.
-7. Resolve Elastic interface ownership from `sources` and `sinks` as before.
-8. Resolve both `parent` and `children` references after every component exists.
+7. Retain every source and sink reference on its component, including boundary references.
+8. Resolve operational Elastic interface ownership only from references with `boundary == false`.
+   An interface may have multiple boundary references but at most one operational endpoint in each
+   direction.
+9. Resolve both `parent` and `children` references after every component exists.
 
 Because ancestry is serialized in both directions, the loader must validate it rather than
 silently choosing one representation. Reject:
@@ -149,7 +180,9 @@ silently choosing one representation. Reject:
 - duplicate child paths;
 - self-parenting;
 - ancestry cycles;
-- a component with nonempty `children` and nonempty `sources` or `sinks`.
+- a component with nonempty `children` and any source or sink reference whose `boundary` flag is
+  false;
+- more than one operational source or sink endpoint for an interface.
 
 After loading, every relationship must satisfy both:
 
@@ -160,52 +193,62 @@ child.parent == parent
 
 ## Deadlock algorithm
 
-The C++ deadlock graph must contain runtime monitor instances, not every tracking component.
+The C++ tracking graph must retain every component and every boundary reference. The deadlock graph
+must still contain runtime monitor instances, not every tracking component.
 
 The current algorithm already has the correct basic structure:
 
 - SystemVerilog monitor registration looks up its tracking component by path and inserts a
   `Monitor` into `deadlock::Module::monitors_`;
 - `deadlock::Module::checkCalled()` iterates `monitors_`, follows each monitored component's
-  interface references, and maps the opposite endpoint through `componentToMonitor_`;
+  operational interface references, resolves the opposite operational leaf endpoint, and maps it
+  through `componentToMonitor_`;
 - `MonitorCycleFinder` starts from the registered monitors.
 
-Therefore composite components need no synthetic deadlock vertex. They have no source/sink stall
-signals, and their leaf descendants already own the actual interface dependencies. Adding a
+Therefore composite components need no synthetic deadlock vertex. Their boundary ports have no
+stall signals, and their leaf descendants already own the actual interface dependencies. Adding a
 composite vertex would add hierarchy to a protocol wait-for graph where it does not represent an
 observable wait condition.
 
 The required separation is:
 
 ```text
-tracking and ancestry: retain every component
-deadlock vertices:     retain components with registered runtime monitors
+tracking and ancestry:       retain every component and every port reference
+operational endpoint owner:  resolve the non-boundary leaf reference
+deadlock vertices:           retain components with registered runtime monitors
 ```
 
-It is safe for deadlock-specific code to ignore a component when both `sources` and `sinks` are
-empty. Do not apply that filter while parsing the tracking graph, because doing so removes parent
-and child nodes. Also do not accidentally filter source-only or sink-only leaves; the predicate is
-`sources.empty() && sinks.empty()`, not either collection being empty.
+Do not filter components while parsing the tracking graph, because doing so removes ancestry and
+display information. When following an interface for deadlock analysis, ignore boundary references
+and select its operational endpoint. That endpoint must be a leaf (`children.empty()`), but monitor
+lookup remains decisive: a leaf without a registered runtime monitor contributes no deadlock
+neighbor. Source-only and sink-only monitored leaves remain valid.
 
-No structural change should be necessary in `deadlock::Module::checkCalled()` or
-`MonitorCycleFinder`: both already operate on registered monitors. The important compatibility
-requirement is that `tracking::Module::findComponent()` continues to find every unified component,
-so `sv_register()` can associate an HDL monitor with the corresponding leaf.
+`MonitorCycleFinder` needs no structural change because it already operates on registered monitors.
+`deadlock::Module::checkCalled()` must use the operational endpoint resolver rather than treating a
+container boundary reference as interface ownership. The important compatibility requirement is
+that `tracking::Module::findComponent()` continues to find every unified component, so
+`sv_register()` can associate an HDL monitor with the corresponding leaf.
 
-Optionally, the C++ side may reject registration of a monitor for a component with both interface
-lists empty. This is a diagnostic guard, not the mechanism used to select deadlock vertices.
+Optionally, the C++ side may reject registration of a monitor for a component with no operational
+interface references. This is a diagnostic guard, not the mechanism used to select deadlock
+vertices.
 
 ## Porting and validation checklist
 
 1. Update JSON structs and parsing for unified components.
 2. Merge the C++ `Container` runtime object into `Component`.
 3. Resolve and cross-check `parent` and `children`.
-4. Preserve all components in `findComponent()`.
-5. Leave deadlock traversal based on registered monitors.
-6. Add loader tests for nested ancestry, conflicting ancestry, unknown paths, duplicate children,
-   hierarchy cycles, and composite components with interfaces.
-7. Add deadlock tests showing that:
+4. Retain boundary references while assigning interface ownership only to operational references.
+5. Preserve all components in `findComponent()`.
+6. Resolve deadlock neighbors to operational leaves and keep traversal based on registered
+   monitors.
+7. Add loader tests for nested ancestry, conflicting ancestry, unknown paths, duplicate children,
+   hierarchy cycles, operational ports on composite components, nested boundary references, and
+   duplicate operational endpoints.
+8. Add deadlock tests showing that:
    - inserting one or more portless ancestors does not change a detected leaf-level cycle;
+   - inserting one or more boundary-port ancestors does not change a detected leaf-level cycle;
    - a source-only or sink-only monitored component is not filtered;
-   - portless ancestors appear in tracking/diagnostic output but not in the monitor cycle graph.
-8. Regenerate the Arteris Interview `*.moduleGraph.json` fixtures using the unified Chext schema.
+   - boundary ancestors appear in tracking/diagnostic output but not in the monitor cycle graph.
+9. Regenerate the Arteris Interview `*.moduleGraph.json` fixtures using the unified Chext schema.

@@ -187,8 +187,8 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
     val interfaceSet = HashSet.empty[Tracked]
     components.foreach { component =>
       val elasticState = component.trackingState(Tag)
-      elasticState.sources.foreach { case (_, interface) => interfaceSet.add(interface) }
-      elasticState.sinks.foreach { case (_, interface) => interfaceSet.add(interface) }
+      elasticState.sources.foreach { port => interfaceSet.add(port.interface) }
+      elasticState.sinks.foreach { port => interfaceSet.add(port.interface) }
     }
 
     val interfaces = interfaceSet
@@ -261,11 +261,11 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
             Graph.Component(
               path = f"/${component.pathStr}",
               tpe = component.tpe,
-              sources = elasticState.sources.map {
-                case (name, interface) => (name, interfaceRefs(interface))
+              sources = elasticState.sources.map { port =>
+                port.name -> interfaceRefs(port.interface).copy(boundary = port.boundary)
               },
-              sinks = elasticState.sinks.map {
-                case (name, interface) => (name, interfaceRefs(interface))
+              sinks = elasticState.sinks.map { port =>
+                port.name -> interfaceRefs(port.interface).copy(boundary = port.boundary)
               },
               children = component.children.map { child => f"/${child.pathStr}" },
               parent = {
@@ -296,8 +296,9 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
       val elasticState = component.trackingState(Tag)
       require_(
         component.children.isEmpty ||
-          (elasticState.sources.isEmpty && elasticState.sinks.isEmpty),
-        "A component with children must not define Elastic source or sink interfaces.",
+          (elasticState.sources.forall(_.boundary) && elasticState.sinks.forall(_.boundary)),
+        "A component with children must not define operational Elastic source or sink interfaces. " +
+          "Use boundary ports for hierarchy-only interface references.",
         Seq(f"Component: ${component.toString()}")
       )(component.sourceInfo)
     }
