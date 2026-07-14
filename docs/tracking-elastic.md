@@ -139,6 +139,17 @@ The corresponding reference carries the flag in JSON:
 A component with children may contain only boundary ports. Ordinary operational ports remain
 valid only on components with no children.
 
+The built-in Elastic composites `Repeat`, `Fold`, `Loop`, `Scope`, `Switch`, and `RandomStall`
+register their external interfaces as boundary references. AXI4 Full and AXI4-Lite `Connect`
+components likewise expose every available master/slave channel as a boundary reference, while
+their channel-level Elastic children retain operational ownership.
+
+User extension points are part of the logical boundary as well. `Scope` exposes `sinkBegin` and
+`sourceEnd`; `Loop` exposes `sinkCurrent` and `sourceNext`; `Fold` exposes `sinkA`, `sinkB`, and
+`sourceResult`; and `Switch` exposes a `sink_<branch>` / `source_<branch>` pair for every branch
+callback. The source/sink classification is from the composite's perspective: an interface driven
+by the composite is a boundary sink, while an interface consumed by it is a boundary source.
+
 For example, a `Fork` may emit ports like:
 
 ```text

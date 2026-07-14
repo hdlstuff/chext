@@ -52,11 +52,20 @@ abstract class Fold[Tin <: Data, Tout <: Data](
   def tpe: String = "Fold"
   def namePrefix: String = "fold"
 
+  private val elasticState = trackingState(tracking.Tag)
+  elasticState.addSource("source", source, boundary = true)
+  elasticState.addSource("sourceInit", sourceInit, boundary = true)
+  elasticState.addSink("sink", sink, boundary = true)
+
   protected final val gen = chiselTypeOf(sink.$bits)
 
   protected final val sinkA = EWire(gen) // newest input
   protected final val sinkB = EWire(gen) // accumulator
   protected final val sourceResult = EWire(gen) // fold result
+
+  elasticState.addSink("sinkA", sinkA, boundary = true)
+  elasticState.addSink("sinkB", sinkB, boundary = true)
+  elasticState.addSource("sourceResult", sourceResult, boundary = true)
 
   type OperandFn = (Tin) => Tout
   type OperandExplicitFn = (Tin, Tout) => Unit

@@ -47,6 +47,10 @@ abstract class Repeat[Tin <: Data, Tout <: Data](
   def tpe: String = "Repeat"
   def namePrefix: String = "repeat"
 
+  private val elasticState = trackingState(tracking.Tag)
+  elasticState.addSource("source", source, boundary = true)
+  elasticState.addSink("sink", sink, boundary = true)
+
   type LenFn = (Tin) => UInt
   type OutFn = (Tin, UInt, Bool, Bool) => Tout
   type OutExplicitFn = (Tin, UInt, Bool, Bool, Tout) => Unit

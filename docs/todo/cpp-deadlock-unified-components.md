@@ -115,6 +115,15 @@ The two `children` fields have different scopes:
 - `Module.children` contains child Chisel modules;
 - `Component.children` contains child Chext components.
 
+Chext currently emits boundary references for the Elastic composites `Repeat`, `Fold`, `Loop`,
+`Scope`, `Switch`, and `RandomStall`. AXI4 Full and AXI4-Lite `Connect` components expose each
+available master/slave channel as a boundary reference. Their leaf descendants still provide the
+non-boundary references used for deadlock resolution.
+
+Composite-owned wires used as user extension points are serialized as boundary references too.
+This includes the Scope, Loop, and Fold body interfaces and the per-branch input/output pairs in
+Switch. C++ consumers must therefore allow boundary references to wires as well as module IO.
+
 Paths remain absolute within the emitted/flattened graph. A top-level component currently uses the
 empty string for `parent`, matching the existing module-graph convention.
 

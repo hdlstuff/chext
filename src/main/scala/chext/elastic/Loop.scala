@@ -15,10 +15,17 @@ class Loop[Tstate <: Data](
   val sourceInfo: SourceInfo = si_
   def namePrefix: String = "loop"
 
+  private val elasticState = trackingState(tracking.Tag)
+  elasticState.addSource("sourceInit", sourceInit, boundary = true)
+  elasticState.addSink("sinkExit", sinkExit, boundary = true)
+
   private val genState = chiselTypeOf(sourceInit.$bits)
 
   final val sinkCurrent = EWire(genState)
   final val sourceNext = EWire(genState)
+
+  elasticState.addSink("sinkCurrent", sinkCurrent, boundary = true)
+  elasticState.addSource("sourceNext", sourceNext, boundary = true)
 
   type EndFn = (Tstate) => Bool
 

@@ -677,7 +677,7 @@ val repeat0 = new e.Repeat(source, sink, wIndex = 8) {
 }
 ```
 
-**Details:** Component; tpe: Repeat; namePrefix: repeat. Hierarchy: creates a child `Count` under `withComponent(this)`, with observed path shape `/repeat0` -> `/repeat0_count`.
+**Details:** Component; tpe: Repeat; namePrefix: repeat. Boundary interfaces: source `source`, sink `sink`. Hierarchy: creates a child `Count` under `withComponent(this)`, with observed path shape `/repeat0` -> `/repeat0_count`.
 
 ---
 
@@ -698,7 +698,7 @@ val fold0 = new e.Fold(source, sourceInit, sink) {
 }
 ```
 
-**Details:** Component; tpe: Fold; namePrefix: fold. User-facing internal wires: `sinkA`, `sinkB`, `sourceResult`. Hierarchy: stage wiring under `stage0` and `stage1`; children include `Transducer` or `Transform`, `Join`, `Connect`, and buffers attached to the `Fold` component.
+**Details:** Component; tpe: Fold; namePrefix: fold. Boundary sources: `source`, `sourceInit`, `sourceResult`; boundary sinks: `sink`, `sinkA`, `sinkB`. The latter three interfaces are user extension points for fold logic. Hierarchy: stage wiring under `stage0` and `stage1`; children include `Transducer` or `Transform`, `Join`, `Connect`, and buffers attached to the `Fold` component.
 
 ---
 
@@ -717,7 +717,7 @@ val loop0 = new e.Loop(sourceInit, sinkExit) {
 }
 ```
 
-**Details:** Component; tpe: Loop; namePrefix: loop. User-facing internal wires: `sinkCurrent`, `sourceNext`. Hierarchy: creates `Stall`, `Connect`, `Fork`, `Demux`, `Merger`, and buffers attached to the `Loop` component.
+**Details:** Component; tpe: Loop; namePrefix: loop. Boundary sources: `sourceInit`, `sourceNext`; boundary sinks: `sinkExit`, `sinkCurrent`. `sinkCurrent` and `sourceNext` are the user-visible loop-body extension points. Hierarchy: creates `Stall`, `Connect`, `Fork`, `Demux`, `Merger`, and buffers attached to the `Loop` component.
 
 ---
 
@@ -737,7 +737,7 @@ val scope0 = new e.Scope(sourceInit, sinkExit) {
 }
 ```
 
-**Details:** Component; tpe: Scope; namePrefix: scope. User-facing internal wires: `sinkBegin`, `sourceEnd`. Hierarchy: creates a `Stall`, a `Connect`, and sink buffers attached to the `Scope` component.
+**Details:** Component; tpe: Scope; namePrefix: scope. Boundary sources: `sourceInit`, `sourceEnd`; boundary sinks: `sinkExit`, `sinkBegin`. `sinkBegin` and `sourceEnd` are the user-visible scope-body extension points. Hierarchy: creates a `Stall`, a `Connect`, and sink buffers attached to the `Scope` component.
 
 ---
 
@@ -753,7 +753,26 @@ val randomStall0 =
   new e.RandomStall(source, sink)
 ```
 
-**Details:** Component; tpe: RandomStall; namePrefix: randomStall. Hierarchy: creates `Stall` plus `SinkBuffer`; observed child paths include `/randomStall0_stall` and `/randomStall0_stall_sinkBuffer0_queue0`.
+**Details:** Component; tpe: RandomStall; namePrefix: randomStall. Boundary interfaces: source `source`, sink `sink`. Hierarchy: creates `Stall` plus `SinkBuffer`; observed child paths include `/randomStall0_stall` and `/randomStall0_stall_sinkBuffer0_queue0`.
+
+---
+
+<a id="entry-elastic-composite-components-e-switch"></a>
+
+### `e.Switch` [#](#entry-elastic-composite-components-e-switch)
+
+**Sources:** [Scala](../src/main/scala/chext/elastic/Switch.scala); [Scala TB](../src/test/scala/chext/elastic/Switch.tb.scala)
+
+**Intent and Usage:** Route tokens through user-defined branches:
+```scala
+val switch0 = new e.Switch(source, sink) {
+  branch { in => in.select } { (branchSource, branchSink) =>
+    branchSource :=> branchSink
+  }
+}
+```
+
+**Details:** Component; tpe: Switch; namePrefix: switch. Boundary interfaces include external source `source` and sink `sink`, plus `sink_<branch>` / `source_<branch>` extension pairs passed to each branch callback. Hierarchy: creates `Fork`, `Demux`, `Mux`, a selection queue, and the components instantiated by each branch.
 
 ---
 
@@ -897,7 +916,7 @@ val m_axil = IO(axi4l.Master(axiCfg))
 s_axi :=> m_axi
 ```
 
-**Details:** Creates `axi4f.Connect`; UniquePrefix: axi4fConnect; graph `tpe` is `Axi4f_Connect`.
+**Details:** Creates `axi4f.Connect`; UniquePrefix: axi4fConnect; graph `tpe` is `Axi4f_Connect`. Exposes each available master/slave AXI channel as a boundary interface; channel-level child `Connect` components retain operational ownership.
 
 ---
 
@@ -942,7 +961,7 @@ s_axi_N :=> m_axi_N
 s_axil :=> m_axil
 ```
 
-**Details:** Creates `axi4l.Connect`; UniquePrefix: axi4lConnect; graph `tpe` is `Axi4l_Connect`.
+**Details:** Creates `axi4l.Connect`; UniquePrefix: axi4lConnect; graph `tpe` is `Axi4l_Connect`. Exposes each available master/slave AXI channel as a boundary interface; channel-level child `Connect` components retain operational ownership.
 
 ---
 

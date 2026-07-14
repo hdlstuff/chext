@@ -56,6 +56,10 @@ abstract class Switch[Tin <: Data, Tout <: Data](
   def tpe: String = "Switch"
   def namePrefix: String = "switch"
 
+  private val elasticState = trackingState(tracking.Tag)
+  elasticState.addSource("source", source, boundary = true)
+  elasticState.addSink("sink", sink, boundary = true)
+
   private val require_ = chext.util.Require.inferred(sourceInfo)
 
   private val genIn = chiselTypeOf(source.$bits)
@@ -163,6 +167,16 @@ abstract class Switch[Tin <: Data, Tout <: Data](
 
       val wireRvDemuxN = Wire(Vec(branches.length, elastic.Interface(genIn)))
       val wireRvMuxN = Wire(Vec(branches.length, elastic.Interface(genOut)))
+
+      wireRvDemuxN.zip(wireRvMuxN).zip(branches).foreach {
+        case ((branchSource, branchSink), branch) =>
+          elasticState.addSink(s"sink_${branch.name}", branchSource, boundary = true)(
+            branch.sourceInfo
+          )
+          elasticState.addSource(s"source_${branch.name}", branchSink, boundary = true)(
+            branch.sourceInfo
+          )
+      }
 
       val queueIndex = elastic.Queue(
         UInt(log2Ceil(branches.length).W),

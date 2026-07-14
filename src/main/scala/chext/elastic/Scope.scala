@@ -15,8 +15,15 @@ class Scope[Tinit <: Data, Texit <: Data](
   val sourceInfo: SourceInfo = si_
   def namePrefix: String = "scope"
 
+  private val elasticState = trackingState(tracking.Tag)
+  elasticState.addSource("sourceInit", sourceInit, boundary = true)
+  elasticState.addSink("sinkExit", sinkExit, boundary = true)
+
   final val sinkBegin = EWire.like(sourceInit)
   final val sourceEnd = EWire.like(sinkExit)
+
+  elasticState.addSink("sinkBegin", sinkBegin, boundary = true)
+  elasticState.addSource("sourceEnd", sourceEnd, boundary = true)
 
   type InitFn = (Tinit) => Unit
   type ExitFn = (Texit) => Unit

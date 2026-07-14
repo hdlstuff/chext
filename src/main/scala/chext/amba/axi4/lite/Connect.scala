@@ -21,6 +21,27 @@ final class Connect(
   def tpe: String = "Axi4l_Connect"
   def namePrefix: String = "axi4lConnect"
 
+  private val elasticState = trackingState(elastic.tracking.Tag)
+
+  if (master.cfg.read) {
+    elasticState.addSource("master_ar", master.ar, boundary = true)
+    elasticState.addSink("master_r", master.r, boundary = true)
+  }
+  if (master.cfg.write) {
+    elasticState.addSource("master_aw", master.aw, boundary = true)
+    elasticState.addSource("master_w", master.w, boundary = true)
+    elasticState.addSink("master_b", master.b, boundary = true)
+  }
+  if (slave.cfg.read) {
+    elasticState.addSink("slave_ar", slave.ar, boundary = true)
+    elasticState.addSource("slave_r", slave.r, boundary = true)
+  }
+  if (slave.cfg.write) {
+    elasticState.addSink("slave_aw", slave.aw, boundary = true)
+    elasticState.addSink("slave_w", slave.w, boundary = true)
+    elasticState.addSource("slave_b", slave.b, boundary = true)
+  }
+
   private def error(message: String, lines: Seq[String] = Seq()): Diagnostic =
     Diagnostic.error(message, lines)
 

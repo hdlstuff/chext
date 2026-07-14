@@ -32,6 +32,10 @@ final class RandomStall[T <: Data](
   def tpe: String = "RandomStall"
   def namePrefix: String = "randomStall"
 
+  private val elasticState = trackingState(tracking.Tag)
+  elasticState.addSource("source", source, boundary = true)
+  elasticState.addSink("sink", sink, boundary = true)
+
   require_(lfsrBits >= 4, "there should be at least 4 bits for LFSR.")
   require_(threshold >= 0 && threshold <= (1L << lfsrBits), "invalid threshold interval.")
 

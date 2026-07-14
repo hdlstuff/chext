@@ -763,7 +763,7 @@ components own children:
 | `Fork` | `new e.Fork(source)` | `source`, `sink_0`, `sink_1`, ... |
 | `Join` | `new e.Join(sink)` | `source_0`, `source_1`, ..., `sink` |
 | `Merger`, `Mux`, `Demux`, `Arbiter`, `ArbiterNs`, `DemuxNs` | Routing components | Indexed source/sink/select ports |
-| `Repeat`, `Fold`, `Loop`, `Scope`, `Switch`, `RandomStall` | Composite components | May expose hierarchy-only boundary ports; operational ports belong to components under `children` |
+| `Repeat`, `Fold`, `Loop`, `Scope`, `Switch`, `RandomStall` | Composite components | Expose their external interfaces as hierarchy-only boundary references; operational interfaces belong to components under `children` |
 | `ResponseBuffer`, `ShareD`, `ShareNd` | Chisel modules with declared elastic IO | Module graph includes the declared interfaces and contained components |
 
 Actual graph paths come from Chisel naming, `prefix(...)`, and Chext

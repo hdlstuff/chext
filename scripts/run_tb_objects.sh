@@ -33,6 +33,7 @@ done
 TEST_TARGETS=(
   "chext.elastic.Count_Tb"
   "chext.elastic.Fold_Tb"
+  "chext.elastic.CompositeBoundary_Tb"
   "chext.elastic.Transducer_Tb"
   "chext.elastic.Arbiter_Tb"
   "chext.elastic.BufferedNaming_Tb"

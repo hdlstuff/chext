@@ -16,6 +16,7 @@ import chext.amba.{axi4, axi4s}
 import chext.amba.axi4.Casts._
 import chext.amba.axi4.ConnectOp._
 import chext.amba.axi4.full.{ConnectOp => Axi4FullConnectOp}
+import chext.amba.axi4.lite.{ConnectOp => Axi4LiteConnectOp}
 import chext.amba.axi4s.Casts._
 import chext.tracking.{Component, withComponent}
 import io.circe.generic.auto._
@@ -421,6 +422,51 @@ private class InvalidBoundaryMonitorTop extends Module {
   val invalidBoundaryMonitor0 = new InvalidBoundaryMonitorComponent(source, sink)
 }
 
+private class ElasticCompositeBoundaryTop extends Module {
+  val sourceRepeat = IO(e.Source(UInt(8.W)))
+  val sinkRepeat = IO(e.Sink(UInt(8.W)))
+  val repeat0 = new e.Repeat(sourceRepeat, sinkRepeat, 8) {
+    len { _ => 1.U }
+    out { (in, _, _, _) => in }
+  }
+
+  val sourceRandomStall = IO(e.Source(UInt(8.W)))
+  val sinkRandomStall = IO(e.Sink(UInt(8.W)))
+  val randomStall0 = new e.RandomStall(sourceRandomStall, sinkRandomStall)
+
+  val sourceLoop = IO(e.Source(UInt(8.W)))
+  val sinkLoop = IO(e.Sink(UInt(8.W)))
+  val loop0 = new e.Loop(sourceLoop, sinkLoop) {
+    end { _ => true.B }
+    val connectBody0 = new e.Connect(sinkCurrent, sourceNext)
+  }
+
+  val sourceScope = IO(e.Source(UInt(8.W)))
+  val sinkScope = IO(e.Sink(UInt(8.W)))
+  val scope0 = new e.Scope(sourceScope, sinkScope) {
+    val connectBody0 = new e.Connect(sinkBegin, sourceEnd)
+  }
+
+  val sourceSwitch = IO(e.Source(UInt(8.W)))
+  val sinkSwitch = IO(e.Sink(UInt(8.W)))
+  val switch0 = new e.Switch(sourceSwitch, sinkSwitch) {
+    branch { _ => true.B } { (source, sink) =>
+      val connect0 = new e.Connect(source, sink)
+    }
+  }
+
+  val sourceFold = IO(e.Source(UInt(8.W)))
+  val sourceFoldInit = IO(e.Source(UInt(8.W)))
+  val sinkFold = IO(e.Sink(UInt(8.W)))
+  val fold0 = new e.Fold(sourceFold, sourceFoldInit, sinkFold) {
+    operand { in => in }
+    last { _ => true.B }
+    val join0 = new e.Join(sourceResult) {
+      out := join(sinkA) + join(sinkB)
+    }
+  }
+}
+
 private class NamePrefixWarningTop extends Module {
   Seq("queueing0", "myQueue0", "rightBuffer0", "readConnectMany0").foreach { name =>
     prefix(name) {
@@ -465,6 +511,16 @@ private class Axi4FullNativeTop extends Module {
   private val cfg = axi4.Config(wId = 1, wAddr = 16, wData = 32)
   val s_axi = IO(axi4.full.Slave(cfg))
   val m_axi = IO(axi4.full.Master(cfg))
+
+  s_axi :=> m_axi
+}
+
+private class Axi4LiteNativeTop extends Module {
+  import Axi4LiteConnectOp._
+
+  private val cfg = axi4.Config(lite = true, wAddr = 16, wData = 32)
+  val s_axi = IO(axi4.lite.Slave(cfg))
+  val m_axi = IO(axi4.lite.Master(cfg))
 
   s_axi :=> m_axi
 }
@@ -1026,6 +1082,33 @@ object TrackingDiagnostics_Tb extends App {
       )
     ),
     TestCase(
+      name = "elastic_composite_boundary_interfaces",
+      description = "Every built-in Elastic composite exposes its external interfaces as boundary references.",
+      shouldPass = true,
+      gen = () => new ElasticCompositeBoundaryTop,
+      graphContains = Seq(
+        "\"tpe\" : \"Repeat\"",
+        "\"tpe\" : \"RandomStall\"",
+        "\"tpe\" : \"Loop\"",
+        "\"tpe\" : \"Scope\"",
+        "\"tpe\" : \"Switch\"",
+        "\"tpe\" : \"Fold\"",
+        "\"sourceInit\"",
+        "\"sinkExit\"",
+        "\"sinkBegin\"",
+        "\"sourceEnd\"",
+        "\"sinkCurrent\"",
+        "\"sourceNext\"",
+        "\"sinkA\"",
+        "\"sinkB\"",
+        "\"sourceResult\"",
+        "\"sink_b0\"",
+        "\"source_b0\""
+      ),
+      graphOccurrences = Seq("\"boundary\" : true" -> 22),
+      logExcludes = Seq("more than 1 times")
+    ),
+    TestCase(
       name = "elastic_unused",
       description = "A root elastic source is not used, so tracking should warn before FIRRTL reports incomplete initialization.",
       shouldPass = false,
@@ -1118,7 +1201,18 @@ object TrackingDiagnostics_Tb extends App {
       shouldPass = true,
       gen = () => new Axi4FullNativeTop,
       svContains = Seq("module Axi4FullNativeTop"),
-      graphContains = Seq("/s_axi_ar", "/m_axi_r"),
+      graphContains = Seq("/s_axi_ar", "/m_axi_r", "\"master_ar\"", "\"slave_b\""),
+      graphOccurrences = Seq("\"boundary\" : true" -> 10),
+      logExcludes = Seq("axi4View", "Interface never marked!", "more than 1 times")
+    ),
+    TestCase(
+      name = "axi_lite_native",
+      description = "Native AXI4-Lite connect exposes both aggregate sides as channel-level boundary references.",
+      shouldPass = true,
+      gen = () => new Axi4LiteNativeTop,
+      svContains = Seq("module Axi4LiteNativeTop"),
+      graphContains = Seq("/s_axi_ar", "/m_axi_r", "\"master_ar\"", "\"slave_b\""),
+      graphOccurrences = Seq("\"boundary\" : true" -> 10),
       logExcludes = Seq("axi4View", "Interface never marked!", "more than 1 times")
     ),
     TestCase(
