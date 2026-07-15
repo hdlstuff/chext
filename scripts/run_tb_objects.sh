@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Runs all objects that derive from chext.TestBench and emit SV used by SystemC sims.
+# Runs SystemC HDL generators and repository test-scope applications.
 # Usage:
 #   ./scripts/run_tb_objects.sh
 #   ./scripts/run_tb_objects.sh --dry-run
@@ -65,9 +65,14 @@ TEST_TARGETS=(
 COMPILE_TARGETS=()
 
 APP_TARGETS=(
-  "chext.amba.TrackingDiagnostics_Tb"
-  "chext.amba.axi4.full.ConnectDiag_Tb"
-  "chext.amba.axi4.lite.ConnectDiag_Tb"
+  "chext.amba.axi4.tracking.Properties_Tb"
+  "chext.amba.TrackingDiagnostics_Test"
+  "chext.amba.axi4.ConstantSlave_Test"
+  "chext.amba.axi4.full.Connect_Test"
+  "chext.amba.axi4.lite.Connect_Test"
+  "chext.amba.axi4.full.components.DemuxMm_Test"
+  "chext.elastic.ChildIoTracking_Test"
+  "chext.elastic.GraphDeclarationOrder_Test"
 )
 
 sbt_args=()
