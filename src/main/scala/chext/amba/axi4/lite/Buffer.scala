@@ -12,30 +12,72 @@ import chext.elastic
 import elastic.{SinkBuffer, SourceBuffer}
 import elastic.ConnectOp._
 
-import chext.tracking.uniquePrefix
+import chext.tracking.{uniquePrefix, withComponent}
 
-private[axi4] object BufferImpl {
+final class Buffer(
+    master: Interface,
+    slave: Interface,
+    cfg: BufferConfig
+)(implicit si_ : SourceInfo)
+    extends chext.tracking.Component {
   private val require_ = chext.util.Require.inferred()
 
-  private[lite] def insertBufferR(
-      master: Interface,
-      slave: Interface,
-      cfg: BufferConfig
-  )(implicit si: SourceInfo): Unit = {
+  val sourceInfo: SourceInfo = si_
+  def tpe: String = "Axi4l_Buffer"
+  def namePrefix: String = "axi4lBuffer"
+
+  require_.here(
+    master.cfg == slave.cfg,
+    "master and slave configurations do not match!",
+    Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
+  )
+
+  private val elasticState = trackingState(elastic.tracking.Tag)
+  private val propertyResolver =
+    new axi4.tracking.ForwardingResolver(
+      this,
+      master,
+      slave,
+      kind = "buffer",
+      resolver = "BufferResolver"
+    )
+
+  if (master.cfg.read) {
+    elasticState.addSource("master_ar", master.ar, boundary = true)
+    elasticState.addSink("master_r", master.r, boundary = true)
+    elasticState.addSink("slave_ar", slave.ar, boundary = true)
+    elasticState.addSource("slave_r", slave.r, boundary = true)
+  }
+  if (master.cfg.write) {
+    elasticState.addSource("master_aw", master.aw, boundary = true)
+    elasticState.addSource("master_w", master.w, boundary = true)
+    elasticState.addSink("master_b", master.b, boundary = true)
+    elasticState.addSink("slave_aw", slave.aw, boundary = true)
+    elasticState.addSink("slave_w", slave.w, boundary = true)
+    elasticState.addSource("slave_b", slave.b, boundary = true)
+  }
+
+  private def insertBufferR(): Unit = {
     SourceBuffer(master.ar, cfg.ar, name = "arBuffer") :=> slave.ar
     slave.r :=> SinkBuffer(master.r, cfg.r, name = "rBuffer")
   }
 
-  private[lite] def insertBufferW(
-      master: Interface,
-      slave: Interface,
-      cfg: BufferConfig
-  )(implicit si: SourceInfo): Unit = {
+  private def insertBufferW(): Unit = {
     SourceBuffer(master.aw, cfg.aw, name = "awBuffer") :=> slave.aw
     SourceBuffer(master.w, cfg.w, name = "wBuffer") :=> slave.w
     slave.b :=> SinkBuffer(master.b, cfg.b, name = "bBuffer")
   }
 
+  withComponent(this) {
+    if (master.cfg.read)
+      insertBufferR()
+
+    if (master.cfg.write)
+      insertBufferW()
+  }
+}
+
+private[axi4] object BufferImpl {
   /** Inserts a buffer between a master and a slave interface.
     *
     * @param master
@@ -47,17 +89,9 @@ private[axi4] object BufferImpl {
       slave: Interface,
       cfg: BufferConfig
   )(implicit si: SourceInfo): Unit = {
-    require_.here(
-      master.cfg == slave.cfg,
-      "master and slave configurations do not match!",
-      Seq(f"master.cfg = ${master.cfg}", f"slave.cfg = ${slave.cfg}")
-    )
-
-    if (master.cfg.read)
-      insertBufferR(master, slave, cfg)
-
-    if (master.cfg.write)
-      insertBufferW(master, slave, cfg)
+    uniquePrefix("axi4lBuffer") {
+      new Buffer(master, slave, cfg)
+    }
   }
 }
 

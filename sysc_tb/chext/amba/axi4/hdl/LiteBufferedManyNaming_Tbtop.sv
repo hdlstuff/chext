@@ -102,22 +102,28 @@ module LiteBufferedManyNaming_Tbtop(
   wire        slaveBuffered_0_ar_valid;
   wire [2:0]  slaveBuffered_0_ar_bits_prot;
   wire [15:0] slaveBuffered_0_ar_bits_addr;
-  wire        masterBuffered_0_arBuffer0_queueSink_ready = m_axil_0_ar_ready;
-  wire [31:0] masterBuffered_0_rBuffer0_queueSource_bits_data = m_axil_0_r_bits_data;
-  wire [1:0]  masterBuffered_0_rBuffer0_queueSource_bits_resp = m_axil_0_r_bits_resp;
-  wire        masterBuffered_0_rBuffer0_queueSource_valid = m_axil_0_r_valid;
-  wire        masterBuffered_0_awBuffer0_queueSink_ready = m_axil_0_aw_ready;
-  wire        masterBuffered_0_wBuffer0_queueSink_ready = m_axil_0_w_ready;
-  wire [1:0]  masterBuffered_0_bBuffer0_queueSource_bits_resp = m_axil_0_b_bits_resp;
-  wire        masterBuffered_0_bBuffer0_queueSource_valid = m_axil_0_b_valid;
-  wire        masterBuffered_1_arBuffer0_queueSink_ready = m_axil_1_ar_ready;
-  wire [31:0] masterBuffered_1_rBuffer0_queueSource_bits_data = m_axil_1_r_bits_data;
-  wire [1:0]  masterBuffered_1_rBuffer0_queueSource_bits_resp = m_axil_1_r_bits_resp;
-  wire        masterBuffered_1_rBuffer0_queueSource_valid = m_axil_1_r_valid;
-  wire        masterBuffered_1_awBuffer0_queueSink_ready = m_axil_1_aw_ready;
-  wire        masterBuffered_1_wBuffer0_queueSink_ready = m_axil_1_w_ready;
-  wire [1:0]  masterBuffered_1_bBuffer0_queueSource_bits_resp = m_axil_1_b_bits_resp;
-  wire        masterBuffered_1_bBuffer0_queueSource_valid = m_axil_1_b_valid;
+  wire        masterBuffered_0_axi4lBuffer0_arBuffer0_queueSink_ready = m_axil_0_ar_ready;
+  wire [31:0] masterBuffered_0_axi4lBuffer0_rBuffer0_queueSource_bits_data =
+    m_axil_0_r_bits_data;
+  wire [1:0]  masterBuffered_0_axi4lBuffer0_rBuffer0_queueSource_bits_resp =
+    m_axil_0_r_bits_resp;
+  wire        masterBuffered_0_axi4lBuffer0_rBuffer0_queueSource_valid = m_axil_0_r_valid;
+  wire        masterBuffered_0_axi4lBuffer0_awBuffer0_queueSink_ready = m_axil_0_aw_ready;
+  wire        masterBuffered_0_axi4lBuffer0_wBuffer0_queueSink_ready = m_axil_0_w_ready;
+  wire [1:0]  masterBuffered_0_axi4lBuffer0_bBuffer0_queueSource_bits_resp =
+    m_axil_0_b_bits_resp;
+  wire        masterBuffered_0_axi4lBuffer0_bBuffer0_queueSource_valid = m_axil_0_b_valid;
+  wire        masterBuffered_1_axi4lBuffer0_arBuffer0_queueSink_ready = m_axil_1_ar_ready;
+  wire [31:0] masterBuffered_1_axi4lBuffer0_rBuffer0_queueSource_bits_data =
+    m_axil_1_r_bits_data;
+  wire [1:0]  masterBuffered_1_axi4lBuffer0_rBuffer0_queueSource_bits_resp =
+    m_axil_1_r_bits_resp;
+  wire        masterBuffered_1_axi4lBuffer0_rBuffer0_queueSource_valid = m_axil_1_r_valid;
+  wire        masterBuffered_1_axi4lBuffer0_awBuffer0_queueSink_ready = m_axil_1_aw_ready;
+  wire        masterBuffered_1_axi4lBuffer0_wBuffer0_queueSink_ready = m_axil_1_w_ready;
+  wire [1:0]  masterBuffered_1_axi4lBuffer0_bBuffer0_queueSource_bits_resp =
+    m_axil_1_b_bits_resp;
+  wire        masterBuffered_1_axi4lBuffer0_bBuffer0_queueSource_valid = m_axil_1_b_valid;
   wire [15:0] masterBuffered_0_ar_bits_addr = slaveBuffered_0_ar_bits_addr;
   wire [2:0]  masterBuffered_0_ar_bits_prot = slaveBuffered_0_ar_bits_prot;
   wire        masterBuffered_0_ar_ready;
@@ -156,441 +162,497 @@ module LiteBufferedManyNaming_Tbtop(
   wire [1:0]  masterBuffered_1_b_bits_resp;
   wire        masterBuffered_1_b_ready = slaveBuffered_1_b_ready;
   wire        masterBuffered_1_b_valid;
-  wire        slaveBuffered_0_arBuffer0_queueSink_ready = masterBuffered_0_ar_ready;
-  wire [31:0] slaveBuffered_0_rBuffer0_queueSource_bits_data =
+  wire        slaveBuffered_0_axi4lBuffer0_arBuffer0_queueSink_ready =
+    masterBuffered_0_ar_ready;
+  wire [31:0] slaveBuffered_0_axi4lBuffer0_rBuffer0_queueSource_bits_data =
     masterBuffered_0_r_bits_data;
-  wire [1:0]  slaveBuffered_0_rBuffer0_queueSource_bits_resp =
+  wire [1:0]  slaveBuffered_0_axi4lBuffer0_rBuffer0_queueSource_bits_resp =
     masterBuffered_0_r_bits_resp;
-  wire        slaveBuffered_0_rBuffer0_queueSource_valid = masterBuffered_0_r_valid;
-  wire        slaveBuffered_0_awBuffer0_queueSink_ready = masterBuffered_0_aw_ready;
-  wire        slaveBuffered_0_wBuffer0_queueSink_ready = masterBuffered_0_w_ready;
-  wire [1:0]  slaveBuffered_0_bBuffer0_queueSource_bits_resp =
+  wire        slaveBuffered_0_axi4lBuffer0_rBuffer0_queueSource_valid =
+    masterBuffered_0_r_valid;
+  wire        slaveBuffered_0_axi4lBuffer0_awBuffer0_queueSink_ready =
+    masterBuffered_0_aw_ready;
+  wire        slaveBuffered_0_axi4lBuffer0_wBuffer0_queueSink_ready =
+    masterBuffered_0_w_ready;
+  wire [1:0]  slaveBuffered_0_axi4lBuffer0_bBuffer0_queueSource_bits_resp =
     masterBuffered_0_b_bits_resp;
-  wire        slaveBuffered_0_bBuffer0_queueSource_valid = masterBuffered_0_b_valid;
-  wire        slaveBuffered_1_arBuffer0_queueSink_ready = masterBuffered_1_ar_ready;
-  wire [31:0] slaveBuffered_1_rBuffer0_queueSource_bits_data =
+  wire        slaveBuffered_0_axi4lBuffer0_bBuffer0_queueSource_valid =
+    masterBuffered_0_b_valid;
+  wire        slaveBuffered_1_axi4lBuffer0_arBuffer0_queueSink_ready =
+    masterBuffered_1_ar_ready;
+  wire [31:0] slaveBuffered_1_axi4lBuffer0_rBuffer0_queueSource_bits_data =
     masterBuffered_1_r_bits_data;
-  wire [1:0]  slaveBuffered_1_rBuffer0_queueSource_bits_resp =
+  wire [1:0]  slaveBuffered_1_axi4lBuffer0_rBuffer0_queueSource_bits_resp =
     masterBuffered_1_r_bits_resp;
-  wire        slaveBuffered_1_rBuffer0_queueSource_valid = masterBuffered_1_r_valid;
-  wire        slaveBuffered_1_awBuffer0_queueSink_ready = masterBuffered_1_aw_ready;
-  wire        slaveBuffered_1_wBuffer0_queueSink_ready = masterBuffered_1_w_ready;
-  wire [1:0]  slaveBuffered_1_bBuffer0_queueSource_bits_resp =
+  wire        slaveBuffered_1_axi4lBuffer0_rBuffer0_queueSource_valid =
+    masterBuffered_1_r_valid;
+  wire        slaveBuffered_1_axi4lBuffer0_awBuffer0_queueSink_ready =
+    masterBuffered_1_aw_ready;
+  wire        slaveBuffered_1_axi4lBuffer0_wBuffer0_queueSink_ready =
+    masterBuffered_1_w_ready;
+  wire [1:0]  slaveBuffered_1_axi4lBuffer0_bBuffer0_queueSource_bits_resp =
     masterBuffered_1_b_bits_resp;
-  wire        slaveBuffered_1_bBuffer0_queueSource_valid = masterBuffered_1_b_valid;
-  reg  [1:0]  masterBuffered_1_bBuffer0_queue0_mem;
-  assign masterBuffered_1_b_bits_resp = masterBuffered_1_bBuffer0_queue0_mem;
-  reg         masterBuffered_1_bBuffer0_queue0_maybeFull;
-  assign masterBuffered_1_b_valid = masterBuffered_1_bBuffer0_queue0_maybeFull;
-  wire        masterBuffered_1_bBuffer0_queueSource_ready =
-    ~masterBuffered_1_bBuffer0_queue0_maybeFull;
-  reg  [35:0] masterBuffered_1_wBuffer0_queue0_mem;
-  reg         masterBuffered_1_wBuffer0_queue0_maybeFull;
-  wire        masterBuffered_1_wBuffer0_queueSink_valid =
-    masterBuffered_1_wBuffer0_queue0_maybeFull;
-  assign masterBuffered_1_w_ready = ~masterBuffered_1_wBuffer0_queue0_maybeFull;
-  wire [3:0]  masterBuffered_1_wBuffer0_queueSink_bits_strb =
-    masterBuffered_1_wBuffer0_queue0_mem[3:0];
-  wire [31:0] masterBuffered_1_wBuffer0_queueSink_bits_data =
-    masterBuffered_1_wBuffer0_queue0_mem[35:4];
-  reg  [18:0] masterBuffered_1_awBuffer0_queue0_mem;
-  reg         masterBuffered_1_awBuffer0_queue0_maybeFull;
-  wire        masterBuffered_1_awBuffer0_queueSink_valid =
-    masterBuffered_1_awBuffer0_queue0_maybeFull;
-  assign masterBuffered_1_aw_ready = ~masterBuffered_1_awBuffer0_queue0_maybeFull;
-  wire [2:0]  masterBuffered_1_awBuffer0_queueSink_bits_prot =
-    masterBuffered_1_awBuffer0_queue0_mem[2:0];
-  wire [15:0] masterBuffered_1_awBuffer0_queueSink_bits_addr =
-    masterBuffered_1_awBuffer0_queue0_mem[18:3];
-  reg  [33:0] masterBuffered_1_rBuffer0_queue0_mem;
-  reg         masterBuffered_1_rBuffer0_queue0_maybeFull;
-  assign masterBuffered_1_r_valid = masterBuffered_1_rBuffer0_queue0_maybeFull;
-  wire        masterBuffered_1_rBuffer0_queueSource_ready =
-    ~masterBuffered_1_rBuffer0_queue0_maybeFull;
-  assign masterBuffered_1_r_bits_resp = masterBuffered_1_rBuffer0_queue0_mem[1:0];
-  assign masterBuffered_1_r_bits_data = masterBuffered_1_rBuffer0_queue0_mem[33:2];
-  reg  [18:0] masterBuffered_1_arBuffer0_queue0_mem;
-  reg         masterBuffered_1_arBuffer0_queue0_maybeFull;
-  wire        masterBuffered_1_arBuffer0_queueSink_valid =
-    masterBuffered_1_arBuffer0_queue0_maybeFull;
-  assign masterBuffered_1_ar_ready = ~masterBuffered_1_arBuffer0_queue0_maybeFull;
-  wire [2:0]  masterBuffered_1_arBuffer0_queueSink_bits_prot =
-    masterBuffered_1_arBuffer0_queue0_mem[2:0];
-  wire [15:0] masterBuffered_1_arBuffer0_queueSink_bits_addr =
-    masterBuffered_1_arBuffer0_queue0_mem[18:3];
-  reg  [1:0]  masterBuffered_0_bBuffer0_queue0_mem;
-  assign masterBuffered_0_b_bits_resp = masterBuffered_0_bBuffer0_queue0_mem;
-  reg         masterBuffered_0_bBuffer0_queue0_maybeFull;
-  assign masterBuffered_0_b_valid = masterBuffered_0_bBuffer0_queue0_maybeFull;
-  wire        masterBuffered_0_bBuffer0_queueSource_ready =
-    ~masterBuffered_0_bBuffer0_queue0_maybeFull;
-  reg  [35:0] masterBuffered_0_wBuffer0_queue0_mem;
-  reg         masterBuffered_0_wBuffer0_queue0_maybeFull;
-  wire        masterBuffered_0_wBuffer0_queueSink_valid =
-    masterBuffered_0_wBuffer0_queue0_maybeFull;
-  assign masterBuffered_0_w_ready = ~masterBuffered_0_wBuffer0_queue0_maybeFull;
-  wire [3:0]  masterBuffered_0_wBuffer0_queueSink_bits_strb =
-    masterBuffered_0_wBuffer0_queue0_mem[3:0];
-  wire [31:0] masterBuffered_0_wBuffer0_queueSink_bits_data =
-    masterBuffered_0_wBuffer0_queue0_mem[35:4];
-  reg  [18:0] masterBuffered_0_awBuffer0_queue0_mem;
-  reg         masterBuffered_0_awBuffer0_queue0_maybeFull;
-  wire        masterBuffered_0_awBuffer0_queueSink_valid =
-    masterBuffered_0_awBuffer0_queue0_maybeFull;
-  assign masterBuffered_0_aw_ready = ~masterBuffered_0_awBuffer0_queue0_maybeFull;
-  wire [2:0]  masterBuffered_0_awBuffer0_queueSink_bits_prot =
-    masterBuffered_0_awBuffer0_queue0_mem[2:0];
-  wire [15:0] masterBuffered_0_awBuffer0_queueSink_bits_addr =
-    masterBuffered_0_awBuffer0_queue0_mem[18:3];
-  reg  [33:0] masterBuffered_0_rBuffer0_queue0_mem;
-  reg         masterBuffered_0_rBuffer0_queue0_maybeFull;
-  assign masterBuffered_0_r_valid = masterBuffered_0_rBuffer0_queue0_maybeFull;
-  wire        masterBuffered_0_rBuffer0_queueSource_ready =
-    ~masterBuffered_0_rBuffer0_queue0_maybeFull;
-  assign masterBuffered_0_r_bits_resp = masterBuffered_0_rBuffer0_queue0_mem[1:0];
-  assign masterBuffered_0_r_bits_data = masterBuffered_0_rBuffer0_queue0_mem[33:2];
-  reg  [18:0] masterBuffered_0_arBuffer0_queue0_mem;
-  reg         masterBuffered_0_arBuffer0_queue0_maybeFull;
-  wire        masterBuffered_0_arBuffer0_queueSink_valid =
-    masterBuffered_0_arBuffer0_queue0_maybeFull;
-  assign masterBuffered_0_ar_ready = ~masterBuffered_0_arBuffer0_queue0_maybeFull;
-  wire [2:0]  masterBuffered_0_arBuffer0_queueSink_bits_prot =
-    masterBuffered_0_arBuffer0_queue0_mem[2:0];
-  wire [15:0] masterBuffered_0_arBuffer0_queueSink_bits_addr =
-    masterBuffered_0_arBuffer0_queue0_mem[18:3];
-  reg  [1:0]  slaveBuffered_1_bBuffer0_queue0_mem;
-  reg         slaveBuffered_1_bBuffer0_queue0_maybeFull;
-  assign slaveBuffered_1_b_ready = ~slaveBuffered_1_bBuffer0_queue0_maybeFull;
-  reg  [35:0] slaveBuffered_1_wBuffer0_queue0_mem;
-  reg         slaveBuffered_1_wBuffer0_queue0_maybeFull;
-  assign slaveBuffered_1_w_valid = slaveBuffered_1_wBuffer0_queue0_maybeFull;
-  assign slaveBuffered_1_w_bits_strb = slaveBuffered_1_wBuffer0_queue0_mem[3:0];
-  assign slaveBuffered_1_w_bits_data = slaveBuffered_1_wBuffer0_queue0_mem[35:4];
-  reg  [18:0] slaveBuffered_1_awBuffer0_queue0_mem;
-  reg         slaveBuffered_1_awBuffer0_queue0_maybeFull;
-  assign slaveBuffered_1_aw_valid = slaveBuffered_1_awBuffer0_queue0_maybeFull;
-  assign slaveBuffered_1_aw_bits_prot = slaveBuffered_1_awBuffer0_queue0_mem[2:0];
-  assign slaveBuffered_1_aw_bits_addr = slaveBuffered_1_awBuffer0_queue0_mem[18:3];
-  reg  [33:0] slaveBuffered_1_rBuffer0_queue0_mem;
-  reg         slaveBuffered_1_rBuffer0_queue0_maybeFull;
-  assign slaveBuffered_1_r_ready = ~slaveBuffered_1_rBuffer0_queue0_maybeFull;
-  reg  [18:0] slaveBuffered_1_arBuffer0_queue0_mem;
-  reg         slaveBuffered_1_arBuffer0_queue0_maybeFull;
-  assign slaveBuffered_1_ar_valid = slaveBuffered_1_arBuffer0_queue0_maybeFull;
-  assign slaveBuffered_1_ar_bits_prot = slaveBuffered_1_arBuffer0_queue0_mem[2:0];
-  assign slaveBuffered_1_ar_bits_addr = slaveBuffered_1_arBuffer0_queue0_mem[18:3];
-  reg  [1:0]  slaveBuffered_0_bBuffer0_queue0_mem;
-  reg         slaveBuffered_0_bBuffer0_queue0_maybeFull;
-  assign slaveBuffered_0_b_ready = ~slaveBuffered_0_bBuffer0_queue0_maybeFull;
-  reg  [35:0] slaveBuffered_0_wBuffer0_queue0_mem;
-  reg         slaveBuffered_0_wBuffer0_queue0_maybeFull;
-  assign slaveBuffered_0_w_valid = slaveBuffered_0_wBuffer0_queue0_maybeFull;
-  assign slaveBuffered_0_w_bits_strb = slaveBuffered_0_wBuffer0_queue0_mem[3:0];
-  assign slaveBuffered_0_w_bits_data = slaveBuffered_0_wBuffer0_queue0_mem[35:4];
-  reg  [18:0] slaveBuffered_0_awBuffer0_queue0_mem;
-  reg         slaveBuffered_0_awBuffer0_queue0_maybeFull;
-  assign slaveBuffered_0_aw_valid = slaveBuffered_0_awBuffer0_queue0_maybeFull;
-  assign slaveBuffered_0_aw_bits_prot = slaveBuffered_0_awBuffer0_queue0_mem[2:0];
-  assign slaveBuffered_0_aw_bits_addr = slaveBuffered_0_awBuffer0_queue0_mem[18:3];
-  reg  [33:0] slaveBuffered_0_rBuffer0_queue0_mem;
-  reg         slaveBuffered_0_rBuffer0_queue0_maybeFull;
-  assign slaveBuffered_0_r_ready = ~slaveBuffered_0_rBuffer0_queue0_maybeFull;
-  reg  [18:0] slaveBuffered_0_arBuffer0_queue0_mem;
-  reg         slaveBuffered_0_arBuffer0_queue0_maybeFull;
-  assign slaveBuffered_0_ar_valid = slaveBuffered_0_arBuffer0_queue0_maybeFull;
-  assign slaveBuffered_0_ar_bits_prot = slaveBuffered_0_arBuffer0_queue0_mem[2:0];
-  assign slaveBuffered_0_ar_bits_addr = slaveBuffered_0_arBuffer0_queue0_mem[18:3];
+  wire        slaveBuffered_1_axi4lBuffer0_bBuffer0_queueSource_valid =
+    masterBuffered_1_b_valid;
+  reg  [1:0]  masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_mem;
+  assign masterBuffered_1_b_bits_resp = masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_mem;
+  reg         masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  assign masterBuffered_1_b_valid =
+    masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  wire        masterBuffered_1_axi4lBuffer0_bBuffer0_queueSource_ready =
+    ~masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  reg  [35:0] masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem;
+  reg         masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  wire        masterBuffered_1_axi4lBuffer0_wBuffer0_queueSink_valid =
+    masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  assign masterBuffered_1_w_ready =
+    ~masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  wire [3:0]  masterBuffered_1_axi4lBuffer0_wBuffer0_queueSink_bits_strb =
+    masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem[3:0];
+  wire [31:0] masterBuffered_1_axi4lBuffer0_wBuffer0_queueSink_bits_data =
+    masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem[35:4];
+  reg  [18:0] masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem;
+  reg         masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  wire        masterBuffered_1_axi4lBuffer0_awBuffer0_queueSink_valid =
+    masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  assign masterBuffered_1_aw_ready =
+    ~masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  wire [2:0]  masterBuffered_1_axi4lBuffer0_awBuffer0_queueSink_bits_prot =
+    masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem[2:0];
+  wire [15:0] masterBuffered_1_axi4lBuffer0_awBuffer0_queueSink_bits_addr =
+    masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem[18:3];
+  reg  [33:0] masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem;
+  reg         masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  assign masterBuffered_1_r_valid =
+    masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  wire        masterBuffered_1_axi4lBuffer0_rBuffer0_queueSource_ready =
+    ~masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  assign masterBuffered_1_r_bits_resp =
+    masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem[1:0];
+  assign masterBuffered_1_r_bits_data =
+    masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem[33:2];
+  reg  [18:0] masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem;
+  reg         masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  wire        masterBuffered_1_axi4lBuffer0_arBuffer0_queueSink_valid =
+    masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  assign masterBuffered_1_ar_ready =
+    ~masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  wire [2:0]  masterBuffered_1_axi4lBuffer0_arBuffer0_queueSink_bits_prot =
+    masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem[2:0];
+  wire [15:0] masterBuffered_1_axi4lBuffer0_arBuffer0_queueSink_bits_addr =
+    masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem[18:3];
+  reg  [1:0]  masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_mem;
+  assign masterBuffered_0_b_bits_resp = masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_mem;
+  reg         masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  assign masterBuffered_0_b_valid =
+    masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  wire        masterBuffered_0_axi4lBuffer0_bBuffer0_queueSource_ready =
+    ~masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  reg  [35:0] masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem;
+  reg         masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  wire        masterBuffered_0_axi4lBuffer0_wBuffer0_queueSink_valid =
+    masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  assign masterBuffered_0_w_ready =
+    ~masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  wire [3:0]  masterBuffered_0_axi4lBuffer0_wBuffer0_queueSink_bits_strb =
+    masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem[3:0];
+  wire [31:0] masterBuffered_0_axi4lBuffer0_wBuffer0_queueSink_bits_data =
+    masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem[35:4];
+  reg  [18:0] masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem;
+  reg         masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  wire        masterBuffered_0_axi4lBuffer0_awBuffer0_queueSink_valid =
+    masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  assign masterBuffered_0_aw_ready =
+    ~masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  wire [2:0]  masterBuffered_0_axi4lBuffer0_awBuffer0_queueSink_bits_prot =
+    masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem[2:0];
+  wire [15:0] masterBuffered_0_axi4lBuffer0_awBuffer0_queueSink_bits_addr =
+    masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem[18:3];
+  reg  [33:0] masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem;
+  reg         masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  assign masterBuffered_0_r_valid =
+    masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  wire        masterBuffered_0_axi4lBuffer0_rBuffer0_queueSource_ready =
+    ~masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  assign masterBuffered_0_r_bits_resp =
+    masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem[1:0];
+  assign masterBuffered_0_r_bits_data =
+    masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem[33:2];
+  reg  [18:0] masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem;
+  reg         masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  wire        masterBuffered_0_axi4lBuffer0_arBuffer0_queueSink_valid =
+    masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  assign masterBuffered_0_ar_ready =
+    ~masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  wire [2:0]  masterBuffered_0_axi4lBuffer0_arBuffer0_queueSink_bits_prot =
+    masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem[2:0];
+  wire [15:0] masterBuffered_0_axi4lBuffer0_arBuffer0_queueSink_bits_addr =
+    masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem[18:3];
+  reg  [1:0]  slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_mem;
+  reg         slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  assign slaveBuffered_1_b_ready =
+    ~slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  reg  [35:0] slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem;
+  reg         slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  assign slaveBuffered_1_w_valid = slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  assign slaveBuffered_1_w_bits_strb =
+    slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem[3:0];
+  assign slaveBuffered_1_w_bits_data =
+    slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem[35:4];
+  reg  [18:0] slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem;
+  reg         slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  assign slaveBuffered_1_aw_valid =
+    slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  assign slaveBuffered_1_aw_bits_prot =
+    slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem[2:0];
+  assign slaveBuffered_1_aw_bits_addr =
+    slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem[18:3];
+  reg  [33:0] slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem;
+  reg         slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  assign slaveBuffered_1_r_ready =
+    ~slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  reg  [18:0] slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem;
+  reg         slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  assign slaveBuffered_1_ar_valid =
+    slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  assign slaveBuffered_1_ar_bits_prot =
+    slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem[2:0];
+  assign slaveBuffered_1_ar_bits_addr =
+    slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem[18:3];
+  reg  [1:0]  slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_mem;
+  reg         slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  assign slaveBuffered_0_b_ready =
+    ~slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  reg  [35:0] slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem;
+  reg         slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  assign slaveBuffered_0_w_valid = slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  assign slaveBuffered_0_w_bits_strb =
+    slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem[3:0];
+  assign slaveBuffered_0_w_bits_data =
+    slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem[35:4];
+  reg  [18:0] slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem;
+  reg         slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  assign slaveBuffered_0_aw_valid =
+    slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  assign slaveBuffered_0_aw_bits_prot =
+    slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem[2:0];
+  assign slaveBuffered_0_aw_bits_addr =
+    slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem[18:3];
+  reg  [33:0] slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem;
+  reg         slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  assign slaveBuffered_0_r_ready =
+    ~slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  reg  [18:0] slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem;
+  reg         slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  assign slaveBuffered_0_ar_valid =
+    slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  assign slaveBuffered_0_ar_bits_prot =
+    slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem[2:0];
+  assign slaveBuffered_0_ar_bits_addr =
+    slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem[18:3];
   always @(posedge clock) begin
     if (reset) begin
-      masterBuffered_1_bBuffer0_queue0_mem <= 2'h0;
-      masterBuffered_1_bBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffered_1_wBuffer0_queue0_mem <= 36'h0;
-      masterBuffered_1_wBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffered_1_awBuffer0_queue0_mem <= 19'h0;
-      masterBuffered_1_awBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffered_1_rBuffer0_queue0_mem <= 34'h0;
-      masterBuffered_1_rBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffered_1_arBuffer0_queue0_mem <= 19'h0;
-      masterBuffered_1_arBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffered_0_bBuffer0_queue0_mem <= 2'h0;
-      masterBuffered_0_bBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffered_0_wBuffer0_queue0_mem <= 36'h0;
-      masterBuffered_0_wBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffered_0_awBuffer0_queue0_mem <= 19'h0;
-      masterBuffered_0_awBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffered_0_rBuffer0_queue0_mem <= 34'h0;
-      masterBuffered_0_rBuffer0_queue0_maybeFull <= 1'h0;
-      masterBuffered_0_arBuffer0_queue0_mem <= 19'h0;
-      masterBuffered_0_arBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_1_bBuffer0_queue0_mem <= 2'h0;
-      slaveBuffered_1_bBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_1_wBuffer0_queue0_mem <= 36'h0;
-      slaveBuffered_1_wBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_1_awBuffer0_queue0_mem <= 19'h0;
-      slaveBuffered_1_awBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_1_rBuffer0_queue0_mem <= 34'h0;
-      slaveBuffered_1_rBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_1_arBuffer0_queue0_mem <= 19'h0;
-      slaveBuffered_1_arBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_0_bBuffer0_queue0_mem <= 2'h0;
-      slaveBuffered_0_bBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_0_wBuffer0_queue0_mem <= 36'h0;
-      slaveBuffered_0_wBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_0_awBuffer0_queue0_mem <= 19'h0;
-      slaveBuffered_0_awBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_0_rBuffer0_queue0_mem <= 34'h0;
-      slaveBuffered_0_rBuffer0_queue0_maybeFull <= 1'h0;
-      slaveBuffered_0_arBuffer0_queue0_mem <= 19'h0;
-      slaveBuffered_0_arBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_mem <= 2'h0;
+      masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem <= 36'h0;
+      masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem <= 19'h0;
+      masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem <= 34'h0;
+      masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem <= 19'h0;
+      masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_mem <= 2'h0;
+      masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem <= 36'h0;
+      masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem <= 19'h0;
+      masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem <= 34'h0;
+      masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull <= 1'h0;
+      masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem <= 19'h0;
+      masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_mem <= 2'h0;
+      slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem <= 36'h0;
+      slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem <= 19'h0;
+      slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem <= 34'h0;
+      slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem <= 19'h0;
+      slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_mem <= 2'h0;
+      slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem <= 36'h0;
+      slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem <= 19'h0;
+      slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem <= 34'h0;
+      slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull <= 1'h0;
+      slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem <= 19'h0;
+      slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull <= 1'h0;
     end
     else begin
-      automatic logic masterBuffered_1_wBuffer0_queue0_doEnq;
-      automatic logic masterBuffered_1_awBuffer0_queue0_doEnq;
-      automatic logic masterBuffered_1_arBuffer0_queue0_doEnq;
-      automatic logic masterBuffered_0_wBuffer0_queue0_doEnq;
-      automatic logic masterBuffered_0_arBuffer0_queue0_doEnq;
-      automatic logic masterBuffered_1_bBuffer0_queue0_doEnq;
-      automatic logic masterBuffered_1_rBuffer0_queue0_doEnq;
-      automatic logic masterBuffered_0_bBuffer0_queue0_doEnq;
-      automatic logic masterBuffered_0_awBuffer0_queue0_doEnq;
-      automatic logic masterBuffered_0_rBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_0_bBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_1_bBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_1_wBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_1_awBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_1_rBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_1_arBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_0_wBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_0_awBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_0_rBuffer0_queue0_doEnq;
-      automatic logic slaveBuffered_0_arBuffer0_queue0_doEnq;
-      masterBuffered_1_wBuffer0_queue0_doEnq =
+      automatic logic masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq;
+      automatic logic masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq;
+      automatic logic masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq;
+      automatic logic masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq;
+      automatic logic masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq;
+      automatic logic masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq;
+      automatic logic masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq;
+      automatic logic masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq;
+      automatic logic masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq;
+      automatic logic masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq;
+      automatic logic slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq;
+      masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq =
         masterBuffered_1_w_ready & masterBuffered_1_w_valid;
-      masterBuffered_1_awBuffer0_queue0_doEnq =
+      masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq =
         masterBuffered_1_aw_ready & masterBuffered_1_aw_valid;
-      masterBuffered_1_arBuffer0_queue0_doEnq =
+      masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq =
         masterBuffered_1_ar_ready & masterBuffered_1_ar_valid;
-      masterBuffered_0_wBuffer0_queue0_doEnq =
+      masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq =
         masterBuffered_0_w_ready & masterBuffered_0_w_valid;
-      masterBuffered_0_arBuffer0_queue0_doEnq =
+      masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq =
         masterBuffered_0_ar_ready & masterBuffered_0_ar_valid;
-      masterBuffered_1_bBuffer0_queue0_doEnq =
-        masterBuffered_1_bBuffer0_queueSource_ready
-        & masterBuffered_1_bBuffer0_queueSource_valid;
-      masterBuffered_1_rBuffer0_queue0_doEnq =
-        masterBuffered_1_rBuffer0_queueSource_ready
-        & masterBuffered_1_rBuffer0_queueSource_valid;
-      masterBuffered_0_bBuffer0_queue0_doEnq =
-        masterBuffered_0_bBuffer0_queueSource_ready
-        & masterBuffered_0_bBuffer0_queueSource_valid;
-      masterBuffered_0_awBuffer0_queue0_doEnq =
+      masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq =
+        masterBuffered_1_axi4lBuffer0_bBuffer0_queueSource_ready
+        & masterBuffered_1_axi4lBuffer0_bBuffer0_queueSource_valid;
+      masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq =
+        masterBuffered_1_axi4lBuffer0_rBuffer0_queueSource_ready
+        & masterBuffered_1_axi4lBuffer0_rBuffer0_queueSource_valid;
+      masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq =
+        masterBuffered_0_axi4lBuffer0_bBuffer0_queueSource_ready
+        & masterBuffered_0_axi4lBuffer0_bBuffer0_queueSource_valid;
+      masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq =
         masterBuffered_0_aw_ready & masterBuffered_0_aw_valid;
-      masterBuffered_0_rBuffer0_queue0_doEnq =
-        masterBuffered_0_rBuffer0_queueSource_ready
-        & masterBuffered_0_rBuffer0_queueSource_valid;
-      slaveBuffered_0_bBuffer0_queue0_doEnq =
-        slaveBuffered_0_b_ready & slaveBuffered_0_bBuffer0_queueSource_valid;
-      slaveBuffered_1_bBuffer0_queue0_doEnq =
-        slaveBuffered_1_b_ready & slaveBuffered_1_bBuffer0_queueSource_valid;
-      slaveBuffered_1_wBuffer0_queue0_doEnq =
-        ~slaveBuffered_1_wBuffer0_queue0_maybeFull & s_axil_1_w_valid;
-      slaveBuffered_1_awBuffer0_queue0_doEnq =
-        ~slaveBuffered_1_awBuffer0_queue0_maybeFull & s_axil_1_aw_valid;
-      slaveBuffered_1_rBuffer0_queue0_doEnq =
-        slaveBuffered_1_r_ready & slaveBuffered_1_rBuffer0_queueSource_valid;
-      slaveBuffered_1_arBuffer0_queue0_doEnq =
-        ~slaveBuffered_1_arBuffer0_queue0_maybeFull & s_axil_1_ar_valid;
-      slaveBuffered_0_wBuffer0_queue0_doEnq =
-        ~slaveBuffered_0_wBuffer0_queue0_maybeFull & s_axil_0_w_valid;
-      slaveBuffered_0_awBuffer0_queue0_doEnq =
-        ~slaveBuffered_0_awBuffer0_queue0_maybeFull & s_axil_0_aw_valid;
-      slaveBuffered_0_rBuffer0_queue0_doEnq =
-        slaveBuffered_0_r_ready & slaveBuffered_0_rBuffer0_queueSource_valid;
-      slaveBuffered_0_arBuffer0_queue0_doEnq =
-        ~slaveBuffered_0_arBuffer0_queue0_maybeFull & s_axil_0_ar_valid;
-      if (masterBuffered_1_bBuffer0_queue0_doEnq)
-        masterBuffered_1_bBuffer0_queue0_mem <=
-          masterBuffered_1_bBuffer0_queueSource_bits_resp;
-      if (masterBuffered_1_bBuffer0_queue0_doEnq != (masterBuffered_1_b_ready
-                                                     & masterBuffered_1_b_valid))
-        masterBuffered_1_bBuffer0_queue0_maybeFull <=
-          masterBuffered_1_bBuffer0_queue0_doEnq;
-      if (masterBuffered_1_wBuffer0_queue0_doEnq)
-        masterBuffered_1_wBuffer0_queue0_mem <=
+      masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq =
+        masterBuffered_0_axi4lBuffer0_rBuffer0_queueSource_ready
+        & masterBuffered_0_axi4lBuffer0_rBuffer0_queueSource_valid;
+      slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq =
+        slaveBuffered_0_b_ready & slaveBuffered_0_axi4lBuffer0_bBuffer0_queueSource_valid;
+      slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq =
+        slaveBuffered_1_b_ready & slaveBuffered_1_axi4lBuffer0_bBuffer0_queueSource_valid;
+      slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq =
+        ~slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull & s_axil_1_w_valid;
+      slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq =
+        ~slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull & s_axil_1_aw_valid;
+      slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq =
+        slaveBuffered_1_r_ready & slaveBuffered_1_axi4lBuffer0_rBuffer0_queueSource_valid;
+      slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq =
+        ~slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull & s_axil_1_ar_valid;
+      slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq =
+        ~slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull & s_axil_0_w_valid;
+      slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq =
+        ~slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull & s_axil_0_aw_valid;
+      slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq =
+        slaveBuffered_0_r_ready & slaveBuffered_0_axi4lBuffer0_rBuffer0_queueSource_valid;
+      slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq =
+        ~slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull & s_axil_0_ar_valid;
+      if (masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq)
+        masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_mem <=
+          masterBuffered_1_axi4lBuffer0_bBuffer0_queueSource_bits_resp;
+      if (masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq != (masterBuffered_1_b_ready
+                                                                  & masterBuffered_1_b_valid))
+        masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull <=
+          masterBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq;
+      if (masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq)
+        masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem <=
           {masterBuffered_1_w_bits_data, masterBuffered_1_w_bits_strb};
-      if (masterBuffered_1_wBuffer0_queue0_doEnq != (masterBuffered_1_wBuffer0_queueSink_ready
-                                                     & masterBuffered_1_wBuffer0_queueSink_valid))
-        masterBuffered_1_wBuffer0_queue0_maybeFull <=
-          masterBuffered_1_wBuffer0_queue0_doEnq;
-      if (masterBuffered_1_awBuffer0_queue0_doEnq)
-        masterBuffered_1_awBuffer0_queue0_mem <=
+      if (masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq != (masterBuffered_1_axi4lBuffer0_wBuffer0_queueSink_ready
+                                                                  & masterBuffered_1_axi4lBuffer0_wBuffer0_queueSink_valid))
+        masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull <=
+          masterBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq;
+      if (masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq)
+        masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem <=
           {masterBuffered_1_aw_bits_addr, masterBuffered_1_aw_bits_prot};
-      if (masterBuffered_1_awBuffer0_queue0_doEnq != (masterBuffered_1_awBuffer0_queueSink_ready
-                                                      & masterBuffered_1_awBuffer0_queueSink_valid))
-        masterBuffered_1_awBuffer0_queue0_maybeFull <=
-          masterBuffered_1_awBuffer0_queue0_doEnq;
-      if (masterBuffered_1_rBuffer0_queue0_doEnq)
-        masterBuffered_1_rBuffer0_queue0_mem <=
-          {masterBuffered_1_rBuffer0_queueSource_bits_data,
-           masterBuffered_1_rBuffer0_queueSource_bits_resp};
-      if (masterBuffered_1_rBuffer0_queue0_doEnq != (masterBuffered_1_r_ready
-                                                     & masterBuffered_1_r_valid))
-        masterBuffered_1_rBuffer0_queue0_maybeFull <=
-          masterBuffered_1_rBuffer0_queue0_doEnq;
-      if (masterBuffered_1_arBuffer0_queue0_doEnq)
-        masterBuffered_1_arBuffer0_queue0_mem <=
+      if (masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq != (masterBuffered_1_axi4lBuffer0_awBuffer0_queueSink_ready
+                                                                   & masterBuffered_1_axi4lBuffer0_awBuffer0_queueSink_valid))
+        masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull <=
+          masterBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq;
+      if (masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq)
+        masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem <=
+          {masterBuffered_1_axi4lBuffer0_rBuffer0_queueSource_bits_data,
+           masterBuffered_1_axi4lBuffer0_rBuffer0_queueSource_bits_resp};
+      if (masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq != (masterBuffered_1_r_ready
+                                                                  & masterBuffered_1_r_valid))
+        masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull <=
+          masterBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq;
+      if (masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq)
+        masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem <=
           {masterBuffered_1_ar_bits_addr, masterBuffered_1_ar_bits_prot};
-      if (masterBuffered_1_arBuffer0_queue0_doEnq != (masterBuffered_1_arBuffer0_queueSink_ready
-                                                      & masterBuffered_1_arBuffer0_queueSink_valid))
-        masterBuffered_1_arBuffer0_queue0_maybeFull <=
-          masterBuffered_1_arBuffer0_queue0_doEnq;
-      if (masterBuffered_0_bBuffer0_queue0_doEnq)
-        masterBuffered_0_bBuffer0_queue0_mem <=
-          masterBuffered_0_bBuffer0_queueSource_bits_resp;
-      if (masterBuffered_0_bBuffer0_queue0_doEnq != (masterBuffered_0_b_ready
-                                                     & masterBuffered_0_b_valid))
-        masterBuffered_0_bBuffer0_queue0_maybeFull <=
-          masterBuffered_0_bBuffer0_queue0_doEnq;
-      if (masterBuffered_0_wBuffer0_queue0_doEnq)
-        masterBuffered_0_wBuffer0_queue0_mem <=
+      if (masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq != (masterBuffered_1_axi4lBuffer0_arBuffer0_queueSink_ready
+                                                                   & masterBuffered_1_axi4lBuffer0_arBuffer0_queueSink_valid))
+        masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull <=
+          masterBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq;
+      if (masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq)
+        masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_mem <=
+          masterBuffered_0_axi4lBuffer0_bBuffer0_queueSource_bits_resp;
+      if (masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq != (masterBuffered_0_b_ready
+                                                                  & masterBuffered_0_b_valid))
+        masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull <=
+          masterBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq;
+      if (masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq)
+        masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem <=
           {masterBuffered_0_w_bits_data, masterBuffered_0_w_bits_strb};
-      if (masterBuffered_0_wBuffer0_queue0_doEnq != (masterBuffered_0_wBuffer0_queueSink_ready
-                                                     & masterBuffered_0_wBuffer0_queueSink_valid))
-        masterBuffered_0_wBuffer0_queue0_maybeFull <=
-          masterBuffered_0_wBuffer0_queue0_doEnq;
-      if (masterBuffered_0_awBuffer0_queue0_doEnq)
-        masterBuffered_0_awBuffer0_queue0_mem <=
+      if (masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq != (masterBuffered_0_axi4lBuffer0_wBuffer0_queueSink_ready
+                                                                  & masterBuffered_0_axi4lBuffer0_wBuffer0_queueSink_valid))
+        masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull <=
+          masterBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq;
+      if (masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq)
+        masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem <=
           {masterBuffered_0_aw_bits_addr, masterBuffered_0_aw_bits_prot};
-      if (masterBuffered_0_awBuffer0_queue0_doEnq != (masterBuffered_0_awBuffer0_queueSink_ready
-                                                      & masterBuffered_0_awBuffer0_queueSink_valid))
-        masterBuffered_0_awBuffer0_queue0_maybeFull <=
-          masterBuffered_0_awBuffer0_queue0_doEnq;
-      if (masterBuffered_0_rBuffer0_queue0_doEnq)
-        masterBuffered_0_rBuffer0_queue0_mem <=
-          {masterBuffered_0_rBuffer0_queueSource_bits_data,
-           masterBuffered_0_rBuffer0_queueSource_bits_resp};
-      if (masterBuffered_0_rBuffer0_queue0_doEnq != (masterBuffered_0_r_ready
-                                                     & masterBuffered_0_r_valid))
-        masterBuffered_0_rBuffer0_queue0_maybeFull <=
-          masterBuffered_0_rBuffer0_queue0_doEnq;
-      if (masterBuffered_0_arBuffer0_queue0_doEnq)
-        masterBuffered_0_arBuffer0_queue0_mem <=
+      if (masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq != (masterBuffered_0_axi4lBuffer0_awBuffer0_queueSink_ready
+                                                                   & masterBuffered_0_axi4lBuffer0_awBuffer0_queueSink_valid))
+        masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull <=
+          masterBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq;
+      if (masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq)
+        masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem <=
+          {masterBuffered_0_axi4lBuffer0_rBuffer0_queueSource_bits_data,
+           masterBuffered_0_axi4lBuffer0_rBuffer0_queueSource_bits_resp};
+      if (masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq != (masterBuffered_0_r_ready
+                                                                  & masterBuffered_0_r_valid))
+        masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull <=
+          masterBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq;
+      if (masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq)
+        masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem <=
           {masterBuffered_0_ar_bits_addr, masterBuffered_0_ar_bits_prot};
-      if (masterBuffered_0_arBuffer0_queue0_doEnq != (masterBuffered_0_arBuffer0_queueSink_ready
-                                                      & masterBuffered_0_arBuffer0_queueSink_valid))
-        masterBuffered_0_arBuffer0_queue0_maybeFull <=
-          masterBuffered_0_arBuffer0_queue0_doEnq;
-      if (slaveBuffered_1_bBuffer0_queue0_doEnq)
-        slaveBuffered_1_bBuffer0_queue0_mem <=
-          slaveBuffered_1_bBuffer0_queueSource_bits_resp;
-      if (slaveBuffered_1_bBuffer0_queue0_doEnq != (s_axil_1_b_ready
-                                                    & slaveBuffered_1_bBuffer0_queue0_maybeFull))
-        slaveBuffered_1_bBuffer0_queue0_maybeFull <=
-          slaveBuffered_1_bBuffer0_queue0_doEnq;
-      if (slaveBuffered_1_wBuffer0_queue0_doEnq)
-        slaveBuffered_1_wBuffer0_queue0_mem <=
+      if (masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq != (masterBuffered_0_axi4lBuffer0_arBuffer0_queueSink_ready
+                                                                   & masterBuffered_0_axi4lBuffer0_arBuffer0_queueSink_valid))
+        masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull <=
+          masterBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq;
+      if (slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq)
+        slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_mem <=
+          slaveBuffered_1_axi4lBuffer0_bBuffer0_queueSource_bits_resp;
+      if (slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq != (s_axil_1_b_ready
+                                                                 & slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull))
+        slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull <=
+          slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_doEnq;
+      if (slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq)
+        slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_mem <=
           {s_axil_1_w_bits_data, s_axil_1_w_bits_strb};
-      if (slaveBuffered_1_wBuffer0_queue0_doEnq != (slaveBuffered_1_wBuffer0_queueSink_ready
-                                                    & slaveBuffered_1_w_valid))
-        slaveBuffered_1_wBuffer0_queue0_maybeFull <=
-          slaveBuffered_1_wBuffer0_queue0_doEnq;
-      if (slaveBuffered_1_awBuffer0_queue0_doEnq)
-        slaveBuffered_1_awBuffer0_queue0_mem <=
+      if (slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq != (slaveBuffered_1_axi4lBuffer0_wBuffer0_queueSink_ready
+                                                                 & slaveBuffered_1_w_valid))
+        slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull <=
+          slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_doEnq;
+      if (slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq)
+        slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_mem <=
           {s_axil_1_aw_bits_addr, s_axil_1_aw_bits_prot};
-      if (slaveBuffered_1_awBuffer0_queue0_doEnq != (slaveBuffered_1_awBuffer0_queueSink_ready
-                                                     & slaveBuffered_1_aw_valid))
-        slaveBuffered_1_awBuffer0_queue0_maybeFull <=
-          slaveBuffered_1_awBuffer0_queue0_doEnq;
-      if (slaveBuffered_1_rBuffer0_queue0_doEnq)
-        slaveBuffered_1_rBuffer0_queue0_mem <=
-          {slaveBuffered_1_rBuffer0_queueSource_bits_data,
-           slaveBuffered_1_rBuffer0_queueSource_bits_resp};
-      if (slaveBuffered_1_rBuffer0_queue0_doEnq != (s_axil_1_r_ready
-                                                    & slaveBuffered_1_rBuffer0_queue0_maybeFull))
-        slaveBuffered_1_rBuffer0_queue0_maybeFull <=
-          slaveBuffered_1_rBuffer0_queue0_doEnq;
-      if (slaveBuffered_1_arBuffer0_queue0_doEnq)
-        slaveBuffered_1_arBuffer0_queue0_mem <=
+      if (slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq != (slaveBuffered_1_axi4lBuffer0_awBuffer0_queueSink_ready
+                                                                  & slaveBuffered_1_aw_valid))
+        slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull <=
+          slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_doEnq;
+      if (slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq)
+        slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem <=
+          {slaveBuffered_1_axi4lBuffer0_rBuffer0_queueSource_bits_data,
+           slaveBuffered_1_axi4lBuffer0_rBuffer0_queueSource_bits_resp};
+      if (slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq != (s_axil_1_r_ready
+                                                                 & slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull))
+        slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull <=
+          slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_doEnq;
+      if (slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq)
+        slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_mem <=
           {s_axil_1_ar_bits_addr, s_axil_1_ar_bits_prot};
-      if (slaveBuffered_1_arBuffer0_queue0_doEnq != (slaveBuffered_1_arBuffer0_queueSink_ready
-                                                     & slaveBuffered_1_ar_valid))
-        slaveBuffered_1_arBuffer0_queue0_maybeFull <=
-          slaveBuffered_1_arBuffer0_queue0_doEnq;
-      if (slaveBuffered_0_bBuffer0_queue0_doEnq)
-        slaveBuffered_0_bBuffer0_queue0_mem <=
-          slaveBuffered_0_bBuffer0_queueSource_bits_resp;
-      if (slaveBuffered_0_bBuffer0_queue0_doEnq != (s_axil_0_b_ready
-                                                    & slaveBuffered_0_bBuffer0_queue0_maybeFull))
-        slaveBuffered_0_bBuffer0_queue0_maybeFull <=
-          slaveBuffered_0_bBuffer0_queue0_doEnq;
-      if (slaveBuffered_0_wBuffer0_queue0_doEnq)
-        slaveBuffered_0_wBuffer0_queue0_mem <=
+      if (slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq != (slaveBuffered_1_axi4lBuffer0_arBuffer0_queueSink_ready
+                                                                  & slaveBuffered_1_ar_valid))
+        slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull <=
+          slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_doEnq;
+      if (slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq)
+        slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_mem <=
+          slaveBuffered_0_axi4lBuffer0_bBuffer0_queueSource_bits_resp;
+      if (slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq != (s_axil_0_b_ready
+                                                                 & slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull))
+        slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull <=
+          slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_doEnq;
+      if (slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq)
+        slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_mem <=
           {s_axil_0_w_bits_data, s_axil_0_w_bits_strb};
-      if (slaveBuffered_0_wBuffer0_queue0_doEnq != (slaveBuffered_0_wBuffer0_queueSink_ready
-                                                    & slaveBuffered_0_w_valid))
-        slaveBuffered_0_wBuffer0_queue0_maybeFull <=
-          slaveBuffered_0_wBuffer0_queue0_doEnq;
-      if (slaveBuffered_0_awBuffer0_queue0_doEnq)
-        slaveBuffered_0_awBuffer0_queue0_mem <=
+      if (slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq != (slaveBuffered_0_axi4lBuffer0_wBuffer0_queueSink_ready
+                                                                 & slaveBuffered_0_w_valid))
+        slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull <=
+          slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_doEnq;
+      if (slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq)
+        slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_mem <=
           {s_axil_0_aw_bits_addr, s_axil_0_aw_bits_prot};
-      if (slaveBuffered_0_awBuffer0_queue0_doEnq != (slaveBuffered_0_awBuffer0_queueSink_ready
-                                                     & slaveBuffered_0_aw_valid))
-        slaveBuffered_0_awBuffer0_queue0_maybeFull <=
-          slaveBuffered_0_awBuffer0_queue0_doEnq;
-      if (slaveBuffered_0_rBuffer0_queue0_doEnq)
-        slaveBuffered_0_rBuffer0_queue0_mem <=
-          {slaveBuffered_0_rBuffer0_queueSource_bits_data,
-           slaveBuffered_0_rBuffer0_queueSource_bits_resp};
-      if (slaveBuffered_0_rBuffer0_queue0_doEnq != (s_axil_0_r_ready
-                                                    & slaveBuffered_0_rBuffer0_queue0_maybeFull))
-        slaveBuffered_0_rBuffer0_queue0_maybeFull <=
-          slaveBuffered_0_rBuffer0_queue0_doEnq;
-      if (slaveBuffered_0_arBuffer0_queue0_doEnq)
-        slaveBuffered_0_arBuffer0_queue0_mem <=
+      if (slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq != (slaveBuffered_0_axi4lBuffer0_awBuffer0_queueSink_ready
+                                                                  & slaveBuffered_0_aw_valid))
+        slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull <=
+          slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_doEnq;
+      if (slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq)
+        slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem <=
+          {slaveBuffered_0_axi4lBuffer0_rBuffer0_queueSource_bits_data,
+           slaveBuffered_0_axi4lBuffer0_rBuffer0_queueSource_bits_resp};
+      if (slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq != (s_axil_0_r_ready
+                                                                 & slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull))
+        slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull <=
+          slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_doEnq;
+      if (slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq)
+        slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_mem <=
           {s_axil_0_ar_bits_addr, s_axil_0_ar_bits_prot};
-      if (slaveBuffered_0_arBuffer0_queue0_doEnq != (slaveBuffered_0_arBuffer0_queueSink_ready
-                                                     & slaveBuffered_0_ar_valid))
-        slaveBuffered_0_arBuffer0_queue0_maybeFull <=
-          slaveBuffered_0_arBuffer0_queue0_doEnq;
+      if (slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq != (slaveBuffered_0_axi4lBuffer0_arBuffer0_queueSink_ready
+                                                                  & slaveBuffered_0_ar_valid))
+        slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull <=
+          slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_doEnq;
     end
   end // always @(posedge)
-  assign s_axil_0_ar_ready = ~slaveBuffered_0_arBuffer0_queue0_maybeFull;
-  assign s_axil_0_r_bits_data = slaveBuffered_0_rBuffer0_queue0_mem[33:2];
-  assign s_axil_0_r_bits_resp = slaveBuffered_0_rBuffer0_queue0_mem[1:0];
-  assign s_axil_0_r_valid = slaveBuffered_0_rBuffer0_queue0_maybeFull;
-  assign s_axil_0_aw_ready = ~slaveBuffered_0_awBuffer0_queue0_maybeFull;
-  assign s_axil_0_w_ready = ~slaveBuffered_0_wBuffer0_queue0_maybeFull;
-  assign s_axil_0_b_bits_resp = slaveBuffered_0_bBuffer0_queue0_mem;
-  assign s_axil_0_b_valid = slaveBuffered_0_bBuffer0_queue0_maybeFull;
-  assign s_axil_1_ar_ready = ~slaveBuffered_1_arBuffer0_queue0_maybeFull;
-  assign s_axil_1_r_bits_data = slaveBuffered_1_rBuffer0_queue0_mem[33:2];
-  assign s_axil_1_r_bits_resp = slaveBuffered_1_rBuffer0_queue0_mem[1:0];
-  assign s_axil_1_r_valid = slaveBuffered_1_rBuffer0_queue0_maybeFull;
-  assign s_axil_1_aw_ready = ~slaveBuffered_1_awBuffer0_queue0_maybeFull;
-  assign s_axil_1_w_ready = ~slaveBuffered_1_wBuffer0_queue0_maybeFull;
-  assign s_axil_1_b_bits_resp = slaveBuffered_1_bBuffer0_queue0_mem;
-  assign s_axil_1_b_valid = slaveBuffered_1_bBuffer0_queue0_maybeFull;
-  assign m_axil_0_ar_bits_addr = masterBuffered_0_arBuffer0_queueSink_bits_addr;
-  assign m_axil_0_ar_bits_prot = masterBuffered_0_arBuffer0_queueSink_bits_prot;
-  assign m_axil_0_ar_valid = masterBuffered_0_arBuffer0_queueSink_valid;
-  assign m_axil_0_r_ready = masterBuffered_0_rBuffer0_queueSource_ready;
-  assign m_axil_0_aw_bits_addr = masterBuffered_0_awBuffer0_queueSink_bits_addr;
-  assign m_axil_0_aw_bits_prot = masterBuffered_0_awBuffer0_queueSink_bits_prot;
-  assign m_axil_0_aw_valid = masterBuffered_0_awBuffer0_queueSink_valid;
-  assign m_axil_0_w_bits_data = masterBuffered_0_wBuffer0_queueSink_bits_data;
-  assign m_axil_0_w_bits_strb = masterBuffered_0_wBuffer0_queueSink_bits_strb;
-  assign m_axil_0_w_valid = masterBuffered_0_wBuffer0_queueSink_valid;
-  assign m_axil_0_b_ready = masterBuffered_0_bBuffer0_queueSource_ready;
-  assign m_axil_1_ar_bits_addr = masterBuffered_1_arBuffer0_queueSink_bits_addr;
-  assign m_axil_1_ar_bits_prot = masterBuffered_1_arBuffer0_queueSink_bits_prot;
-  assign m_axil_1_ar_valid = masterBuffered_1_arBuffer0_queueSink_valid;
-  assign m_axil_1_r_ready = masterBuffered_1_rBuffer0_queueSource_ready;
-  assign m_axil_1_aw_bits_addr = masterBuffered_1_awBuffer0_queueSink_bits_addr;
-  assign m_axil_1_aw_bits_prot = masterBuffered_1_awBuffer0_queueSink_bits_prot;
-  assign m_axil_1_aw_valid = masterBuffered_1_awBuffer0_queueSink_valid;
-  assign m_axil_1_w_bits_data = masterBuffered_1_wBuffer0_queueSink_bits_data;
-  assign m_axil_1_w_bits_strb = masterBuffered_1_wBuffer0_queueSink_bits_strb;
-  assign m_axil_1_w_valid = masterBuffered_1_wBuffer0_queueSink_valid;
-  assign m_axil_1_b_ready = masterBuffered_1_bBuffer0_queueSource_ready;
+  assign s_axil_0_ar_ready = ~slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  assign s_axil_0_r_bits_data = slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem[33:2];
+  assign s_axil_0_r_bits_resp = slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_mem[1:0];
+  assign s_axil_0_r_valid = slaveBuffered_0_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  assign s_axil_0_aw_ready = ~slaveBuffered_0_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  assign s_axil_0_w_ready = ~slaveBuffered_0_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  assign s_axil_0_b_bits_resp = slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_mem;
+  assign s_axil_0_b_valid = slaveBuffered_0_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  assign s_axil_1_ar_ready = ~slaveBuffered_1_axi4lBuffer0_arBuffer0_queue0_maybeFull;
+  assign s_axil_1_r_bits_data = slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem[33:2];
+  assign s_axil_1_r_bits_resp = slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_mem[1:0];
+  assign s_axil_1_r_valid = slaveBuffered_1_axi4lBuffer0_rBuffer0_queue0_maybeFull;
+  assign s_axil_1_aw_ready = ~slaveBuffered_1_axi4lBuffer0_awBuffer0_queue0_maybeFull;
+  assign s_axil_1_w_ready = ~slaveBuffered_1_axi4lBuffer0_wBuffer0_queue0_maybeFull;
+  assign s_axil_1_b_bits_resp = slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_mem;
+  assign s_axil_1_b_valid = slaveBuffered_1_axi4lBuffer0_bBuffer0_queue0_maybeFull;
+  assign m_axil_0_ar_bits_addr =
+    masterBuffered_0_axi4lBuffer0_arBuffer0_queueSink_bits_addr;
+  assign m_axil_0_ar_bits_prot =
+    masterBuffered_0_axi4lBuffer0_arBuffer0_queueSink_bits_prot;
+  assign m_axil_0_ar_valid = masterBuffered_0_axi4lBuffer0_arBuffer0_queueSink_valid;
+  assign m_axil_0_r_ready = masterBuffered_0_axi4lBuffer0_rBuffer0_queueSource_ready;
+  assign m_axil_0_aw_bits_addr =
+    masterBuffered_0_axi4lBuffer0_awBuffer0_queueSink_bits_addr;
+  assign m_axil_0_aw_bits_prot =
+    masterBuffered_0_axi4lBuffer0_awBuffer0_queueSink_bits_prot;
+  assign m_axil_0_aw_valid = masterBuffered_0_axi4lBuffer0_awBuffer0_queueSink_valid;
+  assign m_axil_0_w_bits_data =
+    masterBuffered_0_axi4lBuffer0_wBuffer0_queueSink_bits_data;
+  assign m_axil_0_w_bits_strb =
+    masterBuffered_0_axi4lBuffer0_wBuffer0_queueSink_bits_strb;
+  assign m_axil_0_w_valid = masterBuffered_0_axi4lBuffer0_wBuffer0_queueSink_valid;
+  assign m_axil_0_b_ready = masterBuffered_0_axi4lBuffer0_bBuffer0_queueSource_ready;
+  assign m_axil_1_ar_bits_addr =
+    masterBuffered_1_axi4lBuffer0_arBuffer0_queueSink_bits_addr;
+  assign m_axil_1_ar_bits_prot =
+    masterBuffered_1_axi4lBuffer0_arBuffer0_queueSink_bits_prot;
+  assign m_axil_1_ar_valid = masterBuffered_1_axi4lBuffer0_arBuffer0_queueSink_valid;
+  assign m_axil_1_r_ready = masterBuffered_1_axi4lBuffer0_rBuffer0_queueSource_ready;
+  assign m_axil_1_aw_bits_addr =
+    masterBuffered_1_axi4lBuffer0_awBuffer0_queueSink_bits_addr;
+  assign m_axil_1_aw_bits_prot =
+    masterBuffered_1_axi4lBuffer0_awBuffer0_queueSink_bits_prot;
+  assign m_axil_1_aw_valid = masterBuffered_1_axi4lBuffer0_awBuffer0_queueSink_valid;
+  assign m_axil_1_w_bits_data =
+    masterBuffered_1_axi4lBuffer0_wBuffer0_queueSink_bits_data;
+  assign m_axil_1_w_bits_strb =
+    masterBuffered_1_axi4lBuffer0_wBuffer0_queueSink_bits_strb;
+  assign m_axil_1_w_valid = masterBuffered_1_axi4lBuffer0_wBuffer0_queueSink_valid;
+  assign m_axil_1_b_ready = masterBuffered_1_axi4lBuffer0_bBuffer0_queueSource_ready;
 endmodule
 

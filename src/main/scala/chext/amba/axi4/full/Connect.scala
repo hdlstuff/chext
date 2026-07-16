@@ -24,6 +24,14 @@ final class Connect(
   def namePrefix: String = "axi4fConnect"
 
   private val elasticState = trackingState(elastic.tracking.Tag)
+  private val propertyResolver =
+    new axi4.tracking.ForwardingResolver(
+      this,
+      master,
+      slave,
+      kind = "connect",
+      resolver = "ConnectResolver"
+    )
 
   if (master.cfg.read) {
     elasticState.addSource("master_ar", master.ar, boundary = true)

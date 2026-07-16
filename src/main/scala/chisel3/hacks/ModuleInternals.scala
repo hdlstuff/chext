@@ -35,10 +35,10 @@ object ModuleInternals {
       .filter(_.topBinding.isInstanceOf[WireBinding])
   }
 
-  def getParent(module: BaseModule): Option[BaseModule] = {
+  def getParent(id: HasId): Option[BaseModule] = {
     val method = classOf[HasId].getDeclaredMethod("_parent")
     method.setAccessible(true)
-    method.invoke(module).asInstanceOf[Option[BaseModule]]
+    method.invoke(id).asInstanceOf[Option[BaseModule]]
   }
 
   def getChildren(module: BaseModule): Seq[BaseModule] = {

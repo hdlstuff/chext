@@ -1043,7 +1043,7 @@ s_axi_raw_N :=> m_axi_raw_N
 
 ## AXI4 Buffers
 
-AXI buffer naming follows the elastic convention: `SlaveBuffer`, `MasterBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used anonymously inside a connection expression. `SlaveBuffered` and `MasterBuffered` return an interface directly and do not add an internal `uniquePrefix`, including for sequence overloads; bind them to a `val` when the buffered AXI side is reused.
+AXI buffer naming follows the elastic convention: `SlaveBuffer`, `MasterBuffer`, `LeftBuffer`, and `RightBuffer` wrap their internal implementation in `uniquePrefix(name)` and are usually used anonymously inside a connection expression. `SlaveBuffered` and `MasterBuffered` return an interface directly and do not add an outer `uniquePrefix`, including for sequence overloads; bind them to a `val` when the buffered AXI side is reused. Every helper creates an inner tracked `Buffer` component (`axi4fBuffer` or `axi4lBuffer`) that owns its property resolver and channel-level elastic children.
 
 <a id="entry-axi-buffers-axi4-buffer-config"></a>
 
@@ -1078,7 +1078,7 @@ axi4f.SlaveBuffer(s_axi, bufferCfg) :=> m_axi
 s_axi :=> axi4f.MasterBuffer(m_axi, bufferCfg)
 ```
 
-**Details:** Function. Uses `uniquePrefix`; internally creates channel-level `e.SourceBuffer` / `e.SinkBuffer`. Read channels use `arBuffer` / `rBuffer`; write channels use `awBuffer` / `wBuffer` / `bBuffer`; underlying graph nodes are elastic `Queue` and `Connect` components.
+**Details:** Function. Uses `uniquePrefix`; internally creates a tracked Component; tpe: Axi4f_Buffer; namePrefix: axi4fBuffer that owns the AXI property resolver and channel-level `e.SourceBuffer` / `e.SinkBuffer` children. Read channels use `arBuffer` / `rBuffer`; write channels use `awBuffer` / `wBuffer` / `bBuffer`; underlying graph nodes are elastic `Queue` and `Connect` components.
 
 ---
 
@@ -1094,7 +1094,7 @@ val s_axi_buffered = axi4f.SlaveBuffered(s_axi, bufferCfg)
 val m_axi_buffered = axi4f.MasterBuffered(m_axi, bufferCfg)
 ```
 
-**Details:** Function. Same channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface and sequence forms do not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence overloads add only per-element index prefixes, for example `slaveBuffered_0_arBuffer0_queue0`.
+**Details:** Function. Same tracked `Axi4f_Buffer` component and channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface and sequence forms do not add an outer `uniquePrefix`; the Scala `val` name is the important handle. Sequence overloads add per-element index prefixes around the inner component, for example `slaveBuffered_0_axi4fBuffer0_arBuffer0_queue0`.
 
 ---
 
@@ -1110,7 +1110,7 @@ axi4l.SlaveBuffer(s_axil, bufferCfg) :=> m_axil
 s_axil :=> axi4l.MasterBuffer(m_axil, bufferCfg)
 ```
 
-**Details:** Function. Uses `uniquePrefix`; internally creates channel-level `e.SourceBuffer` / `e.SinkBuffer`. AXI4-Lite read channels use `arBuffer` / `rBuffer`; write channels use `awBuffer` / `wBuffer` / `bBuffer`; underlying graph nodes are elastic `Queue` and `Connect` components.
+**Details:** Function. Uses `uniquePrefix`; internally creates a tracked Component; tpe: Axi4l_Buffer; namePrefix: axi4lBuffer that owns the AXI property resolver and channel-level `e.SourceBuffer` / `e.SinkBuffer` children. AXI4-Lite read channels use `arBuffer` / `rBuffer`; write channels use `awBuffer` / `wBuffer` / `bBuffer`; underlying graph nodes are elastic `Queue` and `Connect` components.
 
 ---
 
@@ -1126,7 +1126,7 @@ val s_axil_buffered = axi4l.SlaveBuffered(s_axil, bufferCfg)
 val m_axil_buffered = axi4l.MasterBuffered(m_axil, bufferCfg)
 ```
 
-**Details:** Function. Same channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface and sequence forms do not add a `uniquePrefix`; the Scala `val` name is the important handle. Sequence overloads add only per-element index prefixes, for example `slaveBuffered_0_arBuffer0_queue0`.
+**Details:** Function. Same tracked `Axi4l_Buffer` component and channel-level buffering as `SlaveBuffer` / `MasterBuffer`, but the single-interface and sequence forms do not add an outer `uniquePrefix`; the Scala `val` name is the important handle. Sequence overloads add per-element index prefixes around the inner component, for example `slaveBuffered_0_axi4lBuffer0_arBuffer0_queue0`.
 
 ---
 

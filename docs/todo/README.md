@@ -33,10 +33,19 @@ superseded AI handoff prompts are retained only in the [archive](archive/).
   touched construction and connection APIs for checks that should remain or be
   made clearer rather than silently weakening them.
 
+## AXI4 DataView tracking identity
+
+- Make a raw AXI4 interface and its `.asFull`/`.asLite` DataView share one canonical tracking
+  identity. Their properties and resolver registrations currently belong to distinct `Tracked`
+  Scala objects, so metadata attached to the raw interface does not follow the view.
+
 ## Design investigations
 
 The remaining pipelining and connection-API questions are collected in
 [design-issues.md](design-issues.md).
+
+The developing AXI4 interface-property and resolver model is recorded in
+[axi4-tracking.md](axi4-tracking.md).
 
 ## Archived prompts
 

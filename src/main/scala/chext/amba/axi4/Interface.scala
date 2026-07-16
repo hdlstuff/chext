@@ -148,7 +148,9 @@ case class Config(
   * @param cfg
   *   configuration
   */
-class RawInterface(val cfg: axi4.Config)(implicit si: SourceInfo) extends Bundle {
+class RawInterface(val cfg: axi4.Config)(implicit si: SourceInfo)
+    extends Bundle
+    with tracking.Tracked {
   def sourceInfo: SourceInfo = si
 
   private[axi4] val viewCalls_ =

@@ -81,7 +81,7 @@ object WriteResponseChannel {
   def apply(cfg: axi4.Config) = new WriteResponseChannel()(cfg)
 }
 
-abstract class Interface extends Bundle {
+abstract class Interface extends Bundle with axi4.tracking.Tracked {
 
   /** Interface configuration. */
   def cfg: axi4.Config

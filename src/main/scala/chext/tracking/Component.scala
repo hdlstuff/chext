@@ -45,7 +45,7 @@ trait Component extends HasPath {
   private[chext] final def args = args_.toSeq
 
   // addChild(...) reads parentOption_, so hierarchy fields must be initialized before registration.
-  private[tracking] final val moduleInfo = Manager.registerCurrentModule()
+  private[chext] final val moduleInfo = Manager.registerCurrentModule()
   moduleInfo.addComponent(this)
   moduleInfo.lastComponentOption.foreach { _.addChild(this) }
 

@@ -76,6 +76,14 @@ private[chext] class ModuleInfo(
       }
   }
 
+  private[chext] lazy val absolutePath: String =
+    parent match {
+      case None => "/"
+      case Some(parentInfo) =>
+        val prefix = if (parentInfo.absolutePath == "/") "" else parentInfo.absolutePath
+        s"$prefix/$instanceName"
+    }
+
   private[chext] def childInstanceName(childModule: BaseModule): Option[String] =
     children_.get(childModule).map(_.instanceName)
 
