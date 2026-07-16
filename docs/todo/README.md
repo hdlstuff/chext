@@ -11,6 +11,12 @@ superseded AI handoff prompts are retained only in the [archive](archive/).
 - Make tracking, logger, and requirement failure messages follow a consistent
   shape while preserving the information specific to each subsystem.
 
+## Elaboration test migration
+
+- Convert the composite-boundary and buffered-naming HDL generators into report-oriented
+  elaboration tests, then remove their tracked generated artifacts. See the
+  [elaboration-test migration checklist](elaboration-test-migration.md).
+
 ## Elastic tracking type coupling
 
 - Consider removing `tpe` from `chext.elastic.tracking.Tracked`. The Elastic

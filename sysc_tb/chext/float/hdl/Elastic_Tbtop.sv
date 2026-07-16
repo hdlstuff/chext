@@ -351,132 +351,132 @@ endmodule
 
 module AddFp_Pipelined_8_23(
   input         clock,
-                io_in_a_sign,
-  input  [7:0]  io_in_a_exponent,
-  input  [22:0] io_in_a_mantissa,
-  input         io_in_b_sign,
-  input  [7:0]  io_in_b_exponent,
-  input  [22:0] io_in_b_mantissa,
+                io_inA_sign,
+  input  [7:0]  io_inA_exponent,
+  input  [22:0] io_inA_mantissa,
+  input         io_inB_sign,
+  input  [7:0]  io_inB_exponent,
+  input  [22:0] io_inB_mantissa,
   output        io_out_sign,
   output [7:0]  io_out_exponent,
   output [22:0] io_out_mantissa
 );
 
   wire [32:0] _addRecFN_io_out;
-  wire        addRecFN_io_a_rawIn_isZeroExpIn = io_in_a_exponent == 8'h0;
+  wire        addRecFN_io_a_rawIn_isZeroExpIn = io_inA_exponent == 8'h0;
   wire [4:0]  addRecFN_io_a_rawIn_normDist =
-    io_in_a_mantissa[22]
+    io_inA_mantissa[22]
       ? 5'h0
-      : io_in_a_mantissa[21]
+      : io_inA_mantissa[21]
           ? 5'h1
-          : io_in_a_mantissa[20]
+          : io_inA_mantissa[20]
               ? 5'h2
-              : io_in_a_mantissa[19]
+              : io_inA_mantissa[19]
                   ? 5'h3
-                  : io_in_a_mantissa[18]
+                  : io_inA_mantissa[18]
                       ? 5'h4
-                      : io_in_a_mantissa[17]
+                      : io_inA_mantissa[17]
                           ? 5'h5
-                          : io_in_a_mantissa[16]
+                          : io_inA_mantissa[16]
                               ? 5'h6
-                              : io_in_a_mantissa[15]
+                              : io_inA_mantissa[15]
                                   ? 5'h7
-                                  : io_in_a_mantissa[14]
+                                  : io_inA_mantissa[14]
                                       ? 5'h8
-                                      : io_in_a_mantissa[13]
+                                      : io_inA_mantissa[13]
                                           ? 5'h9
-                                          : io_in_a_mantissa[12]
+                                          : io_inA_mantissa[12]
                                               ? 5'hA
-                                              : io_in_a_mantissa[11]
+                                              : io_inA_mantissa[11]
                                                   ? 5'hB
-                                                  : io_in_a_mantissa[10]
+                                                  : io_inA_mantissa[10]
                                                       ? 5'hC
-                                                      : io_in_a_mantissa[9]
+                                                      : io_inA_mantissa[9]
                                                           ? 5'hD
-                                                          : io_in_a_mantissa[8]
+                                                          : io_inA_mantissa[8]
                                                               ? 5'hE
-                                                              : io_in_a_mantissa[7]
+                                                              : io_inA_mantissa[7]
                                                                   ? 5'hF
-                                                                  : io_in_a_mantissa[6]
+                                                                  : io_inA_mantissa[6]
                                                                       ? 5'h10
-                                                                      : io_in_a_mantissa[5]
+                                                                      : io_inA_mantissa[5]
                                                                           ? 5'h11
-                                                                          : io_in_a_mantissa[4]
+                                                                          : io_inA_mantissa[4]
                                                                               ? 5'h12
-                                                                              : io_in_a_mantissa[3]
+                                                                              : io_inA_mantissa[3]
                                                                                   ? 5'h13
-                                                                                  : io_in_a_mantissa[2]
+                                                                                  : io_inA_mantissa[2]
                                                                                       ? 5'h14
-                                                                                      : io_in_a_mantissa[1]
+                                                                                      : io_inA_mantissa[1]
                                                                                           ? 5'h15
                                                                                           : 5'h16;
   wire [53:0] _addRecFN_io_a_rawIn_subnormFract_T =
-    {31'h0, io_in_a_mantissa} << addRecFN_io_a_rawIn_normDist;
+    {31'h0, io_inA_mantissa} << addRecFN_io_a_rawIn_normDist;
   wire [8:0]  _addRecFN_io_a_rawIn_adjustedExp_T_4 =
     (addRecFN_io_a_rawIn_isZeroExpIn
        ? {4'hF, ~addRecFN_io_a_rawIn_normDist}
-       : {1'h0, io_in_a_exponent})
+       : {1'h0, io_inA_exponent})
     + {7'h20, addRecFN_io_a_rawIn_isZeroExpIn ? 2'h2 : 2'h1};
   wire [2:0]  _addRecFN_io_a_T_2 =
-    addRecFN_io_a_rawIn_isZeroExpIn & ~(|io_in_a_mantissa)
+    addRecFN_io_a_rawIn_isZeroExpIn & ~(|io_inA_mantissa)
       ? 3'h0
       : _addRecFN_io_a_rawIn_adjustedExp_T_4[8:6];
-  wire        addRecFN_io_b_rawIn_isZeroExpIn = io_in_b_exponent == 8'h0;
+  wire        addRecFN_io_b_rawIn_isZeroExpIn = io_inB_exponent == 8'h0;
   wire [4:0]  addRecFN_io_b_rawIn_normDist =
-    io_in_b_mantissa[22]
+    io_inB_mantissa[22]
       ? 5'h0
-      : io_in_b_mantissa[21]
+      : io_inB_mantissa[21]
           ? 5'h1
-          : io_in_b_mantissa[20]
+          : io_inB_mantissa[20]
               ? 5'h2
-              : io_in_b_mantissa[19]
+              : io_inB_mantissa[19]
                   ? 5'h3
-                  : io_in_b_mantissa[18]
+                  : io_inB_mantissa[18]
                       ? 5'h4
-                      : io_in_b_mantissa[17]
+                      : io_inB_mantissa[17]
                           ? 5'h5
-                          : io_in_b_mantissa[16]
+                          : io_inB_mantissa[16]
                               ? 5'h6
-                              : io_in_b_mantissa[15]
+                              : io_inB_mantissa[15]
                                   ? 5'h7
-                                  : io_in_b_mantissa[14]
+                                  : io_inB_mantissa[14]
                                       ? 5'h8
-                                      : io_in_b_mantissa[13]
+                                      : io_inB_mantissa[13]
                                           ? 5'h9
-                                          : io_in_b_mantissa[12]
+                                          : io_inB_mantissa[12]
                                               ? 5'hA
-                                              : io_in_b_mantissa[11]
+                                              : io_inB_mantissa[11]
                                                   ? 5'hB
-                                                  : io_in_b_mantissa[10]
+                                                  : io_inB_mantissa[10]
                                                       ? 5'hC
-                                                      : io_in_b_mantissa[9]
+                                                      : io_inB_mantissa[9]
                                                           ? 5'hD
-                                                          : io_in_b_mantissa[8]
+                                                          : io_inB_mantissa[8]
                                                               ? 5'hE
-                                                              : io_in_b_mantissa[7]
+                                                              : io_inB_mantissa[7]
                                                                   ? 5'hF
-                                                                  : io_in_b_mantissa[6]
+                                                                  : io_inB_mantissa[6]
                                                                       ? 5'h10
-                                                                      : io_in_b_mantissa[5]
+                                                                      : io_inB_mantissa[5]
                                                                           ? 5'h11
-                                                                          : io_in_b_mantissa[4]
+                                                                          : io_inB_mantissa[4]
                                                                               ? 5'h12
-                                                                              : io_in_b_mantissa[3]
+                                                                              : io_inB_mantissa[3]
                                                                                   ? 5'h13
-                                                                                  : io_in_b_mantissa[2]
+                                                                                  : io_inB_mantissa[2]
                                                                                       ? 5'h14
-                                                                                      : io_in_b_mantissa[1]
+                                                                                      : io_inB_mantissa[1]
                                                                                           ? 5'h15
                                                                                           : 5'h16;
   wire [53:0] _addRecFN_io_b_rawIn_subnormFract_T =
-    {31'h0, io_in_b_mantissa} << addRecFN_io_b_rawIn_normDist;
+    {31'h0, io_inB_mantissa} << addRecFN_io_b_rawIn_normDist;
   wire [8:0]  _addRecFN_io_b_rawIn_adjustedExp_T_4 =
     (addRecFN_io_b_rawIn_isZeroExpIn
        ? {4'hF, ~addRecFN_io_b_rawIn_normDist}
-       : {1'h0, io_in_b_exponent})
+       : {1'h0, io_inB_exponent})
     + {7'h20, addRecFN_io_b_rawIn_isZeroExpIn ? 2'h2 : 2'h1};
   wire [2:0]  _addRecFN_io_b_T_2 =
-    addRecFN_io_b_rawIn_isZeroExpIn & ~(|io_in_b_mantissa)
+    addRecFN_io_b_rawIn_isZeroExpIn & ~(|io_inB_mantissa)
       ? 3'h0
       : _addRecFN_io_b_rawIn_adjustedExp_T_4[8:6];
   wire        io_out_rawIn_isInf = (&(_addRecFN_io_out[31:30])) & ~(_addRecFN_io_out[29]);
@@ -487,23 +487,23 @@ module AddFp_Pipelined_8_23(
   AddRecFN_Pipelined_8_24 addRecFN (
     .clock  (clock),
     .io_a
-      ({io_in_a_sign,
+      ({io_inA_sign,
         _addRecFN_io_a_T_2[2:1],
         _addRecFN_io_a_T_2[0] | (&(_addRecFN_io_a_rawIn_adjustedExp_T_4[8:7]))
-          & (|io_in_a_mantissa),
+          & (|io_inA_mantissa),
         _addRecFN_io_a_rawIn_adjustedExp_T_4[5:0],
         addRecFN_io_a_rawIn_isZeroExpIn
           ? {_addRecFN_io_a_rawIn_subnormFract_T[21:0], 1'h0}
-          : io_in_a_mantissa}),
+          : io_inA_mantissa}),
     .io_b
-      ({io_in_b_sign,
+      ({io_inB_sign,
         _addRecFN_io_b_T_2[2:1],
         _addRecFN_io_b_T_2[0] | (&(_addRecFN_io_b_rawIn_adjustedExp_T_4[8:7]))
-          & (|io_in_b_mantissa),
+          & (|io_inB_mantissa),
         _addRecFN_io_b_rawIn_adjustedExp_T_4[5:0],
         addRecFN_io_b_rawIn_isZeroExpIn
           ? {_addRecFN_io_b_rawIn_subnormFract_T[21:0], 1'h0}
-          : io_in_b_mantissa}),
+          : io_inB_mantissa}),
     .io_out (_addRecFN_io_out)
   );
   assign io_out_sign = _addRecFN_io_out[32];
@@ -518,12 +518,12 @@ endmodule
 
 module OpAdd(
   input         clock,
-                io_in_a_sign,
-  input  [7:0]  io_in_a_exponent,
-  input  [22:0] io_in_a_mantissa,
-  input         io_in_b_sign,
-  input  [7:0]  io_in_b_exponent,
-  input  [22:0] io_in_b_mantissa,
+                io_inA_sign,
+  input  [7:0]  io_inA_exponent,
+  input  [22:0] io_inA_mantissa,
+  input         io_inB_sign,
+  input  [7:0]  io_inB_exponent,
+  input  [22:0] io_inB_mantissa,
   output        io_out_sign,
   output [7:0]  io_out_exponent,
   output [22:0] io_out_mantissa
@@ -532,21 +532,21 @@ module OpAdd(
   wire        _module_io_out_sign;
   wire [7:0]  _module_io_out_exponent;
   wire [22:0] _module_io_out_mantissa;
-  wire [31:0] in_a__ = {io_in_a_sign, io_in_a_exponent, io_in_a_mantissa};
-  wire [31:0] in_b__ = {io_in_b_sign, io_in_b_exponent, io_in_b_mantissa};
+  wire [31:0] inA__ = {io_inA_sign, io_inA_exponent, io_inA_mantissa};
+  wire [31:0] inB__ = {io_inB_sign, io_inB_exponent, io_inB_mantissa};
   wire [31:0] out__ =
     {_module_io_out_sign, _module_io_out_exponent, _module_io_out_mantissa};
   AddFp_Pipelined_8_23 module_0 (
-    .clock            (clock),
-    .io_in_a_sign     (io_in_a_sign),
-    .io_in_a_exponent (io_in_a_exponent),
-    .io_in_a_mantissa (io_in_a_mantissa),
-    .io_in_b_sign     (io_in_b_sign),
-    .io_in_b_exponent (io_in_b_exponent),
-    .io_in_b_mantissa (io_in_b_mantissa),
-    .io_out_sign      (_module_io_out_sign),
-    .io_out_exponent  (_module_io_out_exponent),
-    .io_out_mantissa  (_module_io_out_mantissa)
+    .clock           (clock),
+    .io_inA_sign     (io_inA_sign),
+    .io_inA_exponent (io_inA_exponent),
+    .io_inA_mantissa (io_inA_mantissa),
+    .io_inB_sign     (io_inB_sign),
+    .io_inB_exponent (io_inB_exponent),
+    .io_inB_mantissa (io_inB_mantissa),
+    .io_out_sign     (_module_io_out_sign),
+    .io_out_exponent (_module_io_out_exponent),
+    .io_out_mantissa (_module_io_out_mantissa)
   );
   assign io_out_sign = _module_io_out_sign;
   assign io_out_exponent = _module_io_out_exponent;
@@ -694,16 +694,16 @@ module ElasticAdd(
   wire        join0_allValid = sourceInA_valid & sourceInB_valid;
   wire        join0_fire = _wrapper_source_ready & join0_allValid;
   OpAdd add (
-    .clock            (clock),
-    .io_in_a_sign     (_wrapper_moduleIn__1_sign),
-    .io_in_a_exponent (_wrapper_moduleIn__1_exponent),
-    .io_in_a_mantissa (_wrapper_moduleIn__1_mantissa),
-    .io_in_b_sign     (_wrapper_moduleIn__2_sign),
-    .io_in_b_exponent (_wrapper_moduleIn__2_exponent),
-    .io_in_b_mantissa (_wrapper_moduleIn__2_mantissa),
-    .io_out_sign      (_add_io_out_sign),
-    .io_out_exponent  (_add_io_out_exponent),
-    .io_out_mantissa  (_add_io_out_mantissa)
+    .clock           (clock),
+    .io_inA_sign     (_wrapper_moduleIn__1_sign),
+    .io_inA_exponent (_wrapper_moduleIn__1_exponent),
+    .io_inA_mantissa (_wrapper_moduleIn__1_mantissa),
+    .io_inB_sign     (_wrapper_moduleIn__2_sign),
+    .io_inB_exponent (_wrapper_moduleIn__2_exponent),
+    .io_inB_mantissa (_wrapper_moduleIn__2_mantissa),
+    .io_out_sign     (_add_io_out_sign),
+    .io_out_exponent (_add_io_out_exponent),
+    .io_out_mantissa (_add_io_out_mantissa)
   );
   Wrapper wrapper (
     .clock                   (clock),
@@ -1159,246 +1159,246 @@ endmodule
 
 module AddFp_Pipelined_11_52(
   input         clock,
-                io_in_a_sign,
-  input  [10:0] io_in_a_exponent,
-  input  [51:0] io_in_a_mantissa,
-  input         io_in_b_sign,
-  input  [10:0] io_in_b_exponent,
-  input  [51:0] io_in_b_mantissa,
+                io_inA_sign,
+  input  [10:0] io_inA_exponent,
+  input  [51:0] io_inA_mantissa,
+  input         io_inB_sign,
+  input  [10:0] io_inB_exponent,
+  input  [51:0] io_inB_mantissa,
   output        io_out_sign,
   output [10:0] io_out_exponent,
   output [51:0] io_out_mantissa
 );
 
   wire [64:0]  _addRecFN_io_out;
-  wire         addRecFN_io_a_rawIn_isZeroExpIn = io_in_a_exponent == 11'h0;
+  wire         addRecFN_io_a_rawIn_isZeroExpIn = io_inA_exponent == 11'h0;
   wire [5:0]   addRecFN_io_a_rawIn_normDist =
-    io_in_a_mantissa[51]
+    io_inA_mantissa[51]
       ? 6'h0
-      : io_in_a_mantissa[50]
+      : io_inA_mantissa[50]
           ? 6'h1
-          : io_in_a_mantissa[49]
+          : io_inA_mantissa[49]
               ? 6'h2
-              : io_in_a_mantissa[48]
+              : io_inA_mantissa[48]
                   ? 6'h3
-                  : io_in_a_mantissa[47]
+                  : io_inA_mantissa[47]
                       ? 6'h4
-                      : io_in_a_mantissa[46]
+                      : io_inA_mantissa[46]
                           ? 6'h5
-                          : io_in_a_mantissa[45]
+                          : io_inA_mantissa[45]
                               ? 6'h6
-                              : io_in_a_mantissa[44]
+                              : io_inA_mantissa[44]
                                   ? 6'h7
-                                  : io_in_a_mantissa[43]
+                                  : io_inA_mantissa[43]
                                       ? 6'h8
-                                      : io_in_a_mantissa[42]
+                                      : io_inA_mantissa[42]
                                           ? 6'h9
-                                          : io_in_a_mantissa[41]
+                                          : io_inA_mantissa[41]
                                               ? 6'hA
-                                              : io_in_a_mantissa[40]
+                                              : io_inA_mantissa[40]
                                                   ? 6'hB
-                                                  : io_in_a_mantissa[39]
+                                                  : io_inA_mantissa[39]
                                                       ? 6'hC
-                                                      : io_in_a_mantissa[38]
+                                                      : io_inA_mantissa[38]
                                                           ? 6'hD
-                                                          : io_in_a_mantissa[37]
+                                                          : io_inA_mantissa[37]
                                                               ? 6'hE
-                                                              : io_in_a_mantissa[36]
+                                                              : io_inA_mantissa[36]
                                                                   ? 6'hF
-                                                                  : io_in_a_mantissa[35]
+                                                                  : io_inA_mantissa[35]
                                                                       ? 6'h10
-                                                                      : io_in_a_mantissa[34]
+                                                                      : io_inA_mantissa[34]
                                                                           ? 6'h11
-                                                                          : io_in_a_mantissa[33]
+                                                                          : io_inA_mantissa[33]
                                                                               ? 6'h12
-                                                                              : io_in_a_mantissa[32]
+                                                                              : io_inA_mantissa[32]
                                                                                   ? 6'h13
-                                                                                  : io_in_a_mantissa[31]
+                                                                                  : io_inA_mantissa[31]
                                                                                       ? 6'h14
-                                                                                      : io_in_a_mantissa[30]
+                                                                                      : io_inA_mantissa[30]
                                                                                           ? 6'h15
-                                                                                          : io_in_a_mantissa[29]
+                                                                                          : io_inA_mantissa[29]
                                                                                               ? 6'h16
-                                                                                              : io_in_a_mantissa[28]
+                                                                                              : io_inA_mantissa[28]
                                                                                                   ? 6'h17
-                                                                                                  : io_in_a_mantissa[27]
+                                                                                                  : io_inA_mantissa[27]
                                                                                                       ? 6'h18
-                                                                                                      : io_in_a_mantissa[26]
+                                                                                                      : io_inA_mantissa[26]
                                                                                                           ? 6'h19
-                                                                                                          : io_in_a_mantissa[25]
+                                                                                                          : io_inA_mantissa[25]
                                                                                                               ? 6'h1A
-                                                                                                              : io_in_a_mantissa[24]
+                                                                                                              : io_inA_mantissa[24]
                                                                                                                   ? 6'h1B
-                                                                                                                  : io_in_a_mantissa[23]
+                                                                                                                  : io_inA_mantissa[23]
                                                                                                                       ? 6'h1C
-                                                                                                                      : io_in_a_mantissa[22]
+                                                                                                                      : io_inA_mantissa[22]
                                                                                                                           ? 6'h1D
-                                                                                                                          : io_in_a_mantissa[21]
+                                                                                                                          : io_inA_mantissa[21]
                                                                                                                               ? 6'h1E
-                                                                                                                              : io_in_a_mantissa[20]
+                                                                                                                              : io_inA_mantissa[20]
                                                                                                                                   ? 6'h1F
-                                                                                                                                  : io_in_a_mantissa[19]
+                                                                                                                                  : io_inA_mantissa[19]
                                                                                                                                       ? 6'h20
-                                                                                                                                      : io_in_a_mantissa[18]
+                                                                                                                                      : io_inA_mantissa[18]
                                                                                                                                           ? 6'h21
-                                                                                                                                          : io_in_a_mantissa[17]
+                                                                                                                                          : io_inA_mantissa[17]
                                                                                                                                               ? 6'h22
-                                                                                                                                              : io_in_a_mantissa[16]
+                                                                                                                                              : io_inA_mantissa[16]
                                                                                                                                                   ? 6'h23
-                                                                                                                                                  : io_in_a_mantissa[15]
+                                                                                                                                                  : io_inA_mantissa[15]
                                                                                                                                                       ? 6'h24
-                                                                                                                                                      : io_in_a_mantissa[14]
+                                                                                                                                                      : io_inA_mantissa[14]
                                                                                                                                                           ? 6'h25
-                                                                                                                                                          : io_in_a_mantissa[13]
+                                                                                                                                                          : io_inA_mantissa[13]
                                                                                                                                                               ? 6'h26
-                                                                                                                                                              : io_in_a_mantissa[12]
+                                                                                                                                                              : io_inA_mantissa[12]
                                                                                                                                                                   ? 6'h27
-                                                                                                                                                                  : io_in_a_mantissa[11]
+                                                                                                                                                                  : io_inA_mantissa[11]
                                                                                                                                                                       ? 6'h28
-                                                                                                                                                                      : io_in_a_mantissa[10]
+                                                                                                                                                                      : io_inA_mantissa[10]
                                                                                                                                                                           ? 6'h29
-                                                                                                                                                                          : io_in_a_mantissa[9]
+                                                                                                                                                                          : io_inA_mantissa[9]
                                                                                                                                                                               ? 6'h2A
-                                                                                                                                                                              : io_in_a_mantissa[8]
+                                                                                                                                                                              : io_inA_mantissa[8]
                                                                                                                                                                                   ? 6'h2B
-                                                                                                                                                                                  : io_in_a_mantissa[7]
+                                                                                                                                                                                  : io_inA_mantissa[7]
                                                                                                                                                                                       ? 6'h2C
-                                                                                                                                                                                      : io_in_a_mantissa[6]
+                                                                                                                                                                                      : io_inA_mantissa[6]
                                                                                                                                                                                           ? 6'h2D
-                                                                                                                                                                                          : io_in_a_mantissa[5]
+                                                                                                                                                                                          : io_inA_mantissa[5]
                                                                                                                                                                                               ? 6'h2E
-                                                                                                                                                                                              : io_in_a_mantissa[4]
+                                                                                                                                                                                              : io_inA_mantissa[4]
                                                                                                                                                                                                   ? 6'h2F
-                                                                                                                                                                                                  : io_in_a_mantissa[3]
+                                                                                                                                                                                                  : io_inA_mantissa[3]
                                                                                                                                                                                                       ? 6'h30
-                                                                                                                                                                                                      : io_in_a_mantissa[2]
+                                                                                                                                                                                                      : io_inA_mantissa[2]
                                                                                                                                                                                                           ? 6'h31
                                                                                                                                                                                                           : {5'h19,
-                                                                                                                                                                                                             ~(io_in_a_mantissa[1])};
+                                                                                                                                                                                                             ~(io_inA_mantissa[1])};
   wire [114:0] _addRecFN_io_a_rawIn_subnormFract_T =
-    {63'h0, io_in_a_mantissa} << addRecFN_io_a_rawIn_normDist;
+    {63'h0, io_inA_mantissa} << addRecFN_io_a_rawIn_normDist;
   wire [11:0]  _addRecFN_io_a_rawIn_adjustedExp_T_4 =
     (addRecFN_io_a_rawIn_isZeroExpIn
        ? {6'h3F, ~addRecFN_io_a_rawIn_normDist}
-       : {1'h0, io_in_a_exponent})
+       : {1'h0, io_inA_exponent})
     + {10'h100, addRecFN_io_a_rawIn_isZeroExpIn ? 2'h2 : 2'h1};
   wire [2:0]   _addRecFN_io_a_T_2 =
-    addRecFN_io_a_rawIn_isZeroExpIn & ~(|io_in_a_mantissa)
+    addRecFN_io_a_rawIn_isZeroExpIn & ~(|io_inA_mantissa)
       ? 3'h0
       : _addRecFN_io_a_rawIn_adjustedExp_T_4[11:9];
-  wire         addRecFN_io_b_rawIn_isZeroExpIn = io_in_b_exponent == 11'h0;
+  wire         addRecFN_io_b_rawIn_isZeroExpIn = io_inB_exponent == 11'h0;
   wire [5:0]   addRecFN_io_b_rawIn_normDist =
-    io_in_b_mantissa[51]
+    io_inB_mantissa[51]
       ? 6'h0
-      : io_in_b_mantissa[50]
+      : io_inB_mantissa[50]
           ? 6'h1
-          : io_in_b_mantissa[49]
+          : io_inB_mantissa[49]
               ? 6'h2
-              : io_in_b_mantissa[48]
+              : io_inB_mantissa[48]
                   ? 6'h3
-                  : io_in_b_mantissa[47]
+                  : io_inB_mantissa[47]
                       ? 6'h4
-                      : io_in_b_mantissa[46]
+                      : io_inB_mantissa[46]
                           ? 6'h5
-                          : io_in_b_mantissa[45]
+                          : io_inB_mantissa[45]
                               ? 6'h6
-                              : io_in_b_mantissa[44]
+                              : io_inB_mantissa[44]
                                   ? 6'h7
-                                  : io_in_b_mantissa[43]
+                                  : io_inB_mantissa[43]
                                       ? 6'h8
-                                      : io_in_b_mantissa[42]
+                                      : io_inB_mantissa[42]
                                           ? 6'h9
-                                          : io_in_b_mantissa[41]
+                                          : io_inB_mantissa[41]
                                               ? 6'hA
-                                              : io_in_b_mantissa[40]
+                                              : io_inB_mantissa[40]
                                                   ? 6'hB
-                                                  : io_in_b_mantissa[39]
+                                                  : io_inB_mantissa[39]
                                                       ? 6'hC
-                                                      : io_in_b_mantissa[38]
+                                                      : io_inB_mantissa[38]
                                                           ? 6'hD
-                                                          : io_in_b_mantissa[37]
+                                                          : io_inB_mantissa[37]
                                                               ? 6'hE
-                                                              : io_in_b_mantissa[36]
+                                                              : io_inB_mantissa[36]
                                                                   ? 6'hF
-                                                                  : io_in_b_mantissa[35]
+                                                                  : io_inB_mantissa[35]
                                                                       ? 6'h10
-                                                                      : io_in_b_mantissa[34]
+                                                                      : io_inB_mantissa[34]
                                                                           ? 6'h11
-                                                                          : io_in_b_mantissa[33]
+                                                                          : io_inB_mantissa[33]
                                                                               ? 6'h12
-                                                                              : io_in_b_mantissa[32]
+                                                                              : io_inB_mantissa[32]
                                                                                   ? 6'h13
-                                                                                  : io_in_b_mantissa[31]
+                                                                                  : io_inB_mantissa[31]
                                                                                       ? 6'h14
-                                                                                      : io_in_b_mantissa[30]
+                                                                                      : io_inB_mantissa[30]
                                                                                           ? 6'h15
-                                                                                          : io_in_b_mantissa[29]
+                                                                                          : io_inB_mantissa[29]
                                                                                               ? 6'h16
-                                                                                              : io_in_b_mantissa[28]
+                                                                                              : io_inB_mantissa[28]
                                                                                                   ? 6'h17
-                                                                                                  : io_in_b_mantissa[27]
+                                                                                                  : io_inB_mantissa[27]
                                                                                                       ? 6'h18
-                                                                                                      : io_in_b_mantissa[26]
+                                                                                                      : io_inB_mantissa[26]
                                                                                                           ? 6'h19
-                                                                                                          : io_in_b_mantissa[25]
+                                                                                                          : io_inB_mantissa[25]
                                                                                                               ? 6'h1A
-                                                                                                              : io_in_b_mantissa[24]
+                                                                                                              : io_inB_mantissa[24]
                                                                                                                   ? 6'h1B
-                                                                                                                  : io_in_b_mantissa[23]
+                                                                                                                  : io_inB_mantissa[23]
                                                                                                                       ? 6'h1C
-                                                                                                                      : io_in_b_mantissa[22]
+                                                                                                                      : io_inB_mantissa[22]
                                                                                                                           ? 6'h1D
-                                                                                                                          : io_in_b_mantissa[21]
+                                                                                                                          : io_inB_mantissa[21]
                                                                                                                               ? 6'h1E
-                                                                                                                              : io_in_b_mantissa[20]
+                                                                                                                              : io_inB_mantissa[20]
                                                                                                                                   ? 6'h1F
-                                                                                                                                  : io_in_b_mantissa[19]
+                                                                                                                                  : io_inB_mantissa[19]
                                                                                                                                       ? 6'h20
-                                                                                                                                      : io_in_b_mantissa[18]
+                                                                                                                                      : io_inB_mantissa[18]
                                                                                                                                           ? 6'h21
-                                                                                                                                          : io_in_b_mantissa[17]
+                                                                                                                                          : io_inB_mantissa[17]
                                                                                                                                               ? 6'h22
-                                                                                                                                              : io_in_b_mantissa[16]
+                                                                                                                                              : io_inB_mantissa[16]
                                                                                                                                                   ? 6'h23
-                                                                                                                                                  : io_in_b_mantissa[15]
+                                                                                                                                                  : io_inB_mantissa[15]
                                                                                                                                                       ? 6'h24
-                                                                                                                                                      : io_in_b_mantissa[14]
+                                                                                                                                                      : io_inB_mantissa[14]
                                                                                                                                                           ? 6'h25
-                                                                                                                                                          : io_in_b_mantissa[13]
+                                                                                                                                                          : io_inB_mantissa[13]
                                                                                                                                                               ? 6'h26
-                                                                                                                                                              : io_in_b_mantissa[12]
+                                                                                                                                                              : io_inB_mantissa[12]
                                                                                                                                                                   ? 6'h27
-                                                                                                                                                                  : io_in_b_mantissa[11]
+                                                                                                                                                                  : io_inB_mantissa[11]
                                                                                                                                                                       ? 6'h28
-                                                                                                                                                                      : io_in_b_mantissa[10]
+                                                                                                                                                                      : io_inB_mantissa[10]
                                                                                                                                                                           ? 6'h29
-                                                                                                                                                                          : io_in_b_mantissa[9]
+                                                                                                                                                                          : io_inB_mantissa[9]
                                                                                                                                                                               ? 6'h2A
-                                                                                                                                                                              : io_in_b_mantissa[8]
+                                                                                                                                                                              : io_inB_mantissa[8]
                                                                                                                                                                                   ? 6'h2B
-                                                                                                                                                                                  : io_in_b_mantissa[7]
+                                                                                                                                                                                  : io_inB_mantissa[7]
                                                                                                                                                                                       ? 6'h2C
-                                                                                                                                                                                      : io_in_b_mantissa[6]
+                                                                                                                                                                                      : io_inB_mantissa[6]
                                                                                                                                                                                           ? 6'h2D
-                                                                                                                                                                                          : io_in_b_mantissa[5]
+                                                                                                                                                                                          : io_inB_mantissa[5]
                                                                                                                                                                                               ? 6'h2E
-                                                                                                                                                                                              : io_in_b_mantissa[4]
+                                                                                                                                                                                              : io_inB_mantissa[4]
                                                                                                                                                                                                   ? 6'h2F
-                                                                                                                                                                                                  : io_in_b_mantissa[3]
+                                                                                                                                                                                                  : io_inB_mantissa[3]
                                                                                                                                                                                                       ? 6'h30
-                                                                                                                                                                                                      : io_in_b_mantissa[2]
+                                                                                                                                                                                                      : io_inB_mantissa[2]
                                                                                                                                                                                                           ? 6'h31
                                                                                                                                                                                                           : {5'h19,
-                                                                                                                                                                                                             ~(io_in_b_mantissa[1])};
+                                                                                                                                                                                                             ~(io_inB_mantissa[1])};
   wire [114:0] _addRecFN_io_b_rawIn_subnormFract_T =
-    {63'h0, io_in_b_mantissa} << addRecFN_io_b_rawIn_normDist;
+    {63'h0, io_inB_mantissa} << addRecFN_io_b_rawIn_normDist;
   wire [11:0]  _addRecFN_io_b_rawIn_adjustedExp_T_4 =
     (addRecFN_io_b_rawIn_isZeroExpIn
        ? {6'h3F, ~addRecFN_io_b_rawIn_normDist}
-       : {1'h0, io_in_b_exponent})
+       : {1'h0, io_inB_exponent})
     + {10'h100, addRecFN_io_b_rawIn_isZeroExpIn ? 2'h2 : 2'h1};
   wire [2:0]   _addRecFN_io_b_T_2 =
-    addRecFN_io_b_rawIn_isZeroExpIn & ~(|io_in_b_mantissa)
+    addRecFN_io_b_rawIn_isZeroExpIn & ~(|io_inB_mantissa)
       ? 3'h0
       : _addRecFN_io_b_rawIn_adjustedExp_T_4[11:9];
   wire         io_out_rawIn_isInf =
@@ -1410,23 +1410,23 @@ module AddFp_Pipelined_11_52(
   AddRecFN_Pipelined_11_53 addRecFN (
     .clock  (clock),
     .io_a
-      ({io_in_a_sign,
+      ({io_inA_sign,
         _addRecFN_io_a_T_2[2:1],
         _addRecFN_io_a_T_2[0] | (&(_addRecFN_io_a_rawIn_adjustedExp_T_4[11:10]))
-          & (|io_in_a_mantissa),
+          & (|io_inA_mantissa),
         _addRecFN_io_a_rawIn_adjustedExp_T_4[8:0],
         addRecFN_io_a_rawIn_isZeroExpIn
           ? {_addRecFN_io_a_rawIn_subnormFract_T[50:0], 1'h0}
-          : io_in_a_mantissa}),
+          : io_inA_mantissa}),
     .io_b
-      ({io_in_b_sign,
+      ({io_inB_sign,
         _addRecFN_io_b_T_2[2:1],
         _addRecFN_io_b_T_2[0] | (&(_addRecFN_io_b_rawIn_adjustedExp_T_4[11:10]))
-          & (|io_in_b_mantissa),
+          & (|io_inB_mantissa),
         _addRecFN_io_b_rawIn_adjustedExp_T_4[8:0],
         addRecFN_io_b_rawIn_isZeroExpIn
           ? {_addRecFN_io_b_rawIn_subnormFract_T[50:0], 1'h0}
-          : io_in_b_mantissa}),
+          : io_inB_mantissa}),
     .io_out (_addRecFN_io_out)
   );
   assign io_out_sign = _addRecFN_io_out[64];
@@ -1441,12 +1441,12 @@ endmodule
 
 module OpAdd_1(
   input         clock,
-                io_in_a_sign,
-  input  [10:0] io_in_a_exponent,
-  input  [51:0] io_in_a_mantissa,
-  input         io_in_b_sign,
-  input  [10:0] io_in_b_exponent,
-  input  [51:0] io_in_b_mantissa,
+                io_inA_sign,
+  input  [10:0] io_inA_exponent,
+  input  [51:0] io_inA_mantissa,
+  input         io_inB_sign,
+  input  [10:0] io_inB_exponent,
+  input  [51:0] io_inB_mantissa,
   output        io_out_sign,
   output [10:0] io_out_exponent,
   output [51:0] io_out_mantissa
@@ -1455,21 +1455,21 @@ module OpAdd_1(
   wire        _module_io_out_sign;
   wire [10:0] _module_io_out_exponent;
   wire [51:0] _module_io_out_mantissa;
-  wire [63:0] in_a__ = {io_in_a_sign, io_in_a_exponent, io_in_a_mantissa};
-  wire [63:0] in_b__ = {io_in_b_sign, io_in_b_exponent, io_in_b_mantissa};
+  wire [63:0] inA__ = {io_inA_sign, io_inA_exponent, io_inA_mantissa};
+  wire [63:0] inB__ = {io_inB_sign, io_inB_exponent, io_inB_mantissa};
   wire [63:0] out__ =
     {_module_io_out_sign, _module_io_out_exponent, _module_io_out_mantissa};
   AddFp_Pipelined_11_52 module_0 (
-    .clock            (clock),
-    .io_in_a_sign     (io_in_a_sign),
-    .io_in_a_exponent (io_in_a_exponent),
-    .io_in_a_mantissa (io_in_a_mantissa),
-    .io_in_b_sign     (io_in_b_sign),
-    .io_in_b_exponent (io_in_b_exponent),
-    .io_in_b_mantissa (io_in_b_mantissa),
-    .io_out_sign      (_module_io_out_sign),
-    .io_out_exponent  (_module_io_out_exponent),
-    .io_out_mantissa  (_module_io_out_mantissa)
+    .clock           (clock),
+    .io_inA_sign     (io_inA_sign),
+    .io_inA_exponent (io_inA_exponent),
+    .io_inA_mantissa (io_inA_mantissa),
+    .io_inB_sign     (io_inB_sign),
+    .io_inB_exponent (io_inB_exponent),
+    .io_inB_mantissa (io_inB_mantissa),
+    .io_out_sign     (_module_io_out_sign),
+    .io_out_exponent (_module_io_out_exponent),
+    .io_out_mantissa (_module_io_out_mantissa)
   );
   assign io_out_sign = _module_io_out_sign;
   assign io_out_exponent = _module_io_out_exponent;
@@ -1617,16 +1617,16 @@ module ElasticAdd_1(
   wire        join0_allValid = sourceInA_valid & sourceInB_valid;
   wire        join0_fire = _wrapper_source_ready & join0_allValid;
   OpAdd_1 add (
-    .clock            (clock),
-    .io_in_a_sign     (_wrapper_moduleIn__1_sign),
-    .io_in_a_exponent (_wrapper_moduleIn__1_exponent),
-    .io_in_a_mantissa (_wrapper_moduleIn__1_mantissa),
-    .io_in_b_sign     (_wrapper_moduleIn__2_sign),
-    .io_in_b_exponent (_wrapper_moduleIn__2_exponent),
-    .io_in_b_mantissa (_wrapper_moduleIn__2_mantissa),
-    .io_out_sign      (_add_io_out_sign),
-    .io_out_exponent  (_add_io_out_exponent),
-    .io_out_mantissa  (_add_io_out_mantissa)
+    .clock           (clock),
+    .io_inA_sign     (_wrapper_moduleIn__1_sign),
+    .io_inA_exponent (_wrapper_moduleIn__1_exponent),
+    .io_inA_mantissa (_wrapper_moduleIn__1_mantissa),
+    .io_inB_sign     (_wrapper_moduleIn__2_sign),
+    .io_inB_exponent (_wrapper_moduleIn__2_exponent),
+    .io_inB_mantissa (_wrapper_moduleIn__2_mantissa),
+    .io_out_sign     (_add_io_out_sign),
+    .io_out_exponent (_add_io_out_exponent),
+    .io_out_mantissa (_add_io_out_mantissa)
   );
   Wrapper_1 wrapper (
     .clock                   (clock),
@@ -1816,132 +1816,132 @@ endmodule
 
 module MulFp_Pipelined_8_23(
   input         clock,
-                io_in_a_sign,
-  input  [7:0]  io_in_a_exponent,
-  input  [22:0] io_in_a_mantissa,
-  input         io_in_b_sign,
-  input  [7:0]  io_in_b_exponent,
-  input  [22:0] io_in_b_mantissa,
+                io_inA_sign,
+  input  [7:0]  io_inA_exponent,
+  input  [22:0] io_inA_mantissa,
+  input         io_inB_sign,
+  input  [7:0]  io_inB_exponent,
+  input  [22:0] io_inB_mantissa,
   output        io_out_sign,
   output [7:0]  io_out_exponent,
   output [22:0] io_out_mantissa
 );
 
   wire [32:0] _mulRecFn_io_out;
-  wire        mulRecFn_io_a_rawIn_isZeroExpIn = io_in_a_exponent == 8'h0;
+  wire        mulRecFn_io_a_rawIn_isZeroExpIn = io_inA_exponent == 8'h0;
   wire [4:0]  mulRecFn_io_a_rawIn_normDist =
-    io_in_a_mantissa[22]
+    io_inA_mantissa[22]
       ? 5'h0
-      : io_in_a_mantissa[21]
+      : io_inA_mantissa[21]
           ? 5'h1
-          : io_in_a_mantissa[20]
+          : io_inA_mantissa[20]
               ? 5'h2
-              : io_in_a_mantissa[19]
+              : io_inA_mantissa[19]
                   ? 5'h3
-                  : io_in_a_mantissa[18]
+                  : io_inA_mantissa[18]
                       ? 5'h4
-                      : io_in_a_mantissa[17]
+                      : io_inA_mantissa[17]
                           ? 5'h5
-                          : io_in_a_mantissa[16]
+                          : io_inA_mantissa[16]
                               ? 5'h6
-                              : io_in_a_mantissa[15]
+                              : io_inA_mantissa[15]
                                   ? 5'h7
-                                  : io_in_a_mantissa[14]
+                                  : io_inA_mantissa[14]
                                       ? 5'h8
-                                      : io_in_a_mantissa[13]
+                                      : io_inA_mantissa[13]
                                           ? 5'h9
-                                          : io_in_a_mantissa[12]
+                                          : io_inA_mantissa[12]
                                               ? 5'hA
-                                              : io_in_a_mantissa[11]
+                                              : io_inA_mantissa[11]
                                                   ? 5'hB
-                                                  : io_in_a_mantissa[10]
+                                                  : io_inA_mantissa[10]
                                                       ? 5'hC
-                                                      : io_in_a_mantissa[9]
+                                                      : io_inA_mantissa[9]
                                                           ? 5'hD
-                                                          : io_in_a_mantissa[8]
+                                                          : io_inA_mantissa[8]
                                                               ? 5'hE
-                                                              : io_in_a_mantissa[7]
+                                                              : io_inA_mantissa[7]
                                                                   ? 5'hF
-                                                                  : io_in_a_mantissa[6]
+                                                                  : io_inA_mantissa[6]
                                                                       ? 5'h10
-                                                                      : io_in_a_mantissa[5]
+                                                                      : io_inA_mantissa[5]
                                                                           ? 5'h11
-                                                                          : io_in_a_mantissa[4]
+                                                                          : io_inA_mantissa[4]
                                                                               ? 5'h12
-                                                                              : io_in_a_mantissa[3]
+                                                                              : io_inA_mantissa[3]
                                                                                   ? 5'h13
-                                                                                  : io_in_a_mantissa[2]
+                                                                                  : io_inA_mantissa[2]
                                                                                       ? 5'h14
-                                                                                      : io_in_a_mantissa[1]
+                                                                                      : io_inA_mantissa[1]
                                                                                           ? 5'h15
                                                                                           : 5'h16;
   wire [53:0] _mulRecFn_io_a_rawIn_subnormFract_T =
-    {31'h0, io_in_a_mantissa} << mulRecFn_io_a_rawIn_normDist;
+    {31'h0, io_inA_mantissa} << mulRecFn_io_a_rawIn_normDist;
   wire [8:0]  _mulRecFn_io_a_rawIn_adjustedExp_T_4 =
     (mulRecFn_io_a_rawIn_isZeroExpIn
        ? {4'hF, ~mulRecFn_io_a_rawIn_normDist}
-       : {1'h0, io_in_a_exponent})
+       : {1'h0, io_inA_exponent})
     + {7'h20, mulRecFn_io_a_rawIn_isZeroExpIn ? 2'h2 : 2'h1};
   wire [2:0]  _mulRecFn_io_a_T_2 =
-    mulRecFn_io_a_rawIn_isZeroExpIn & ~(|io_in_a_mantissa)
+    mulRecFn_io_a_rawIn_isZeroExpIn & ~(|io_inA_mantissa)
       ? 3'h0
       : _mulRecFn_io_a_rawIn_adjustedExp_T_4[8:6];
-  wire        mulRecFn_io_b_rawIn_isZeroExpIn = io_in_b_exponent == 8'h0;
+  wire        mulRecFn_io_b_rawIn_isZeroExpIn = io_inB_exponent == 8'h0;
   wire [4:0]  mulRecFn_io_b_rawIn_normDist =
-    io_in_b_mantissa[22]
+    io_inB_mantissa[22]
       ? 5'h0
-      : io_in_b_mantissa[21]
+      : io_inB_mantissa[21]
           ? 5'h1
-          : io_in_b_mantissa[20]
+          : io_inB_mantissa[20]
               ? 5'h2
-              : io_in_b_mantissa[19]
+              : io_inB_mantissa[19]
                   ? 5'h3
-                  : io_in_b_mantissa[18]
+                  : io_inB_mantissa[18]
                       ? 5'h4
-                      : io_in_b_mantissa[17]
+                      : io_inB_mantissa[17]
                           ? 5'h5
-                          : io_in_b_mantissa[16]
+                          : io_inB_mantissa[16]
                               ? 5'h6
-                              : io_in_b_mantissa[15]
+                              : io_inB_mantissa[15]
                                   ? 5'h7
-                                  : io_in_b_mantissa[14]
+                                  : io_inB_mantissa[14]
                                       ? 5'h8
-                                      : io_in_b_mantissa[13]
+                                      : io_inB_mantissa[13]
                                           ? 5'h9
-                                          : io_in_b_mantissa[12]
+                                          : io_inB_mantissa[12]
                                               ? 5'hA
-                                              : io_in_b_mantissa[11]
+                                              : io_inB_mantissa[11]
                                                   ? 5'hB
-                                                  : io_in_b_mantissa[10]
+                                                  : io_inB_mantissa[10]
                                                       ? 5'hC
-                                                      : io_in_b_mantissa[9]
+                                                      : io_inB_mantissa[9]
                                                           ? 5'hD
-                                                          : io_in_b_mantissa[8]
+                                                          : io_inB_mantissa[8]
                                                               ? 5'hE
-                                                              : io_in_b_mantissa[7]
+                                                              : io_inB_mantissa[7]
                                                                   ? 5'hF
-                                                                  : io_in_b_mantissa[6]
+                                                                  : io_inB_mantissa[6]
                                                                       ? 5'h10
-                                                                      : io_in_b_mantissa[5]
+                                                                      : io_inB_mantissa[5]
                                                                           ? 5'h11
-                                                                          : io_in_b_mantissa[4]
+                                                                          : io_inB_mantissa[4]
                                                                               ? 5'h12
-                                                                              : io_in_b_mantissa[3]
+                                                                              : io_inB_mantissa[3]
                                                                                   ? 5'h13
-                                                                                  : io_in_b_mantissa[2]
+                                                                                  : io_inB_mantissa[2]
                                                                                       ? 5'h14
-                                                                                      : io_in_b_mantissa[1]
+                                                                                      : io_inB_mantissa[1]
                                                                                           ? 5'h15
                                                                                           : 5'h16;
   wire [53:0] _mulRecFn_io_b_rawIn_subnormFract_T =
-    {31'h0, io_in_b_mantissa} << mulRecFn_io_b_rawIn_normDist;
+    {31'h0, io_inB_mantissa} << mulRecFn_io_b_rawIn_normDist;
   wire [8:0]  _mulRecFn_io_b_rawIn_adjustedExp_T_4 =
     (mulRecFn_io_b_rawIn_isZeroExpIn
        ? {4'hF, ~mulRecFn_io_b_rawIn_normDist}
-       : {1'h0, io_in_b_exponent})
+       : {1'h0, io_inB_exponent})
     + {7'h20, mulRecFn_io_b_rawIn_isZeroExpIn ? 2'h2 : 2'h1};
   wire [2:0]  _mulRecFn_io_b_T_2 =
-    mulRecFn_io_b_rawIn_isZeroExpIn & ~(|io_in_b_mantissa)
+    mulRecFn_io_b_rawIn_isZeroExpIn & ~(|io_inB_mantissa)
       ? 3'h0
       : _mulRecFn_io_b_rawIn_adjustedExp_T_4[8:6];
   wire        io_out_rawIn_isInf = (&(_mulRecFn_io_out[31:30])) & ~(_mulRecFn_io_out[29]);
@@ -1952,23 +1952,23 @@ module MulFp_Pipelined_8_23(
   MulRecFN_Pipelined_8_24 mulRecFn (
     .clock  (clock),
     .io_a
-      ({io_in_a_sign,
+      ({io_inA_sign,
         _mulRecFn_io_a_T_2[2:1],
         _mulRecFn_io_a_T_2[0] | (&(_mulRecFn_io_a_rawIn_adjustedExp_T_4[8:7]))
-          & (|io_in_a_mantissa),
+          & (|io_inA_mantissa),
         _mulRecFn_io_a_rawIn_adjustedExp_T_4[5:0],
         mulRecFn_io_a_rawIn_isZeroExpIn
           ? {_mulRecFn_io_a_rawIn_subnormFract_T[21:0], 1'h0}
-          : io_in_a_mantissa}),
+          : io_inA_mantissa}),
     .io_b
-      ({io_in_b_sign,
+      ({io_inB_sign,
         _mulRecFn_io_b_T_2[2:1],
         _mulRecFn_io_b_T_2[0] | (&(_mulRecFn_io_b_rawIn_adjustedExp_T_4[8:7]))
-          & (|io_in_b_mantissa),
+          & (|io_inB_mantissa),
         _mulRecFn_io_b_rawIn_adjustedExp_T_4[5:0],
         mulRecFn_io_b_rawIn_isZeroExpIn
           ? {_mulRecFn_io_b_rawIn_subnormFract_T[21:0], 1'h0}
-          : io_in_b_mantissa}),
+          : io_inB_mantissa}),
     .io_out (_mulRecFn_io_out)
   );
   assign io_out_sign = _mulRecFn_io_out[32];
@@ -1983,12 +1983,12 @@ endmodule
 
 module OpMultiply(
   input         clock,
-                io_in_a_sign,
-  input  [7:0]  io_in_a_exponent,
-  input  [22:0] io_in_a_mantissa,
-  input         io_in_b_sign,
-  input  [7:0]  io_in_b_exponent,
-  input  [22:0] io_in_b_mantissa,
+                io_inA_sign,
+  input  [7:0]  io_inA_exponent,
+  input  [22:0] io_inA_mantissa,
+  input         io_inB_sign,
+  input  [7:0]  io_inB_exponent,
+  input  [22:0] io_inB_mantissa,
   output        io_out_sign,
   output [7:0]  io_out_exponent,
   output [22:0] io_out_mantissa
@@ -1997,21 +1997,21 @@ module OpMultiply(
   wire        _module_io_out_sign;
   wire [7:0]  _module_io_out_exponent;
   wire [22:0] _module_io_out_mantissa;
-  wire [31:0] in_a__ = {io_in_a_sign, io_in_a_exponent, io_in_a_mantissa};
-  wire [31:0] in_b__ = {io_in_b_sign, io_in_b_exponent, io_in_b_mantissa};
+  wire [31:0] inA__ = {io_inA_sign, io_inA_exponent, io_inA_mantissa};
+  wire [31:0] inB__ = {io_inB_sign, io_inB_exponent, io_inB_mantissa};
   wire [31:0] out__ =
     {_module_io_out_sign, _module_io_out_exponent, _module_io_out_mantissa};
   MulFp_Pipelined_8_23 module_0 (
-    .clock            (clock),
-    .io_in_a_sign     (io_in_a_sign),
-    .io_in_a_exponent (io_in_a_exponent),
-    .io_in_a_mantissa (io_in_a_mantissa),
-    .io_in_b_sign     (io_in_b_sign),
-    .io_in_b_exponent (io_in_b_exponent),
-    .io_in_b_mantissa (io_in_b_mantissa),
-    .io_out_sign      (_module_io_out_sign),
-    .io_out_exponent  (_module_io_out_exponent),
-    .io_out_mantissa  (_module_io_out_mantissa)
+    .clock           (clock),
+    .io_inA_sign     (io_inA_sign),
+    .io_inA_exponent (io_inA_exponent),
+    .io_inA_mantissa (io_inA_mantissa),
+    .io_inB_sign     (io_inB_sign),
+    .io_inB_exponent (io_inB_exponent),
+    .io_inB_mantissa (io_inB_mantissa),
+    .io_out_sign     (_module_io_out_sign),
+    .io_out_exponent (_module_io_out_exponent),
+    .io_out_mantissa (_module_io_out_mantissa)
   );
   assign io_out_sign = _module_io_out_sign;
   assign io_out_exponent = _module_io_out_exponent;
@@ -2157,16 +2157,16 @@ module ElasticMultiply(
   wire        join0_allValid = sourceInA_valid & sourceInB_valid;
   wire        join0_fire = _wrapper_source_ready & join0_allValid;
   OpMultiply multiply (
-    .clock            (clock),
-    .io_in_a_sign     (_wrapper_moduleIn__1_sign),
-    .io_in_a_exponent (_wrapper_moduleIn__1_exponent),
-    .io_in_a_mantissa (_wrapper_moduleIn__1_mantissa),
-    .io_in_b_sign     (_wrapper_moduleIn__2_sign),
-    .io_in_b_exponent (_wrapper_moduleIn__2_exponent),
-    .io_in_b_mantissa (_wrapper_moduleIn__2_mantissa),
-    .io_out_sign      (_multiply_io_out_sign),
-    .io_out_exponent  (_multiply_io_out_exponent),
-    .io_out_mantissa  (_multiply_io_out_mantissa)
+    .clock           (clock),
+    .io_inA_sign     (_wrapper_moduleIn__1_sign),
+    .io_inA_exponent (_wrapper_moduleIn__1_exponent),
+    .io_inA_mantissa (_wrapper_moduleIn__1_mantissa),
+    .io_inB_sign     (_wrapper_moduleIn__2_sign),
+    .io_inB_exponent (_wrapper_moduleIn__2_exponent),
+    .io_inB_mantissa (_wrapper_moduleIn__2_mantissa),
+    .io_out_sign     (_multiply_io_out_sign),
+    .io_out_exponent (_multiply_io_out_exponent),
+    .io_out_mantissa (_multiply_io_out_mantissa)
   );
   Wrapper_2 wrapper (
     .clock                   (clock),
@@ -2356,246 +2356,246 @@ endmodule
 
 module MulFp_Pipelined_11_52(
   input         clock,
-                io_in_a_sign,
-  input  [10:0] io_in_a_exponent,
-  input  [51:0] io_in_a_mantissa,
-  input         io_in_b_sign,
-  input  [10:0] io_in_b_exponent,
-  input  [51:0] io_in_b_mantissa,
+                io_inA_sign,
+  input  [10:0] io_inA_exponent,
+  input  [51:0] io_inA_mantissa,
+  input         io_inB_sign,
+  input  [10:0] io_inB_exponent,
+  input  [51:0] io_inB_mantissa,
   output        io_out_sign,
   output [10:0] io_out_exponent,
   output [51:0] io_out_mantissa
 );
 
   wire [64:0]  _mulRecFn_io_out;
-  wire         mulRecFn_io_a_rawIn_isZeroExpIn = io_in_a_exponent == 11'h0;
+  wire         mulRecFn_io_a_rawIn_isZeroExpIn = io_inA_exponent == 11'h0;
   wire [5:0]   mulRecFn_io_a_rawIn_normDist =
-    io_in_a_mantissa[51]
+    io_inA_mantissa[51]
       ? 6'h0
-      : io_in_a_mantissa[50]
+      : io_inA_mantissa[50]
           ? 6'h1
-          : io_in_a_mantissa[49]
+          : io_inA_mantissa[49]
               ? 6'h2
-              : io_in_a_mantissa[48]
+              : io_inA_mantissa[48]
                   ? 6'h3
-                  : io_in_a_mantissa[47]
+                  : io_inA_mantissa[47]
                       ? 6'h4
-                      : io_in_a_mantissa[46]
+                      : io_inA_mantissa[46]
                           ? 6'h5
-                          : io_in_a_mantissa[45]
+                          : io_inA_mantissa[45]
                               ? 6'h6
-                              : io_in_a_mantissa[44]
+                              : io_inA_mantissa[44]
                                   ? 6'h7
-                                  : io_in_a_mantissa[43]
+                                  : io_inA_mantissa[43]
                                       ? 6'h8
-                                      : io_in_a_mantissa[42]
+                                      : io_inA_mantissa[42]
                                           ? 6'h9
-                                          : io_in_a_mantissa[41]
+                                          : io_inA_mantissa[41]
                                               ? 6'hA
-                                              : io_in_a_mantissa[40]
+                                              : io_inA_mantissa[40]
                                                   ? 6'hB
-                                                  : io_in_a_mantissa[39]
+                                                  : io_inA_mantissa[39]
                                                       ? 6'hC
-                                                      : io_in_a_mantissa[38]
+                                                      : io_inA_mantissa[38]
                                                           ? 6'hD
-                                                          : io_in_a_mantissa[37]
+                                                          : io_inA_mantissa[37]
                                                               ? 6'hE
-                                                              : io_in_a_mantissa[36]
+                                                              : io_inA_mantissa[36]
                                                                   ? 6'hF
-                                                                  : io_in_a_mantissa[35]
+                                                                  : io_inA_mantissa[35]
                                                                       ? 6'h10
-                                                                      : io_in_a_mantissa[34]
+                                                                      : io_inA_mantissa[34]
                                                                           ? 6'h11
-                                                                          : io_in_a_mantissa[33]
+                                                                          : io_inA_mantissa[33]
                                                                               ? 6'h12
-                                                                              : io_in_a_mantissa[32]
+                                                                              : io_inA_mantissa[32]
                                                                                   ? 6'h13
-                                                                                  : io_in_a_mantissa[31]
+                                                                                  : io_inA_mantissa[31]
                                                                                       ? 6'h14
-                                                                                      : io_in_a_mantissa[30]
+                                                                                      : io_inA_mantissa[30]
                                                                                           ? 6'h15
-                                                                                          : io_in_a_mantissa[29]
+                                                                                          : io_inA_mantissa[29]
                                                                                               ? 6'h16
-                                                                                              : io_in_a_mantissa[28]
+                                                                                              : io_inA_mantissa[28]
                                                                                                   ? 6'h17
-                                                                                                  : io_in_a_mantissa[27]
+                                                                                                  : io_inA_mantissa[27]
                                                                                                       ? 6'h18
-                                                                                                      : io_in_a_mantissa[26]
+                                                                                                      : io_inA_mantissa[26]
                                                                                                           ? 6'h19
-                                                                                                          : io_in_a_mantissa[25]
+                                                                                                          : io_inA_mantissa[25]
                                                                                                               ? 6'h1A
-                                                                                                              : io_in_a_mantissa[24]
+                                                                                                              : io_inA_mantissa[24]
                                                                                                                   ? 6'h1B
-                                                                                                                  : io_in_a_mantissa[23]
+                                                                                                                  : io_inA_mantissa[23]
                                                                                                                       ? 6'h1C
-                                                                                                                      : io_in_a_mantissa[22]
+                                                                                                                      : io_inA_mantissa[22]
                                                                                                                           ? 6'h1D
-                                                                                                                          : io_in_a_mantissa[21]
+                                                                                                                          : io_inA_mantissa[21]
                                                                                                                               ? 6'h1E
-                                                                                                                              : io_in_a_mantissa[20]
+                                                                                                                              : io_inA_mantissa[20]
                                                                                                                                   ? 6'h1F
-                                                                                                                                  : io_in_a_mantissa[19]
+                                                                                                                                  : io_inA_mantissa[19]
                                                                                                                                       ? 6'h20
-                                                                                                                                      : io_in_a_mantissa[18]
+                                                                                                                                      : io_inA_mantissa[18]
                                                                                                                                           ? 6'h21
-                                                                                                                                          : io_in_a_mantissa[17]
+                                                                                                                                          : io_inA_mantissa[17]
                                                                                                                                               ? 6'h22
-                                                                                                                                              : io_in_a_mantissa[16]
+                                                                                                                                              : io_inA_mantissa[16]
                                                                                                                                                   ? 6'h23
-                                                                                                                                                  : io_in_a_mantissa[15]
+                                                                                                                                                  : io_inA_mantissa[15]
                                                                                                                                                       ? 6'h24
-                                                                                                                                                      : io_in_a_mantissa[14]
+                                                                                                                                                      : io_inA_mantissa[14]
                                                                                                                                                           ? 6'h25
-                                                                                                                                                          : io_in_a_mantissa[13]
+                                                                                                                                                          : io_inA_mantissa[13]
                                                                                                                                                               ? 6'h26
-                                                                                                                                                              : io_in_a_mantissa[12]
+                                                                                                                                                              : io_inA_mantissa[12]
                                                                                                                                                                   ? 6'h27
-                                                                                                                                                                  : io_in_a_mantissa[11]
+                                                                                                                                                                  : io_inA_mantissa[11]
                                                                                                                                                                       ? 6'h28
-                                                                                                                                                                      : io_in_a_mantissa[10]
+                                                                                                                                                                      : io_inA_mantissa[10]
                                                                                                                                                                           ? 6'h29
-                                                                                                                                                                          : io_in_a_mantissa[9]
+                                                                                                                                                                          : io_inA_mantissa[9]
                                                                                                                                                                               ? 6'h2A
-                                                                                                                                                                              : io_in_a_mantissa[8]
+                                                                                                                                                                              : io_inA_mantissa[8]
                                                                                                                                                                                   ? 6'h2B
-                                                                                                                                                                                  : io_in_a_mantissa[7]
+                                                                                                                                                                                  : io_inA_mantissa[7]
                                                                                                                                                                                       ? 6'h2C
-                                                                                                                                                                                      : io_in_a_mantissa[6]
+                                                                                                                                                                                      : io_inA_mantissa[6]
                                                                                                                                                                                           ? 6'h2D
-                                                                                                                                                                                          : io_in_a_mantissa[5]
+                                                                                                                                                                                          : io_inA_mantissa[5]
                                                                                                                                                                                               ? 6'h2E
-                                                                                                                                                                                              : io_in_a_mantissa[4]
+                                                                                                                                                                                              : io_inA_mantissa[4]
                                                                                                                                                                                                   ? 6'h2F
-                                                                                                                                                                                                  : io_in_a_mantissa[3]
+                                                                                                                                                                                                  : io_inA_mantissa[3]
                                                                                                                                                                                                       ? 6'h30
-                                                                                                                                                                                                      : io_in_a_mantissa[2]
+                                                                                                                                                                                                      : io_inA_mantissa[2]
                                                                                                                                                                                                           ? 6'h31
                                                                                                                                                                                                           : {5'h19,
-                                                                                                                                                                                                             ~(io_in_a_mantissa[1])};
+                                                                                                                                                                                                             ~(io_inA_mantissa[1])};
   wire [114:0] _mulRecFn_io_a_rawIn_subnormFract_T =
-    {63'h0, io_in_a_mantissa} << mulRecFn_io_a_rawIn_normDist;
+    {63'h0, io_inA_mantissa} << mulRecFn_io_a_rawIn_normDist;
   wire [11:0]  _mulRecFn_io_a_rawIn_adjustedExp_T_4 =
     (mulRecFn_io_a_rawIn_isZeroExpIn
        ? {6'h3F, ~mulRecFn_io_a_rawIn_normDist}
-       : {1'h0, io_in_a_exponent})
+       : {1'h0, io_inA_exponent})
     + {10'h100, mulRecFn_io_a_rawIn_isZeroExpIn ? 2'h2 : 2'h1};
   wire [2:0]   _mulRecFn_io_a_T_2 =
-    mulRecFn_io_a_rawIn_isZeroExpIn & ~(|io_in_a_mantissa)
+    mulRecFn_io_a_rawIn_isZeroExpIn & ~(|io_inA_mantissa)
       ? 3'h0
       : _mulRecFn_io_a_rawIn_adjustedExp_T_4[11:9];
-  wire         mulRecFn_io_b_rawIn_isZeroExpIn = io_in_b_exponent == 11'h0;
+  wire         mulRecFn_io_b_rawIn_isZeroExpIn = io_inB_exponent == 11'h0;
   wire [5:0]   mulRecFn_io_b_rawIn_normDist =
-    io_in_b_mantissa[51]
+    io_inB_mantissa[51]
       ? 6'h0
-      : io_in_b_mantissa[50]
+      : io_inB_mantissa[50]
           ? 6'h1
-          : io_in_b_mantissa[49]
+          : io_inB_mantissa[49]
               ? 6'h2
-              : io_in_b_mantissa[48]
+              : io_inB_mantissa[48]
                   ? 6'h3
-                  : io_in_b_mantissa[47]
+                  : io_inB_mantissa[47]
                       ? 6'h4
-                      : io_in_b_mantissa[46]
+                      : io_inB_mantissa[46]
                           ? 6'h5
-                          : io_in_b_mantissa[45]
+                          : io_inB_mantissa[45]
                               ? 6'h6
-                              : io_in_b_mantissa[44]
+                              : io_inB_mantissa[44]
                                   ? 6'h7
-                                  : io_in_b_mantissa[43]
+                                  : io_inB_mantissa[43]
                                       ? 6'h8
-                                      : io_in_b_mantissa[42]
+                                      : io_inB_mantissa[42]
                                           ? 6'h9
-                                          : io_in_b_mantissa[41]
+                                          : io_inB_mantissa[41]
                                               ? 6'hA
-                                              : io_in_b_mantissa[40]
+                                              : io_inB_mantissa[40]
                                                   ? 6'hB
-                                                  : io_in_b_mantissa[39]
+                                                  : io_inB_mantissa[39]
                                                       ? 6'hC
-                                                      : io_in_b_mantissa[38]
+                                                      : io_inB_mantissa[38]
                                                           ? 6'hD
-                                                          : io_in_b_mantissa[37]
+                                                          : io_inB_mantissa[37]
                                                               ? 6'hE
-                                                              : io_in_b_mantissa[36]
+                                                              : io_inB_mantissa[36]
                                                                   ? 6'hF
-                                                                  : io_in_b_mantissa[35]
+                                                                  : io_inB_mantissa[35]
                                                                       ? 6'h10
-                                                                      : io_in_b_mantissa[34]
+                                                                      : io_inB_mantissa[34]
                                                                           ? 6'h11
-                                                                          : io_in_b_mantissa[33]
+                                                                          : io_inB_mantissa[33]
                                                                               ? 6'h12
-                                                                              : io_in_b_mantissa[32]
+                                                                              : io_inB_mantissa[32]
                                                                                   ? 6'h13
-                                                                                  : io_in_b_mantissa[31]
+                                                                                  : io_inB_mantissa[31]
                                                                                       ? 6'h14
-                                                                                      : io_in_b_mantissa[30]
+                                                                                      : io_inB_mantissa[30]
                                                                                           ? 6'h15
-                                                                                          : io_in_b_mantissa[29]
+                                                                                          : io_inB_mantissa[29]
                                                                                               ? 6'h16
-                                                                                              : io_in_b_mantissa[28]
+                                                                                              : io_inB_mantissa[28]
                                                                                                   ? 6'h17
-                                                                                                  : io_in_b_mantissa[27]
+                                                                                                  : io_inB_mantissa[27]
                                                                                                       ? 6'h18
-                                                                                                      : io_in_b_mantissa[26]
+                                                                                                      : io_inB_mantissa[26]
                                                                                                           ? 6'h19
-                                                                                                          : io_in_b_mantissa[25]
+                                                                                                          : io_inB_mantissa[25]
                                                                                                               ? 6'h1A
-                                                                                                              : io_in_b_mantissa[24]
+                                                                                                              : io_inB_mantissa[24]
                                                                                                                   ? 6'h1B
-                                                                                                                  : io_in_b_mantissa[23]
+                                                                                                                  : io_inB_mantissa[23]
                                                                                                                       ? 6'h1C
-                                                                                                                      : io_in_b_mantissa[22]
+                                                                                                                      : io_inB_mantissa[22]
                                                                                                                           ? 6'h1D
-                                                                                                                          : io_in_b_mantissa[21]
+                                                                                                                          : io_inB_mantissa[21]
                                                                                                                               ? 6'h1E
-                                                                                                                              : io_in_b_mantissa[20]
+                                                                                                                              : io_inB_mantissa[20]
                                                                                                                                   ? 6'h1F
-                                                                                                                                  : io_in_b_mantissa[19]
+                                                                                                                                  : io_inB_mantissa[19]
                                                                                                                                       ? 6'h20
-                                                                                                                                      : io_in_b_mantissa[18]
+                                                                                                                                      : io_inB_mantissa[18]
                                                                                                                                           ? 6'h21
-                                                                                                                                          : io_in_b_mantissa[17]
+                                                                                                                                          : io_inB_mantissa[17]
                                                                                                                                               ? 6'h22
-                                                                                                                                              : io_in_b_mantissa[16]
+                                                                                                                                              : io_inB_mantissa[16]
                                                                                                                                                   ? 6'h23
-                                                                                                                                                  : io_in_b_mantissa[15]
+                                                                                                                                                  : io_inB_mantissa[15]
                                                                                                                                                       ? 6'h24
-                                                                                                                                                      : io_in_b_mantissa[14]
+                                                                                                                                                      : io_inB_mantissa[14]
                                                                                                                                                           ? 6'h25
-                                                                                                                                                          : io_in_b_mantissa[13]
+                                                                                                                                                          : io_inB_mantissa[13]
                                                                                                                                                               ? 6'h26
-                                                                                                                                                              : io_in_b_mantissa[12]
+                                                                                                                                                              : io_inB_mantissa[12]
                                                                                                                                                                   ? 6'h27
-                                                                                                                                                                  : io_in_b_mantissa[11]
+                                                                                                                                                                  : io_inB_mantissa[11]
                                                                                                                                                                       ? 6'h28
-                                                                                                                                                                      : io_in_b_mantissa[10]
+                                                                                                                                                                      : io_inB_mantissa[10]
                                                                                                                                                                           ? 6'h29
-                                                                                                                                                                          : io_in_b_mantissa[9]
+                                                                                                                                                                          : io_inB_mantissa[9]
                                                                                                                                                                               ? 6'h2A
-                                                                                                                                                                              : io_in_b_mantissa[8]
+                                                                                                                                                                              : io_inB_mantissa[8]
                                                                                                                                                                                   ? 6'h2B
-                                                                                                                                                                                  : io_in_b_mantissa[7]
+                                                                                                                                                                                  : io_inB_mantissa[7]
                                                                                                                                                                                       ? 6'h2C
-                                                                                                                                                                                      : io_in_b_mantissa[6]
+                                                                                                                                                                                      : io_inB_mantissa[6]
                                                                                                                                                                                           ? 6'h2D
-                                                                                                                                                                                          : io_in_b_mantissa[5]
+                                                                                                                                                                                          : io_inB_mantissa[5]
                                                                                                                                                                                               ? 6'h2E
-                                                                                                                                                                                              : io_in_b_mantissa[4]
+                                                                                                                                                                                              : io_inB_mantissa[4]
                                                                                                                                                                                                   ? 6'h2F
-                                                                                                                                                                                                  : io_in_b_mantissa[3]
+                                                                                                                                                                                                  : io_inB_mantissa[3]
                                                                                                                                                                                                       ? 6'h30
-                                                                                                                                                                                                      : io_in_b_mantissa[2]
+                                                                                                                                                                                                      : io_inB_mantissa[2]
                                                                                                                                                                                                           ? 6'h31
                                                                                                                                                                                                           : {5'h19,
-                                                                                                                                                                                                             ~(io_in_b_mantissa[1])};
+                                                                                                                                                                                                             ~(io_inB_mantissa[1])};
   wire [114:0] _mulRecFn_io_b_rawIn_subnormFract_T =
-    {63'h0, io_in_b_mantissa} << mulRecFn_io_b_rawIn_normDist;
+    {63'h0, io_inB_mantissa} << mulRecFn_io_b_rawIn_normDist;
   wire [11:0]  _mulRecFn_io_b_rawIn_adjustedExp_T_4 =
     (mulRecFn_io_b_rawIn_isZeroExpIn
        ? {6'h3F, ~mulRecFn_io_b_rawIn_normDist}
-       : {1'h0, io_in_b_exponent})
+       : {1'h0, io_inB_exponent})
     + {10'h100, mulRecFn_io_b_rawIn_isZeroExpIn ? 2'h2 : 2'h1};
   wire [2:0]   _mulRecFn_io_b_T_2 =
-    mulRecFn_io_b_rawIn_isZeroExpIn & ~(|io_in_b_mantissa)
+    mulRecFn_io_b_rawIn_isZeroExpIn & ~(|io_inB_mantissa)
       ? 3'h0
       : _mulRecFn_io_b_rawIn_adjustedExp_T_4[11:9];
   wire         io_out_rawIn_isInf =
@@ -2607,23 +2607,23 @@ module MulFp_Pipelined_11_52(
   MulRecFN_Pipelined_11_53 mulRecFn (
     .clock  (clock),
     .io_a
-      ({io_in_a_sign,
+      ({io_inA_sign,
         _mulRecFn_io_a_T_2[2:1],
         _mulRecFn_io_a_T_2[0] | (&(_mulRecFn_io_a_rawIn_adjustedExp_T_4[11:10]))
-          & (|io_in_a_mantissa),
+          & (|io_inA_mantissa),
         _mulRecFn_io_a_rawIn_adjustedExp_T_4[8:0],
         mulRecFn_io_a_rawIn_isZeroExpIn
           ? {_mulRecFn_io_a_rawIn_subnormFract_T[50:0], 1'h0}
-          : io_in_a_mantissa}),
+          : io_inA_mantissa}),
     .io_b
-      ({io_in_b_sign,
+      ({io_inB_sign,
         _mulRecFn_io_b_T_2[2:1],
         _mulRecFn_io_b_T_2[0] | (&(_mulRecFn_io_b_rawIn_adjustedExp_T_4[11:10]))
-          & (|io_in_b_mantissa),
+          & (|io_inB_mantissa),
         _mulRecFn_io_b_rawIn_adjustedExp_T_4[8:0],
         mulRecFn_io_b_rawIn_isZeroExpIn
           ? {_mulRecFn_io_b_rawIn_subnormFract_T[50:0], 1'h0}
-          : io_in_b_mantissa}),
+          : io_inB_mantissa}),
     .io_out (_mulRecFn_io_out)
   );
   assign io_out_sign = _mulRecFn_io_out[64];
@@ -2638,12 +2638,12 @@ endmodule
 
 module OpMultiply_1(
   input         clock,
-                io_in_a_sign,
-  input  [10:0] io_in_a_exponent,
-  input  [51:0] io_in_a_mantissa,
-  input         io_in_b_sign,
-  input  [10:0] io_in_b_exponent,
-  input  [51:0] io_in_b_mantissa,
+                io_inA_sign,
+  input  [10:0] io_inA_exponent,
+  input  [51:0] io_inA_mantissa,
+  input         io_inB_sign,
+  input  [10:0] io_inB_exponent,
+  input  [51:0] io_inB_mantissa,
   output        io_out_sign,
   output [10:0] io_out_exponent,
   output [51:0] io_out_mantissa
@@ -2652,21 +2652,21 @@ module OpMultiply_1(
   wire        _module_io_out_sign;
   wire [10:0] _module_io_out_exponent;
   wire [51:0] _module_io_out_mantissa;
-  wire [63:0] in_a__ = {io_in_a_sign, io_in_a_exponent, io_in_a_mantissa};
-  wire [63:0] in_b__ = {io_in_b_sign, io_in_b_exponent, io_in_b_mantissa};
+  wire [63:0] inA__ = {io_inA_sign, io_inA_exponent, io_inA_mantissa};
+  wire [63:0] inB__ = {io_inB_sign, io_inB_exponent, io_inB_mantissa};
   wire [63:0] out__ =
     {_module_io_out_sign, _module_io_out_exponent, _module_io_out_mantissa};
   MulFp_Pipelined_11_52 module_0 (
-    .clock            (clock),
-    .io_in_a_sign     (io_in_a_sign),
-    .io_in_a_exponent (io_in_a_exponent),
-    .io_in_a_mantissa (io_in_a_mantissa),
-    .io_in_b_sign     (io_in_b_sign),
-    .io_in_b_exponent (io_in_b_exponent),
-    .io_in_b_mantissa (io_in_b_mantissa),
-    .io_out_sign      (_module_io_out_sign),
-    .io_out_exponent  (_module_io_out_exponent),
-    .io_out_mantissa  (_module_io_out_mantissa)
+    .clock           (clock),
+    .io_inA_sign     (io_inA_sign),
+    .io_inA_exponent (io_inA_exponent),
+    .io_inA_mantissa (io_inA_mantissa),
+    .io_inB_sign     (io_inB_sign),
+    .io_inB_exponent (io_inB_exponent),
+    .io_inB_mantissa (io_inB_mantissa),
+    .io_out_sign     (_module_io_out_sign),
+    .io_out_exponent (_module_io_out_exponent),
+    .io_out_mantissa (_module_io_out_mantissa)
   );
   assign io_out_sign = _module_io_out_sign;
   assign io_out_exponent = _module_io_out_exponent;
@@ -2812,16 +2812,16 @@ module ElasticMultiply_1(
   wire        join0_allValid = sourceInA_valid & sourceInB_valid;
   wire        join0_fire = _wrapper_source_ready & join0_allValid;
   OpMultiply_1 multiply (
-    .clock            (clock),
-    .io_in_a_sign     (_wrapper_moduleIn__1_sign),
-    .io_in_a_exponent (_wrapper_moduleIn__1_exponent),
-    .io_in_a_mantissa (_wrapper_moduleIn__1_mantissa),
-    .io_in_b_sign     (_wrapper_moduleIn__2_sign),
-    .io_in_b_exponent (_wrapper_moduleIn__2_exponent),
-    .io_in_b_mantissa (_wrapper_moduleIn__2_mantissa),
-    .io_out_sign      (_multiply_io_out_sign),
-    .io_out_exponent  (_multiply_io_out_exponent),
-    .io_out_mantissa  (_multiply_io_out_mantissa)
+    .clock           (clock),
+    .io_inA_sign     (_wrapper_moduleIn__1_sign),
+    .io_inA_exponent (_wrapper_moduleIn__1_exponent),
+    .io_inA_mantissa (_wrapper_moduleIn__1_mantissa),
+    .io_inB_sign     (_wrapper_moduleIn__2_sign),
+    .io_inB_exponent (_wrapper_moduleIn__2_exponent),
+    .io_inB_mantissa (_wrapper_moduleIn__2_mantissa),
+    .io_out_sign     (_multiply_io_out_sign),
+    .io_out_exponent (_multiply_io_out_exponent),
+    .io_out_mantissa (_multiply_io_out_mantissa)
   );
   Wrapper_3 wrapper (
     .clock                   (clock),
