@@ -422,8 +422,12 @@ that case reached Chisel's lower-level write-direction check.
 
 ## Tests
 
-`TrackingDiagnostics_Tb` is the merged diagnostic driver under `src/test/scala/chext/amba`.
-It covers default tracking behavior and view-specific behavior in one run.
+`TrackingDiagnostics_Test` is the merged diagnostic driver under `src/test/scala/chext/amba`.
+It covers default tracking behavior and view-specific behavior in one run. The driver uses the
+reusable `chext.util.ElaborationTest` test-scope mixin for elaboration, output capture, artifact
+checks, aggregate failure handling, and per-case reports. The typed `ModuleGraph` and `HdlInfo`
+artifacts retain the original metadata objects for custom checks, while `ModuleGraphJson` and
+`HdlInfoJson` provide their serialized forms for text checks and reports.
 
 The default tracking cases include:
 

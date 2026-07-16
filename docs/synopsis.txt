@@ -1028,7 +1028,7 @@ Creates `axi4f.Connect`; {{badge:UniquePrefix:axi4fConnect}}; graph `tpe` is `Ax
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/full/Connect.scala}}
-{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/Connect.tb.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/full/Connect.test.scala}}
 END
 
 [row.axi_connects]
@@ -1077,7 +1077,7 @@ Creates `axi4l.Connect`; {{badge:UniquePrefix:axi4lConnect}}; graph `tpe` is `Ax
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
-{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/lite/Connect.tb.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/lite/Connect.test.scala}}
 END
 
 [row.axi_connects]
@@ -1094,7 +1094,7 @@ Same component and prefix as lite single connect.
 END
 hierarchy <<END
 {{badge:Scala}} {{src:src/main/scala/chext/amba/axi4/lite/Connect.scala}}
-{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/lite/Connect.tb.scala}}
+{{badge:Scala}} {{src:src/test/scala/chext/amba/axi4/lite/Connect.test.scala}}
 END
 
 [row.axi_connects]

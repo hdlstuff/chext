@@ -40,6 +40,9 @@ object ElaborationTest {
   case object HdlInfo extends Artifact[hdlinfo.Module]("HDLINFO", "(not available)")
   case object HdlInfoJson extends StringArtifact("HDLINFO", "(not available)")
 
+  def textArtifact(reportName: String, missingText: String = "(empty)"): StringArtifact =
+    new StringArtifact(reportName, missingText) {}
+
   sealed trait ExpectedOutcome
   case object Success extends ExpectedOutcome
   case object Failure extends ExpectedOutcome
@@ -124,8 +127,16 @@ object ElaborationTest {
       expected: ExpectedOutcome,
       gen: () => RawModule,
       checks: Seq[Assertion],
-      disabledCommonChecks: Set[String]
+      disabledCommonChecks: Set[String],
+      captureArtifacts: (RawModule, ArtifactOutput) => Unit
   )
+
+  final class ArtifactOutput private[util] (
+      saveValue: (Artifact[_], Any) => Unit
+  ) {
+    def write(artifact: StringArtifact, contents: String): Unit =
+      saveValue(artifact, contents)
+  }
 
   final class Result private[util] (
       private[util] val artifacts: Map[Artifact[_], Any],
@@ -157,6 +168,11 @@ trait ElaborationTest {
   protected final val Success: ExpectedOutcome = ElaborationTest.Success
   protected final val Failure: ExpectedOutcome = ElaborationTest.Failure
 
+  protected final def textArtifact(
+      reportName: String,
+      missingText: String = "(empty)"
+  ): StringArtifact = ElaborationTest.textArtifact(reportName, missingText)
+
   private var suiteConfig = Option.empty[SuiteConfig]
   private val testCases = ArrayBuffer.empty[TestCase]
 
@@ -176,9 +192,18 @@ trait ElaborationTest {
       expected: ExpectedOutcome = Success,
       gen: () => RawModule,
       checks: Seq[Assertion] = Seq.empty,
-      disabledCommonChecks: Set[String] = Set.empty
+      disabledCommonChecks: Set[String] = Set.empty,
+      captureArtifacts: (RawModule, ArtifactOutput) => Unit = (_, _) => ()
   ): Unit =
-    testCases += TestCase(name, description, expected, gen, checks, disabledCommonChecks)
+    testCases += TestCase(
+      name,
+      description,
+      expected,
+      gen,
+      checks,
+      disabledCommonChecks,
+      captureArtifacts
+    )
 
   protected final def runTests(): Unit = {
     val config = suiteConfig.getOrElse(
@@ -188,7 +213,7 @@ trait ElaborationTest {
 
     val results = testCases.toSeq.map { testCase =>
       println(s"[${config.name}] running: ${testCase.name}")
-      val result = elaborate(testCase.gen())
+      val result = elaborate(testCase.gen(), testCase.captureArtifacts)
       val checks = config.commonChecks.filterNot(check =>
         check.id.exists(testCase.disabledCommonChecks.contains)
       ) ++ testCase.checks
@@ -224,11 +249,15 @@ trait ElaborationTest {
     println(s"[${config.name}] wrote reports under: ${config.outputDir}")
   }
 
-  private def elaborate(gen: => RawModule): Result = {
+  private def elaborate(
+      gen: => RawModule,
+      captureArtifacts: (RawModule, ArtifactOutput) => Unit
+  ): Result = {
     val logBytes = new ByteArrayOutputStream()
     val logStream = new PrintStream(logBytes)
     val artifacts = scala.collection.mutable.Map.empty[Artifact[_], Any]
     def save[A](artifact: Artifact[A], value: A): Unit = artifacts(artifact) = value
+    val artifactOutput = new ArtifactOutput((artifact, value) => artifacts(artifact) = value)
 
     val failure =
       try {
@@ -237,6 +266,7 @@ trait ElaborationTest {
             ChiselStage.emitSystemVerilog(
               {
                 val module = gen
+                captureArtifacts(module, artifactOutput)
 
                 chext.tracking.onComplete(module) {
                   import io.circe.generic.auto._
@@ -256,6 +286,7 @@ trait ElaborationTest {
                       save(HdlInfoJson, hdlInfo.asJson.toString())
                     case _ => ()
                   }
+
                 }
                 module
               },

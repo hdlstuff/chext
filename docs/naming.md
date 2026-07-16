@@ -444,11 +444,20 @@ better matches the SystemC testbench. Do not hand-author `_1`, `_2`, and similar
 imitate names assigned by an emission tool. Generated numeric suffixes describe artifact-name
 collisions, not source-level semantic identity.
 
-Diagnostic applications that do not use the ordinary `chext.TestBench` flow may use a descriptor:
+## Elaboration Tests
+
+Place report-oriented elaboration tests in test scope and use `.test.scala`:
+
+```text
+src/test/scala/chext/amba/TrackingDiagnostics.test.scala
+```
+
+Name the runnable object `Foo_Test`. These tests use `chext.util.ElaborationTest`; they are distinct
+from the `Foo_Tb` objects that emit HDL for SystemC testbenches.
 
 ```scala
-object TrackingDiagnostics_Tb extends App
-object ConnectDiag_Tb extends App
+object TrackingDiagnostics_Test extends App with ElaborationTest
+object Connect_Test extends App with ElaborationTest
 ```
 
 ## Emit Applications
@@ -528,6 +537,7 @@ Use the established multi-part suffixes for test and emit sources:
 
 ```text
 Queue.tb.scala
+TrackingDiagnostics.test.scala
 Components.emit.scala
 ```
 
@@ -547,5 +557,6 @@ When adding a construction or test, check that:
   vocabulary enforcement;
 - protocol aggregates retain conventional channel and external interface names;
 - testbench wrappers use `Foo_Tbtop` and runners use `Foo_Tb`;
+- report-oriented elaboration tests use `.test.scala` and `Foo_Test`;
 - emit applications use `.emit.scala` and `Foo_Emit`;
 - SystemC sources and generated artifacts match the emitted `Tbtop` desired name.

@@ -925,7 +925,7 @@ val m_axil = IO(axi4l.Master(axiCfg))
 
 ### Full single connect [#](#entry-axi-connects-full-single-connect)
 
-**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/Connect.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/Connect.tb.scala)
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/Connect.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/Connect.test.scala)
 
 **Intent and Usage:** Connect one full AXI interface pair:
 ```scala
@@ -970,7 +970,7 @@ s_axi_N :=> m_axi_N
 
 ### Lite single connect [#](#entry-axi-connects-lite-single-connect)
 
-**Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Connect.scala); [Scala TB](../src/test/scala/chext/amba/axi4/lite/Connect.tb.scala)
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Connect.scala); [Scala TB](../src/test/scala/chext/amba/axi4/lite/Connect.test.scala)
 
 **Intent and Usage:** Connect one AXI4-Lite pair:
 ```scala
@@ -985,7 +985,7 @@ s_axil :=> m_axil
 
 ### Lite configured connect [#](#entry-axi-connects-lite-configured-connect)
 
-**Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Connect.scala); [Scala TB](../src/test/scala/chext/amba/axi4/lite/Connect.tb.scala)
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/lite/Connect.scala); [Scala TB](../src/test/scala/chext/amba/axi4/lite/Connect.test.scala)
 
 **Intent and Usage:** Same, with diagnostics/tie-off config:
 ```scala
