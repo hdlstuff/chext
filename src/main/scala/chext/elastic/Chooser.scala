@@ -12,6 +12,9 @@ object Chooser {
     def apply(valid: Vec[Bool], ready: Bool): UInt = {
       val wChoice = log2Ceil(valid.length)
 
+      if (valid.length == 1)
+        return 0.U(0.W)
+
       val max = (-1).S(wChoice.W).asUInt
       val last = RegInit(0.U(wChoice.W))
 
@@ -46,6 +49,9 @@ object Chooser {
   object priority extends Chooser {
     def apply(valid: Vec[Bool], ready: Bool): UInt = {
       val wChoice = log2Ceil(valid.length)
+
+      if (valid.length == 1)
+        return 0.U(0.W)
 
       val priority = PriorityEncoder(valid)
 

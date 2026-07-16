@@ -23,7 +23,7 @@ import chext.tracking.Component
   * @param chooser
   *   arbitration function
   */
-final class ArbiterNs[Tin <: Data, Tout <: Data](
+class ArbiterNs[Tin <: Data, Tout <: Data](
     val sources: Seq[Interface[Tin]],
     val sink: Interface[Tout],
     val chooser: Chooser

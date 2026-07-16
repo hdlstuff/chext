@@ -25,7 +25,6 @@ case class DemuxConfig(
     val numIdsTrackedWrite: Int = 4,
     val numOutstandingRead: Int = 16,
     val numOutstandingWrite: Int = 16,
-    val capacityPortQueueW: Int = 8,
     val slaveBuffers: BufferConfig = BufferConfig.all(2),
     val masterBuffers: BufferConfig = BufferConfig.all(0),
     val arbiterPolicy: elastic.Chooser = elastic.Chooser.rr
@@ -40,7 +39,6 @@ case class DemuxConfig(
   require_(numIdsTrackedWrite > 0)
   require_(numOutstandingRead > 0)
   require_(numOutstandingWrite > 0)
-  require_(capacityPortQueueW > 0)
 
   val wIdTrackedRead: Int = log2Ceil(numIdsTrackedRead + 1)
   val wIdTrackedWrite: Int = log2Ceil(numIdsTrackedWrite + 1)
@@ -144,7 +142,7 @@ class Demux(val cfg: DemuxConfig) extends Module with chext.AnnotatedModule {
 
     val queuePort = elastic.Queue(
       genPort,
-      capacityPortQueueW,
+      numOutstandingWrite,
       flow = true,
       pipe = true
     )

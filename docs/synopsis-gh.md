@@ -1150,7 +1150,6 @@ val cfg = axi4f.components.DemuxConfig(
   numIdsTrackedWrite = 4,
   numOutstandingRead = 16,
   numOutstandingWrite = 16,
-  capacityPortQueueW = 8,
   slaveBuffers = axi4.BufferConfig.all(2),
   masterBuffers = axi4.BufferConfig.all(0),
   arbiterPolicy = e.Chooser.rr
@@ -1173,6 +1172,57 @@ val demux0 = Module(new axi4f.components.Demux(cfg))
 ```
 
 **Details:** Module. Full AXI fan-out by address/routing selection. Internally uses channel-level elastic wiring around `ar`, `r`, `aw`, `w`, and `b`.
+
+---
+
+<a id="entry-axi4-full-components-demux-mm-config"></a>
+
+### `axi4f.components.DemuxMmConfig` [#](#entry-axi4-full-components-demux-mm-config)
+
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/DemuxMm.scala)
+
+**Intent and Usage:** Memory-map-driven fan-out configuration:
+```scala
+val cfg = axi4f.components.DemuxMmConfig(
+  axiSlaveCfg = fullCfg,
+  numMasters = 4,
+  numIdsTrackedRead = 4,
+  numIdsTrackedWrite = 4,
+  numOutstandingRead = 16,
+  numOutstandingWrite = 16,
+  arbiterPolicy = e.Chooser.rr
+)
+```
+
+**Details:** Config. Configuration for `DemuxMm`; address selection is supplied by generated elastic decoders rather than a Chisel decode function. AXI boundary buffering is left to the caller.
+
+---
+
+<a id="entry-axi4-full-components-demux-mm"></a>
+
+### `axi4f.components.DemuxMm` [#](#entry-axi4-full-components-demux-mm)
+
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/DemuxMm.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/DemuxMm.test.scala)
+
+**Intent and Usage:** Aggregate maps resolved at the master interfaces and generate address decoders:
+```scala
+val demux = Module(new axi4f.components.DemuxMm(cfg))
+demux.m_axi :=> m_axi
+
+// Slave properties propagate upstream through AXI Connect components.
+m_axi.zip(childMaps).foreach { case (master, childMap) =>
+  require(childMap.path.nonEmpty)
+  master.slaveProps(Slave.MemoryMap) = childMap
+}
+// Place m_axi(2), then m_axi(0); reserve m_axi(1) for decode errors:
+val memoryMap = demux.genDecoder(
+  permutation = Some(Seq(2, 0)),
+  errorSlave = Some(1),
+  allocationScheme = MemoryMap.AllocationScheme.AlignedPacked
+)
+```
+
+**Details:** Module. Resolves each mapped master interface's `Slave.MemoryMap`; AXI `Connect` and tracked `Buffer` component resolvers allow those properties to propagate through downstream connections and buffered links. It optionally reorders the maps with a complete permutation of non-error interfaces and calls `MemoryMap.aggregate` with `AlignedPacked`, `AlignedLargest`, or `Tight` allocation. `memoryMapPath` names a generated map when DemuxMm instances are composed hierarchically. Maps and segments carry absolute slash-separated origins. Optional `captureResolutionTrace` records typed `interfaceFrom`, `interfaceTo`, `kind`, `resolver`, and `resolverPath` steps in map arguments. `errorSlave = Some(index)` reserves that `m_axi` interface for addresses outside all mapped segments, so it does not need a memory-map property. Without an error slave, misses select the first interface in address order. Every map has an explicit declared size; validation rejects out-of-bounds and overlapping children or segments. The map model contains no routing indices; decoder routing privately zips address-ordered children with the interface order. The combined map is published as the slave interface's memory map. Decoder elastic IO remains declared for tracking but is private to the module. Unnamed or zero-sized child maps and layouts exceeding `wAddr` are rejected.
 
 ---
 

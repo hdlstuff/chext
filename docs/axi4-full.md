@@ -153,7 +153,6 @@ val cfg = axi4f.components.DemuxConfig(
   numIdsTrackedWrite = 8,
   numOutstandingRead = 16,
   numOutstandingWrite = 16,
-  capacityPortQueueW = 8,
   slaveBuffers = axi4.BufferConfig.all(2),
   masterBuffers = axi4.BufferConfig.all(0)
 )
@@ -162,6 +161,71 @@ val demux = Module(new axi4f.components.Demux(cfg))
 s_axi :=> demux.s_axi
 demux.m_axi(0) :=> m0_axi
 ```
+
+### `axi4f.components.DemuxMm`
+
+`DemuxMm` replaces the Chisel `decodeFn` with elastic address decoders generated from hierarchical
+`MemoryMap` properties. Assign one map to each master interface and call `genDecoder()` to aggregate
+them and generate the private read/write decoders.
+
+```scala
+import chext.amba.axi4.tracking.properties.Slave
+import chext.amba.axi4.util.MemoryMap
+
+val demux = Module(
+  new axi4f.components.DemuxMm(
+    axi4f.components.DemuxMmConfig(axiCfg, numMasters = childMaps.size)
+  )
+)
+
+demux.m_axi :=> m_axi
+
+// Properties attached downstream propagate through the AXI Connect components.
+m_axi.zip(childMaps).foreach { case (master, childMap) =>
+  require(childMap.path.nonEmpty)
+  master.slaveProps(Slave.MemoryMap) = childMap
+}
+
+// Place m_axi(2), then m_axi(0); reserve m_axi(1) for decode errors:
+val combinedMemoryMap = demux.genDecoder(
+  permutation = Some(Seq(2, 0)),
+  errorSlave = Some(1),
+  allocationScheme = MemoryMap.AllocationScheme.AlignedPacked
+)
+```
+
+Every `MemoryMap` declares its `size`. `MemoryMap.aggregate` processes maps in the supplied order
+using one of three allocation schemes: `AlignedPacked` reserves each child's power-of-two-aligned
+extent, `AlignedLargest` gives every child the largest such extent, and `Tight` places declared
+extents consecutively. The map itself contains no AXI routing indices; `DemuxMm` privately
+associates each address-ordered child with its original `m_axi` index. The resulting combined map is
+validated and installed as `demux.s_axi`'s `Slave.MemoryMap`. Validation rejects children or
+segments outside their containing map and rejects overlapping direct entries. A child map must
+have a non-empty component `path`, and the complete layout must fit in `axiCfg.wAddr`. AXI boundary
+buffering is left to the caller.
+
+`errorSlave = Some(index)` excludes that interface from aggregation and routes addresses outside
+all mapped segments to it; the error interface therefore does not need a `Slave.MemoryMap`.
+The permutation must contain every remaining interface exactly once. Without an error slave,
+unmapped addresses select the first interface in address-map order.
+
+DemuxMm instances can be composed hierarchically. Give a non-root instance's generated map a
+component path, for example `childDemux.genDecoder(memoryMapPath = Seq("child"))`, before a parent
+DemuxMm resolves it. Each AXI full or lite channel buffer is a tracked component that owns its
+property resolver and its channel-level elastic children. Buffers transparently forward AXI
+tracking properties, so buffered links between the parent and child do not interrupt memory-map
+resolution.
+Set `captureResolutionTrace = true` to attach typed `resolutionTrace` arguments to resolved child
+maps. Each step records absolute `interfaceFrom` and `interfaceTo` paths, a stable `kind` such as
+`connect` or `buffer`, a stable resolver name, and the resolver component or module's absolute
+`resolverPath`. Maps and segments also carry an absolute `origin`; `/` is the top module and an
+empty origin means that tracking provenance was unavailable. Trace collection is disabled by
+default, while origins are still recorded.
+
+Child offsets are relative to their immediate parent. `MemoryMap.flattenOnce` promotes direct-child
+segments and grandchildren by adding the child offset and prefixing names with the child's path;
+`flatten` repeats this until no children remain. For example, a segment `control` below paths
+`Seq("peripheral")` and `Seq("registers")` becomes `/peripheral/registers/control`.
 
 ### `axi4f.components.Mux`
 

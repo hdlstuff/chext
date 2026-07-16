@@ -352,7 +352,7 @@ Slave-role properties flow upstream from the connected slave endpoint to the mas
 while master-role properties flow downstream from master to slave. Resolution retains terminal
 `Undefined` and `Incomplete` states as well as concrete property values. Each forwarding step can
 record the absolute source and target interface paths, relationship kind, resolver name, and
-resolver-owner path.
+resolver-owner path. `DemuxMm` optionally stores those steps on resolved child memory maps.
 
 Important component behavior includes:
 

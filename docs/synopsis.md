@@ -627,7 +627,6 @@ AXI4 full components are Chisel modules. They are not Chext components themselve
   numIdsTrackedWrite = 4,
   numOutstandingRead = 16,
   numOutstandingWrite = 16,
-  capacityPortQueueW = 8,
   slaveBuffers = axi4.BufferConfig.all(2),
   masterBuffers = axi4.BufferConfig.all(0),
   arbiterPolicy = e.Chooser.rr
@@ -638,6 +637,37 @@ AXI4 full components are Chisel modules. They are not Chext components themselve
       <td style="vertical-align:top;"><code>axi4f.components.Demux</code> <a href="#entry-axi4-full-components-demux" style="text-decoration:none;" aria-label="Permalink to entry-axi4-full-components-demux">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/full/components/Demux.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/test/scala/chext/amba/axi4/full/components/Interconnect.tb.scala" style="text-decoration:none;"><span style="background:#edf2ff;color:#364fc7;padding:2px 6px;border-radius:4px;">Scala TB</span></a></div><div><a href="../sysc_tb/chext/amba/axi4/full/components/src/Interconnect.tb.cpp" style="text-decoration:none;"><span style="background:#e6fcf5;color:#087f5b;padding:2px 6px;border-radius:4px;">SysC TB</span></a></div></div></td>
       <td style="vertical-align:top;">Fan one full AXI slave-side port out to multiple master-side ports:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val demux0 = Module(new axi4f.components.Demux(cfg))</code></pre></td>
       <td style="vertical-align:top;"><span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span> Full AXI fan-out by address/routing selection. Internally uses channel-level elastic wiring around <code>ar</code>, <code>r</code>, <code>aw</code>, <code>w</code>, and <code>b</code>.</td>
+    </tr>
+    <tr id="entry-axi4-full-components-demux-mm-config">
+      <td style="vertical-align:top;"><code>axi4f.components.DemuxMmConfig</code> <a href="#entry-axi4-full-components-demux-mm-config" style="text-decoration:none;" aria-label="Permalink to entry-axi4-full-components-demux-mm-config">#</a><div style="margin-top:6px;font-size:0.92em;"><div><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span></div></div><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/full/components/DemuxMm.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+      <td style="vertical-align:top;">Memory-map-driven fan-out configuration:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val cfg = axi4f.components.DemuxMmConfig(
+  axiSlaveCfg = fullCfg,
+  numMasters = 4,
+  numIdsTrackedRead = 4,
+  numIdsTrackedWrite = 4,
+  numOutstandingRead = 16,
+  numOutstandingWrite = 16,
+  arbiterPolicy = e.Chooser.rr
+)</code></pre></td>
+      <td style="vertical-align:top;"><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span> Configuration for <code>DemuxMm</code>; address selection is supplied by generated elastic decoders rather than a Chisel decode function. AXI boundary buffering is left to the caller.</td>
+    </tr>
+    <tr id="entry-axi4-full-components-demux-mm">
+      <td style="vertical-align:top;"><code>axi4f.components.DemuxMm</code> <a href="#entry-axi4-full-components-demux-mm" style="text-decoration:none;" aria-label="Permalink to entry-axi4-full-components-demux-mm">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/full/components/DemuxMm.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div><div><a href="../src/test/scala/chext/amba/axi4/full/components/DemuxMm.test.scala" style="text-decoration:none;"><span style="background:#edf2ff;color:#364fc7;padding:2px 6px;border-radius:4px;">Scala TB</span></a></div></div></td>
+      <td style="vertical-align:top;">Aggregate maps resolved at the master interfaces and generate address decoders:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val demux = Module(new axi4f.components.DemuxMm(cfg))
+demux.m_axi :=&gt; m_axi
+
+// Slave properties propagate upstream through AXI Connect components.
+m_axi.zip(childMaps).foreach { case (master, childMap) =&gt;
+  require(childMap.path.nonEmpty)
+  master.slaveProps(Slave.MemoryMap) = childMap
+}
+// Place m_axi(2), then m_axi(0); reserve m_axi(1) for decode errors:
+val memoryMap = demux.genDecoder(
+  permutation = Some(Seq(2, 0)),
+  errorSlave = Some(1),
+  allocationScheme = MemoryMap.AllocationScheme.AlignedPacked
+)</code></pre></td>
+      <td style="vertical-align:top;"><span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span> Resolves each mapped master interface's <code>Slave.MemoryMap</code>; AXI <code>Connect</code> and tracked <code>Buffer</code> component resolvers allow those properties to propagate through downstream connections and buffered links. It optionally reorders the maps with a complete permutation of non-error interfaces and calls <code>MemoryMap.aggregate</code> with <code>AlignedPacked</code>, <code>AlignedLargest</code>, or <code>Tight</code> allocation. <code>memoryMapPath</code> names a generated map when DemuxMm instances are composed hierarchically. Maps and segments carry absolute slash-separated origins. Optional <code>captureResolutionTrace</code> records typed <code>interfaceFrom</code>, <code>interfaceTo</code>, <code>kind</code>, <code>resolver</code>, and <code>resolverPath</code> steps in map arguments. <code>errorSlave = Some(index)</code> reserves that <code>m_axi</code> interface for addresses outside all mapped segments, so it does not need a memory-map property. Without an error slave, misses select the first interface in address order. Every map has an explicit declared size; validation rejects out-of-bounds and overlapping children or segments. The map model contains no routing indices; decoder routing privately zips address-ordered children with the interface order. The combined map is published as the slave interface's memory map. Decoder elastic IO remains declared for tracking but is private to the module. Unnamed or zero-sized child maps and layouts exceeding <code>wAddr</code> are rejected.</td>
     </tr>
     <tr id="entry-axi4-full-components-mux-config">
       <td style="vertical-align:top;"><code>axi4f.components.MuxConfig</code> <a href="#entry-axi4-full-components-mux-config" style="text-decoration:none;" aria-label="Permalink to entry-axi4-full-components-mux-config">#</a><div style="margin-top:6px;font-size:0.92em;"><div><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span></div></div><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/full/components/Mux.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
