@@ -467,7 +467,7 @@ case class ConnectConfig(
     warnSideband: Boolean = true,
     simCheckAxi3Compat: SimulationCheck = SimulationCheck.Default,
     simCheckIdWidth: SimulationCheck = SimulationCheck.Default,
-    simCheckAddrWidth: SimulationCheck = SimulationCheck.Default
+    simCheckAddrWidth: SimulationCheck = SimulationCheck.None
 )
 
 trait ConnectOp {

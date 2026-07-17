@@ -74,7 +74,7 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
       .earlyName(interface)
       .split('.')
       .lastOption
-      .map { channel => f"$$view.$channel" }
+      .map { channel => f"$$view_$channel" }
       .getOrElse("$view")
 
   /** Converts a Chisel early name into the spelling used by module-graph paths.

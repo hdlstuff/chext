@@ -334,7 +334,7 @@ case class ConnectConfig(
     tieOffSlave: Boolean = true,
     warnReadWriteMismatch: Boolean = true,
     warnAddrWidth: Boolean = true,
-    simCheckAddrWidth: SimulationCheck = SimulationCheck.Default
+    simCheckAddrWidth: SimulationCheck = SimulationCheck.None
 )
 
 trait ConnectOp {
