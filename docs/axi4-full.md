@@ -63,11 +63,25 @@ s_axi.connect(
   axi4f.ConnectConfig(
     warnIdWidth = true,
     warnAddrWidth = true,
+    warnSideband = true,
     tieOffMaster = true,
-    tieOffSlave = true
+    tieOffSlave = true,
+    // Disabled by default; select Default, Printf, or Assert to enable it.
+    simCheckAddrWidth = chext.util.SimulationCheck.None
   )
 )
 ```
+
+`warnSideband` compares the effective widths of the address-channel `LOCK`, `CACHE`, `PROT`,
+`QOS`, and `REGION` fields and all five user fields: `ARUSER`, `RUSER`, `AWUSER`, `WUSER`, and
+`BUSER`. The address-channel checks apply to both `AR` and `AW`. This option controls diagnostic
+warnings only; configured connections still reject unsupported differences in sideband-presence
+flags and user widths. There are no simulation-time upper-bit checks for sideband fields.
+
+Address-width truncation can be checked with `simCheckAddrWidth`. Its default is
+`SimulationCheck.None`, so it emits no checking hardware unless explicitly set to `Default`,
+`Printf`, or `Assert`. When enabled, it checks the upper `ARADDR` and `AWADDR` bits while the
+corresponding channel is valid.
 
 `axi4.BufferConfig` controls per-channel queue depths: `aw`, `w`, `b`, `ar`, and `r`.
 

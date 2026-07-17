@@ -455,7 +455,12 @@ final class Connect(
 
 /** AXI full connection options.
   *
+  * `warnSideband` compares the effective widths of LOCK, CACHE, PROT, QOS, REGION, ARUSER, RUSER,
+  * AWUSER, WUSER, and BUSER. It controls warnings only and does not insert simulation checks for
+  * sideband fields.
+  *
   * Simulation checks only emit hardware when the checked condition is relevant.
+  * `simCheckAddrWidth` is disabled by default.
   */
 case class ConnectConfig(
     tieOffMaster: Boolean = true,

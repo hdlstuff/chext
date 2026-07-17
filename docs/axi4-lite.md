@@ -54,10 +54,17 @@ s_axil.connect(
   axi4l.ConnectConfig(
     tieOffMaster = true,
     tieOffSlave = true,
-    warnAddrWidth = true
+    warnAddrWidth = true,
+    // Disabled by default; select Default, Printf, or Assert to enable it.
+    simCheckAddrWidth = chext.util.SimulationCheck.None
   )
 )
 ```
+
+`simCheckAddrWidth` defaults to `SimulationCheck.None`, so address-width differences do not emit
+simulation-checking hardware unless the option is explicitly set to `Default`, `Printf`, or
+`Assert`. When enabled for a narrowing connection, it checks that the upper `ARADDR` and `AWADDR`
+bits are zero while the corresponding channel is valid.
 
 `axi4.BufferConfig` has per-channel queue depths: `aw`, `w`, `b`, `ar`, and `r`.
 

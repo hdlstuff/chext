@@ -327,7 +327,7 @@ final class Connect(
 /** AXI4-Lite connection options.
   *
   * Address widths may differ; optional simulation checks can validate that truncated upper address
-  * bits are zero.
+  * bits are zero. `simCheckAddrWidth` is disabled by default.
   */
 case class ConnectConfig(
     tieOffMaster: Boolean = true,

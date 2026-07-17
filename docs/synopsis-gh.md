@@ -858,11 +858,11 @@ val cfg = axi4f.ConnectConfig(
   // Default resolves to the process-wide policy.
   simCheckAxi3Compat = chext.util.SimulationCheck.Default,
   simCheckIdWidth = chext.util.SimulationCheck.Default,
-  simCheckAddrWidth = chext.util.SimulationCheck.Default
+  simCheckAddrWidth = chext.util.SimulationCheck.None
 )
 ```
 
-**Details:** Config. Configuration for `s_axi.connect(m_axi, cfg)`: controls tie-offs, warnings, and simulation checks for full AXI connections.
+**Details:** Config. Configuration for `s_axi.connect(m_axi, cfg)`: controls tie-offs, warnings, and simulation checks for full AXI connections. `warnSideband` compares the effective widths of `LOCK`, `CACHE`, `PROT`, `QOS`, and `REGION` on the address channels, plus `ARUSER`, `RUSER`, `AWUSER`, `WUSER`, and `BUSER`. It does not add simulation-time sideband checks. Address-width simulation checks are disabled by default.
 
 ---
 
@@ -881,11 +881,11 @@ val cfg = axi4l.ConnectConfig(
   warnAddrWidth = true,
   // SimulationCheck: Default, None, Printf, Assert.
   // Default resolves to the process-wide policy.
-  simCheckAddrWidth = chext.util.SimulationCheck.Default
+  simCheckAddrWidth = chext.util.SimulationCheck.None
 )
 ```
 
-**Details:** Config. Configuration for `s_axil.connect(m_axil, cfg)`: controls tie-offs, warnings, and address-width simulation checks for AXI4-Lite connections.
+**Details:** Config. Configuration for `s_axil.connect(m_axil, cfg)`: controls tie-offs, warnings, and address-width simulation checks for AXI4-Lite connections. Address-width simulation checks are disabled by default; select `Default`, `Printf`, or `Assert` to enable them.
 
 ---
 

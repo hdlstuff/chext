@@ -471,9 +471,9 @@ import chext.{elastic => e}
   // Default resolves to the process-wide policy.
   simCheckAxi3Compat = chext.util.SimulationCheck.Default,
   simCheckIdWidth = chext.util.SimulationCheck.Default,
-  simCheckAddrWidth = chext.util.SimulationCheck.Default
+  simCheckAddrWidth = chext.util.SimulationCheck.None
 )</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span> Configuration for <code>s_axi.connect(m_axi, cfg)</code>: controls tie-offs, warnings, and simulation checks for full AXI connections.</td>
+      <td style="vertical-align:top;"><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span> Configuration for <code>s_axi.connect(m_axi, cfg)</code>: controls tie-offs, warnings, and simulation checks for full AXI connections. <code>warnSideband</code> compares the effective widths of <code>LOCK</code>, <code>CACHE</code>, <code>PROT</code>, <code>QOS</code>, and <code>REGION</code> on the address channels, plus <code>ARUSER</code>, <code>RUSER</code>, <code>AWUSER</code>, <code>WUSER</code>, and <code>BUSER</code>. It does not add simulation-time sideband checks. Address-width simulation checks are disabled by default.</td>
     </tr>
     <tr id="entry-axi-connects-lite-connect-config">
       <td style="vertical-align:top;"><code>axi4l.ConnectConfig</code> <a href="#entry-axi-connects-lite-connect-config" style="text-decoration:none;" aria-label="Permalink to entry-axi-connects-lite-connect-config">#</a><div style="margin-top:6px;font-size:0.92em;"><div><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span></div></div><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/lite/Connect.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
@@ -484,9 +484,9 @@ import chext.{elastic => e}
   warnAddrWidth = true,
   // SimulationCheck: Default, None, Printf, Assert.
   // Default resolves to the process-wide policy.
-  simCheckAddrWidth = chext.util.SimulationCheck.Default
+  simCheckAddrWidth = chext.util.SimulationCheck.None
 )</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span> Configuration for <code>s_axil.connect(m_axil, cfg)</code>: controls tie-offs, warnings, and address-width simulation checks for AXI4-Lite connections.</td>
+      <td style="vertical-align:top;"><span style="background:#e6f4ea;color:#0d652d;padding:2px 6px;border-radius:4px;">Config</span> Configuration for <code>s_axil.connect(m_axil, cfg)</code>: controls tie-offs, warnings, and address-width simulation checks for AXI4-Lite connections. Address-width simulation checks are disabled by default; select <code>Default</code>, <code>Printf</code>, or <code>Assert</code> to enable them.</td>
     </tr>
     <tr id="entry-axi-connects-full-slave-master">
       <td style="vertical-align:top;"><code>axi4f.Slave</code> / <code>axi4f.Master</code> <a href="#entry-axi-connects-full-slave-master" style="text-decoration:none;" aria-label="Permalink to entry-axi-connects-full-slave-master">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/amba/axi4/full/Interface.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
