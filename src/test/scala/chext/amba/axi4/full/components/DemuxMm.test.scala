@@ -1,9 +1,12 @@
 package chext.amba.axi4.full.components
 
 import chisel3._
+import chisel3.experimental.prefix
 
 import chext.amba.axi4
 import chext.amba.axi4.full.ConnectOp._
+import chext.amba.axi4.lite.{ConnectOp => LiteConnectOp}
+import chext.amba.axi4.lite.components.RegisterBlock
 import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, Resolver}
 import chext.amba.axi4.tracking.properties.Slave
 import chext.amba.axi4.util.MemoryMap
@@ -85,16 +88,16 @@ class DemuxMmTestTop(
 }
 
 class DemuxMmTreeTestTop extends Module with chext.AnnotatedModule {
-  private val axiCfg = axi4.Config(wId = 2, wAddr = 16, wData = 32)
+  import LiteConnectOp._
+
+  private val axiCfg = axi4.Config(wId = 0, wAddr = 16, wData = 64)
   private val bufferCfg = axi4.BufferConfig.all(1)
 
   val s_axi = IO(axi4.full.Slave(axiCfg))
-  val m_axi = IO(axi4.full.Master.many(4, axiCfg))
 
   declareClock(clock)
   declareReset(reset)
   declareAxi4Interface(s_axi)
-  declareAxi4Interface(m_axi)
 
   val rootDemux = Module(new DemuxMm(DemuxMmConfig(axiCfg, numMasters = 2)))
   val leftDemux = Module(new DemuxMm(DemuxMmConfig(axiCfg, numMasters = 2)))
@@ -108,16 +111,41 @@ class DemuxMmTreeTestTop extends Module with chext.AnnotatedModule {
     axi4.full.RightBuffer(leftDemux.s_axi, bufferCfg, "leftBranchBuffer")
   rootDemux.m_axi(1) :=>
     axi4.full.RightBuffer(rightDemux.s_axi, bufferCfg, "rightBranchBuffer")
-  leftDemux.m_axi :=> m_axi.take(2)
-  rightDemux.m_axi :=> m_axi.drop(2)
 
-  private val leafSizes = Seq[BigInt](0x100, 0x180, 0x80, 0x300)
-  m_axi.zipWithIndex.foreach { case (master, index) =>
-    master.slaveProps(Slave.MemoryMap) = MemoryMap(
-      path = Seq(s"leaf$index"),
-      size = leafSizes(index),
-      segments = Seq(MemoryMap.Segment(Seq("memory"), 0, leafSizes(index)))
-    )
+  val converters = Seq.tabulate(4) { index =>
+    val converter = Module(
+      new LiteConverter(
+        LiteConverterConfig(axiCfg, wDataMaster = 32)
+      )
+    ).suggestName(s"liteConverter$index")
+    chext.tracking.suggestInstanceName(converter, s"liteConverter$index")
+    converter
+  }
+  leftDemux.m_axi :=> converters.take(2).map(_.s_axi)
+  rightDemux.m_axi :=> converters.drop(2).map(_.s_axi)
+
+  private val leafMasks = Seq(8, 9, 7, 10)
+  val registerBlocks = leafMasks.zipWithIndex.map { case (wMask, index) =>
+    prefix(s"registerBlock$index") {
+      new RegisterBlock(
+        wAddr = axiCfg.wAddr,
+        wData = 32,
+        wMask = wMask,
+        memoryMapPath = Seq(s"leaf$index")
+      )
+    }
+  }
+
+  converters.zip(registerBlocks).foreach { case (converter, registerBlock) =>
+    converter.m_axil :=> registerBlock.s_axil
+  }
+
+  registerBlocks.zipWithIndex.foreach { case (registerBlock, index) =>
+    val storage = prefix(s"storage$index") { RegInit(0.U(32.W)) }
+    val status = prefix(s"status$index") { WireDefault((0x100 + index).U(32.W)) }
+    registerBlock.reg(storage, desc = "storage")
+    registerBlock.reg(status, write = false, desc = "status")
+    registerBlock.complete()
   }
 
   val leftMemoryMap = leftDemux.genDecoder(
@@ -134,10 +162,10 @@ class DemuxMmTreeTestTop extends Module with chext.AnnotatedModule {
   assert(rootMemoryMap.children.map(_.offset) == Seq(0, 0x800))
   assert(
     rootMemoryMap.flatten.segments.map(segment => segment.path -> segment.baseAddress) == Seq(
-      Seq("left", "leaf0", "memory") -> BigInt(0),
-      Seq("left", "leaf1", "memory") -> BigInt(0x200),
-      Seq("right", "leaf2", "memory") -> BigInt(0x800),
-      Seq("right", "leaf3", "memory") -> BigInt(0xc00)
+      Seq("left", "leaf0", "registers") -> BigInt(0),
+      Seq("left", "leaf1", "registers") -> BigInt(0x200),
+      Seq("right", "leaf2", "registers") -> BigInt(0x800),
+      Seq("right", "leaf3", "registers") -> BigInt(0xc00)
     )
   )
 }
@@ -248,26 +276,35 @@ object DemuxMm_Test extends App with ElaborationTest {
     gen = () => new DemuxMmTreeTestTop,
     checks = Seq(
       SystemVerilog occurs ("  DemuxMm ", 3),
+      SystemVerilog occurs ("  LiteConverter ", 4),
       SystemVerilog contains "leftBranchBuffer0_axi4fBuffer0_arBuffer0_queue0",
       SystemVerilog contains "rightBranchBuffer0_axi4fBuffer0_arBuffer0_queue0",
       MemoryMapJson contains "\"origin\" : \"/rootDemux/s_axi\"",
-      MemoryMapJson contains "\"origin\" : \"/m_axi_0\"",
+      MemoryMapJson contains "\"leaf0\"",
       MemoryMapJson contains "\"interfaceFrom\" : \"/rootDemux/m_axi_0\"",
       MemoryMapJson contains "\"interfaceTo\" : \"/leftDemux/s_axi\"",
       MemoryMapJson contains "\"kind\" : \"buffer\"",
       MemoryMapJson contains "\"resolver\" : \"BufferResolver\"",
       MemoryMapJson contains "\"resolverPath\" : \"/leftBranchBuffer0_axi4fBuffer0\"",
-      FlattenedMemoryMapJson contains "\"origin\" : \"/m_axi_3\"",
-      ModuleGraph.check("buffers are tracked components") { graph =>
+      MemoryMapJson contains "\"resolver\" : \"LiteConverterResolver\"",
+      FlattenedMemoryMapJson contains "\"registers\"",
+      ModuleGraph.check("buffers and register blocks are tracked components") { graph =>
         val bufferPaths = graph.flatten.components.collect {
           case component if component.tpe == "Axi4f_Buffer" => component.path
+        }
+        val registerBlockPaths = graph.flatten.components.collect {
+          case component if component.tpe == "Axi4l_RegisterBlock" => component.path
         }
         Option.unless(
           bufferPaths == Seq(
             "/leftBranchBuffer0_axi4fBuffer0",
             "/rightBranchBuffer0_axi4fBuffer0"
           )
-        )(s"found buffer component paths: ${bufferPaths.mkString(", ")}")
+        )(s"found buffer component paths: ${bufferPaths.mkString(", ")}").orElse(
+          Option.unless(registerBlockPaths.size == 4)(
+            s"found register-block component paths: ${registerBlockPaths.mkString(", ")}"
+          )
+        )
       }
     ),
     captureArtifacts = captureMemoryMap

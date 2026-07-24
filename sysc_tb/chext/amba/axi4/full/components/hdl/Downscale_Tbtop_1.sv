@@ -1928,6 +1928,7 @@ module Downscale(
   input          clock,
                  reset,
   input  [13:0]  s_axi_ar_bits_addr,
+  input  [7:0]   s_axi_ar_bits_len,
   input  [2:0]   s_axi_ar_bits_size,
   input          s_axi_ar_bits_lock,
   input  [3:0]   s_axi_ar_bits_cache,
@@ -1941,6 +1942,7 @@ module Downscale(
   output         s_axi_r_valid,
   input          s_axi_r_ready,
   input  [13:0]  s_axi_aw_bits_addr,
+  input  [7:0]   s_axi_aw_bits_len,
   input  [2:0]   s_axi_aw_bits_size,
   input          s_axi_aw_bits_lock,
   input  [3:0]   s_axi_aw_bits_cache,
@@ -2189,38 +2191,42 @@ module Downscale(
     read_r_zipped_valid & read_r_transducerReduceResp_cond == 2'h0;
   `ifndef SYNTHESIS
     always @(posedge clock) begin
+      if ((`PRINTF_COND_) & ~(~s_axi_ar_valid | s_axi_ar_bits_len == 8'h0) & ~reset)
+        $fwrite(32'h80000002, "axi4.full.components.Downscale: ARLEN must be zero\n");
+      if ((`PRINTF_COND_) & ~(~s_axi_aw_valid | s_axi_aw_bits_len == 8'h0) & ~reset)
+        $fwrite(32'h80000002, "axi4.full.components.Downscale: AWLEN must be zero\n");
       if ((`PRINTF_COND_) & write_w_transducerRepeatData_errorAtLeastTwoActions & ~reset)
         $fwrite(32'h80000002,
                 "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");
       if ((`PRINTF_COND_) & write_w_transducerRepeatData_errorAtLeastTwoActions
           & _write_w_transducerRepeatData_cond_WIRE_0 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:187:46]\n");
+                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:212:46]\n");
       if ((`PRINTF_COND_) & write_w_transducerRepeatData_errorAtLeastTwoActions
           & _write_w_transducerRepeatData_cond_WIRE_1 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:187:46]\n");
+                "elastic.Transducer: action 'produce' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:212:46]\n");
       if ((`PRINTF_COND_) & write_w_transducerRepeatData_errorAtLeastTwoActions
           & _write_w_transducerRepeatData_cond_WIRE_2 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'stall' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:187:46]\n");
+                "elastic.Transducer: action 'stall' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:212:46]\n");
       if ((`PRINTF_COND_) & write_w_transducerRepeatData_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:187:46]\n");
+                "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:212:46]\n");
       if ((`PRINTF_COND_) & read_r_transducerReduceResp_errorAtLeastTwoActions & ~reset)
         $fwrite(32'h80000002,
                 "elastic.Transducer: at least two actions are taken in the same clock cycle!\n");
       if ((`PRINTF_COND_) & read_r_transducerReduceResp_errorAtLeastTwoActions
           & _read_r_transducerReduceResp_cond_WIRE_0 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:106:46]\n");
+                "elastic.Transducer: action 'accept' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:131:46]\n");
       if ((`PRINTF_COND_) & read_r_transducerReduceResp_errorAtLeastTwoActions
           & _read_r_transducerReduceResp_cond_WIRE_1 & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: action 'consume' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:106:46]\n");
+                "elastic.Transducer: action 'consume' @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:131:46]\n");
       if ((`PRINTF_COND_) & read_r_transducerReduceResp_errorNoAction & ~reset)
         $fwrite(32'h80000002,
-                "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:106:46]\n");
+                "elastic.Transducer: no action was taken! @[src/main/scala/chext/amba/axi4/full/components/Downscale.scala:131:46]\n");
     end // always @(posedge)
   `endif // not def SYNTHESIS
   wire         read_ar_fork0_transform0_sinkBuffer0_queue0_doEnq =
@@ -2537,6 +2543,7 @@ module Downscale_Tbtop_1(
   wire         _downscale_m_axi_w_valid;
   wire         _downscale_m_axi_b_ready;
   wire [13:0]  _unburst_m_axi_ar_bits_addr;
+  wire [7:0]   _unburst_m_axi_ar_bits_len;
   wire [2:0]   _unburst_m_axi_ar_bits_size;
   wire         _unburst_m_axi_ar_bits_lock;
   wire [3:0]   _unburst_m_axi_ar_bits_cache;
@@ -2546,6 +2553,7 @@ module Downscale_Tbtop_1(
   wire         _unburst_m_axi_ar_valid;
   wire         _unburst_m_axi_r_ready;
   wire [13:0]  _unburst_m_axi_aw_bits_addr;
+  wire [7:0]   _unburst_m_axi_aw_bits_len;
   wire [2:0]   _unburst_m_axi_aw_bits_size;
   wire         _unburst_m_axi_aw_bits_lock;
   wire [3:0]   _unburst_m_axi_aw_bits_cache;
@@ -2757,7 +2765,7 @@ module Downscale_Tbtop_1(
     .s_axi_b_valid        (S_AXI_TEST_BVALID),
     .s_axi_b_ready        (S_AXI_TEST_BREADY),
     .m_axi_ar_bits_addr   (_unburst_m_axi_ar_bits_addr),
-    .m_axi_ar_bits_len    (/* unused */),
+    .m_axi_ar_bits_len    (_unburst_m_axi_ar_bits_len),
     .m_axi_ar_bits_size   (_unburst_m_axi_ar_bits_size),
     .m_axi_ar_bits_burst  (/* unused */),
     .m_axi_ar_bits_lock   (_unburst_m_axi_ar_bits_lock),
@@ -2773,7 +2781,7 @@ module Downscale_Tbtop_1(
     .m_axi_r_valid        (_downscale_s_axi_r_valid),
     .m_axi_r_ready        (_unburst_m_axi_r_ready),
     .m_axi_aw_bits_addr   (_unburst_m_axi_aw_bits_addr),
-    .m_axi_aw_bits_len    (/* unused */),
+    .m_axi_aw_bits_len    (_unburst_m_axi_aw_bits_len),
     .m_axi_aw_bits_size   (_unburst_m_axi_aw_bits_size),
     .m_axi_aw_bits_burst  (/* unused */),
     .m_axi_aw_bits_lock   (_unburst_m_axi_aw_bits_lock),
@@ -2796,6 +2804,7 @@ module Downscale_Tbtop_1(
     .clock                (clock),
     .reset                (reset),
     .s_axi_ar_bits_addr   (_unburst_m_axi_ar_bits_addr),
+    .s_axi_ar_bits_len    (_unburst_m_axi_ar_bits_len),
     .s_axi_ar_bits_size   (_unburst_m_axi_ar_bits_size),
     .s_axi_ar_bits_lock   (_unburst_m_axi_ar_bits_lock),
     .s_axi_ar_bits_cache  (_unburst_m_axi_ar_bits_cache),
@@ -2809,6 +2818,7 @@ module Downscale_Tbtop_1(
     .s_axi_r_valid        (_downscale_s_axi_r_valid),
     .s_axi_r_ready        (_unburst_m_axi_r_ready),
     .s_axi_aw_bits_addr   (_unburst_m_axi_aw_bits_addr),
+    .s_axi_aw_bits_len    (_unburst_m_axi_aw_bits_len),
     .s_axi_aw_bits_size   (_unburst_m_axi_aw_bits_size),
     .s_axi_aw_bits_lock   (_unburst_m_axi_aw_bits_lock),
     .s_axi_aw_bits_cache  (_unburst_m_axi_aw_bits_cache),

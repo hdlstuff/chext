@@ -6,6 +6,7 @@ import chisel3.experimental.prefix
 
 import chext.amba.axi4
 import chext.elastic
+import chext.util.SimulationCheck
 
 import chext.util.BitOps._
 import elastic.ConnectOp._
@@ -13,11 +14,18 @@ import axi4.Ops._
 
 import helpers.{SteerLeft, SteerRight}
 
+/** Configuration for [[Downscale]].
+  *
+  * The slave interface must have no transaction IDs (`wId == 0`), and input traffic must contain
+  * only single-beat transactions (`ARLEN == 0` and `AWLEN == 0`). `Downscale` may turn one wide
+  * input beat into a multi-beat transaction on its narrower master interface.
+  */
 case class DownscaleConfig(
     val axiSlaveCfg: axi4.Config,
     val wDataMaster: Int,
     val numOutstandingRead: Int = 32,
-    val numOutstandingWrite: Int = 32
+    val numOutstandingWrite: Int = 32,
+    val simCheckBurst: SimulationCheck = SimulationCheck.Default
 ) {
   private val require_ = chext.util.Require.inferred()
 
@@ -45,6 +53,12 @@ case class DownscaleConfig(
   val axiMasterCfg = axiSlaveCfg.copy(wData = wDataMaster)
 }
 
+/** Reduces the data width of single-beat, ID-free AXI4-Full traffic.
+  *
+  * This module does not decompose input bursts. Place `Unburst` before it unless single-beat input
+  * is guaranteed, and place `Unburst` after it when the downstream interface requires single-beat
+  * transactions.
+  */
 class Downscale(val cfg: DownscaleConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
@@ -55,6 +69,17 @@ class Downscale(val cfg: DownscaleConfig) extends Module with chext.AnnotatedMod
   declareReset(reset)
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axi)
+
+  if (axiSlaveCfg.read)
+    simCheckBurst(
+      !s_axi.ar.$valid || s_axi.ar.$bits.len === 0.U,
+      "axi4.full.components.Downscale: ARLEN must be zero"
+    )
+  if (axiSlaveCfg.write)
+    simCheckBurst(
+      !s_axi.aw.$valid || s_axi.aw.$bits.len === 0.U,
+      "axi4.full.components.Downscale: AWLEN must be zero"
+    )
 
   private val genOffsetLast = chext.bundles.BundleN(UInt(wOffset.W), Bool())
 

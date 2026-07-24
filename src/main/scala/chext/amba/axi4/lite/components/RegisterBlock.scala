@@ -1,304 +1,274 @@
 package chext.amba.axi4.lite.components
 
-import chext.amba.axi4
-
-import chext.elastic
-import elastic.ConnectOp._
-
 import chisel3._
+import chisel3.experimental.SourceInfo
+import chisel3.hacks.{deferred, PrefixManager}
 import chisel3.util._
 
-import axi4.Casts._
-import axi4.lite.SlaveBuffered
+import chext.amba.axi4
+import chext.amba.axi4.tracking.properties.Slave
+import chext.amba.axi4.util.MemoryMap
+import chext.elastic
+import chext.tracking.{Component, withComponent}
 
 /** Defines an AXI4-Lite register block.
   *
-  * @note
-  *   Register block assumes that the address is always data-width aligned.
+  * Register and reserved-region declarations are collected until [[complete]] is called. Completion
+  * creates the Elastic request/response logic and publishes the block's `Slave.MemoryMap` property.
+  * `complete()` must be called exactly once.
   *
-  * @note
-  *   If a register with `bitWidth < dataWidth` is mapped, it still occupies a `dataWidth` space in
-  *   the memory space.
-  *
-  * @note
-  *   Unaligned transfers are ignored by clearing the least significant bits.
-  *
-  * @note
-  *   Overlapping assignments are OK, only the last one is effective.
+  * The block assumes data-width-aligned accesses. A mapped value narrower than the data width still
+  * occupies one full data-width word. Read-only wires should be registered with `write = false`.
   *
   * @param wAddr
-  *   Address width of the AXI4-Lite interface.
+  *   address width of the AXI4-Lite interface
   * @param wData
-  *   Data width of the AXI4-Lite interface.
+  *   data width of the AXI4-Lite interface
   * @param wMask
-  *   Mask width. Determines the size of the assigned address space, which is `pow2(wMask)`.
+  *   address-space width; the block occupies `2^wMask` bytes
+  * @param memoryMapPath
+  *   logical path used when this block is aggregated into a memory map; when empty, the latest
+  *   component prefix is used
   */
 class RegisterBlock(
     val wAddr: Int = 32,
     val wData: Int = 32,
-    val wMask: Int = 4
-) {
-  private val require_ = chext.util.Require.inferred()
+    val wMask: Int = 4,
+    val memoryMapPath: Seq[String] = Seq.empty
+)(implicit si_ : SourceInfo)
+    extends Component {
+  val sourceInfo: SourceInfo = si_
+  private val require_ = chext.util.Require.inferred(sourceInfo)
 
-  require_(chisel3.util.isPow2(wData))
-  require_(wMask <= 31, "the implementation supports only 31-bit masks")
-  require_(wMask >= (log2Ceil(wData) - 3))
+  def tpe: String = "Axi4l_RegisterBlock"
+  def namePrefix: String = "registerBlock"
 
-  /** address increment */
-  val addrIncr = wData / 8
-
-  /** address space size */
-  val sizeAddressSpace = (1 << wMask)
-
-  /** corresponding AXI4-Lite configuration */
-  val cfgAxi = axi4.Config(
-    wAddr = wAddr,
-    wData = wData,
-    lite = true
+  require_(isPow2(wData))
+  require_(wData == 32 || wData == 64, "AXI4-Lite data width must be 32 or 64")
+  require_(wMask <= 31, "the implementation supports only 31-bit address-space widths")
+  require_(wMask <= wAddr, "register-block address space exceeds the AXI address width")
+  require_(wMask >= log2Ceil(wData) - 3)
+  require_(memoryMapPath.forall(_.nonEmpty), "memory-map path elements must not be empty")
+  require_(
+    memoryMapPath.forall(element => !element.contains('/')),
+    "memory-map path elements must not contain '/'"
   )
 
-  /** slave AXI4-Lite interface
-    */
+  /** Address increment of one mapped register, in bytes. */
+  val addrIncr: Int = wData / 8
+
+  /** Declared byte extent of the register block. */
+  val sizeAddressSpace: BigInt = BigInt(1) << wMask
+
+  /** Corresponding AXI4-Lite configuration. */
+  val cfgAxi: axi4.Config = axi4.Config(wAddr = wAddr, wData = wData, lite = true)
+
+  /** Slave AXI4-Lite interface. */
   val s_axil = Wire(axi4.lite.Slave(cfgAxi))
 
-  // NOTE: To avoid valid signal waiting for ready down the line.
-  private val s_axil_ = SlaveBuffered(s_axil, axi4.BufferConfig.all(2))
+  private val elasticState = trackingState(elastic.tracking.Tag)
+  elasticState.addSink("s_axil_ar", s_axil.ar, boundary = true)
+  elasticState.addSource("s_axil_r", s_axil.r, boundary = true)
+  elasticState.addSink("s_axil_aw", s_axil.aw, boundary = true)
+  elasticState.addSink("s_axil_w", s_axil.w, boundary = true)
+  elasticState.addSource("s_axil_b", s_axil.b, boundary = true)
 
-  /** @note
-    *   Use `BigInt` to support masks larger than 31-bits.
-    */
-  private var lastAddr_ = 0: Int
-  private var addrMap_ =
-    scala.collection.mutable.ListBuffer.empty[
-      (
-          Int,
-          Int,
-          () => Bits,
-          (Bits /* WDATA */, Bits /* WSTRB */ ) => Unit,
-          String
-      )
-    ]
+  private final class Entry(
+      val startAddr: Int,
+      val endAddr: Int,
+      val readFn: () => Bits,
+      val writeFn: (Bits, Bits) => Unit,
+      val desc: String
+  )
 
-  /** Rebases the RegisterBlock address, the start value is 0x00.
-    *
-    * @param addr
-    *   New base address.
-    */
-  def base(addr: Int): Unit = { lastAddr_ = addr }
+  private var lastAddr_ = 0
+  private val addrMap_ = scala.collection.mutable.ListBuffer.empty[Entry]
+  private var completed_ = false
+  private var memoryMap_ = Option.empty[MemoryMap]
 
-  /** Returns the next address.
-    *
-    * @return
-    *   next address
-    */
-  def nextAddr = lastAddr_
+  private def requireOpen(operation: String): Unit =
+    require_.here(!completed_, s"RegisterBlock.$operation cannot be called after complete()")
 
-  /** Assigns a new register to the current address and increments the next address by `addrIncr`.
-    *
-    * @param t
-    *   Register to assign
-    * @param read
-    *   Read enable
-    * @param write
-    *   Write enable
-    * @param desc
-    *   Description
-    *
-    * @return
-    *   Assigned address
-    */
+  /** Rebases the next allocation address. */
+  def base(addr: Int): Unit = {
+    requireOpen("base")
+    require_.here(addr >= 0, "base address must not be negative")
+    require_.here(BigInt(addr) <= sizeAddressSpace, "base address exceeds the address space")
+    require_.here(addr % addrIncr == 0, "base address must be data-width aligned")
+    lastAddr_ = addr
+  }
+
+  /** Returns the next byte address to be allocated. */
+  def nextAddr: Int = lastAddr_
+
+  /** Assigns a value to the current address and advances by one data-width word. */
   def reg[T <: Data](
       t: T,
       read: Boolean = true,
       write: Boolean = true,
       desc: String = "<no description>"
   ): Int = {
-    require_(t.getWidth <= wData)
+    requireOpen("reg")
+    require_.here(t.getWidth <= wData, "mapped value is wider than the AXI data width")
+
     val ret = lastAddr_
-    lastAddr_ = lastAddr_ + addrIncr
-    require_(lastAddr_ <= sizeAddressSpace, "Address space is too small.")
-    val readFn = if (read) () => t.asUInt else () => (-1).S(wData.W).asUInt
+    lastAddr_ += addrIncr
+    require_.here(BigInt(lastAddr_) <= sizeAddressSpace, "address space is too small")
+
+    val readFn =
+      if (read) () => t.asUInt
+      else () => (-1).S(wData.W).asUInt
     val writeFn =
-      if (write) (wdata: Bits, wstrb: Bits) => {
-        t := axi4.util
-          .writeStrobeLogic(t.asTypeOf(wdata), wdata, wstrb)
-          .asTypeOf(t)
-      }
-      else (wdata: Bits, wstrb: Bits) => ()
-    addrMap_.addOne((ret, lastAddr_ - 1, readFn, writeFn, desc))
+      if (write)
+        (wdata: Bits, wstrb: Bits) => {
+          t := axi4.util
+            .writeStrobeLogic(t.asTypeOf(wdata), wdata, wstrb)
+            .asTypeOf(t)
+        }
+      else (_: Bits, _: Bits) => ()
+
+    addrMap_.addOne(new Entry(ret, lastAddr_ - 1, readFn, writeFn, desc))
     ret
   }
 
-  /** Reserves a region in the RegisterBlock.
-    *
-    * @param size
-    *   Size of the region
-    * @param desc
-    *   Description
-    * @return
-    *   Assigned address
-    */
+  /** Reserves a byte region, rounded up to a whole data-width word. */
   def reserve(size: Int, desc: String = "<no description>"): Int = {
+    requireOpen("reserve")
+    require_.here(size >= 0, "reserved size must not be negative")
+
     val ret = lastAddr_
-    if (size % addrIncr == 0)
-      lastAddr_ = lastAddr_ + size
-    else
-      lastAddr_ = lastAddr_ + (size / addrIncr + 1) * addrIncr
-    require_(lastAddr_ <= sizeAddressSpace, "Address space is too small.")
-    addrMap_.addOne((ret, lastAddr_ - 1, () => 0.U, (_, _) => (), desc))
+    val roundedSize = ((size + addrIncr - 1) / addrIncr) * addrIncr
+    lastAddr_ += roundedSize
+    require_.here(BigInt(lastAddr_) <= sizeAddressSpace, "address space is too small")
+    if (roundedSize > 0)
+      addrMap_.addOne(new Entry(ret, lastAddr_ - 1, () => 0.U, (_, _) => (), desc))
     ret
   }
 
-  /** Export the register map to a file.
-    *
-    * @param path
-    *   File path to save
-    */
-  def saveRegisterMap(directory: String, name: String) = {
-    val write = new java.io.PrintWriter(f"${directory}/${name}.csv")
-    write.println(s"sep=,")
-    write.println(s"startAddr, endAddr, desc")
-    addrMap_.foreach { case (startAddr, endAddr, _, _, desc) =>
-      write.println(f"0x$startAddr%08x, 0x$endAddr%08x, $desc")
+  /** Writes the declared register map as CSV. */
+  def saveRegisterMap(directory: String, name: String): Unit = {
+    val write = new java.io.PrintWriter(f"$directory/$name.csv")
+    try {
+      write.println("sep=,")
+      write.println("startAddr, endAddr, desc")
+      addrMap_.foreach { entry =>
+        write.println(
+          f"0x${entry.startAddr}%08x, 0x${entry.endAddr}%08x, ${entry.desc}"
+        )
+      }
+    } finally write.close()
+  }
+
+  /** The generated memory map, available after [[complete]]. */
+  def memoryMap: MemoryMap = memoryMap_.getOrElse {
+    throw new IllegalStateException("RegisterBlock.memoryMap is available only after complete()")
+  }
+
+  private def enforceProperties(result: MemoryMap): Unit = {
+    val fullSize = log2Ceil(wData / 8)
+
+    s_axil.slaveProps(Slave.MemoryMap) = result
+    s_axil.slaveProps(Slave.ReadOutstandingTransactions) = 1
+    s_axil.slaveProps(Slave.WriteOutstandingTransactions) = 1
+    s_axil.slaveProps(Slave.ReadThreads) = 1
+    s_axil.slaveProps(Slave.WriteThreads) = 1
+    s_axil.slaveProps(Slave.ReadBurstBeats) = 1
+    s_axil.slaveProps(Slave.WriteBurstBeats) = 1
+    s_axil.slaveProps(Slave.ReadBurstNarrow) = false
+    s_axil.slaveProps(Slave.WriteBurstNarrow) = false
+    s_axil.slaveProps(Slave.ReadBurstTypes) = Set(1)
+    s_axil.slaveProps(Slave.WriteBurstTypes) = Set(1)
+    s_axil.slaveProps(Slave.ReadBurstSizes) = Set(fullSize)
+    s_axil.slaveProps(Slave.WriteBurstSizes) = Set(fullSize)
+  }
+
+  private def implementRead(): Unit = {
+    val addressMask = (sizeAddressSpace - 1) & ~(BigInt(addrIncr) - 1)
+    val request = elastic.SourceBuffered(s_axil.ar, 1)
+    val response = elastic.SinkBuffered(s_axil.r, 1)
+
+    val transformRead = new elastic.Transform(request, response) {
+      val address = in.addr & addressMask.U(wAddr.W)
+
+      out.data := (-1).S(wData.W).asUInt
+      out.resp := axi4.ResponseFlag.OKAY
+
+      addrMap_.foreach { entry =>
+        when(address === entry.startAddr.U) {
+          out.data := entry.readFn().asUInt
+        }
+      }
     }
-    write.close()
   }
 
-  val mask = (-1).S(wMask.W).asUInt ^ (addrIncr - 1).U
+  private def implementWrite(): Unit = {
+    val addressMask = (sizeAddressSpace - 1) & ~(BigInt(addrIncr) - 1)
+    val requestAddress = elastic.SourceBuffered(s_axil.aw, 1)
+    val requestData = elastic.SourceBuffered(s_axil.w, 1)
+    val response = elastic.SinkBuffered(s_axil.b, 1)
 
-  private val rdReq_ = elastic.SourceBuffered(s_axil_.ar)
+    val joinWrite = new elastic.Join(response) {
+      val aw = join(requestAddress)
+      val w = join(requestData)
+      val address = aw.addr & addressMask.U(wAddr.W)
 
-  // We need to place a queue of length 1 to be fully AXI-compliant
-  // Otherwise, valid signal waits for the ready signal
-  private val queueRdResp_ = elastic.Queue(chiselTypeOf(s_axil_.r.$bits), 1)
-  private val rdResp_ = queueRdResp_.source
-  queueRdResp_.sink :=> s_axil_.r
+      out.resp := axi4.ResponseFlag.OKAY
 
-  private val wrReq_ = elastic.SourceBuffered(s_axil_.aw, 1)
-  private val wrReqData_ = elastic.SourceBuffered(s_axil_.w, 1)
-
-  // Same as before
-  private val queueWrResp_ = elastic.Queue(chiselTypeOf(s_axil_.b.$bits), 1)
-  private val wrResp_ = queueWrResp_.source
-  queueWrResp_.sink :=> s_axil_.b
-
-  rdReq_.nodeq()
-  rdResp_.noenq()
-  wrReq_.nodeq()
-  wrReqData_.nodeq()
-  wrResp_.noenq()
-
-  rdReq_.markSource()
-  rdResp_.markSink()
-  wrReq_.markSource()
-  wrReqData_.markSource()
-  wrResp_.markSink()
-
-  /** Enqueues a read response.
-    *
-    * @param data
-    *   Data of the response.
-    * @param resp_flag
-    *   Response flag.
-    */
-  private def do_rdResp(data: UInt, resp_flag: UInt): Unit = {
-    assert(rdReq)
-
-    rdReq_.deq()
-
-    val resp = Wire(chiselTypeOf(rdResp_.$bits))
-    resp.data := data
-    resp.resp := resp_flag
-    rdResp_.enq(resp)
+      fire {
+        addrMap_.foreach { entry =>
+          when(address === entry.startAddr.U) {
+            entry.writeFn(w.data, w.strb)
+          }
+        }
+      }
+    }
   }
 
-  /** Enqueues a write response.
-    *
-    * @param resp_flag
-    *   Response flag.
-    */
-  private def do_wrResp(resp_flag: UInt): Unit = {
-    assert(wrReq)
+  /** Finalizes the block, creates its hardware, and publishes its memory-map property. */
+  def complete(): MemoryMap = {
+    require_.here(!completed_, "RegisterBlock.complete() must be called exactly once")
 
-    wrReq_.deq()
-    wrReqData_.deq()
+    val resolvedPath = memoryMapPath match {
+      case path if path.nonEmpty => path
+      case _                     => path.headOption.toSeq
+    }
+    require_.here(
+      resolvedPath.nonEmpty,
+      "RegisterBlock needs a component prefix or an explicit memoryMapPath"
+    )
 
-    val resp = Wire(chiselTypeOf(wrResp_.$bits))
-    resp.resp := resp_flag
-    wrResp_.enq(resp)
-  }
+    val result = MemoryMap(
+      path = resolvedPath,
+      size = sizeAddressSpace,
+      segments = Seq(
+        MemoryMap.Segment(
+          path = Seq("registers"),
+          baseAddress = 0,
+          size = sizeAddressSpace,
+          origin = axi4.tracking.TrackingPath.interface(s_axil)
+        )
+      ),
+      origin = axi4.tracking.TrackingPath.interface(s_axil)
+    )
 
-  /** `True` if there is an incoming read request */
-  val rdReq: Bool = (rdReq_.$valid && rdResp_.$ready)
-
-  /** address of the incoming read request */
-  val rdAddr: UInt = rdReq_.$bits.addr & mask
-
-  /** accepts the incoming read request, returning the default values to the requester.
-    */
-  def rdOk(): Unit = {
-    val data = Wire(UInt(wData.W))
-
-    // default, in case no address matches
-    data := (-1).S(wData.W).asUInt
-
-    addrMap_.foreach {
-      case (addr, _, readFn, _, _) => {
-        when(addr.asUInt === rdAddr) {
-          data := readFn()
+    enforceProperties(result)
+    PrefixManager.withAbsolute(path) {
+      withComponent(this) {
+        PrefixManager.withRelative("read") {
+          implementRead()
+        }
+        PrefixManager.withRelative("write") {
+          implementWrite()
         }
       }
     }
 
-    rdOk(data)
+    memoryMap_ = Some(result)
+    completed_ = true
+    result
   }
 
-  /** accepts the incoming read request, returning the provided data as a response to the requester.
-    *
-    * @param data
-    *   data to return.
-    */
-  def rdOk(data: Bits): Unit = {
-    do_rdResp(data.asUInt, axi4.ResponseFlag.OKAY)
-  }
-
-  /** fails the read request with an error. */
-  def rdError(): Unit = {
-    do_rdResp((-1).S(wData.W).asUInt, axi4.ResponseFlag.SLVERR)
-  }
-
-  /** `True` if there is an incoming write request */
-  val wrReq: Bool = wrReq_.$valid && wrReqData_.$valid && wrResp_.$ready
-
-  /** address of the incoming write request */
-  val wrAddr: UInt = wrReq_.$bits.addr & mask
-
-  /** data corresponding to the incoming write request */
-  val wrData: UInt = wrReqData_.$bits.data
-
-  /** write strobe of the incoming write request */
-  val wrStrb: UInt = wrReqData_.$bits.strb
-
-  /** accepts the write request, performing the default action.
-    */
-  def wrOk(): Unit = {
-    addrMap_.foreach {
-      case (addr, _, _, writeFn, _) => {
-        when(addr.asUInt === wrAddr) {
-          writeFn(wrData, wrStrb)
-        }
-      }
-    }
-    do_wrResp(axi4.ResponseFlag.OKAY)
-  }
-
-  /** accepts the write request, does not do anything. */
-  def wrDiscard(): Unit = {
-    do_wrResp(axi4.ResponseFlag.OKAY)
-  }
-
-  /** fails the write request. */
-  def wrError(): Unit = {
-    do_wrResp(axi4.ResponseFlag.SLVERR)
+  deferred {
+    require_(completed_, "RegisterBlock.complete() must be called exactly once")
   }
 }

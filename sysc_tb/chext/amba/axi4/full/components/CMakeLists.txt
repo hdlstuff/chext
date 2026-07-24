@@ -14,6 +14,11 @@ generate_tb(
 )
 
 generate_tb(
+    TARGET_NAME DemuxMm
+    HDL_MODULES DemuxMm_Tbtop
+)
+
+generate_tb(
     TARGET_NAME Upscale
     HDL_MODULES
         UpscaleTestTop1_1

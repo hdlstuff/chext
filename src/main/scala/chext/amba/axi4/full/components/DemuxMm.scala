@@ -95,11 +95,8 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
       val decoded = join(response)
 
       out._1 := pendingAddress
+      address(out._1) := decoded.address
       out._2 := decoded.port
-
-      fire {
-        assert(decoded.address === address(pendingAddress))
-      }
     }
   }
 

@@ -48,6 +48,7 @@ TEST_TARGETS=(
   "chext.amba.axi4.full.components.AddressGenerator_Tb"
   "chext.amba.axi4.full.components.AddressStrobeGenerator_Tb"
   "chext.amba.axi4.full.components.Downscale_Tb"
+  "chext.amba.axi4.full.components.DemuxMm_Tb"
   "chext.amba.axi4.full.components.Upscale_Tb"
   "chext.amba.axi4.full.components.Interconnect_Tb"
   "chext.amba.axi4.full.components.Unburst_Tb"
@@ -65,6 +66,7 @@ APP_TARGETS=(
   "chext.amba.axi4.full.Connect_Test"
   "chext.amba.axi4.lite.Connect_Test"
   "chext.amba.axi4.full.components.DemuxMm_Test"
+  "chext.amba.axi4.full.components.LiteConverter_Test"
   "chext.elastic.ChildIoTracking_Test"
   "chext.elastic.GraphDeclarationOrder_Test"
 )

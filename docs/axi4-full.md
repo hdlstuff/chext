@@ -228,7 +228,8 @@ component path, for example `childDemux.genDecoder(memoryMapPath = Seq("child"))
 DemuxMm resolves it. Each AXI full or lite channel buffer is a tracked component that owns its
 property resolver and its channel-level elastic children. Buffers transparently forward AXI
 tracking properties, so buffered links between the parent and child do not interrupt memory-map
-resolution.
+resolution. Each decoder rebases the forwarded `ARADDR` or `AWADDR` by the selected child's map
+offset, so every level receives an address relative to its own memory map.
 Set `captureResolutionTrace = true` to attach typed `resolutionTrace` arguments to resolved child
 maps. Each step records absolute `interfaceFrom` and `interfaceTo` paths, a stable `kind` such as
 `connect` or `buffer`, a stable resolver name, and the resolver component or module's absolute
@@ -337,13 +338,23 @@ val upscale = Module(new axi4f.components.Upscale(cfg))
 
 ### `axi4f.components.Downscale`
 
-Adapts a wider slave-side data bus to a narrower master-side data bus. It requires `wId == 0`,
-AXI4-Full, `wDataMaster < axiSlaveCfg.wData`, and no R-channel user data.
+Adapts a wider slave-side data bus to a narrower master-side data bus. Its input has two important
+traffic preconditions:
+
+- There are no transaction IDs: the configured `wId` must be zero.
+- There are no input bursts: every accepted request must have `ARLEN == 0` or `AWLEN == 0`.
+
+It also requires AXI4-Full, `wDataMaster < axiSlaveCfg.wData`, and no R-channel user data.
+`Downscale` can turn one wide input beat into a burst of narrower output beats. `simCheckBurst`
+controls optional `ARLEN`/`AWLEN` checks for the single-beat precondition. Use `Unburst` before it
+when single-beat input is not guaranteed, and after it when the downstream interface accepts only
+single-beat transactions.
 
 ```scala
 val cfg = axi4f.components.DownscaleConfig(
   axiSlaveCfg = axi4.Config(wId = 0, wAddr = 32, wData = 128, wUserR = 0),
-  wDataMaster = 32
+  wDataMaster = 32,
+  simCheckBurst = chext.util.SimulationCheck.Default
 )
 
 val downscale = Module(new axi4f.components.Downscale(cfg))
@@ -479,3 +490,40 @@ val converter = Module(new axi4f.components.ProtocolConverter(cfg))
 s_axi :=> converter.s_axi
 converter.m_axi :=> m_axi
 ```
+
+## Lite Converter
+
+`axi4f.components.LiteConverter` terminates a Full AXI interface as an AXI4-Lite master. It can
+increase or reduce the data width and decompose bursts. It requires an ID-free Full interface
+(`wId == 0`) and does not instantiate `IdSerialize`. Input unbursting always occurs before width
+conversion. `Upscale` selects the addressed read-data lane and shifts write data and `WSTRB` into
+the corresponding wider lanes. Because `Downscale` can create a narrow burst, only its output needs
+a second unburst stage before AXI4-Lite.
+
+```scala
+val cfg = axi4f.components.LiteConverterConfig(
+  axiSlaveCfg = axi4.Config(wId = 0, wAddr = 32, wData = 64),
+  wDataMaster = 32,
+  numOutstandingRead = 2,
+  numOutstandingWrite = 2,
+  simCheckNarrow = chext.util.SimulationCheck.Default,
+  simCheckAligned = chext.util.SimulationCheck.Default
+)
+
+val converter = Module(new axi4f.components.LiteConverter(cfg))
+s_axi :=> converter.s_axi
+converter.m_axil :=> registerBlock.s_axil
+```
+
+The Full interface must have `wId == 0`, and all AXI user widths must be zero. Input transfers must
+use the full Full-side data width and must be naturally aligned to that width. `simCheckNarrow`
+checks `ARSIZE`/`AWSIZE`; `simCheckAligned` checks the low address bits of `ARADDR`/`AWADDR`. Both
+support `SimulationCheck.Default`, `None`, `Printf`, or `Assert`.
+
+Upscaling is instantiated when the Full data width is narrower than the Lite width; downscaling is
+instantiated when it is wider. Equal widths need neither stage. After downscaling, a second internal
+unburst stage is always instantiated. Upscaling does not create additional beats and therefore
+needs no output unburst stage.
+
+The converter publishes generated-traffic properties on `m_axil` and accepted-traffic properties
+on `s_axi`. The downstream `Slave.MemoryMap` property is resolved through the converter to `s_axi`.

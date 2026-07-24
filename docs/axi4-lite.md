@@ -271,9 +271,10 @@ when(mem.debug.wen) {
 
 ### `axi4l.components.RegisterBlock`
 
-`RegisterBlock` is a helper object, not a `Module`. It creates an AXI4-Lite slave wire
-(`s_axil`) and a matching `cfgAxi`, then maps Chisel registers into an aligned address space.
-Reads and writes are accepted by calling `rdOk`, `rdError`, `wrOk`, `wrDiscard`, or `wrError`.
+`RegisterBlock` is a tracked component, not a `Module`. It creates an AXI4-Lite slave wire
+(`s_axil`) and a matching `cfgAxi`, then maps Chisel registers and read-only wires into an aligned
+address space. `complete()` must be called exactly once after all declarations; it generates the
+Elastic read/write implementation and publishes `Slave.MemoryMap` on `s_axil`.
 
 ```scala
 class RegTop extends Module {
@@ -293,23 +294,19 @@ class RegTop extends Module {
   val controlAddr = regs.reg(control, read = true, write = true, desc = "control")
   val statusAddr = regs.reg(status, read = true, write = false, desc = "status")
 
-  when(regs.rdReq) {
-    regs.rdOk()
-  }
-
-  when(regs.wrReq) {
-    regs.wrOk()
-  }
+  val memoryMap = regs.complete()
 }
 ```
 
 `base(addr)` rebases the next allocation, `nextAddr` returns the next free byte address, `reserve`
-skips a region, and `saveRegisterMap(directory, name)` writes a CSV map.
+skips a region, and `saveRegisterMap(directory, name)` writes a CSV map. Allocation methods cannot
+be called after `complete()`.
 
 ```scala
 regs.base(0x40)
 val scratch = RegInit(0.U(32.W))
 val scratchAddr = regs.reg(scratch, desc = "scratch")
 regs.reserve(16, desc = "reserved")
+regs.complete()
 regs.saveRegisterMap("build", "registers")
 ```

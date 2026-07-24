@@ -15,7 +15,8 @@ object Decoder {
       name: String,
       baseAddress: BigInt,
       size: BigInt,
-      index: Int
+      index: Int,
+      addressOffset: BigInt
   ) {
     def endAddress: BigInt = baseAddress + size
   }
@@ -43,7 +44,8 @@ final class Decoder(
         (flattened.path ++ segment.path).mkString("/", "/", ""),
         flattened.offset + segment.baseAddress,
         segment.size,
-        index
+        index,
+        flattened.offset
       )
     }
   }
@@ -82,8 +84,7 @@ final class Decoder(
   declareElasticInterface(dec_resp, "Port")
 
   val transform0 = new elastic.Transform(dec_req, dec_resp) {
-    out.address := in
-
+    val decodedAddress = WireDefault(in)
     val decoded = WireDefault(defaultPort.U(wPort.W))
     segments.foreach { segment =>
       val atOrAboveBase = in >= segment.baseAddress.U(wAddr.W)
@@ -93,8 +94,10 @@ final class Decoder(
 
       when(atOrAboveBase && belowEnd) {
         decoded := segment.index.U(wPort.W)
+        decodedAddress := in - segment.addressOffset.U(wAddr.W)
       }
     }
+    out.address := decodedAddress
     out.port := decoded
   }
 }

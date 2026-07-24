@@ -1202,7 +1202,7 @@ val cfg = axi4f.components.DemuxMmConfig(
 
 ### `axi4f.components.DemuxMm` [#](#entry-axi4-full-components-demux-mm)
 
-**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/DemuxMm.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/DemuxMm.test.scala)
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/DemuxMm.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/DemuxMm.test.scala); [SysC TB](../sysc_tb/chext/amba/axi4/full/components/src/DemuxMm.tb.cpp)
 
 **Intent and Usage:** Aggregate maps resolved at the master interfaces and generate address decoders:
 ```scala
@@ -1222,7 +1222,7 @@ val memoryMap = demux.genDecoder(
 )
 ```
 
-**Details:** Module. Resolves each mapped master interface's `Slave.MemoryMap`; AXI `Connect` and tracked `Buffer` component resolvers allow those properties to propagate through downstream connections and buffered links. It optionally reorders the maps with a complete permutation of non-error interfaces and calls `MemoryMap.aggregate` with `AlignedPacked`, `AlignedLargest`, or `Tight` allocation. `memoryMapPath` names a generated map when DemuxMm instances are composed hierarchically. Maps and segments carry absolute slash-separated origins. Optional `captureResolutionTrace` records typed `interfaceFrom`, `interfaceTo`, `kind`, `resolver`, and `resolverPath` steps in map arguments. `errorSlave = Some(index)` reserves that `m_axi` interface for addresses outside all mapped segments, so it does not need a memory-map property. Without an error slave, misses select the first interface in address order. Every map has an explicit declared size; validation rejects out-of-bounds and overlapping children or segments. The map model contains no routing indices; decoder routing privately zips address-ordered children with the interface order. The combined map is published as the slave interface's memory map. Decoder elastic IO remains declared for tracking but is private to the module. Unnamed or zero-sized child maps and layouts exceeding `wAddr` are rejected.
+**Details:** Module. Resolves each mapped master interface's `Slave.MemoryMap`; AXI `Connect` and tracked `Buffer` component resolvers allow those properties to propagate through downstream connections and buffered links. It optionally reorders the maps with a complete permutation of non-error interfaces and calls `MemoryMap.aggregate` with `AlignedPacked`, `AlignedLargest`, or `Tight` allocation. `memoryMapPath` names a generated map when DemuxMm instances are composed hierarchically. Each decoder subtracts the selected child map's offset from forwarded `ARADDR` and `AWADDR`, so the next hierarchy level receives a local address. Maps and segments carry absolute slash-separated origins. Optional `captureResolutionTrace` records typed `interfaceFrom`, `interfaceTo`, `kind`, `resolver`, and `resolverPath` steps in map arguments. `errorSlave = Some(index)` reserves that `m_axi` interface for addresses outside all mapped segments, so it does not need a memory-map property. Without an error slave, misses select the first interface in address order. Every map has an explicit declared size; validation rejects out-of-bounds and overlapping children or segments. The map model contains no routing indices; decoder routing privately zips address-ordered children with the interface order. The combined map is published as the slave interface's memory map. Decoder elastic IO remains declared for tracking but is private to the module. Unnamed or zero-sized child maps and layouts exceeding `wAddr` are rejected.
 
 ---
 
@@ -1451,11 +1451,12 @@ val cfg = axi4f.components.DownscaleConfig(
   axiSlaveCfg = fullCfg.copy(wId = 0, wData = 64),
   wDataMaster = 32,
   numOutstandingRead = 32,
-  numOutstandingWrite = 32
+  numOutstandingWrite = 32,
+  simCheckBurst = chext.util.SimulationCheck.Default
 )
 ```
 
-**Details:** Config. Configuration for `Downscale`; master data width must be narrower than the slave data width.
+**Details:** Config. Configuration for `Downscale`; master data width must be narrower than the slave data width. The input must have no transaction IDs (`wId == 0`) and every request must be single-beat (`ARLEN == 0`, `AWLEN == 0`). `simCheckBurst` controls optional simulation checks for the single-beat precondition.
 
 ---
 
@@ -1470,7 +1471,7 @@ val cfg = axi4f.components.DownscaleConfig(
 val downscale0 = Module(new axi4f.components.Downscale(cfg))
 ```
 
-**Details:** Module. Full AXI width downscaler. Internally splits wider beats and coordinates read/write data flow through elastic logic.
+**Details:** Module. Full AXI width downscaler for ID-free, single-beat input. It may create a narrow output burst; use `Unburst` before it for burst-capable input and after it for a single-beat downstream interface.
 
 ---
 
@@ -1610,6 +1611,46 @@ val protocolConverter0 =
 ```
 
 **Details:** Module. Staged full AXI protocol conversion. It composes lower-level full AXI component modules and their internal elastic channel components.
+
+---
+
+<a id="entry-axi4-full-components-lite-converter-config"></a>
+
+### `axi4f.components.LiteConverterConfig` [#](#entry-axi4-full-components-lite-converter-config)
+
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/LiteConverter.scala)
+
+**Intent and Usage:** Configure conversion from AXI4-Full to AXI4-Lite:
+```scala
+val cfg = axi4f.components.LiteConverterConfig(
+  axiSlaveCfg = fullCfg.copy(wId = 0, wData = 64),
+  wDataMaster = 32,
+  numOutstandingRead = 2,
+  numOutstandingWrite = 2,
+  simCheckNarrow = chext.util.SimulationCheck.Default,
+  simCheckAligned = chext.util.SimulationCheck.Default
+)
+```
+
+**Details:** Config. Configures inferred burst decomposition and width conversion. The Full interface must have `wId == 0`, and all user widths must be zero; `LiteConverter` does not instantiate `IdSerialize`. Outstanding capacities default to 2. `simCheckNarrow` verifies full-width `AxSIZE`, while `simCheckAligned` verifies naturally aligned `AxADDR`.
+
+---
+
+<a id="entry-axi4-full-components-lite-converter"></a>
+
+### `axi4f.components.LiteConverter` [#](#entry-axi4-full-components-lite-converter)
+
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/full/components/LiteConverter.scala); [Scala TB](../src/test/scala/chext/amba/axi4/full/components/LiteConverter.test.scala)
+
+**Intent and Usage:** Convert an AXI4-Full slave to an AXI4-Lite master:
+```scala
+val liteConverter0 =
+  Module(new axi4f.components.LiteConverter(cfg))
+s_axi :=> liteConverter0.s_axi
+liteConverter0.m_axil :=> registerBlock.s_axil
+```
+
+**Details:** Module. ID-free Full-to-Lite conversion with generated and accepted traffic properties. `Slave.MemoryMap` resolves from `m_axil` back to `s_axi`. Input unbursting always precedes inferred width conversion. Upscaling steers data and write strobes without adding beats; downscaling is followed by a second unburst stage.
 
 ---
 
@@ -1868,9 +1909,15 @@ val regs = new axi4l.components.RegisterBlock(
 )
 val s_axil = IO(axi4l.Slave(regs.cfgAxi))
 s_axil :=> regs.s_axil
+
+val control = RegInit(0.U(32.W))
+val status = WireDefault(0.U(32.W))
+regs.reg(control, desc = "control")
+regs.reg(status, write = false, desc = "status")
+val memoryMap = regs.complete()
 ```
 
-**Details:** Module. AXI4-Lite register block module with generated read/write register access behavior.
+**Details:** Component. AXI4-Lite register block with generated Elastic read/write behavior. `complete()` must be called exactly once and publishes `Slave.MemoryMap` on `s_axil`.
 
 ---
 
