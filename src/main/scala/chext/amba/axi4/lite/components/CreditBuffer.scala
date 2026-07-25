@@ -41,6 +41,8 @@ class CreditBuffer(val cfg: CreditBufferConfig) extends Module with chext.Annota
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axi)
 
+  private val resolver = new CreditBuffer_Resolver(this)
+
   private def connectRead()(implicit si: SourceInfo): Unit = {
     if (rBuffer > 0) {
       val responseBuffer = Module(new ReadResponseBuffer(ReadResponseBufferConfig(axiCfg, rBuffer)))
@@ -98,6 +100,32 @@ class CreditBuffer(val cfg: CreditBufferConfig) extends Module with chext.Annota
 
   if (axiCfg.read) connectRead()
   if (axiCfg.write) connectWrite()
+}
+
+private final class CreditBuffer_Resolver(owner: CreditBuffer)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking.{ResolveRequest, ResolveResult}
+  import axi4.tracking.properties.{Master, Slave}
+
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axi)
+
+  override def kind: String = "credit-buffer"
+  override def resolver: String = "CreditBufferResolver"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(Slave.MemoryMap | Slave.ShapeProperty()) =>
+        forwardTo(request, owner.m_axi)
+      case MasterRequests(Master.ShapeProperty()) =>
+        forwardTo(request, owner.s_axi)
+      case SlaveRequests(_) | MasterRequests(_) =>
+        request.incomplete()
+      case _ =>
+        request.failure(
+          s"CreditBuffer cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }
 
 /** Config for [[ReadResponseBuffer]].

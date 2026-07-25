@@ -6,6 +6,7 @@ import chisel3.hacks.{deferred, PrefixManager}
 import chisel3.util._
 
 import chext.amba.axi4
+import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, Resolver}
 import chext.amba.axi4.tracking.properties.Slave
 import chext.amba.axi4.util.MemoryMap
 import chext.elastic
@@ -14,8 +15,8 @@ import chext.tracking.{Component, withComponent}
 /** Defines an AXI4-Lite register block.
   *
   * Register and reserved-region declarations are collected until [[complete]] is called. Completion
-  * creates the Elastic request/response logic and publishes the block's `Slave.MemoryMap` property.
-  * `complete()` must be called exactly once.
+  * creates the Elastic request/response logic and makes the block's memory map available to its
+  * resolver. `complete()` must be called exactly once.
   *
   * The block assumes data-width-aligned accesses. A mapped value narrower than the data width still
   * occupies one full data-width word. Read-only wires should be registered with `write = false`.
@@ -72,6 +73,8 @@ class RegisterBlock(
   elasticState.addSink("s_axil_aw", s_axil.aw, boundary = true)
   elasticState.addSink("s_axil_w", s_axil.w, boundary = true)
   elasticState.addSource("s_axil_b", s_axil.b, boundary = true)
+
+  private val resolver = new RegisterBlock_Resolver(this)
 
   private final class Entry(
       val startAddr: Int,
@@ -159,27 +162,12 @@ class RegisterBlock(
     } finally write.close()
   }
 
+  /** The generated memory map, or `None` until [[complete]] has been called. */
+  def memoryMapOption: Option[MemoryMap] = memoryMap_
+
   /** The generated memory map, available after [[complete]]. */
-  def memoryMap: MemoryMap = memoryMap_.getOrElse {
+  def memoryMap: MemoryMap = memoryMapOption.getOrElse {
     throw new IllegalStateException("RegisterBlock.memoryMap is available only after complete()")
-  }
-
-  private def enforceProperties(result: MemoryMap): Unit = {
-    val fullSize = log2Ceil(wData / 8)
-
-    s_axil.slaveProps(Slave.MemoryMap) = result
-    s_axil.slaveProps(Slave.ReadOutstandingTransactions) = 1
-    s_axil.slaveProps(Slave.WriteOutstandingTransactions) = 1
-    s_axil.slaveProps(Slave.ReadThreads) = 1
-    s_axil.slaveProps(Slave.WriteThreads) = 1
-    s_axil.slaveProps(Slave.ReadBurstBeats) = 1
-    s_axil.slaveProps(Slave.WriteBurstBeats) = 1
-    s_axil.slaveProps(Slave.ReadBurstNarrow) = false
-    s_axil.slaveProps(Slave.WriteBurstNarrow) = false
-    s_axil.slaveProps(Slave.ReadBurstTypes) = Set(1)
-    s_axil.slaveProps(Slave.WriteBurstTypes) = Set(1)
-    s_axil.slaveProps(Slave.ReadBurstSizes) = Set(fullSize)
-    s_axil.slaveProps(Slave.WriteBurstSizes) = Set(fullSize)
   }
 
   private def implementRead(): Unit = {
@@ -224,7 +212,7 @@ class RegisterBlock(
     }
   }
 
-  /** Finalizes the block, creates its hardware, and publishes its memory-map property. */
+  /** Finalizes the block, creates its hardware, and makes its memory map resolvable. */
   def complete(): MemoryMap = {
     require_.here(!completed_, "RegisterBlock.complete() must be called exactly once")
 
@@ -251,7 +239,6 @@ class RegisterBlock(
       origin = axi4.tracking.TrackingPath.interface(s_axil)
     )
 
-    enforceProperties(result)
     PrefixManager.withAbsolute(path) {
       withComponent(this) {
         PrefixManager.withRelative("read") {
@@ -264,6 +251,7 @@ class RegisterBlock(
     }
 
     memoryMap_ = Some(result)
+    s_axil.slaveProps(Slave.MemoryMap) = result
     completed_ = true
     result
   }
@@ -271,4 +259,44 @@ class RegisterBlock(
   deferred {
     require_(completed_, "RegisterBlock.complete() must be called exactly once")
   }
+}
+
+/** Resolves and initializes interface properties for one [[RegisterBlock]]. */
+private final class RegisterBlock_Resolver(owner: RegisterBlock)(implicit sourceInfo: SourceInfo)
+    extends Resolver(owner) {
+  private val SlaveRequests = bindSlave(owner.s_axil)
+
+  override def kind: String = "register-block"
+  override def resolver: String = "RegisterBlock_Resolver"
+
+  private val fullSize = log2Ceil(owner.wData / 8)
+
+  owner.s_axil.slaveProps(Slave.ReadOutstandingTransactions) = 1
+  owner.s_axil.slaveProps(Slave.WriteOutstandingTransactions) = 1
+  owner.s_axil.slaveProps(Slave.ReadThreads) = 1
+  owner.s_axil.slaveProps(Slave.WriteThreads) = 1
+  owner.s_axil.slaveProps(Slave.ReadBurstBeats) = 1
+  owner.s_axil.slaveProps(Slave.WriteBurstBeats) = 1
+  owner.s_axil.slaveProps(Slave.ReadBurstNarrow) = false
+  owner.s_axil.slaveProps(Slave.WriteBurstNarrow) = false
+  owner.s_axil.slaveProps(Slave.ReadBurstTypes) = Set(1)
+  owner.s_axil.slaveProps(Slave.WriteBurstTypes) = Set(1)
+  owner.s_axil.slaveProps(Slave.ReadBurstSizes) = Set(fullSize)
+  owner.s_axil.slaveProps(Slave.WriteBurstSizes) = Set(fullSize)
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(Slave.MemoryMap) =>
+        request.failure(
+          "RegisterBlock.complete() was not called before resolving slave.memoryMap"
+        )
+      case SlaveRequests(_) =>
+        request.failure(
+          s"RegisterBlock has no resolver rule for '${request.qualifiedName}'"
+        )
+      case _ =>
+        request.failure(
+          s"RegisterBlock cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }

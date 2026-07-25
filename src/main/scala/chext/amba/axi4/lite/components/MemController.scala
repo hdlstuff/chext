@@ -7,10 +7,14 @@ import elastic.ConnectOp._
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.SourceInfo
 import chisel3.experimental.BundleLiterals._
 
 import axi4.lite.WriteResponseChannel
 import chext.amba.axi4.{Config, ResponseFlag}
+import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, Resolver}
+import chext.amba.axi4.tracking.properties.Slave
+import chext.amba.axi4.util.MemoryMap
 
 class MemDebugPort(val wAddr: Int, val wData: Int) extends Bundle {
   private val require_ = chext.util.Require.inferred()
@@ -53,6 +57,8 @@ class MemController(
   declareClock(clock)
   declareReset(reset)
   declareAxi4Interface(s_axil)
+
+  private val resolver = new MemController_Resolver(this)
 
   /** Debug port.
     *
@@ -127,4 +133,45 @@ class MemController(
       mem(debug.waddr) := debug.wdata
     }
   }
+}
+
+private final class MemController_Resolver(owner: MemController)(implicit sourceInfo: SourceInfo)
+    extends Resolver(owner) {
+  private val SlaveRequests = bindSlave(owner.s_axil)
+
+  override def kind: String = "memory-controller"
+  override def resolver: String = "MemControllerResolver"
+
+  private val fullSize = log2Ceil(owner.axiCfg.wData / 8)
+
+  if (owner.axiCfg.read) {
+    owner.s_axil.slaveProps(Slave.ReadOutstandingTransactions) = 4
+    owner.s_axil.slaveProps(Slave.ReadThreads) = 1
+    owner.s_axil.slaveProps(Slave.ReadBurstBeats) = 1
+    owner.s_axil.slaveProps(Slave.ReadBurstNarrow) = false
+    owner.s_axil.slaveProps(Slave.ReadBurstTypes) = Set(1)
+    owner.s_axil.slaveProps(Slave.ReadBurstSizes) = Set(fullSize)
+  }
+  if (owner.axiCfg.write) {
+    owner.s_axil.slaveProps(Slave.WriteOutstandingTransactions) = 4
+    owner.s_axil.slaveProps(Slave.WriteThreads) = 1
+    owner.s_axil.slaveProps(Slave.WriteBurstBeats) = 1
+    owner.s_axil.slaveProps(Slave.WriteBurstNarrow) = false
+    owner.s_axil.slaveProps(Slave.WriteBurstTypes) = Set(1)
+    owner.s_axil.slaveProps(Slave.WriteBurstSizes) = Set(fullSize)
+  }
+  owner.s_axil.slaveProps(Slave.MemoryMap) =
+    MemoryMap(
+      size = BigInt(1) << (owner.log2numElements + owner.addrBitLow)
+    )
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(_) =>
+        request.undefined()
+      case _ =>
+        request.failure(
+          s"MemController cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }

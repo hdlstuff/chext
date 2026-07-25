@@ -60,7 +60,7 @@ private class LiteConverterTestTop(
   m_axil.slaveProps(Slave.MemoryMap) = terminalMap
 
   private val request = ResolveRequest(s_axi, Slave.MemoryMap)
-  assert(Resolver.recursiveResolve(request) == ResolveResult.Success())
+  assert(Resolver.resolve(request).result == ResolveResult.Success())
   assert(request.valueOption.contains(terminalMap))
 
   assert(converter.m_axil.masterProps(Master.ReadThreads).get == 1)
@@ -103,13 +103,43 @@ private class RegisterBlockTestTop(completeMode: Int)
   registerBlock.reg(storage, desc = "storage")
   registerBlock.reg(status, write = false, desc = "status")
 
-  if (completeMode >= 1) {
+  assert(registerBlock.memoryMapOption.isEmpty)
+  private val memoryMapUnavailable =
+    try {
+      registerBlock.memoryMap
+      false
+    } catch {
+      case _: IllegalStateException => true
+    }
+  assert(memoryMapUnavailable)
+  assert(registerBlock.s_axil.slaveProps(Slave.ReadThreads).get == 1)
+
+  private val earlyRequest = Option.when(completeMode == 3) {
+    ResolveRequest(registerBlock.s_axil, Slave.MemoryMap)
+  }
+  earlyRequest.foreach { request =>
+    Resolver.resolve(request).result match {
+      case ResolveResult.Failure(message, failedRequest) =>
+        assert(message.contains("RegisterBlock.complete() was not called"))
+        assert(failedRequest == request)
+      case result => assert(false, result.toString)
+    }
+  }
+
+  if (completeMode != 0) {
     val generatedMap = registerBlock.complete()
     assert(generatedMap.path == Seq("leaf"))
     assert(generatedMap.size == 0x100)
     assert(generatedMap.segments.map(_.path) == Seq(Seq("registers")))
+    assert(registerBlock.memoryMapOption.contains(generatedMap))
+    assert(registerBlock.memoryMap == generatedMap)
+
+    val request =
+      earlyRequest.getOrElse(ResolveRequest(registerBlock.s_axil, Slave.MemoryMap))
+    assert(Resolver.resolve(request).result == ResolveResult.Success())
+    assert(request.valueOption.contains(generatedMap))
   }
-  if (completeMode >= 2)
+  if (completeMode == 2)
     registerBlock.complete()
 }
 
@@ -209,6 +239,11 @@ object LiteConverter_Test extends App with ElaborationTest {
     expected = Failure,
     gen = () => new RegisterBlockTestTop(completeMode = 2),
     checks = Seq(FailureMessage contains "RegisterBlock.complete() must be called exactly once")
+  )
+  test(
+    name = "register_block_resolution_before_complete",
+    gen = () => new RegisterBlockTestTop(completeMode = 3),
+    checks = Seq(SystemVerilog contains "RegisterBlockTestTop")
   )
 
   runTests()
