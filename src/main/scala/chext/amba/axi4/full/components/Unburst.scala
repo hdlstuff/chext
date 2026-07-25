@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.amba.axi4
 import chext.elastic
@@ -37,6 +37,8 @@ class Unburst(val cfg: UnburstConfig) extends Module with chext.AnnotatedModule 
   declareReset(reset)
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axi)
+
+  private val resolver = new Unburst_Resolver(this)
 
   dontTouch(s_axi)
   dontTouch(m_axi)
@@ -169,4 +171,28 @@ class Unburst(val cfg: UnburstConfig) extends Module with chext.AnnotatedModule 
 
   if (axiCfg.read) implRead()
   if (axiCfg.write) implWrite()
+}
+
+private final class Unburst_Resolver(owner: Unburst)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking.{ResolveRequest, ResolveResult}
+  import axi4.tracking.properties.Slave
+
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axi)
+
+  override def kind: String = "unburst"
+  override def resolver: String = "UnburstResolver"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(Slave.MemoryMap) =>
+        forwardTo(request, owner.m_axi)
+      case SlaveRequests(_) | MasterRequests(_) =>
+        request.incomplete()
+      case _ =>
+        request.failure(
+          s"Unburst cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }

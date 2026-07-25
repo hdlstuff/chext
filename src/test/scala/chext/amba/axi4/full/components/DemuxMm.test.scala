@@ -7,8 +7,8 @@ import chext.amba.axi4
 import chext.amba.axi4.full.ConnectOp._
 import chext.amba.axi4.lite.{ConnectOp => LiteConnectOp}
 import chext.amba.axi4.lite.components.RegisterBlock
-import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, Resolver}
-import chext.amba.axi4.tracking.properties.Slave
+import chext.amba.axi4.tracking.{PropertyState, ResolveRequest, ResolveResult, Resolver}
+import chext.amba.axi4.tracking.properties.{Master, Slave}
 import chext.amba.axi4.util.MemoryMap
 import chext.util.ElaborationTest
 
@@ -85,6 +85,34 @@ class DemuxMmTestTop(
       order.map(index => logicalSegments(masterMemoryMaps(index).get))
   )
   assert(demux.s_axi.slaveProps(Slave.MemoryMap).get == derivedMemoryMap)
+
+  if (!read) {
+    assert(demux.s_axi.slaveProps(Slave.ReadThreads).state == PropertyState.Undefined)
+    val slaveReadRequest = ResolveRequest(demux.s_axi, Slave.ReadThreads)
+    assert(Resolver.resolve(slaveReadRequest).result == ResolveResult.Success())
+    assert(slaveReadRequest.state == PropertyState.Undefined)
+
+    demux.m_axi.foreach { output =>
+      assert(output.masterProps(Master.ReadThreads).state == PropertyState.Undefined)
+      val masterReadRequest = ResolveRequest(output, Master.ReadThreads)
+      assert(Resolver.resolve(masterReadRequest).result == ResolveResult.Success())
+      assert(masterReadRequest.state == PropertyState.Undefined)
+    }
+  }
+
+  if (!write) {
+    assert(demux.s_axi.slaveProps(Slave.WriteThreads).state == PropertyState.Undefined)
+    val slaveWriteRequest = ResolveRequest(demux.s_axi, Slave.WriteThreads)
+    assert(Resolver.resolve(slaveWriteRequest).result == ResolveResult.Success())
+    assert(slaveWriteRequest.state == PropertyState.Undefined)
+
+    demux.m_axi.foreach { output =>
+      assert(output.masterProps(Master.WriteThreads).state == PropertyState.Undefined)
+      val masterWriteRequest = ResolveRequest(output, Master.WriteThreads)
+      assert(Resolver.resolve(masterWriteRequest).result == ResolveResult.Success())
+      assert(masterWriteRequest.state == PropertyState.Undefined)
+    }
+  }
 }
 
 class DemuxMmTreeTestTop extends Module with chext.AnnotatedModule {
@@ -184,7 +212,7 @@ object DemuxMm_Test extends App with ElaborationTest {
         case _ => throw new AssertionError(s"Unsupported DemuxMm test top: $module")
       }
       val request = ResolveRequest(interface, Slave.MemoryMap)
-      Resolver.recursiveResolve(request) match {
+      Resolver.resolve(request).result match {
         case ResolveResult.Success() => ()
         case ResolveResult.Failure(message, _) =>
           throw new AssertionError(s"Could not resolve top-level s_axi memory map: $message")

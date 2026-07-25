@@ -1,7 +1,7 @@
 package chext.amba.axi4.full.components
 
 import chisel3._
-import chisel3.experimental.BaseModule
+import chisel3.experimental.SourceInfo
 import chisel3.util._
 
 import chext.amba.axi4
@@ -65,63 +65,6 @@ case class LiteConverterConfig(
   )
 }
 
-/** Resolves properties that cross the Full/Lite protocol boundary.
-  *
-  * Traffic-shape properties are enforced directly on the applicable interface. Unresolved slave
-  * properties, most importantly `Slave.MemoryMap`, flow from the Lite master interface to the Full
-  * slave interface. Unresolved master properties flow in the opposite direction.
-  */
-private final class LiteConverterResolver(
-    owner: BaseModule,
-    upstream: axi4.tracking.Tracked,
-    downstream: axi4.tracking.Tracked
-) extends Resolver(owner) {
-  upstream.addResolver(SlaveTag, this)
-  downstream.addResolver(MasterTag, this)
-
-  override def kind: String = "lite-converter"
-  override def resolver: String = "LiteConverterResolver"
-
-  def resolve[T](request: ResolveRequest[T]): ResolveResult = {
-    val target =
-      if ((request.interface eq upstream) && request.role == SlaveTag) downstream
-      else if ((request.interface eq downstream) && request.role == MasterTag) upstream
-      else
-        return request.failure(
-          s"LiteConverter cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
-
-    val dependency = request.retarget(target)
-    if (!dependency.isResolved)
-      request.retry(Seq(dependency))
-    else
-      dependency.valueOption match {
-        case Some(value) =>
-          request.calculate(
-            value,
-            this,
-            ResolutionStep(
-              interfaceFrom = TrackingPath.interface(request.interface),
-              interfaceTo = TrackingPath.interface(target),
-              kind = kind,
-              resolver = resolver,
-              resolverPath = resolverPath
-            ) +: dependency.resolutionSteps
-          )
-          ResolveResult.Success()
-        case None =>
-          dependency.state match {
-            case PropertyState.Incomplete => request.incomplete()
-            case PropertyState.Undefined  => request.undefined()
-            case state =>
-              request.failure(
-                s"Converted property '${request.qualifiedName}' has unexpected state $state"
-              )
-          }
-      }
-  }
-}
-
 /** Converts an AXI4-Full slave interface into an AXI4-Lite master interface.
   *
   * The Full interface must have `wId == 0`; this converter does not instantiate `IdSerialize`.
@@ -144,67 +87,9 @@ class LiteConverter(val cfg: LiteConverterConfig)
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axil)
 
-  private val propertyResolver = new LiteConverterResolver(this, s_axi, m_axil)
+  private val resolver = new LiteConverter_Resolver(this)
 
   private val fullSizeSlave = log2Ceil(axiSlaveCfg.wData / 8)
-  private val fullSizeMaster = log2Ceil(wDataMaster / 8)
-  private val maxBurstBeats = if (axiSlaveCfg.axi3Compat) 16 else 256
-  private val downscaleRatio = axiSlaveCfg.wData / wDataMaster
-
-  private def cappedProduct(left: Int, right: Int): Int =
-    (BigInt(left) * right min BigInt(Int.MaxValue)).toInt
-
-  private def enforceMasterProperties(): Unit = {
-    if (axiMasterCfg.read) {
-      val outstanding =
-        if (useDownscale) cappedProduct(numOutstandingRead, downscaleRatio)
-        else if (useUpscale) numOutstandingRead
-        else cappedProduct(numOutstandingRead, maxBurstBeats)
-      m_axil.masterProps(Master.ReadOutstandingTransactions) = outstanding
-      m_axil.masterProps(Master.ReadThreads) = 1
-      m_axil.masterProps(Master.ReadBurstBeats) = 1
-      m_axil.masterProps(Master.ReadBurstNarrow) = false
-      m_axil.masterProps(Master.ReadBurstTypes) = Set(1)
-      m_axil.masterProps(Master.ReadBurstSizes) = Set(fullSizeMaster)
-    }
-    if (axiMasterCfg.write) {
-      val outstanding =
-        if (useDownscale) cappedProduct(numOutstandingWrite, downscaleRatio)
-        else if (useUpscale) numOutstandingWrite
-        else cappedProduct(numOutstandingWrite, maxBurstBeats)
-      m_axil.masterProps(Master.WriteOutstandingTransactions) = outstanding
-      m_axil.masterProps(Master.WriteThreads) = 1
-      m_axil.masterProps(Master.WriteBurstBeats) = 1
-      m_axil.masterProps(Master.WriteBurstNarrow) = false
-      m_axil.masterProps(Master.WriteBurstTypes) = Set(1)
-      m_axil.masterProps(Master.WriteBurstSizes) = Set(fullSizeMaster)
-    }
-  }
-
-  private def enforceSlaveProperties(): Unit = {
-    // The input Unburst stage supports every AXI burst encoding.
-    val acceptedBurstTypes = Set(0, 1, 2)
-
-    if (axiSlaveCfg.read) {
-      s_axi.slaveProps(Slave.ReadOutstandingTransactions) = numOutstandingRead
-      s_axi.slaveProps(Slave.ReadThreads) = 1
-      s_axi.slaveProps(Slave.ReadBurstBeats) = maxBurstBeats
-      s_axi.slaveProps(Slave.ReadBurstNarrow) = false
-      s_axi.slaveProps(Slave.ReadBurstTypes) = acceptedBurstTypes
-      s_axi.slaveProps(Slave.ReadBurstSizes) = Set(fullSizeSlave)
-    }
-    if (axiSlaveCfg.write) {
-      s_axi.slaveProps(Slave.WriteOutstandingTransactions) = numOutstandingWrite
-      s_axi.slaveProps(Slave.WriteThreads) = 1
-      s_axi.slaveProps(Slave.WriteBurstBeats) = maxBurstBeats
-      s_axi.slaveProps(Slave.WriteBurstNarrow) = false
-      s_axi.slaveProps(Slave.WriteBurstTypes) = acceptedBurstTypes
-      s_axi.slaveProps(Slave.WriteBurstSizes) = Set(fullSizeSlave)
-    }
-  }
-
-  enforceMasterProperties()
-  enforceSlaveProperties()
 
   private type FullStage = (axi4.full.Interface, axi4.full.Interface)
   private val widthConvertedCfg = axiSlaveCfg.copy(wData = wDataMaster)
@@ -328,4 +213,92 @@ class LiteConverter(val cfg: LiteConverterConfig)
 
   if (axiSlaveCfg.read) bridgeRead()
   if (axiSlaveCfg.write) bridgeWrite()
+}
+
+/** Resolves properties and initializes interface properties for one [[LiteConverter]].
+  *
+  * Slave properties, most importantly `Slave.MemoryMap`, flow from the Lite master interface to the
+  * Full slave interface, while master properties flow in the opposite direction.
+  */
+private final class LiteConverter_Resolver(owner: LiteConverter)(implicit sourceInfo: SourceInfo)
+    extends Resolver(owner) {
+  import owner.cfg._
+
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axil)
+
+  override def kind: String = "lite-converter"
+  override def resolver: String = "LiteConverterResolver"
+
+  private val fullSizeSlave = log2Ceil(axiSlaveCfg.wData / 8)
+  private val fullSizeMaster = log2Ceil(wDataMaster / 8)
+  private val maxBurstBeats = if (axiSlaveCfg.axi3Compat) 16 else 256
+  private val downscaleRatio = axiSlaveCfg.wData / wDataMaster
+
+  private def cappedProduct(left: Int, right: Int): Int =
+    (BigInt(left) * right min BigInt(Int.MaxValue)).toInt
+
+  private def enforceMasterProperties(): Unit = {
+    if (axiMasterCfg.read) {
+      val outstanding =
+        if (useDownscale) cappedProduct(numOutstandingRead, downscaleRatio)
+        else if (useUpscale) numOutstandingRead
+        else cappedProduct(numOutstandingRead, maxBurstBeats)
+      owner.m_axil.masterProps(Master.ReadOutstandingTransactions) = outstanding
+      owner.m_axil.masterProps(Master.ReadThreads) = 1
+      owner.m_axil.masterProps(Master.ReadBurstBeats) = 1
+      owner.m_axil.masterProps(Master.ReadBurstNarrow) = false
+      owner.m_axil.masterProps(Master.ReadBurstTypes) = Set(1)
+      owner.m_axil.masterProps(Master.ReadBurstSizes) = Set(fullSizeMaster)
+    }
+    if (axiMasterCfg.write) {
+      val outstanding =
+        if (useDownscale) cappedProduct(numOutstandingWrite, downscaleRatio)
+        else if (useUpscale) numOutstandingWrite
+        else cappedProduct(numOutstandingWrite, maxBurstBeats)
+      owner.m_axil.masterProps(Master.WriteOutstandingTransactions) = outstanding
+      owner.m_axil.masterProps(Master.WriteThreads) = 1
+      owner.m_axil.masterProps(Master.WriteBurstBeats) = 1
+      owner.m_axil.masterProps(Master.WriteBurstNarrow) = false
+      owner.m_axil.masterProps(Master.WriteBurstTypes) = Set(1)
+      owner.m_axil.masterProps(Master.WriteBurstSizes) = Set(fullSizeMaster)
+    }
+  }
+
+  private def enforceSlaveProperties(): Unit = {
+    val acceptedBurstTypes = Set(0, 1, 2)
+
+    if (axiSlaveCfg.read) {
+      owner.s_axi.slaveProps(Slave.ReadOutstandingTransactions) = numOutstandingRead
+      owner.s_axi.slaveProps(Slave.ReadThreads) = 1
+      owner.s_axi.slaveProps(Slave.ReadBurstBeats) = maxBurstBeats
+      owner.s_axi.slaveProps(Slave.ReadBurstNarrow) = false
+      owner.s_axi.slaveProps(Slave.ReadBurstTypes) = acceptedBurstTypes
+      owner.s_axi.slaveProps(Slave.ReadBurstSizes) = Set(fullSizeSlave)
+    }
+    if (axiSlaveCfg.write) {
+      owner.s_axi.slaveProps(Slave.WriteOutstandingTransactions) = numOutstandingWrite
+      owner.s_axi.slaveProps(Slave.WriteThreads) = 1
+      owner.s_axi.slaveProps(Slave.WriteBurstBeats) = maxBurstBeats
+      owner.s_axi.slaveProps(Slave.WriteBurstNarrow) = false
+      owner.s_axi.slaveProps(Slave.WriteBurstTypes) = acceptedBurstTypes
+      owner.s_axi.slaveProps(Slave.WriteBurstSizes) = Set(fullSizeSlave)
+    }
+  }
+
+  enforceMasterProperties()
+  enforceSlaveProperties()
+
+  /** Forwards one non-traffic-shape property across the protocol boundary. */
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(_) =>
+        forwardTo(request, owner.m_axil)
+      case MasterRequests(_) =>
+        forwardTo(request, owner.s_axi)
+      case _ =>
+        request.failure(
+          s"LiteConverter cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }

@@ -1,12 +1,17 @@
 package chext.amba.axi4.full.components
 
 import chisel3._
-import chisel3.experimental.prefix
+import chisel3.experimental.{prefix, SourceInfo}
 import chisel3.util._
 
 import chext.amba.axi4
 import chext.amba.axi4.full.WriteDataChannel
-import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, ResolutionTrace, Resolver}
+import chext.amba.axi4.tracking.{
+  ResolveRequest,
+  ResolveResult,
+  ResolutionTrace,
+  Resolver
+}
 import chext.amba.axi4.tracking.properties.Slave
 import chext.amba.axi4.util.{Decoder, MemoryMap}
 import chext.bundles._
@@ -71,6 +76,8 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
   declareElasticInterface(readDec_resp, "Port")
   declareElasticInterface(writeDec_req, "Address")
   declareElasticInterface(writeDec_resp, "Port")
+
+  private val resolver = new DemuxMm_Resolver(this)
 
   private val genPort = UInt(wPort.W)
 
@@ -263,7 +270,7 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
       captureResolutionTrace: Boolean
   ): MemoryMap = {
     val request = ResolveRequest(interface, Slave.MemoryMap)
-    val resolution = Resolver.recursiveResolveWithTrace(request)
+    val resolution = Resolver.resolve(request)
     resolution.result match {
       case ResolveResult.Success() => ()
       case ResolveResult.Failure(message, _) =>
@@ -306,14 +313,7 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
         s"DemuxMm address space 0x${addressSpaceSize.toString(16)}"
     )
 
-    val slaveMemoryMap = s_axi.slaveProps(Slave.MemoryMap)
-    slaveMemoryMap.valueOption.foreach { existing =>
-      require_(
-        existing == memoryMap,
-        "DemuxMm slave memory map is already set to a different value"
-      )
-    }
-    slaveMemoryMap.enforce(memoryMap)
+    resolver.setMemoryMap(memoryMap)
 
     prefix("read") {
       if (axiSlaveCfg.read) {
@@ -340,4 +340,61 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
     decoderGenerated = true
     memoryMap
   }
+}
+
+/** Resolves and initializes interface properties for one [[DemuxMm]]. */
+private final class DemuxMm_Resolver(owner: DemuxMm)(implicit sourceInfo: SourceInfo)
+    extends Resolver(owner) {
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axi.toSeq)
+
+  override def kind: String = "demux-mm"
+  override def resolver: String = "DemuxMm_Resolver"
+
+  private var memoryMapOption = Option.empty[MemoryMap]
+  private val noSlaveAggregate =
+    "DemuxMm keeps each downstream slave capability separate instead of aggregating them"
+
+  private val read = owner.cfg.axiSlaveCfg.read
+  private val write = owner.cfg.axiSlaveCfg.write
+
+  if (read) {
+    owner.s_axi.slaveProps(Slave.ReadOutstandingTransactions) =
+      owner.cfg.numOutstandingRead
+    owner.s_axi.slaveProps(Slave.ReadThreads) =
+      owner.cfg.numIdsTrackedRead
+  }
+  if (write) {
+    owner.s_axi.slaveProps(Slave.WriteOutstandingTransactions) =
+      owner.cfg.numOutstandingWrite
+    owner.s_axi.slaveProps(Slave.WriteThreads) =
+      owner.cfg.numIdsTrackedWrite
+  }
+
+  def setMemoryMap(memoryMap: MemoryMap): Unit = {
+    memoryMapOption.foreach { existing =>
+      require(
+        existing == memoryMap,
+        "DemuxMm slave memory map is already set to a different value"
+      )
+    }
+    memoryMapOption = Some(memoryMap)
+    owner.s_axi.slaveProps(Slave.MemoryMap).enforce(memoryMap)
+  }
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(Slave.MemoryMap) =>
+        request.failure(
+          "DemuxMm.genDecoder() was not called before resolving slave.memoryMap"
+        )
+      case SlaveRequests(_) =>
+        request.dontCare(noSlaveAggregate)
+      case MasterRequests(_, _) =>
+        forwardTo(request, owner.s_axi)
+      case _ =>
+        request.failure(
+          s"DemuxMm cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }

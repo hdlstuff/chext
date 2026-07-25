@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.elastic
 import elastic.ConnectOp._
@@ -40,6 +40,8 @@ class IdSerialize(val cfg: IdSerializeConfig) extends Module with chext.Annotate
   declareReset(reset)
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axi)
+
+  private val resolver = new IdSerialize_Resolver(this)
 
   private val genId = UInt(axiSlaveCfg.wId.W)
 
@@ -83,4 +85,28 @@ class IdSerialize(val cfg: IdSerializeConfig) extends Module with chext.Annotate
 
   if (axiSlaveCfg.read) implRead()
   if (axiMasterCfg.write) implWrite()
+}
+
+private final class IdSerialize_Resolver(owner: IdSerialize)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking.{ResolveRequest, ResolveResult}
+  import axi4.tracking.properties.Slave
+
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axi)
+
+  override def kind: String = "id-serialize"
+  override def resolver: String = "IdSerializeResolver"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(Slave.MemoryMap) =>
+        forwardTo(request, owner.m_axi)
+      case SlaveRequests(_) | MasterRequests(_) =>
+        request.incomplete()
+      case _ =>
+        request.failure(
+          s"IdSerialize cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }

@@ -9,7 +9,7 @@ import elastic.ConnectOp._
 
 import chext.amba.axi4
 
-import chisel3.experimental.{prefix, AffectsChiselPrefix}
+import chisel3.experimental.{prefix, AffectsChiselPrefix, SourceInfo}
 
 case class WidenConfig(
     val axiCfg: axi4.Config,
@@ -36,6 +36,8 @@ class Widen(val cfg: WidenConfig) extends Module with chext.AnnotatedModule {
   declareReset(reset)
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axi)
+
+  private val resolver = new Widen_Resolver(this)
 
   private class Control extends Bundle {
     val beatFirst = Bool()
@@ -355,4 +357,28 @@ class Widen(val cfg: WidenConfig) extends Module with chext.AnnotatedModule {
   if (axiCfg.write)
     implWrite()
 
+}
+
+private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking.{ResolveRequest, ResolveResult}
+  import axi4.tracking.properties.Slave
+
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axi)
+
+  override def kind: String = "widen"
+  override def resolver: String = "WidenResolver"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(Slave.MemoryMap) =>
+        forwardTo(request, owner.m_axi)
+      case SlaveRequests(_) | MasterRequests(_) =>
+        request.incomplete()
+      case _ =>
+        request.failure(
+          s"Widen cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }

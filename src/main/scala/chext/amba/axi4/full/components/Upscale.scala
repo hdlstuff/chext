@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.amba.axi4
 import chext.elastic
@@ -46,6 +46,8 @@ class Upscale(val cfg: UpscaleConfig) extends Module with chext.AnnotatedModule 
   declareReset(reset)
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axi)
+
+  private val resolver = new Upscale_Resolver(this)
 
   private def implRead(): Unit = prefix("read") {
     val addressGenerator = Module(new AddressGenerator(log2Ceil(wDataMaster >> 3)))
@@ -153,4 +155,28 @@ class Upscale(val cfg: UpscaleConfig) extends Module with chext.AnnotatedModule 
 
   if (axiSlaveCfg.read) implRead()
   if (axiSlaveCfg.write) implWrite()
+}
+
+private final class Upscale_Resolver(owner: Upscale)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking.{ResolveRequest, ResolveResult}
+  import axi4.tracking.properties.Slave
+
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axi)
+
+  override def kind: String = "upscale"
+  override def resolver: String = "UpscaleResolver"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(Slave.MemoryMap) =>
+        forwardTo(request, owner.m_axi)
+      case SlaveRequests(_) | MasterRequests(_) =>
+        request.incomplete()
+      case _ =>
+        request.failure(
+          s"Upscale cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }

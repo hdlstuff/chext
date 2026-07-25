@@ -2,6 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental.SourceInfo
 
 import chext.elastic
 import chext.amba.axi4
@@ -160,6 +161,31 @@ private class AxiFullStages {
   }
 }
 
+private final class ProtocolConverter_Resolver(owner: ProtocolConverter)(implicit
+    sourceInfo: SourceInfo
+) extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking.{ResolveRequest, ResolveResult}
+  import axi4.tracking.properties.Slave
+
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axi)
+
+  override def kind: String = "protocol-converter"
+  override def resolver: String = "ProtocolConverterResolver"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(Slave.MemoryMap) =>
+        forwardTo(request, owner.m_axi)
+      case SlaveRequests(_) | MasterRequests(_) =>
+        request.incomplete()
+      case _ =>
+        request.failure(
+          s"ProtocolConverter cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
+}
+
 class ProtocolConverter(val cfg: ProtocolConverterConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
@@ -170,6 +196,8 @@ class ProtocolConverter(val cfg: ProtocolConverterConfig) extends Module with ch
   declareReset(reset)
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axi)
+
+  private val resolver = new ProtocolConverter_Resolver(this)
 
   if (isPassthrough) {
     s_axi :=> m_axi

@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.elastic
 import elastic.ConnectOp._
@@ -40,6 +40,8 @@ class Mux(val cfg: MuxConfig) extends Module with chext.AnnotatedModule {
   declareReset(reset)
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axi)
+
+  private val resolver = new Mux_Resolver(this)
 
   private val s_axi_ = {
     val result = Wire(Vec(numSlaves, axi4.full.Interface(axiMasterCfg)))
@@ -129,4 +131,30 @@ class Mux(val cfg: MuxConfig) extends Module with chext.AnnotatedModule {
 
   if (axiSlaveCfg.read) implRead()
   if (axiSlaveCfg.write) implWrite()
+}
+
+private final class Mux_Resolver(owner: Mux)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking._
+
+  private val SlaveRequests = bindSlave(owner.s_axi.toSeq)
+  private val MasterRequests = bindMaster(owner.m_axi)
+
+  override def kind: String = "mux"
+  override def resolver: String = "MuxResolver"
+
+  private val noMasterAggregate =
+    "Mux keeps each upstream master's traffic properties separate instead of aggregating them"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(_, _) =>
+        forwardTo(request, owner.m_axi)
+      case MasterRequests(_) =>
+        request.dontCare(noMasterAggregate)
+      case _ =>
+        request.failure(
+          s"Mux cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }

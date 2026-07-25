@@ -2,7 +2,7 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.amba.axi4
 import chext.elastic
@@ -47,6 +47,8 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module with chext.AnnotatedModule 
   declareReset(reset)
   declareAxi4Interface(s_axi)
   declareAxi4Interface(m_axi)
+
+  private val resolver = new IdDemux_Resolver(this)
 
   private val s_axi_ = s_axi
   private val m_axi_ = m_axi
@@ -161,4 +163,30 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module with chext.AnnotatedModule 
 
   if (axiSlaveCfg.read) implRead()
   if (axiSlaveCfg.write) implWrite()
+}
+
+private final class IdDemux_Resolver(owner: IdDemux)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking._
+
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axi.toSeq)
+
+  override def kind: String = "id-demux"
+  override def resolver: String = "IdDemuxResolver"
+
+  private val noSlaveAggregate =
+    "IdDemux keeps each downstream slave capability separate instead of aggregating them"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(_) =>
+        request.dontCare(noSlaveAggregate)
+      case MasterRequests(_, _) =>
+        forwardTo(request, owner.s_axi)
+      case _ =>
+        request.failure(
+          s"IdDemux cannot resolve '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }
