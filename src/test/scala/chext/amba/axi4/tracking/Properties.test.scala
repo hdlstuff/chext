@@ -188,6 +188,123 @@ object Properties_Test extends App {
   assert(Master.size == 12)
   assert(Slave.size == 13)
   assert(Common.iterator.map(_.name).toSeq == Seq("config"))
+  val shapePropertyNames = Set(
+    "read_burstBeats",
+    "write_burstBeats",
+    "read_burstNarrow",
+    "write_burstNarrow",
+    "read_burstTypes",
+    "write_burstTypes",
+    "read_burstSizes",
+    "write_burstSizes"
+  )
+  val readPropertyNames = Set(
+    "read_outstandingTransactions",
+    "read_threads",
+    "read_burstBeats",
+    "read_burstNarrow",
+    "read_burstTypes",
+    "read_burstSizes"
+  )
+  val writePropertyNames = Set(
+    "write_outstandingTransactions",
+    "write_threads",
+    "write_burstBeats",
+    "write_burstNarrow",
+    "write_burstTypes",
+    "write_burstSizes"
+  )
+  assert(Master.readProperties.map(_.name) == readPropertyNames)
+  assert(Master.writeProperties.map(_.name) == writePropertyNames)
+  assert(Slave.readProperties.map(_.name) == readPropertyNames)
+  assert(Slave.writeProperties.map(_.name) == writePropertyNames)
+  assert(Master.shapeProperties.map(_.name) == shapePropertyNames)
+  assert(Slave.shapeProperties.map(_.name) == shapePropertyNames)
+  assert(
+    Master.shapeProperties.forall {
+      case Master.ShapeProperty() => true
+      case _                      => false
+    }
+  )
+  assert(
+    Slave.shapeProperties.forall {
+      case Slave.ShapeProperty() => true
+      case _                     => false
+    }
+  )
+  assert(
+    Slave.MemoryMap match {
+      case Slave.ShapeProperty() => false
+      case _                     => true
+    }
+  )
+  assert(
+    Common.forall {
+      case CommonProperty() => true
+      case _                => false
+    }
+  )
+  assert(
+    Master.forall {
+      case MasterProperty() => true
+      case _                => false
+    }
+  )
+  assert(
+    Slave.forall {
+      case SlaveProperty() => true
+      case _               => false
+    }
+  )
+  assert(
+    Master.forall {
+      case SlaveProperty() | CommonProperty() => false
+      case _                                  => true
+    }
+  )
+  assert(
+    Slave.forall {
+      case MasterProperty() | CommonProperty() => false
+      case _                                   => true
+    }
+  )
+  assert(
+    Master.count {
+      case ReadProperty() => true
+      case _              => false
+    } == 6
+  )
+  assert(
+    Master.count {
+      case WriteProperty() => true
+      case _               => false
+    } == 6
+  )
+  assert(
+    Slave.count {
+      case ReadProperty() => true
+      case _              => false
+    } == 6
+  )
+  assert(
+    Slave.count {
+      case WriteProperty() => true
+      case _               => false
+    } == 6
+  )
+  assert(
+    Slave.MemoryMap match {
+      case ReadProperty() | WriteProperty() => false
+      case _                                => true
+    }
+  )
+  assert(
+    Common.Config match {
+      case MasterProperty() | SlaveProperty() | ReadProperty() | WriteProperty() => false
+      case CommonProperty()                                                      => true
+      case _                                                                     => false
+    }
+  )
 
   val duplicateName = "test_duplicate_property_name"
   new MasterPropertyKey[Int](duplicateName, "Master test property.") {}
@@ -203,6 +320,21 @@ object Properties_Test extends App {
 
   assert(duplicateRejected)
 
+  val staticallyUndefined = new Tracked {
+    val cfg = chext.amba.axi4.Config()
+  }
+  staticallyUndefined.masterProps.markUndefined(Master.readProperties)
+  staticallyUndefined.slaveProps.markUndefined(Slave.WriteThreads)
+  assert(
+    Master.readProperties.forall(key =>
+      staticallyUndefined.masterProps(key).state == PropertyState.Undefined
+    )
+  )
+  assert(
+    staticallyUndefined.slaveProps(Slave.WriteThreads).state ==
+      PropertyState.Undefined
+  )
+
   val tracked = new Tracked {
     val cfg = chext.amba.axi4.Config()
   }
@@ -210,7 +342,12 @@ object Properties_Test extends App {
   assert(tracked.masterProps eq tracked.properties)
   assert(tracked.slaveProps eq tracked.properties)
   assert(tracked.properties(Common.Config).get == tracked.cfg)
-  assert(tracked.properties(Common.Config).key.role == CommonTag)
+  assert(
+    tracked.properties(Common.Config).key match {
+      case CommonProperty() => true
+      case _                => false
+    }
+  )
 
   val trackedProperty = tracked.properties(Master.ReadBurstBeats)
   val testResolver =
@@ -230,12 +367,12 @@ object Properties_Test extends App {
         request.failure("unexpected fallback resolver")
     }
 
-  tracked.addResolver(CommonTag, testResolver)
+  tracked.addCommonResolver(testResolver)
   tracked
-    .addResolver(MasterTag, testResolver)
-    .addResolver(MasterTag, otherResolver)
-    .addResolver(MasterTag, testResolver)
-  tracked.addResolver(SlaveTag, otherResolver)
+    .addMasterResolver(otherResolver)
+    .addMasterResolver(testResolver)
+    .addMasterResolver(testResolver)
+  tracked.addSlaveResolver(otherResolver)
 
   val request = ResolveRequest(tracked, trackedProperty)
   assert(request.interface eq tracked)
@@ -243,13 +380,18 @@ object Properties_Test extends App {
   assert(request.properties eq tracked.properties)
   assert(request.property eq trackedProperty)
   assert(request.key eq Master.ReadBurstBeats)
-  assert(request.role == MasterTag)
+  assert(
+    request.key match {
+      case MasterProperty() => true
+      case _                => false
+    }
+  )
   assert(request.name == "read_burstBeats")
   assert(request.qualifiedName == "master.read_burstBeats")
   assert(request.description == Master.ReadBurstBeats.description)
   assert(request.state == PropertyState.Unresolved)
 
-  assert(Resolver.recursiveResolve(request) == ResolveResult.Success())
+  assert(Resolver.resolve(request).result == ResolveResult.Success())
   assert(request.state == PropertyState.Calculated(4, testResolver))
   assert(request.valueOption.contains(4))
   assert(
@@ -257,6 +399,70 @@ object Properties_Test extends App {
       CalculateResult.AlreadyCalculated
   )
   assert(request.valueOption.contains(4))
+
+  val bound = new Tracked { val cfg = chext.amba.axi4.Config() }
+  val unbound = new Tracked { val cfg = chext.amba.axi4.Config() }
+  val bindingResolver =
+    new Resolver(null.asInstanceOf[BaseModule]) {
+      private val MasterRequests = bindMaster(bound)
+
+      def resolve[T](request: ResolveRequest[T]): ResolveResult =
+        request match {
+          case MasterRequests(Master.ReadBurstBeats) =>
+            request.calculate(8, this)
+            ResolveResult.Success()
+          case MasterRequests(_) =>
+            request.undefined()
+          case _ =>
+            request.failure("request did not match the registered binding")
+        }
+    }
+
+  val boundRequest = ResolveRequest(bound, Master.ReadBurstBeats)
+  assert(Resolver.resolve(boundRequest).result == ResolveResult.Success())
+  assert(boundRequest.valueOption.contains(8))
+
+  val unboundRequest = ResolveRequest(unbound, Master.ReadBurstBeats)
+  bindingResolver.resolve(unboundRequest) match {
+    case ResolveResult.Failure(message, failedRequest) =>
+      assert(message.contains("did not match"))
+      assert(failedRequest == unboundRequest)
+    case result =>
+      throw new AssertionError(s"expected binding mismatch failure, got $result")
+  }
+
+  val wrongFamilyRequest = ResolveRequest(bound, Slave.ReadBurstBeats)
+  bindingResolver.resolve(wrongFamilyRequest) match {
+    case ResolveResult.Failure(message, failedRequest) =>
+      assert(message.contains("did not match"))
+      assert(failedRequest == wrongFamilyRequest)
+    case result =>
+      throw new AssertionError(s"expected property-family mismatch failure, got $result")
+  }
+
+  val grouped0 = new Tracked { val cfg = chext.amba.axi4.Config() }
+  val grouped1 = new Tracked { val cfg = chext.amba.axi4.Config() }
+  val groupedBindingResolver =
+    new Resolver(null.asInstanceOf[BaseModule]) {
+      private val MasterRequests = bindMaster(Seq(grouped0, grouped1))
+
+      def resolve[T](request: ResolveRequest[T]): ResolveResult =
+        request match {
+          case MasterRequests(_, Master.ReadThreads) =>
+            request.calculate(3, this)
+            ResolveResult.Success()
+          case MasterRequests(_, _) =>
+            request.undefined()
+          case _ =>
+            request.failure("request did not match the grouped binding")
+        }
+    }
+
+  Seq(grouped0, grouped1).foreach { interface =>
+    val groupedRequest = ResolveRequest(interface, Master.ReadThreads)
+    assert(Resolver.resolve(groupedRequest).result == ResolveResult.Success())
+    assert(groupedRequest.valueOption.contains(3))
+  }
 
   val enforcedProperty = tracked.masterProps(Master.ReadThreads)
   enforcedProperty.enforce(2)
@@ -285,6 +491,48 @@ object Properties_Test extends App {
     incompleteRequest.calculate(Slave.ReadThreads, 1, testResolver) ==
       CalculateResult.Incomplete
   )
+
+  val dontCareMessage = "No synthetic aggregate is needed for this boundary"
+  val dontCareProperty = tracked.slaveProps(Slave.ReadBurstTypes)
+  val dontCareRequest = ResolveRequest(tracked, dontCareProperty)
+  assert(dontCareRequest.dontCare(dontCareMessage) == ResolveResult.Success())
+  assert(dontCareRequest.state == PropertyState.DontCare(dontCareMessage))
+  assert(dontCareRequest.isResolved)
+  assert(dontCareRequest.valueOption.isEmpty)
+  assert(
+    dontCareRequest.calculate(Slave.ReadBurstTypes, Set(1), testResolver) ==
+      CalculateResult.DontCare(dontCareMessage)
+  )
+
+  val dontCareSource = new Tracked {
+    val cfg = chext.amba.axi4.Config()
+  }
+  val dontCareSink = new Tracked {
+    val cfg = chext.amba.axi4.Config()
+  }
+  val dontCareSourceResolver =
+    new Resolver(null.asInstanceOf[BaseModule]) {
+      private val MasterRequests = bindMaster(dontCareSource)
+
+      def resolve[T](request: ResolveRequest[T]): ResolveResult =
+        request match {
+          case MasterRequests(_) => request.dontCare(dontCareMessage)
+          case _                 => request.failure("unexpected source request")
+        }
+    }
+  val dontCareSinkResolver =
+    new Resolver(null.asInstanceOf[BaseModule]) {
+      private val MasterRequests = bindMaster(dontCareSink)
+
+      def resolve[T](request: ResolveRequest[T]): ResolveResult =
+        request match {
+          case MasterRequests(_) => forwardTo(request, dontCareSource)
+          case _                 => request.failure("unexpected sink request")
+        }
+    }
+  val forwardedDontCare = ResolveRequest(dontCareSink, Master.ReadBurstTypes)
+  assert(Resolver.resolve(forwardedDontCare).result == ResolveResult.Success())
+  assert(forwardedDontCare.state == PropertyState.DontCare(dontCareMessage))
 
   val dependency = new Tracked {
     val cfg = chext.amba.axi4.Config()
@@ -317,11 +565,42 @@ object Properties_Test extends App {
         }
     }
 
-  dependency.addResolver(MasterTag, dependencyResolver)
-  dependent.addResolver(MasterTag, dependentResolver)
-  assert(Resolver.recursiveResolve(dependentRequest) == ResolveResult.Success())
+  dependency.addMasterResolver(dependencyResolver)
+  dependent.addMasterResolver(dependentResolver)
+  assert(Resolver.resolve(dependentRequest).result == ResolveResult.Success())
   assert(dependencyRequest.valueOption.contains(7))
   assert(dependentRequest.valueOption.contains(14))
+
+  // A dependency path exercises recursive resolution at the configured depth limit.
+  val resolutionDepth = 64
+  val resolutionTracked: Vector[Tracked] =
+    Vector.fill(resolutionDepth)(new Tracked { val cfg = chext.amba.axi4.Config() })
+  val resolutionRequests =
+    resolutionTracked.map(interface => ResolveRequest(interface, Master.ReadThreads))
+  resolutionTracked.last.masterProps(Master.ReadThreads) = 1
+  resolutionTracked.indices.dropRight(1).foreach { index =>
+    val dependencyRequest = resolutionRequests(index + 1)
+    resolutionTracked(index).addMasterResolver(
+      new Resolver(null.asInstanceOf[BaseModule]) {
+        def resolve[T](request: ResolveRequest[T]): ResolveResult =
+          if (!dependencyRequest.isResolved)
+            request.retry(Seq(dependencyRequest))
+          else {
+            request.calculate(
+              Master.ReadThreads,
+              dependencyRequest.valueOption.get + 1,
+              this
+            )
+            ResolveResult.Success()
+          }
+      }
+    )
+  }
+  assert(
+    Resolver.resolve(resolutionRequests.head, maxStackSize = resolutionDepth).result ==
+      ResolveResult.Success()
+  )
+  assert(resolutionRequests.head.valueOption.contains(resolutionDepth))
 
   val stalled = new Tracked { val cfg = chext.amba.axi4.Config() }
   val resolvedDependency = new Tracked { val cfg = chext.amba.axi4.Config() }
@@ -329,12 +608,12 @@ object Properties_Test extends App {
   val resolvedDependencyRequest =
     ResolveRequest(resolvedDependency, Master.ReadThreads)
   resolvedDependency.properties(Master.ReadThreads) = 1
-  stalled.addResolver(MasterTag, new Resolver(null.asInstanceOf[BaseModule]) {
+  stalled.addMasterResolver(new Resolver(null.asInstanceOf[BaseModule]) {
     def resolve[T](request: ResolveRequest[T]): ResolveResult =
       request.retry(Seq(resolvedDependencyRequest))
   })
 
-  Resolver.recursiveResolve(stalledRequest) match {
+  Resolver.resolve(stalledRequest).result match {
     case ResolveResult.Failure(message, failedRequest) =>
       assert(message.contains("repeated the same Retry"))
       assert(failedRequest == stalledRequest)
@@ -345,14 +624,14 @@ object Properties_Test extends App {
   val cycleB = new Tracked { val cfg = chext.amba.axi4.Config() }
   val cycleARequest = ResolveRequest(cycleA, Master.ReadThreads)
   val cycleBRequest = ResolveRequest(cycleB, Master.ReadThreads)
-  cycleA.addResolver(MasterTag, new Resolver(null.asInstanceOf[BaseModule]) {
+  cycleA.addMasterResolver(new Resolver(null.asInstanceOf[BaseModule]) {
     def resolve[T](request: ResolveRequest[T]): ResolveResult = request.retry(Seq(cycleBRequest))
   })
-  cycleB.addResolver(MasterTag, new Resolver(null.asInstanceOf[BaseModule]) {
+  cycleB.addMasterResolver(new Resolver(null.asInstanceOf[BaseModule]) {
     def resolve[T](request: ResolveRequest[T]): ResolveResult = request.retry(Seq(cycleARequest))
   })
 
-  Resolver.recursiveResolve(cycleARequest) match {
+  Resolver.resolve(cycleARequest).result match {
     case ResolveResult.Failure(message, failedRequest) =>
       assert(message.contains("cycle"))
       assert(failedRequest == cycleARequest)

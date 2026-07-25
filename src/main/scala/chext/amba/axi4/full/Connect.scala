@@ -24,14 +24,7 @@ final class Connect(
   def namePrefix: String = "axi4fConnect"
 
   private val elasticState = trackingState(elastic.tracking.Tag)
-  private val propertyResolver =
-    new axi4.tracking.ForwardingResolver(
-      this,
-      master,
-      slave,
-      kind = "connect",
-      resolver = "ConnectResolver"
-    )
+  private val resolver = new Connect_Resolver(this)
 
   if (master.cfg.read) {
     elasticState.addSource("master_ar", master.ar, boundary = true)
@@ -529,3 +522,26 @@ trait ConnectOp {
 }
 
 object ConnectOp extends ConnectOp
+
+private final class Connect_Resolver(owner: Connect)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking.{ResolveRequest, ResolveResult}
+
+  private val SlaveRequests = bindSlave(owner.master)
+  private val MasterRequests = bindMaster(owner.slave)
+
+  override def kind: String = "connect"
+  override def resolver: String = "ConnectResolver"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(_) =>
+        forwardTo(request, owner.slave)
+      case MasterRequests(_) =>
+        forwardTo(request, owner.master)
+      case _ =>
+        request.failure(
+          s"AXI connect resolver cannot forward '${request.qualifiedName}' from this endpoint"
+        )
+    }
+}

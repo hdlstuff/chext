@@ -33,14 +33,7 @@ final class Buffer(
   )
 
   private val elasticState = trackingState(elastic.tracking.Tag)
-  private val propertyResolver =
-    new axi4.tracking.ForwardingResolver(
-      this,
-      master,
-      slave,
-      kind = "buffer",
-      resolver = "BufferResolver"
-    )
+  private val resolver = new Buffer_Resolver(this)
 
   if (master.cfg.read) {
     elasticState.addSource("master_ar", master.ar, boundary = true)
@@ -321,4 +314,27 @@ object RightBuffer {
       interfaces: Seq[Interface]
   )(implicit si: SourceInfo): Seq[Interface] =
     apply(interfaces, BufferConfig.all(2), "rightBuffer")
+}
+
+private final class Buffer_Resolver(owner: Buffer)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking.{ResolveRequest, ResolveResult}
+
+  private val SlaveRequests = bindSlave(owner.master)
+  private val MasterRequests = bindMaster(owner.slave)
+
+  override def kind: String = "buffer"
+  override def resolver: String = "BufferResolver"
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(_) =>
+        forwardTo(request, owner.slave)
+      case MasterRequests(_) =>
+        forwardTo(request, owner.master)
+      case _ =>
+        request.failure(
+          s"AXI buffer resolver cannot forward '${request.qualifiedName}' from this endpoint"
+        )
+    }
 }
