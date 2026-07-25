@@ -274,7 +274,7 @@ when(mem.debug.wen) {
 `RegisterBlock` is a tracked component, not a `Module`. It creates an AXI4-Lite slave wire
 (`s_axil`) and a matching `cfgAxi`, then maps Chisel registers and read-only wires into an aligned
 address space. `complete()` must be called exactly once after all declarations; it generates the
-Elastic read/write implementation and publishes `Slave.MemoryMap` on `s_axil`.
+Elastic read/write implementation and makes the memory map available to the interface resolver.
 
 ```scala
 class RegTop extends Module {
@@ -295,8 +295,14 @@ class RegTop extends Module {
   val statusAddr = regs.reg(status, read = true, write = false, desc = "status")
 
   val memoryMap = regs.complete()
+  assert(regs.memoryMapOption.contains(memoryMap))
+  assert(regs.memoryMap == memoryMap)
 }
 ```
+
+`memoryMapOption` is `None` before completion, while `memoryMap` requires completion. Resolving
+`Slave.MemoryMap` before `complete()` returns a resolution failure; the same request can be retried
+successfully after completion.
 
 `base(addr)` rebases the next allocation, `nextAddr` returns the next free byte address, `reserve`
 skips a region, and `saveRegisterMap(directory, name)` writes a CSV map. Allocation methods cannot

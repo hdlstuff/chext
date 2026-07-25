@@ -8,13 +8,29 @@
 
 ## Goal
 
-`chext.amba.axi4.tracking` describes and validates AXI4 interface behavior. It should eventually
-check address-space propagation, outstanding transaction limits, burst compatibility, and related
-capabilities without making hardware generation depend on expensive hierarchy analysis.
+`chext.amba.axi4.tracking` exists to catch AXI composition errors. It is deliberately not a
+complete behavioral annotation of every interface. Resolvers should generate the minimum facts
+needed by a planned validation rule, propagate requirements or capabilities to the boundary where
+that rule will use them, and expose real limits imposed by component parameters. They should not
+invent aggregate interface profiles merely for completeness.
 
-Resolution and validation are separate phases. Resolution first infers as much metadata as
-possible. After dependency resolution terminates, validation reports incomplete information,
-rejected calculation attempts, and incompatible master/slave properties.
+Resolution and validation are separate phases. The current work only generates and resolves
+properties. Compatibility checks and their diagnostics will be designed after property generation
+is in place; no resolver should perform those checks itself.
+
+For example, a demux forwards an upstream master's burst behavior to each master-side output, where
+it can eventually be compared with that output's connected slave. It does not intersect the
+capabilities of all downstream slaves into one synthetic input capability. Conversely, a mux
+forwards its one downstream slave's capabilities to each slave-side input, but it does not union or
+sum the distinct upstream masters into a synthetic output traffic profile. Queue and tracker
+parameters may still be published when they are genuine component-imposed limits.
+
+A demux keeps those two sources of information distinct. Its slave properties at the common input
+describe limits imposed by the demux internals. Its master properties at every output forward the
+original upstream master's requirements, including outstanding transactions and threads. The
+internal limits must not replace those forwarded requirements: later validation needs the former
+to compare the upstream master with the demux and the latter to compare that same master with every
+downstream slave.
 
 ## Current implementation
 
@@ -23,30 +39,47 @@ The initial implementation provides:
 - AXI4 `Tag`, `ModuleState`, and `ComponentState` scaffolding.
 - `ResolveRequest`, targeting one `Tracked` interface and one realized property.
 - `ResolveResult`: `Success`, dependency-bearing `Retry`, and request-bearing `Failure`.
-- `Resolver.recursiveResolve`, which creates a disposable DFS context and performs dependency
-  resolution with cycle and limit checks.
+- `Resolver.resolve`, which creates a disposable DFS context and returns both the terminal result
+  and trace after recursive dependency resolution with cycle checks and depth limits.
 - `Resolver`, owned by either a Chisel `BaseModule` or unified Chext `Component`.
 - `Tracked`, mixed into raw, full, and Lite AXI4 interface representations.
-- `ForwardingResolver`, used by full and Lite AXI `Connect` and `Buffer` components to propagate
-  slave properties upstream and master properties downstream.
+- Private `X_Resolver(owner: X)(implicit sourceInfo: SourceInfo)` implementations beside every
+  Full or Lite component/module that declares a tracked AXI interface. `Resolver.bindCommon`,
+  `bindMaster`, and `bindSlave` register either one interface or a sequence of interfaces and
+  return a typed request matcher, keeping registration and dispatch consistent without
+  endpoint-identity or role-tag tests in concrete resolvers. Behavioral resolvers are not defined
+  in the generic `tracking` package. Full and Lite AXI `Connect` and `Buffer` resolvers propagate
+  unchanged properties; component-specific resolvers own terminal values and transformations.
+  Fan-in/fan-out resolvers preserve the individual boundaries needed by later checks instead of
+  synthesizing aggregate traffic profiles.
 - Absolute tracking paths for modules, components, and interfaces, plus typed `ResolutionStep`
   records for forwarded properties.
-- Internal `(Role, Resolver, SourceInfo)` registration plus one cached selected resolver for each
-  common/master/slave role.
+- Separate internal common/master/slave `(Resolver, SourceInfo)` registrations plus one cached
+  selected resolver for each property family.
 - One interface-wide `PropertyManager`, exposed as `properties`. The compatibility accessors
   `commonProps`, `masterProps`, and `slaveProps` all return that same store.
 - `properties.Common.Config`, enforced from the interface's `axi4.Config`.
 - Standard key catalogs are organized in the `tracking.properties` subpackage as `Common`,
   `Master`, and `Slave`; the reusable property framework remains directly under `tracking`.
-- Role-tagged property keys with descriptions and role-qualified diagnostic names.
-- Per-property `PropertyState`: `Unresolved`, `Enforced`, `Calculated`, `Incomplete`, or
-  `Undefined`.
+- `Master.shapeProperties` and `Slave.shapeProperties` collect the burst shape keys, with nested
+  `ShapeProperty()` Boolean extractors for resolver patterns. `Slave.MemoryMap` remains separate
+  because address topology is not traffic shape.
+- `Master.readProperties` / `writeProperties` and the corresponding `Slave` collections enumerate
+  the standard access-specific keys. `bindMaster` and `bindSlave` eagerly mark a disabled
+  interface direction `Undefined` from those catalogs.
+- Sealed common/master/slave and read/write key markers, descriptions, and family-qualified
+  diagnostic names.
+- Four family/access-specific standard key bases and composable `CommonProperty()` /
+  `MasterProperty()` / `SlaveProperty()` / `ReadProperty()` / `WriteProperty()` Boolean
+  extractors.
+- Per-property `PropertyState`: `Unresolved`, `Enforced`, `Calculated`, `DontCare(message)`,
+  `Incomplete`, or `Undefined`.
 - Insertion-ordered iteration over the properties instantiated in a manager.
 - Iteration over all standard definitions through `properties.Common`, `properties.Master`, and
   `properties.Slave`.
 - Internal retention of common/master/slave resolver registrations on each `Tracked`, including
-  their call-site source information. The shallowest candidate is selected; equal-depth candidates
-  retain registration order.
+  their call-site source information. The shallowest candidate is selected; the most recently
+  registered candidate wins at equal depth.
 - Lazy depth-based resolver selection. A module-owned resolver has depth zero; each parent in the
   unified Chext `Component` hierarchy adds one.
 - Hierarchical `MemoryMap` values with absolute origins and optional typed resolution traces.
@@ -60,17 +93,17 @@ Raw interfaces and their `.asFull`/`.asLite` DataViews currently have distinct `
 objects. Actual resolution needs a canonical identity or explicit aliasing so every representation
 of the same hardware interface shares property and resolver state.
 
-## Common, master, and slave roles
+## Common, master, and slave property families
 
 Master and slave describe AXI protocol roles, not Chisel input/output direction:
 
 - Master properties describe traffic that may be issued or generated.
 - Slave properties describe traffic that may be accepted or supported.
 
-Roles are runtime metadata on keys, not type parameters on keys, properties, or managers. One store
-therefore contains common, master, and slave properties. The key namespace makes the intended role
-explicit at the call site while allowing generic code to iterate and manipulate every property
-uniformly.
+The family is represented by a sealed marker inherited from the key's specialized base class; it
+is not a separate runtime tag or constructor argument. One store therefore contains common,
+master, and slave properties. The key namespace makes the intended family explicit in diagnostics,
+while generic code can still iterate and manipulate every property uniformly.
 
 ```scala
 trait Tracked {
@@ -78,26 +111,34 @@ trait Tracked {
 
   val properties: PropertyManager
 
-  def addResolver(role: Role, resolver: Resolver)(implicit
-      sourceInfo: SourceInfo
-  ): this.type
+  def addCommonResolver(resolver: Resolver)(implicit sourceInfo: SourceInfo): this.type
+  def addMasterResolver(resolver: Resolver)(implicit sourceInfo: SourceInfo): this.type
+  def addSlaveResolver(resolver: Resolver)(implicit sourceInfo: SourceInfo): this.type
 }
 ```
 
-A resolver can participate in either role:
+A concrete resolver accepts its registration source implicitly and binds each participating
+interface/property-family pair. The sequence overload returns the matched interface together with
+the typed property key:
 
 ```scala
-val resolver = new Resolver(this) {
-  def resolve[T](request: tracking.ResolveRequest[T]): tracking.ResolveResult = {
-    // request.role tells whether the current key is common, master, or slave.
-  }
-}
+private final class X_Resolver(owner: X)(implicit sourceInfo: SourceInfo)
+    extends Resolver(owner) {
+  private val SlaveRequests = bindSlave(owner.s_axi)
+  private val MasterRequests = bindMaster(owner.m_axi.toSeq)
 
-s_axi.addResolver(MasterTag, resolver)
-m_axi.addResolver(SlaveTag, resolver)
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case SlaveRequests(Slave.MemoryMap) => resolveMemoryMap(request)
+      case MasterRequests(_, _)           => forwardTo(request, owner.s_axi)
+      case SlaveRequests(_) =>
+        request.dontCare("downstream slave capabilities remain separate")
+      case _                              => request.failure("unsupported request")
+    }
+}
 ```
 
-Roles without registrations use a future structural/default resolution strategy. A module or
+Property families without registrations use a future structural/default resolution strategy. A module or
 component can therefore specialize selected interfaces without claiming every interface in its
 hierarchy.
 
@@ -107,20 +148,47 @@ at a time. Parent connections may not exist when a child module body completes.
 
 ## Property keys and managers
 
-A property key contains a value type, a runtime role tag, a local name, and a description. Role is
-deliberately not encoded in the Scala type:
+A property key contains a value type, a local name, a description, and one family marker inherited
+from its base class. There is no `Role` value and no `CommonTag`, `MasterTag`, or `SlaveTag`:
 
 ```scala
-sealed trait Role { def name: String }
-case object CommonTag extends Role
-case object MasterTag extends Role
-case object SlaveTag extends Role
-
 abstract class PropertyKey[T](
     val name: String,
-    val role: Role,
     val description: String
 )
+
+sealed trait CommonProperty
+object CommonProperty {
+  def unapply(key: PropertyKey[_]): Boolean
+}
+
+sealed trait MasterProperty
+object MasterProperty {
+  def unapply(key: PropertyKey[_]): Boolean
+}
+
+sealed trait SlaveProperty
+object SlaveProperty {
+  def unapply(key: PropertyKey[_]): Boolean
+}
+
+sealed trait ReadProperty
+object ReadProperty {
+  def unapply(key: PropertyKey[_]): Boolean
+}
+
+sealed trait WriteProperty
+object WriteProperty {
+  def unapply(key: PropertyKey[_]): Boolean
+}
+
+abstract class CommonPropertyKey[T](name: String, description: String)
+abstract class MasterPropertyKey[T](name: String, description: String)
+abstract class SlavePropertyKey[T](name: String, description: String)
+abstract class MasterReadProperty[T](name: String, description: String)
+abstract class MasterWriteProperty[T](name: String, description: String)
+abstract class SlaveReadProperty[T](name: String, description: String)
+abstract class SlaveWriteProperty[T](name: String, description: String)
 
 final class Property[T](val key: PropertyKey[T]) {
   def valueOption: Option[T]
@@ -133,12 +201,33 @@ final class Property[T](val key: PropertyKey[T]) {
 final class PropertyManager extends Iterable[Property[_]] {
   def apply[T](key: PropertyKey[T]): Property[T]
   def update[T](key: PropertyKey[T], value: T): Unit
+  def markUndefined(key: PropertyKey[_]): this.type
+  def markUndefined(keys: Iterable[PropertyKey[_]]): this.type
 }
 ```
 
-Names need only be unique within a role, so master and slave keys intentionally share concise names
+Every directional standard key derives from one of the four family/access-specific bases.
+`ReadProperty()` and `WriteProperty()` are Boolean extractors over those sealed markers. They
+remain available for extension-key resolver policies without changing a binding's typed key
+extractor. Standard keys also appear in explicit read/write catalog groups:
+
+```scala
+Master.readProperties
+Master.writeProperties
+Slave.readProperties
+Slave.writeProperties
+
+interface.slaveProps.markUndefined(Slave.readProperties)
+```
+
+Interface-wide keys such as `Common.Config` and `Slave.MemoryMap` implement neither marker. The
+marker bases prevent standard keys from acquiring independent or contradictory read/write Boolean
+fields. Resolver bindings use the catalog groups to eagerly classify every standard property in a
+direction disabled by `axi4.Config`.
+
+Names need only be unique within a family, so master and slave keys intentionally share concise names
 such as `read_burstBeats`. Diagnostics and serialized output use qualified names such as
-`master.read_burstBeats` and `slave.read_burstBeats`. Duplicate definitions within one role fail
+`master.read_burstBeats` and `slave.read_burstBeats`. Duplicate definitions within one family fail
 immediately.
 
 `Property` is the mutable realization of a `PropertyKey`. Managers use insertion-ordered storage,
@@ -159,10 +248,10 @@ The unavoidable cast for heterogeneous storage is localized inside `PropertyMana
 `get` and `getOrElse` follow `Option` conventions. `enforce(value)` is authoritative: the first
 enforced value remains in effect, later enforcement is harmless, and calculation can never replace
 it. If enforcement occurs before any enforced value, it supersedes the previous non-enforced state.
-Resolver-specific operations live on `ResolveRequest` rather than expanding the basic
-`Property` API.
+Static applicability can be declared through `PropertyManager.markUndefined`; dependency-driven
+terminal operations live on `ResolveRequest`.
 
-The key namespace provides explicit, compact role selection. Scala application-update syntax
+The key namespace provides explicit, compact family context. Scala application-update syntax
 enforces a value:
 
 ```scala
@@ -174,9 +263,10 @@ interface.properties(Slave.ReadOutstandingTransactions) = 12
 interface.properties(Slave.ReadBurstBeats) = 256
 ```
 
-External libraries may add keys and corresponding extension methods without modifying `Tracked`.
+External libraries may add keys by extending the appropriate family base, plus corresponding
+extension methods, without modifying `Tracked`.
 
-`axi4.Config` is a common property shared by both roles:
+`axi4.Config` is a common property shared by both directions:
 
 ```scala
 import chext.amba.axi4.tracking.properties.Common
@@ -189,7 +279,7 @@ the abstract interface configuration is fully constructed before it is enforced.
 
 ## Initial standard properties
 
-The current standard keys are deliberately role-specific:
+The current standard keys are deliberately family-specific:
 
 | Master property | Slave property | Compatibility |
 |---|---|---|
@@ -265,7 +355,7 @@ The concrete immutable `AddressSpace` model is still to be designed.
 
 ## Property resolution state
 
-Every realized property is either unresolved or in one of four terminal resolved states:
+Every realized property is either unresolved or in one of five terminal resolved states:
 
 ```scala
 sealed trait PropertyState[+T]
@@ -276,16 +366,20 @@ object PropertyState {
   sealed trait Resolved[+T] extends PropertyState[T]
   final case class Enforced[T](value: T) extends Resolved[T]
   final case class Calculated[T](value: T, resolver: Resolver) extends Resolved[T]
+  final case class DontCare(message: String) extends Resolved[Nothing]
   case object Incomplete extends Resolved[Nothing]
   case object Undefined extends Resolved[Nothing]
 }
 ```
 
-- `Enforced(value)` means the user supplied the value. Ordinary property assignment uses this
-  state.
+- `Enforced(value)` means component or user code supplied an authoritative value. Ordinary
+  property assignment uses this state.
 - `Calculated(value, resolver)` means a resolver produced the value.
+- `DontCare(message)` means the resolver intentionally does not need a synthetic value at that
+  boundary for the tracking model. The nonempty message records why this is deliberate.
 - `Incomplete` means resolution terminated without a value because of a missing or inconsistent
-  design relationship. It is resolved for scheduling purposes but is a diagnostic condition.
+  design relationship that would be useful to model. It is resolved for scheduling purposes but
+  is a diagnostic condition.
 - `Undefined` means the property does not apply to the interface configuration. For example, write
   properties are undefined on a read-only interface.
 - `Unresolved` means another resolution attempt may make progress. `request.retry(dependencies)`
@@ -304,24 +398,26 @@ object CalculateResult {
   sealed trait Rejected extends CalculateResult
   case object AlreadyEnforced extends Rejected
   case object AlreadyCalculated extends Rejected
+  final case class DontCare(message: String) extends Rejected
   case object Incomplete extends Rejected
   case object Undefined extends Rejected
 }
 ```
 
-`AlreadyEnforced`, `AlreadyCalculated`, `Incomplete`, and `Undefined` leave the property unchanged.
-This makes calculation non-throwing and lets the coordinator distinguish the reason that no
-assignment occurred. A later assignment journal may additionally retain source locations and
-attempt order for diagnostics.
+The rejected results leave the property unchanged. This makes calculation non-throwing and lets
+the coordinator distinguish an intentional `DontCare` from missing information and the other
+reasons that no assignment occurred. A later assignment journal may additionally retain source
+locations and attempt order for diagnostics.
 
 ## Participation and completeness
 
 Users should not need a normal `markResolved` call. Completeness is derived from active property
-obligations and must not mean that every extensible property key or both roles have a value.
+obligations and must not mean that every extensible property key or both directional families have
+a value.
 
 A property becomes active when it is explicitly assigned, claimed as a resolver output or
 dependency, or requested by an applicable compatibility check or resolution profile. An untouched
-master or slave role is inactive, not incomplete.
+master or slave family is inactive, not incomplete.
 
 Participation remains separate from state: an unrealized or unrequested key need not become a
 property at all. Once active, it follows the state machine above.
@@ -335,42 +431,57 @@ resolve-state flags; any summary needed for reporting is derived by iterating th
 
 ## Property propagation
 
-Propagation is also role-specific:
+Propagation is also property-family-specific:
 
 - Master facts flow from an upstream master through connections and transformations toward slaves.
 - Slave capabilities flow from a downstream slave back through connections and transformations
   toward masters.
 - Master facts never become slave facts through copying. Compatibility validation is the explicit
-  operation that compares corresponding role-tagged keys from the common store.
+  operation that compares corresponding master- and slave-property keys from the common store.
 
 A direct connection and an ordinary buffer normally propagate both roles transparently. A width
 converter, unburster, mux, demux, ID serializer, or protocol converter supplies transformation
 rules for the properties it changes.
 
 Full and Lite AXI `Connect` and tracked `Buffer` components register transparent resolvers.
-Slave-role properties flow upstream from the connected slave endpoint to the master endpoint,
-while master-role properties flow downstream from master to slave. Resolution retains terminal
-`Undefined` and `Incomplete` states as well as concrete property values. Each forwarding step can
-record the absolute source and target interface paths, relationship kind, resolver name, and
-resolver-owner path. `DemuxMm` optionally stores those steps on resolved child memory maps.
+Slave properties flow upstream from the connected slave endpoint to the master endpoint, while
+master properties flow downstream from master to slave. Resolution retains terminal
+`DontCare`, `Undefined`, and `Incomplete` states as well as concrete property values. Each
+forwarding step can record the absolute source and target interface paths, relationship kind,
+resolver name, and resolver-owner path. `DemuxMm` optionally stores those steps on resolved child
+memory maps.
 
-Important component behavior includes:
+Implemented component behavior includes:
 
-- `Unburst`: downstream master burst beats become one; upstream slave acceptance may remain
-  broader, subject to buffering and outstanding capacity.
-- `Upscale`/`Downscale`: transform burst sizes, burst beats, narrow-transfer behavior, and possibly
-  outstanding requirements.
-- `Mux`/`Demux`: combine or partition address maps and conservatively combine capacity limits.
-- `IdSerialize`/`IdParallelize`: transform thread and outstanding behavior.
-- `CreditBuffer`: may cap accepted outstanding transactions by configured credits.
-- Terminations: provide terminal slave capabilities or terminal master behavior.
+- `Mux`/`IdMux`: forward the common downstream slave's capabilities to every input. A master
+  property requested at the common output is `DontCare`, because the distinct upstream masters
+  remain available at the individual inputs and are not unioned or summed.
+- `Demux`/`IdDemux`/`DemuxMm`: forward upstream master behavior to every output. They do not
+  intersect downstream slave capabilities. Ordinary `Demux` and `DemuxMm` publish their configured
+  outstanding-transaction and tracked-ID limits only as local slave capabilities at the common
+  input as eager `Enforced` values; output master properties always preserve the upstream values.
+  Binding eagerly classifies disabled standard channel groups as `Undefined`. Arbitrary decode
+  functions leave the combined memory map incomplete, while `DemuxMm` publishes the map built by
+  `genDecoder()`.
+- Lite `Demux` publishes its response-routing queue capacities as local slave-side
+  outstanding-transaction limits eagerly, forwards all upstream master properties to every output,
+  and otherwise follows the same non-aggregating fan-out and eager disabled-channel policy.
+- `CreditBuffer`: matches the shared `Master.ShapeProperty()` / `Slave.ShapeProperty()` catalog
+  groups and forwards those unchanged burst-shape facts. It forwards `Slave.MemoryMap` separately,
+  while credit-sensitive outstanding/thread facts remain incomplete until their exact capacity
+  equations are encoded.
+- `Unburst`, width converters, ID converters, and `ProtocolConverter`: currently forward only the
+  invariant memory map and explicitly mark unimplemented traffic transformations incomplete rather
+  than treating the boundary as transparent.
+- Constant/stall/idle terminations and Lite memory controllers provide their terminal properties
+  directly in their owner-specific resolvers.
 
 One resolver should represent one architectural relationship, not one property. Its individual
 properties still make progress independently.
 
 `ResolveRequest[T]` is a concrete final resolver-facing class. It targets one `Tracked` interface
 and one realized property while preserving the property value through its ordinary type parameter.
-It exposes the interface/configuration, common store, property/key/role metadata, state, and current value.
+It exposes the interface/configuration, common store, property/key metadata, state, and current value.
 Requests compare by interface and property object identity, which makes independently constructed
 requests for the same target equal for dependency tracking.
 
@@ -384,49 +495,62 @@ object ResolveResult {
 }
 ```
 
-A resolver takes a request directly:
+A resolver takes a request directly. A binding extracts `PropertyKey[T]`, so matching a singleton
+key refines the request's value type:
 
 ```scala
-def resolve[T](request: ResolveRequest[T]): ResolveResult = {
-  if (dependency.isResolved) {
-    request.calculate(MyProperties.Key, calculatedValue, this)
-    ResolveResult.Success()
-  } else {
-    request.retry(Seq(dependency))
-  }
+private val SlaveRequests = bindSlave(owner.s_axi)
+
+def resolve[T](request: ResolveRequest[T]): ResolveResult =
+  request match {
+    case SlaveRequests(MyProperties.Key) =>
+      request.calculate(calculatedValue, this)
+      ResolveResult.Success()
+    case SlaveRequests(_) =>
+      forwardTo(request, owner.m_axi)
+    case _ =>
+      request.failure("unsupported request")
 }
 ```
 
 `request.retry(dependencies)` constructs `Retry(dependencies :+ request)`, guaranteeing that the
 original request is at the back. The coordinator validates this invariant even for manually built
 `Retry` values. `request.failure(message)` attaches the current request to a failure. Applicability
-handling uses `request.undefined()`, while an unrecoverable design relationship can use
-`request.incomplete()`.
+handling uses `request.undefined()`, a useful property that cannot currently be derived uses
+`request.incomplete()`, and an intentionally unnecessary synthetic property uses
+`request.dontCare(message)`.
 
-Each `Tracked` internally retains registrations for all three roles in one ordered sequence. Each
-registration records `(Role, Resolver, SourceInfo)`; no public accessor exposes that implementation
-detail. Adding a candidate updates the corresponding cached `commonResolver`, `masterResolver`, or
-`slaveResolver` only when the new resolver is shallower. Equal-depth registration keeps the
-existing selection. The recursive coordinator uses a package-private role-based lookup. Resolver
-hierarchy depth is a `lazy val`: component parentage is fixed by the time the resolver is used, so
-repeated selection does not rescan the hierarchy.
+Each `Tracked` internally retains separate common/master/slave registration sequences. Each
+registration records `(Resolver, SourceInfo)`; no public accessor exposes that implementation
+detail. Concrete resolvers normally register through `bindCommon`, `bindMaster`, or `bindSlave`;
+`Binding` handles one interface, while `Bindings` handles a sequence and returns the matched
+interface with its typed key. Both extractors encapsulate interface identity and property-family
+matching. Internally they receive the named `accepts` predicate from the appropriate marker
+companion; resolver call sites never pass `.unapply`. The resolver's implicit constructor
+`SourceInfo` is passed through to every binding registration. Adding a candidate updates the
+corresponding cached `commonResolver`, `masterResolver`, or `slaveResolver` when the new resolver
+is shallower or is the latest candidate at the same depth. The recursive coordinator selects the
+cache directly from the request key's sealed family base. Resolver hierarchy depth is a `lazy val`:
+component parentage is fixed by the time the resolver is used, so repeated selection does not
+rescan the hierarchy.
 
 ## Depth-first dependency resolution
 
-`Resolver.recursiveResolve(initial)` creates a disposable internal context and performs depth-first
-resolution:
+`Resolver.resolve(initial)` creates a disposable internal context and returns a `Resolution`
+containing the terminal `result` and the initial request's `steps` after depth-first resolution
+using JVM recursion:
 
 1. Return success immediately if the requested property is already terminal.
-2. Select the best retained resolver for the request's runtime role.
+2. Select the best retained resolver for the request key's property family.
 3. Call `resolver.resolve(request)`.
 4. On `Success`, require that the property actually became terminal.
 5. On `Failure`, return the message and failing request unchanged.
 6. On `Retry(dependencies :+ request)`, resolve each dependency in order and then retry the original
    request.
 
-The original request is logically behind its dependencies on the stack, so a dependency's own
-retry requests are processed before siblings and the parent request. Shared dependencies that are
-already resolved return success immediately.
+The original request remains active while its dependencies are resolved recursively, so a
+dependency's own retry requests are processed before siblings and the parent request. Shared
+dependencies that are already resolved return success immediately.
 
 The coordinator tracks the active DFS path. Encountering the same interface/property request on
 that active path returns a cycle `Failure`; it does not reject a request merely because another
@@ -434,9 +558,9 @@ completed or sibling branch used the same dependency. `maxStackSize` limits depe
 Within one active request, returning the identical `Retry` sequence again after its dependencies
 have resolved produces a no-progress `Failure`; this avoids an arbitrary attempt-count limit.
 
-After requested properties have been resolved, later validation can mark non-applicable properties
-`Undefined`, required relationships with no solution `Incomplete`, and run activated master/slave
-compatibility checks.
+After requested properties have been resolved, later validation can ignore intentional
+`DontCare` states, diagnose required relationships that ended `Incomplete`, and run activated
+master/slave compatibility checks. That validation pass is not implemented yet.
 
 Resolution should run after the root hierarchy is complete. Finalizing child modules independently
 would report false incompleteness because their parent-side connections may not yet exist.
@@ -473,11 +597,12 @@ responsible resolver or source location.
 ## Open questions
 
 - Should resolver precedence validate true ancestry rather than hierarchy depth alone?
-- How should the disposable recursive-resolution context expose dependency/attempt traces and
+- How should the disposable recursive resolution context expose dependency/attempt traces and
   provenance?
 - When should resolver selection fall back from the shallowest candidate to another retained
   candidate?
 - Which standard profile activates properties automatically on ordinary connections?
 - Which values have safe defaults, and which must remain unknown?
-- Should role-level resolve state remain stored or become a view derived from active properties?
+- Should property-family-level resolve state remain stored or become a view derived from active
+  properties?
 - What address model supports mux/demux translation without becoming a full IP-XACT model?
