@@ -8,7 +8,7 @@ import chisel3.experimental.{SourceInfo, requireIsChiselType, requireIsHardware}
 import chext.tracking.{Component, uniquePrefix}
 
 abstract class Const[Tin <: Data, Tout <: Data](
-    sink: Interface[Tout]
+    val sink: Interface[Tout]
 )(implicit si_ : SourceInfo)
     extends Component
     with Fire[Tout] {

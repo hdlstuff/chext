@@ -8,7 +8,7 @@ import chext.tracking.Component
 
 /** Permanently backpressures an elastic source without consuming its packets. */
 final class StallSink[T <: Data](
-    source: Interface[T]
+    val source: Interface[T]
 )(implicit si_ : SourceInfo)
     extends Component {
   private val elasticState = trackingState(t.Tag)

@@ -10,8 +10,8 @@ import chisel3.util.ShiftRegister
 import chext.util.Counter
 import chext.tracking.Component
 
-abstract class Wrap[T1 <: Data, T2 <: Data](source: Interface[T1], sink: Interface[T2])(implicit
-    val sourceInfo: SourceInfo
+abstract class Wrap[T1 <: Data, T2 <: Data](val source: Interface[T1], val sink: Interface[T2])(
+    implicit val sourceInfo: SourceInfo
 ) extends Component
     with Fire[T2] {
   protected def fireSink: Interface[T2] = sink

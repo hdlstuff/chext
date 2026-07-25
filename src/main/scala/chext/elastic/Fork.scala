@@ -12,8 +12,8 @@ import chext.deadlock
 import chext.tracking.Component
 
 abstract class Fork[T <: Data](
-    source: Interface[T],
-    eager: Boolean = true
+    val source: Interface[T],
+    val eager: Boolean = true
 )(implicit si_ : SourceInfo)
     extends Component {
   private val elasticState = trackingState(t.Tag)

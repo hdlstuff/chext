@@ -7,8 +7,8 @@ import chisel3.hacks.deferred
 import chext.tracking.{Component, withComponent}
 
 class Loop[Tstate <: Data](
-    sourceInit: Interface[Tstate],
-    sinkExit: Interface[Tstate]
+    val sourceInit: Interface[Tstate],
+    val sinkExit: Interface[Tstate]
 )(implicit si_ : SourceInfo)
     extends Component {
   def tpe: String = "Loop"

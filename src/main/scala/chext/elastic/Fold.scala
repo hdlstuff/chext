@@ -40,9 +40,9 @@ import chext.tracking.{Component, suggestInstanceName, withComponent}
   *   - `sinkOpB` always carries the **newest** token (current input)
   */
 abstract class Fold[Tin <: Data, Tout <: Data](
-    source: Interface[Tin],
-    sourceInit: Interface[Tout],
-    sink: Interface[Tout]
+    val source: Interface[Tin],
+    val sourceInit: Interface[Tout],
+    val sink: Interface[Tout]
 )(implicit si_ : SourceInfo)
     extends Component
     with Fire[Tout] {

@@ -7,7 +7,7 @@ import chisel3.experimental.SourceInfo
 import chext.tracking.Component
 
 final class NullSink[T <: Data](
-    source: Interface[T]
+    val source: Interface[T]
 )(implicit si_ : SourceInfo)
     extends Component
     with Fire[T] {

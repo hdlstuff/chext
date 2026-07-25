@@ -15,9 +15,9 @@ import elastic.ConnectOp._
 import chext.tracking.{uniquePrefix, withComponent}
 
 final class Buffer(
-    master: Interface,
-    slave: Interface,
-    cfg: BufferConfig
+    val master: Interface,
+    val slave: Interface,
+    val cfg: BufferConfig
 )(implicit si_ : SourceInfo)
     extends chext.tracking.Component {
   private val require_ = chext.util.Require.inferred()

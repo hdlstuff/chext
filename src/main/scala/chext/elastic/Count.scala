@@ -9,9 +9,9 @@ import chisel3.hacks.deferred
 import chext.tracking.Component
 
 abstract class Count[Tstate <: Data, Tin <: Data, Tout <: Data](
-    source: Interface[Tin],
-    sink: Interface[Tout],
-    genState: Tstate
+    val source: Interface[Tin],
+    val sink: Interface[Tout],
+    val genState: Tstate
 )(implicit si_ : SourceInfo)
     extends Component
     with Fire[Tout] {

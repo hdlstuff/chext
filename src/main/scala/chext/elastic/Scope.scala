@@ -7,8 +7,8 @@ import chisel3.hacks.deferred
 import chext.tracking.{Component, withComponent}
 
 class Scope[Tinit <: Data, Texit <: Data](
-    sourceInit: Interface[Tinit],
-    sinkExit: Interface[Texit]
+    val sourceInit: Interface[Tinit],
+    val sinkExit: Interface[Texit]
 )(implicit si_ : SourceInfo)
     extends Component {
   def tpe: String = "Scope"

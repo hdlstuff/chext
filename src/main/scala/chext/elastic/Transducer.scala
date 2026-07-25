@@ -46,8 +46,8 @@ import chext.tracking.Component
   *   The type of the sink's data payload (`sink.$bits`).
   */
 abstract class Transducer[Tin <: Data, Tout <: Data](
-    source: Interface[Tin],
-    sink: Interface[Tout]
+    val source: Interface[Tin],
+    val sink: Interface[Tout]
 )(implicit si_ : SourceInfo)
     extends Component
     with Fire[Tout] {

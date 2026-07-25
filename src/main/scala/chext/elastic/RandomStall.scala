@@ -20,10 +20,10 @@ import chext.tracking.{Component, withComponent}
   * @param threshold
   */
 final class RandomStall[T <: Data](
-    source: Interface[T],
-    sink: Interface[T],
-    lfsrBits: Int = 4,
-    threshold: Int = 8
+    val source: Interface[T],
+    val sink: Interface[T],
+    val lfsrBits: Int = 4,
+    val threshold: Int = 8
 )(implicit si_ : SourceInfo)
     extends Component {
   private val require_ = chext.util.Require.inferred()

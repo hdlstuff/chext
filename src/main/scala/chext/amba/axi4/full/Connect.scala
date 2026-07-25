@@ -14,9 +14,9 @@ import chext.tracking
 import tracking.uniquePrefix
 
 final class Connect(
-    master: Interface,
-    slave: Interface,
-    cfgOption: Option[ConnectConfig]
+    val master: Interface,
+    val slave: Interface,
+    val cfgOption: Option[ConnectConfig]
 )(implicit si_ : SourceInfo)
     extends tracking.Component {
   val sourceInfo: SourceInfo = si_

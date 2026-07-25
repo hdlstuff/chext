@@ -35,9 +35,9 @@ import chext.tracking.{Component, withComponent}
   *   The type of the sink data (`sink.$bits`).
   */
 abstract class Repeat[Tin <: Data, Tout <: Data](
-    source: Interface[Tin],
-    sink: Interface[Tout],
-    wIndex: Int
+    val source: Interface[Tin],
+    val sink: Interface[Tout],
+    val wIndex: Int
 )(implicit si_ : SourceInfo)
     extends Component
     with Fire[Tout] {

@@ -7,7 +7,7 @@ import chisel3.experimental.SourceInfo
 import chext.tracking.Component
 
 final class NullSource[T <: Data](
-    sink: Interface[T]
+    val sink: Interface[T]
 )(implicit si_ : SourceInfo)
     extends Component {
   private val elasticState = trackingState(t.Tag)
