@@ -53,10 +53,7 @@ class AddrSizeStrobeLastBundle[T <: Data](
   val user = genUser.cloneType
 }
 
-/** @brief
-  *   Decodes an address packet by calculating the addresses corresponding to each beat of the
-  *   transaction.
-  */
+/** Calculates the address of each beat in an address packet. */
 class AddressGenerator[T <: Data](
     val wAddr: Int,
     val genUser: T = UInt(0.W)

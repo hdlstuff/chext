@@ -266,7 +266,7 @@ final class Property[T] private[tracking] (val key: PropertyKey[T]) {
       case _                    => None
     }
 
-  /** Whether this property currently has a value. */
+  /** Whether this property has a value. */
   def isDefined: Boolean = valueOption.isDefined
 
   /** Returns the current value or throws `NoSuchElementException` for a valueless state. */

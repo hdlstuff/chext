@@ -834,7 +834,7 @@ val axiCfg = axi4.Config(
 )
 ```
 
-**Details:** Config. Configuration for raw, full, and lite AXI interfaces. `lite = true` selects AXI4-Lite behavior; full AXI keeps `lite = false`.
+**Details:** Config. Configuration for raw, full, and lite AXI interfaces. `lite = true` selects AXI4-Lite behavior; full AXI keeps `lite = false`. `BurstType.Encoding` and `ResponseFlag.Encoding` provide the protocol's integer encodings, while the outer objects provide the corresponding Chisel literals.
 
 ---
 
@@ -846,14 +846,15 @@ val axiCfg = axi4.Config(
 
 **Intent and Usage:** Declare generated and accepted traffic facts:
 ```scala
+import chext.amba.axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
 import chext.amba.axi4.tracking.properties.{Master, Slave}
 import chext.amba.axi4.tracking.values._
 
 s_axi.masterProps(Master.ReadBurstShape) = BurstShape(
-  burstBeats = 16,
-  burstNarrow = true,
-  burstTypes = Set(0, 1, 2),
-  burstSizes = BurstShape.validSizes(s_axi.cfg.wData)
+  len = 16,
+  tpe = Seq(FIXED, INCR, WRAP),
+  size = BurstShape.validSizes(s_axi.cfg.wData),
+  align = 3 // Every transaction starts on an 8-byte boundary.
 )
 s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleThread
 m_axi.slaveProps(Slave.MemoryMap) = MemoryMap(size = 0x1000)
@@ -862,7 +863,7 @@ m_axi.slaveProps(Slave.MemoryMap) = MemoryMap(size = 0x1000)
 s_axi.masterProps(Master.WriteTrafficProfile).outstandingTransactions = 4
 ```
 
-**Details:** Scala. Read and write facts use separate `BurstShape`, `ThreadMode`, and placeholder `TrafficProfile` keys; `MemoryMap` is a slave property and is re-exported from `tracking.values`. Property keys retain a runtime value-class token for `PropertyValueType[T]` resolver matching. Aggregate field updates copy and enforce their value, equal complete re-enforcement is idempotent, and conflicting complete re-enforcement throws. Binding marks every AXI4-Lite burst-shape property `Undefined`; at root completion the checker validates enabled Full burst pairs, Full/Lite thread pairs, and each interface's memory map. `TrafficProfile` is intentionally not checked yet.
+**Details:** Scala. Read and write facts use separate `BurstShape`, `ThreadMode`, and placeholder `TrafficProfile` keys. `BurstShape` uses maximum beat count `len`, normalized `tpe` and `size` sequences, and scalar `align` encoded as `log2(bytes)`. Masters guarantee alignment, slaves require it, and compatibility requires the master value to be at least the slave value. `MemoryMap` is a slave property re-exported from `tracking.values`. `PropertyValueType[T]` matches keys by their runtime value class. Field updates copy and enforce aggregate values; equal re-enforcement is idempotent, while conflicting re-enforcement fails. At root completion, the checker validates Full burst shapes, Full/Lite thread modes, and each interface's memory map. AXI4-Lite burst shapes are `Undefined`; `TrafficProfile` is not checked.
 
 ---
 
@@ -1160,7 +1161,7 @@ val m_axil_buffered = axi4l.MasterBuffered(m_axil, bufferCfg)
 
 ## AXI4 Full Components
 
-AXI4 full components are Chisel modules. They are not Chext components themselves; graph content comes from the elastic components they instantiate internally. Every module that declares tracked AXI ports creates a neighboring private `X_Resolver(owner: X)(implicit sourceInfo: SourceInfo)`. The standard read/write catalogs contain aggregate `BurstShape`, `ThreadMode`, and placeholder `TrafficProfile` keys; the slave catalog also contains `MemoryMap`, re-exported from `chext.amba.axi4.tracking.values`. Typed runtime `PropertyValueType[T]` extractors let resolver policies match an aggregate family while retaining its concrete value type for forwarding, transformations, and calculation; singleton-key matches are reserved for truly key-specific behavior. `bindMaster` and `bindSlave` register participating interfaces, and the inherited `MasterRequests` and `SlaveRequests` extractors match typed requests across all corresponding bindings; their nested `withInterface` extractors also expose the selected endpoint when needed. Resolver trace names default from the implementation class name: `_Resolver` is normalized to `Resolver`, and the kind is its kebab-case base name. Field assignment on aggregate properties produces an authoritative enforced value, and conflicting complete re-enforcement is an error. Binding eagerly marks standard properties for directions disabled by `axi4.Config` as `Undefined`, and also marks every AXI4-Lite burst shape `Undefined`. After root construction, tracking resolves and validates burst shape on Full interfaces, thread mode on Full/Lite interfaces, and memory maps on every registered interface, reporting all local incompatibilities with both resolution traces. `TrafficProfile` is deliberately excluded from that first pass and direct requests resolve as `Incomplete`. Fan-in/fan-out behavior stays in owner-specific resolvers. For the detailed guide and examples for every full AXI component/helper, see [axi4-full.md](axi4-full.md).
+AXI4 Full components are Chisel modules whose graph content comes from internal elastic components. A private neighboring resolver registers each tracked interface and implements its propagation or transformation policy. Standard values are `BurstShape`, `ThreadMode`, placeholder `TrafficProfile`, and slave `MemoryMap`. Binding marks disabled directions `Undefined`; the root checker validates Full burst shapes, Full/Lite thread modes, and memory maps. `TrafficProfile` requests remain `Incomplete`. See [axi4-full.md](axi4-full.md) for component APIs and examples.
 
 <a id="entry-axi4-full-components-demux-config"></a>
 
@@ -1250,7 +1251,7 @@ val memoryMap = demux.genDecoder(
 )
 ```
 
-**Details:** Module. Resolves each mapped master interface's `Slave.MemoryMap`; AXI `Connect` and tracked `Buffer` component resolvers allow those properties to propagate through downstream connections and buffered links. `Resolver.resolve` returns a `Resolution` containing the terminal result and trace after recursively traversing dependencies depth-first, with the depth bounded by `maxStackSize`. Resolver candidates prefer the shallowest owner, with the most recently registered candidate winning at equal depth. It optionally reorders the maps with a complete permutation of non-error interfaces and calls `MemoryMap.aggregate` with `AlignedPacked`, `AlignedLargest`, or `Tight` allocation. `memoryMapPath` names a generated map when DemuxMm instances are composed hierarchically. Each decoder subtracts the selected child map's offset from forwarded `ARADDR` and `AWADDR`, so the next hierarchy level receives a local address. Maps and segments carry absolute slash-separated origins. Optional `captureResolutionTrace` records typed `interfaceFrom`, `interfaceTo`, `kind`, `resolver`, and `resolverPath` steps in map arguments. `errorSlave = Some(index)` reserves that `m_axi` interface for addresses outside all mapped segments, so its map may be `Undefined`. Without an error slave, misses select the first interface in address order. Every map has an explicit declared size; validation rejects out-of-bounds, overlapping, and address-width-exceeding layouts. A private `DemuxMm_Resolver` publishes the generated aggregate map after `genDecoder()`, forwards upstream master burst/thread facts to every output, keeps downstream burst/thread capabilities separate with `DontCare`, and leaves `TrafficProfile` `Incomplete`.
+**Details:** Module. Resolves each mapped output's `Slave.MemoryMap` through downstream connections and buffers, then aggregates the non-error maps with `AlignedPacked`, `AlignedLargest`, or `Tight` allocation. `order` may supply a complete output permutation. Each decoder subtracts the selected child offset from forwarded addresses, so nested demuxes receive local addresses. `memoryMapPath` names the aggregate; maps and segments retain absolute origins, and `captureResolutionTrace` stores typed forwarding steps. `errorSlave = Some(index)` reserves one output for misses and permits its map to be `Undefined`; without it, misses select the first address-ordered output. Validation rejects invalid bounds, overlaps, and layouts wider than `wAddr`. The resolver publishes the aggregate after `genDecoder()`, forwards master burst/thread facts to every output, keeps slave burst/thread capabilities separate with `DontCare`, and leaves `TrafficProfile` `Incomplete`.
 
 ---
 
@@ -1463,7 +1464,7 @@ val cfg = axi4f.components.UpscaleConfig(
 val upscale0 = Module(new axi4f.components.Upscale(cfg))
 ```
 
-**Details:** Module. Full AXI width upscaler. Its private `Upscale_Resolver` enforces `SingleThread` on both sides, preserves master beats/types/sizes while recalculating narrow support for the wider bus, derives accepted input sizes from the downstream shape, and forwards `Slave.MemoryMap`. Only `TrafficProfile` remains `Incomplete`. Internally adapts read/write data channels and keeps address/control channels aligned.
+**Details:** Module. Full AXI width upscaler. Its private `Upscale_Resolver` enforces `SingleThread` on both sides, preserves master `len`, `tpe`, `size`, and address alignment, derives accepted input sizes and alignment from the downstream shape, and forwards `Slave.MemoryMap`. Only `TrafficProfile` remains `Incomplete`. Internally adapts read/write data channels without changing transaction start addresses.
 
 ---
 
@@ -1499,7 +1500,7 @@ val cfg = axi4f.components.DownscaleConfig(
 val downscale0 = Module(new axi4f.components.Downscale(cfg))
 ```
 
-**Details:** Module. Full AXI width downscaler for ID-free, single-beat input. Its private `Downscale_Resolver` enforces `SingleThread`, derives output INCR sizes and beat counts from each input size, calculates the reverse accepted input set from downstream capacity, and forwards `Slave.MemoryMap`. Only `TrafficProfile` remains `Incomplete`. It may create an output burst; use `Unburst` before it for burst-capable input and after it for a single-beat downstream interface.
+**Details:** Module. Full AXI width downscaler for ID-free, single-beat input. Its private `Downscale_Resolver` enforces `SingleThread`, derives output INCR sizes and beat counts from each input size, preserves address alignment, calculates the reverse accepted input set from downstream capacity, and forwards `Slave.MemoryMap`. Only `TrafficProfile` remains `Incomplete`. It may create an output burst; use `Unburst` before it for burst-capable input and after it for a single-beat downstream interface.
 
 ---
 
@@ -1533,7 +1534,7 @@ val cfg = axi4f.components.UnburstConfig(
 val unburst0 = Module(new axi4f.components.Unburst(cfg))
 ```
 
-**Details:** Module. Full AXI burst decomposition. Its private `Unburst_Resolver` enforces `SingleThread`, generates a one-beat INCR master shape, derives accepted input sizes from downstream one-beat support, and forwards `Slave.MemoryMap`. Only `TrafficProfile` remains `Incomplete`. Internally generates per-beat addresses and coordinates response/data channels.
+**Details:** Module. Full AXI burst decomposition. Its private `Unburst_Resolver` enforces `SingleThread`, generates a one-beat INCR master shape, reduces its alignment guarantee when generated beat addresses require it, derives accepted input sizes and alignment from downstream one-beat support, and forwards `Slave.MemoryMap`. Only `TrafficProfile` remains `Incomplete`. Internally generates per-beat addresses and coordinates response/data channels.
 
 ---
 
@@ -1567,7 +1568,7 @@ val cfg = axi4f.components.WidenConfig(
 val widen0 = Module(new axi4f.components.Widen(cfg))
 ```
 
-**Details:** Module. Full AXI data widening helper. Its private `Widen_Resolver` preserves `ThreadMode`, removes FIXED bursts, forces full-width output transfers, calculates worst-case aligned output beats and the reverse accepted input shape, and forwards `Slave.MemoryMap`. Only `TrafficProfile` remains `Incomplete`. Internally coordinates address, strobe, data, and response handling through channel logic.
+**Details:** Module. Full AXI data widening helper. Its private `Widen_Resolver` preserves `ThreadMode` and address alignment, removes FIXED bursts, forces full-width output transfers, calculates worst-case output beats and the reverse accepted input shape, and forwards `Slave.MemoryMap`. Only `TrafficProfile` remains `Incomplete`. Internally coordinates address, strobe, data, and response handling through channel logic.
 
 ---
 
@@ -1638,7 +1639,7 @@ val protocolConverter0 =
   Module(new axi4f.components.ProtocolConverter(cfg))
 ```
 
-**Details:** Module. Staged full AXI protocol conversion. It composes ID demux/serialization, width conversion, unbursting, and ID mux stages. `ProtocolConverter_Resolver` exposes the composed master and reverse slave aggregate values across the external boundary, including the final manually wired bridge; `Slave.MemoryMap` reaches `s_axi` from external `m_axi`, while only `TrafficProfile` is deliberately `Incomplete`.
+**Details:** Module. Staged Full AXI protocol conversion using ID demux/serialization, width conversion, unbursting, and ID mux stages. Its resolver exposes the composed master values and reverse-composed slave values at the external boundary. `Slave.MemoryMap` flows from external `m_axi` to `s_axi`; only `TrafficProfile` remains `Incomplete`.
 
 ---
 
@@ -1678,7 +1679,7 @@ s_axi :=> liteConverter0.s_axi
 liteConverter0.m_axil :=> memController.s_axil
 ```
 
-**Details:** Module. ID-free Full-to-Lite conversion with an authoritative Full-input burst shape and `SingleThread` mode on both sides; Lite burst properties remain `Undefined`. Its bridge resolver publishes the protocol-implied one-beat shape only on the internal Full interface, and composes remaining facts through the unburst/width stages, including forwarding `Slave.MemoryMap` from `m_axil` to `s_axi`; `TrafficProfile` remains `Incomplete`. Input unbursting always precedes inferred width conversion. Upscaling steers data and write strobes without adding beats; downscaling is followed by a second unburst stage.
+**Details:** Module. ID-free Full-to-Lite conversion with an authoritative naturally aligned, full-width Full-input burst shape and `SingleThread` mode on both sides; Lite burst properties remain `Undefined`. Its bridge resolver publishes the protocol-implied one-beat shape only on the internal Full interface, and composes remaining facts through the unburst/width stages, including forwarding `Slave.MemoryMap` from `m_axil` to `s_axi`; `TrafficProfile` remains `Incomplete`. Input unbursting always precedes inferred width conversion. Upscaling steers data and write strobes without adding beats; downscaling is followed by a second unburst stage.
 
 ---
 
@@ -1725,7 +1726,7 @@ val idleMaster = Module(new axi4f.components.IdleMaster(fullCfg))
 
 ## AXI4 Lite Components
 
-AXI4-Lite uses `ThreadMode`, `TrafficProfile`, and `MemoryMap`; every master/slave `BurstShape` property is eagerly `Undefined` when a resolver binds the interface because Lite exposes no burst-shape signals. Only `SingleTransaction` and `SingleThread` are valid Lite thread modes; `UniqueThreads` or `Unconstrained` on either side is an elaboration error with resolution provenance. Declared interfaces participate in root-level thread-mode and memory-map validation, while burst compatibility is checked only for Full AXI. `TrafficProfile` is excluded from the initial pass and direct requests remain `Incomplete`. For the detailed guide and examples for every Lite AXI component/helper, see [axi4-lite.md](axi4-lite.md).
+AXI4-Lite uses `ThreadMode`, placeholder `TrafficProfile`, and slave `MemoryMap`; its `BurstShape` properties are `Undefined`. Only `SingleTransaction` and `SingleThread` are valid Lite thread modes. The root checker validates thread modes and memory maps; `TrafficProfile` requests remain `Incomplete`. See [axi4-lite.md](axi4-lite.md) for component APIs and examples.
 
 <a id="entry-axi4-lite-components-constant-slaves"></a>
 

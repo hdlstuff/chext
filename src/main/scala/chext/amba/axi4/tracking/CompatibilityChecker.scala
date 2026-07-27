@@ -19,7 +19,7 @@ object CompatibilityChecker {
   private case object Skip extends Checked[Nothing]
   private case object Invalid extends Checked[Nothing]
 
-  /** Resolves and checks every initially supported property on every supplied interface. */
+  /** Resolves and checks every supported property on every supplied interface. */
   def check(interfaces: Iterable[Tracked]): Unit = {
     val diagnostics = ArrayBuffer.empty[Diagnostic]
     interfaces.foreach(checkInterface(_, diagnostics))

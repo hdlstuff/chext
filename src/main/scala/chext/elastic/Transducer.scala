@@ -41,9 +41,9 @@ import chext.tracking.Component
   * @param sink
   *   The sink elastic interface.
   * @tparam Tin
-  *   The type of the source's data payload (`source.$bits`).
+  *   Source payload type.
   * @tparam Tout
-  *   The type of the sink's data payload (`sink.$bits`).
+  *   Sink payload type.
   */
 abstract class Transducer[Tin <: Data, Tout <: Data](
     val source: Interface[Tin],

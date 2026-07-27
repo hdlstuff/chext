@@ -30,9 +30,9 @@ import chext.tracking.{Component, withComponent}
   *   Bit width of the internal repeat counter.
   *
   * @tparam Tin
-  *   The type of the source data (`source.$bits`).
+  *   Source payload type.
   * @tparam Tout
-  *   The type of the sink data (`sink.$bits`).
+  *   Sink payload type.
   */
 abstract class Repeat[Tin <: Data, Tout <: Data](
     val source: Interface[Tin],

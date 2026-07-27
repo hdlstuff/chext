@@ -39,7 +39,7 @@ final class ResolveRequest[T] private[tracking] (
   /** AXI configuration of the interface on which this request originated. */
   final def cfg: chext.amba.axi4.Config = interface.cfg
 
-  /** Complete property manager of the request's interface. */
+  /** Property manager of the request's interface. */
   final def properties: PropertyManager = interface.properties
 
   /** Typed key identifying the requested property. */
@@ -141,7 +141,7 @@ final class ResolveRequest[T] private[tracking] (
     ResolveResult.Success()
   }
 
-  /** Asks the coordinator to resolve `dependencies` and then invoke this resolver again.
+  /** Asks the coordinator to resolve `dependencies` and then process this resolve request again.
     *
     * The original request is appended as a continuation marker. Callers supply only true
     * dependencies; at least one is required. [[Resolver.resolve]] validates the shape,
@@ -195,7 +195,7 @@ object ResolveRequest {
     apply(interface, interface.properties(key))
 }
 
-/** Control result returned by one invocation of [[Resolver.resolve]].
+/** Control result returned by one resolver step.
   *
   * This is a small protocol between a resolver and the recursive coordinator. `Success` means
   * the resolver put the request into a terminal property state. `Retry` exposes prerequisite
@@ -230,11 +230,10 @@ object ResolveResult {
   *
   * A resolver is registered on one or more [[Tracked]] interfaces with the dedicated master or
   * slave registration method. Registration is family-specific: slave properties conventionally
-  * flow downstream-to-upstream,
-  * while master properties flow upstream-to-downstream. When multiple resolvers are registered for
-  * the same interface and family, the tracking layer selects the resolver owned by the shallowest
-  * hierarchy node so that an enclosing boundary controls propagation. The latest registration
-  * wins when candidates have the same depth.
+  * flow downstream-to-upstream, while master properties flow upstream-to-downstream. When multiple
+  * resolvers are registered for the same interface and family, the tracking layer selects the
+  * resolver owned by the shallowest hierarchy node so that an enclosing boundary controls
+  * propagation. The latest registration wins when candidates have the same depth.
   *
   * [[resolve]] is intentionally one step of a dependency-driven operation. Implementations
   * inspect the request, create typed dependencies with [[ResolveRequest.retarget]], and use the
@@ -383,7 +382,7 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
   )(implicit sourceInfo: SourceInfo): Unit =
     interfaces.foreach(interface => bindSlave(interface))
 
-  /** Fails a request which reached the catch-all branch of this resolver's policy.
+  /** Fails a request that reaches the catch-all branch of this resolver's policy.
     *
     * The diagnostic identifies the derived resolver implementation and kind, so concrete
     * resolvers do not need to repeat endpoint-specific boilerplate.

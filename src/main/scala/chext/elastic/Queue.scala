@@ -346,7 +346,7 @@ class Queue[Tin <: Data, Tout <: Data](
 
   protected final def in: Tin = require_.fail("`in` field shall not be used!")
 
-  /** Sets a pure functional transformation for the value driven on sink.$bits.
+  /** Sets a pure functional transformation for the sink payload.
     * The function takes the raw queue output and returns the transformed value.
     */
   protected final def out(fn: => OutFn)(implicit si_ : SourceInfo): Unit = {
@@ -358,8 +358,9 @@ class Queue[Tin <: Data, Tout <: Data](
     outFn_ = Some(fn)
   }
 
-  /** Sets an imperative transformation for the value driven on sink.$bits. The
-    * function takes the raw queue output and a mutable output wire.
+  /** Sets an imperative transformation for the sink payload.
+    *
+    * The function takes the raw queue output and a mutable output wire.
     */
   protected final def outExplicit(fn: => OutExplicitFn)(implicit si_ : SourceInfo): Unit = {
     require_.here(
