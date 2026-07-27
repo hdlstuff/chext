@@ -53,6 +53,9 @@ The remaining pipelining and connection-API questions are collected in
 The developing AXI4 interface-property and resolver model is recorded in
 [axi4-tracking.md](axi4-tracking.md).
 
+The component-by-component AXI4-Full resolver and shape-property flow is
+specified in [axi4-resolvers.md](axi4-resolvers.md).
+
 ## Archived prompts
 
 - [Tracking refactor prompt](archive/tracking-refactor-prompt.md)
