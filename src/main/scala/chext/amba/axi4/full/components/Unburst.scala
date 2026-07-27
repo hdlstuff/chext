@@ -174,18 +174,13 @@ class Unburst(val cfg: UnburstConfig) extends Module with chext.AnnotatedModule 
 private final class Unburst_Resolver(owner: Unburst)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
-  private val fullSize = values.BurstShape.fullSize(owner.cfg.axiCfg.wData)
-  private val incr = axi4.BurstType.INCR.litValue.toInt
   private val protocolBeats = if (owner.cfg.axiCfg.axi3Compat) 16 else 256
-  private val protocolTypes = Set(
-    axi4.BurstType.FIXED.litValue.toInt,
-    incr,
-    axi4.BurstType.WRAP.litValue.toInt
-  )
+  private val protocolTypes = Seq(FIXED, INCR, WRAP)
 
   if (owner.cfg.axiCfg.read) {
     owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
@@ -201,35 +196,41 @@ private final class Unburst_Resolver(owner: Unburst)(implicit sourceInfo: Source
   }
 
   private def masterShape(input: values.BurstShape): values.BurstShape =
-    if (input.burstSizes.isEmpty)
+    if (input.size.isEmpty)
       values.BurstShape()
     else
       values.BurstShape(
-        burstBeats = 1,
-        burstNarrow = input.burstNarrow,
-        burstTypes = Set(incr),
-        burstSizes = input.burstSizes
+        len = 1,
+        tpe = Seq(INCR),
+        size = input.size,
+        align =
+          if (
+            input.len > 1 &&
+            input.tpe.exists(_ != FIXED)
+          )
+            input.align min input.size.min
+          else input.align
       )
 
   private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
     val sizes =
       if (
-        downstream.burstBeats >= 1 &&
-        downstream.burstTypes.contains(incr)
+        downstream.len >= 1 &&
+        downstream.tpe.contains(INCR)
       )
-        downstream.burstSizes.intersect(
+        downstream.size.intersect(
           values.BurstShape.validSizes(owner.cfg.axiCfg.wData)
-        )
-      else Set.empty[Int]
+        ).filter(_ >= downstream.align)
+      else Seq.empty
 
     if (sizes.isEmpty)
       values.BurstShape()
     else
       values.BurstShape(
-        burstBeats = protocolBeats,
-        burstNarrow = sizes.exists(_ < fullSize),
-        burstTypes = protocolTypes,
-        burstSizes = sizes
+        len = protocolBeats,
+        tpe = protocolTypes,
+        size = sizes,
+        align = downstream.align
       )
   }
 

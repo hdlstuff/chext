@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.amba.axi4
+import chext.amba.axi4.ResponseFlag.Encoding.{DECERR, OKAY, SLVERR}
 import chext.elastic
 
 /** AXI4-Lite slave that returns a constant value and response.
@@ -24,7 +25,7 @@ class ConstantSlave(
   private val readDataValue = readData.litValue
   require_(readDataValue.bitLength <= axiCfg.wData)
   private[components] val responseValue = response.litValue
-  require_(responseValue >= 0 && responseValue < 4)
+  require_(responseValue >= OKAY && responseValue <= DECERR)
 
   val s_axil = IO(axi4.lite.Slave(axiCfg))
 
@@ -65,8 +66,8 @@ class ErrorSlave(
   private val errorResponseValue = errorResponse.litValue
 
   require_(
-    errorResponseValue == axi4.ResponseFlag.SLVERR.litValue ||
-      errorResponseValue == axi4.ResponseFlag.DECERR.litValue,
+    errorResponseValue == SLVERR ||
+      errorResponseValue == DECERR,
     "errorResponse must be axi4.ResponseFlag.SLVERR or axi4.ResponseFlag.DECERR"
   )
 }
@@ -129,6 +130,7 @@ class IdleMaster(val axiCfg: axi4.Config) extends Module with chext.AnnotatedMod
 private final class ConstantSlave_Resolver(owner: ConstantSlave)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.ResponseFlag.Encoding.EXOKAY
 
   bindSlave(owner.s_axil)
 
@@ -140,7 +142,7 @@ private final class ConstantSlave_Resolver(owner: ConstantSlave)(implicit source
     owner.s_axil.slaveProps(properties.Slave.WriteThreadMode) =
       values.ThreadMode.SingleTransaction
   }
-  if (owner.responseValue <= axi4.ResponseFlag.EXOKAY.litValue)
+  if (owner.responseValue <= EXOKAY)
     owner.s_axil.slaveProps(properties.Slave.MemoryMap) =
       values.MemoryMap(size = BigInt(1) << owner.axiCfg.wAddr)
   else

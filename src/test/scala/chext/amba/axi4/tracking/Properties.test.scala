@@ -5,6 +5,7 @@ import chisel3.experimental.BaseModule
 import java.io.{ByteArrayOutputStream, PrintStream}
 
 import chext.amba.axi4
+import chext.amba.axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
 import chext.amba.axi4.tracking.properties.{Master, Slave}
 import chext.amba.axi4.tracking.values.{
   BurstShape,
@@ -22,13 +23,27 @@ object Properties_Test extends App {
 
   private val cfg = axi4.Config(wId = 4, wAddr = 16, wData = 64)
   private val fullSize = BurstShape.fullSize(cfg.wData)
-  private val allTypes = Set(0, 1, 2)
+  private val allTypes = Seq(FIXED, INCR, WRAP)
   private val allSizes = BurstShape.validSizes(cfg.wData)
   private val shape = BurstShape(
-    burstBeats = 16,
-    burstNarrow = true,
-    burstTypes = allTypes,
-    burstSizes = allSizes
+    len = 16,
+    tpe = allTypes,
+    size = allSizes,
+    align = 2
+  )
+  assert(FIXED == 0 && INCR == 1 && WRAP == 2)
+  assert(
+    BurstShape(
+      len = 1,
+      tpe = Seq(WRAP, INCR, INCR),
+      size = Seq(2, 0, 2),
+      align = 0
+    ) == BurstShape(
+      len = 1,
+      tpe = Seq(INCR, WRAP),
+      size = Seq(0, 2),
+      align = 0
+    )
   )
 
   // MemoryMap remains the original immutable type through the values namespace.
@@ -101,14 +116,14 @@ object Properties_Test extends App {
   // Field updates own the lifecycle transition and never expose public mutable fields.
   val properties = new PropertyManager
   val burstProperty = properties(Master.ReadBurstShape)
-  burstProperty.burstBeats = 8
-  assert(burstProperty.state == PropertyState.Enforced(BurstShape(burstBeats = 8)))
-  burstProperty.burstNarrow = true
-  burstProperty.burstTypes = Set(1, 2)
-  burstProperty.burstSizes = allSizes
+  burstProperty.len = 8
+  assert(burstProperty.state == PropertyState.Enforced(BurstShape(len = 8)))
+  burstProperty.tpe = Seq(INCR, WRAP)
+  burstProperty.size = allSizes
+  burstProperty.align = 2
   assert(
     burstProperty.get ==
-      BurstShape(8, true, Set(1, 2), allSizes)
+      BurstShape(8, Seq(INCR, WRAP), allSizes, 2)
   )
 
   val trafficProperty = properties(Master.ReadTrafficProfile)
@@ -131,40 +146,40 @@ object Properties_Test extends App {
       CalculateResult.Success
   )
   assert(calculated.state == PropertyState.Calculated(shape, dummyResolver))
-  calculated.burstBeats = 12
-  assert(calculated.state == PropertyState.Enforced(shape.copyForTest(burstBeats = 12)))
+  calculated.len = 12
+  assert(calculated.state == PropertyState.Enforced(shape.copyForTest(len = 12)))
   assert(calculated.resolutionSteps.isEmpty)
 
   val terminalTracked = new Tracked { val cfg = Properties_Test.cfg }
   val terminalRequest = ResolveRequest(terminalTracked, Slave.ReadBurstShape)
   terminalRequest.incomplete()
-  terminalTracked.slaveProps(Slave.ReadBurstShape).burstBeats = 1
+  terminalTracked.slaveProps(Slave.ReadBurstShape).len = 1
   assert(
     terminalTracked.slaveProps(Slave.ReadBurstShape).state ==
-      PropertyState.Enforced(BurstShape(burstBeats = 1))
+      PropertyState.Enforced(BurstShape(len = 1))
   )
 
   val dontCareTracked = new Tracked { val cfg = Properties_Test.cfg }
   ResolveRequest(dontCareTracked, Slave.ReadBurstShape).dontCare("test")
-  dontCareTracked.slaveProps(Slave.ReadBurstShape).burstTypes = Set(1)
+  dontCareTracked.slaveProps(Slave.ReadBurstShape).tpe = Seq(INCR)
   assert(
     dontCareTracked.slaveProps(Slave.ReadBurstShape).state ==
-      PropertyState.Enforced(BurstShape(burstTypes = Set(1)))
+      PropertyState.Enforced(BurstShape(tpe = Seq(INCR)))
   )
 
   val undefinedTracked = new Tracked { val cfg = Properties_Test.cfg }
   ResolveRequest(undefinedTracked, Slave.ReadBurstShape).undefined()
-  undefinedTracked.slaveProps(Slave.ReadBurstShape).burstSizes = Set(fullSize)
+  undefinedTracked.slaveProps(Slave.ReadBurstShape).size = Seq(fullSize)
   assert(
     undefinedTracked.slaveProps(Slave.ReadBurstShape).state ==
-      PropertyState.Enforced(BurstShape(burstSizes = Set(fullSize)))
+      PropertyState.Enforced(BurstShape(size = Seq(fullSize)))
   )
 
   val authoritative = properties(Slave.ReadBurstShape).enforce(shape)
   authoritative.enforce(shape)
   val conflictingReenforcementRejected =
     try {
-      authoritative.enforce(BurstShape(8, true, allTypes, allSizes))
+      authoritative.enforce(BurstShape(8, allTypes, allSizes, 2))
       false
     } catch {
       case _: IllegalStateException => true
@@ -177,37 +192,60 @@ object Properties_Test extends App {
   assert(
     BurstShape
       .validationErrors(
-        BurstShape(1, false, Set(1), Set(BurstShape.fullSize(liteCfg.wData))),
+        BurstShape(
+          1,
+          Seq(INCR),
+          Seq(BurstShape.fullSize(liteCfg.wData)),
+          0
+        ),
         liteCfg
       )
       .isEmpty
   )
   assert(
     BurstShape
-      .validationErrors(BurstShape(2, false, Set(0), Set(0)), liteCfg)
-      .length == 4
+      .validationErrors(BurstShape(2, Seq(FIXED), Seq(0), 0), liteCfg)
+      .length == 3
   )
   val invalidShape = BurstShape(
-    burstBeats = 300,
-    burstNarrow = true,
-    burstTypes = Set(3),
-    burstSizes = Set(fullSize + 1)
+    len = 300,
+    tpe = Seq(3),
+    size = Seq(fullSize + 1),
+    align = cfg.wAddr + 1
   )
   assert(BurstShape.validationErrors(invalidShape, cfg).length == 4)
+  assert(
+    BurstShape
+      .validationErrors(shape.copyForTest(align = -1), cfg)
+      .exists(_.contains("align must not be negative"))
+  )
 
   val masterMismatch = BurstShape(
-    burstBeats = 32,
-    burstNarrow = true,
-    burstTypes = Set(0, 1, 2),
-    burstSizes = Set(0, 1, 2, 3)
+    len = 32,
+    tpe = Seq(FIXED, INCR, WRAP),
+    size = Seq(0, 1, 2, 3),
+    align = 1
   )
   val slaveMismatch = BurstShape(
-    burstBeats = 8,
-    burstNarrow = false,
-    burstTypes = Set(1),
-    burstSizes = Set(3)
+    len = 8,
+    tpe = Seq(INCR),
+    size = Seq(3),
+    align = 3
   )
   assert(BurstShape.compatibilityErrors(masterMismatch, slaveMismatch).length == 4)
+  assert(
+    BurstShape
+      .compatibilityErrors(
+        shape.copyForTest(align = 3),
+        shape.copyForTest(align = 2)
+      )
+      .isEmpty
+  )
+  assert(
+    BurstShape
+      .compatibilityErrors(BurstShape(), shape.copyForTest(align = 3))
+      .isEmpty
+  )
 
   val modes = Seq(
     ThreadMode.SingleTransaction,
@@ -486,6 +524,30 @@ object Properties_Test extends App {
   assert(stateLog.contains("property is undefined"))
   assert(stateLog.contains("property resolution is incomplete"))
 
+  val alignmentMismatch = new Tracked {
+    val cfg = Properties_Test.cfg.copy(write = false)
+  }
+  alignmentMismatch
+    .masterProps(Master.ReadBurstShape)
+    .enforce(shape.copyForTest(align = 1))
+  alignmentMismatch
+    .slaveProps(Slave.ReadBurstShape)
+    .enforce(shape.copyForTest(align = 3))
+  alignmentMismatch
+    .masterProps(Master.ReadThreadMode)
+    .enforce(ThreadMode.SingleTransaction)
+  alignmentMismatch
+    .slaveProps(Slave.ReadThreadMode)
+    .enforce(ThreadMode.Unconstrained)
+  alignmentMismatch.slaveProps(Slave.MemoryMap).markUndefined()
+  val alignmentLog =
+    capturedFailure(CompatibilityChecker.check(Seq(alignmentMismatch)))
+  assert(
+    alignmentLog.contains(
+      "master align 1 does not meet slave align 3"
+    )
+  )
+
   val traced = new Tracked { val cfg = Properties_Test.cfg.copy(write = false) }
   val masterTrace = ResolutionStep("/checked", "/master", "test", "MasterResolver", "/master")
   val slaveTrace = ResolutionStep("/checked", "/slave", "test", "SlaveResolver", "/slave")
@@ -508,11 +570,11 @@ object Properties_Test extends App {
 
   implicit final class BurstShapeTestOps(private val value: BurstShape) extends AnyVal {
     def copyForTest(
-        burstBeats: Int = value.burstBeats,
-        burstNarrow: Boolean = value.burstNarrow,
-        burstTypes: Set[Int] = value.burstTypes,
-        burstSizes: Set[Int] = value.burstSizes
+        len: Int = value.len,
+        tpe: Seq[Int] = value.tpe,
+        size: Seq[Int] = value.size,
+        align: Int = value.align
     ): BurstShape =
-      BurstShape(burstBeats, burstNarrow, burstTypes, burstSizes)
+      BurstShape(len, tpe, size, align)
   }
 }

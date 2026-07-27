@@ -362,16 +362,13 @@ class Widen(val cfg: WidenConfig) extends Module with chext.AnnotatedModule {
 private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
   private val fullSize = values.BurstShape.fullSize(owner.cfg.axiCfg.wData)
-  private val fixed = axi4.BurstType.FIXED.litValue.toInt
-  private val supportedTypes = Set(
-    axi4.BurstType.INCR.litValue.toInt,
-    axi4.BurstType.WRAP.litValue.toInt
-  )
+  private val supportedTypes = Seq(INCR, WRAP)
   private val protocolBeats =
     if (owner.cfg.axiCfg.axi3Compat) 16 else 256
 
@@ -383,38 +380,37 @@ private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo
   }
 
   private def masterShape(input: values.BurstShape): values.BurstShape = {
-    val types = input.burstTypes - fixed
-    if (input.burstSizes.isEmpty || types.isEmpty)
+    val types = input.tpe.filterNot(_ == FIXED)
+    if (input.size.isEmpty || types.isEmpty)
       values.BurstShape()
     else
       values.BurstShape(
-        burstBeats =
-          input.burstSizes.map(size => widenedBeats(input.burstBeats, size)).max,
-        burstNarrow = false,
-        burstTypes = types,
-        burstSizes = Set(fullSize)
+        len = input.size.map(size => widenedBeats(input.len, size)).max,
+        tpe = types,
+        size = Seq(fullSize),
+        align = input.align
       )
   }
 
   private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
-    val types = downstream.burstTypes.intersect(supportedTypes)
+    val types = downstream.tpe.intersect(supportedTypes)
     val sizes =
-      if (downstream.burstSizes.contains(fullSize))
+      if (downstream.size.contains(fullSize))
         values.BurstShape.validSizes(owner.cfg.axiCfg.wData)
-      else Set.empty[Int]
+      else Seq.empty
     val beats =
       (0 to protocolBeats).reverse.find { candidate =>
-        sizes.forall(size => widenedBeats(candidate, size) <= downstream.burstBeats)
+        sizes.forall(size => widenedBeats(candidate, size) <= downstream.len)
       }.getOrElse(0)
 
     if (sizes.isEmpty || types.isEmpty || beats == 0)
       values.BurstShape()
     else
       values.BurstShape(
-        burstBeats = beats,
-        burstNarrow = sizes.exists(_ < fullSize),
-        burstTypes = types,
-        burstSizes = sizes
+        len = beats,
+        tpe = types,
+        size = sizes,
+        align = downstream.align
       )
   }
 

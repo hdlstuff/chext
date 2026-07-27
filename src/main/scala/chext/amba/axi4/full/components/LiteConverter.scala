@@ -221,6 +221,7 @@ class LiteConverter(val cfg: LiteConverterConfig)
 private final class LiteConverter_Resolver(owner: LiteConverter)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
 
   import owner.cfg._
 
@@ -230,14 +231,10 @@ private final class LiteConverter_Resolver(owner: LiteConverter)(implicit source
   private val fullSizeSlave = values.BurstShape.fullSize(axiSlaveCfg.wData)
   private val maxBurstBeats = if (axiSlaveCfg.axi3Compat) 16 else 256
   private val fullShape = values.BurstShape(
-    burstBeats = maxBurstBeats,
-    burstNarrow = false,
-    burstTypes = Set(
-      axi4.BurstType.FIXED.litValue.toInt,
-      axi4.BurstType.INCR.litValue.toInt,
-      axi4.BurstType.WRAP.litValue.toInt
-    ),
-    burstSizes = Set(fullSizeSlave)
+    len = maxBurstBeats,
+    tpe = Seq(FIXED, INCR, WRAP),
+    size = Seq(fullSizeSlave),
+    align = fullSizeSlave
   )
 
   private def enforceMasterProperties(): Unit = {
@@ -284,17 +281,16 @@ private final class LiteConverterBridge_Resolver(
 )(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.BurstType.Encoding.INCR
 
   bindSlave(converted)
 
-  private val incr = axi4.BurstType.INCR.litValue.toInt
   private val convertedSizes = values.BurstShape.validSizes(converted.cfg.wData)
   private val fullBridgeShape = values.BurstShape(
-    burstBeats = 1,
-    burstNarrow =
-      convertedSizes.exists(_ < values.BurstShape.fullSize(converted.cfg.wData)),
-    burstTypes = Set(incr),
-    burstSizes = convertedSizes
+    len = 1,
+    tpe = Seq(INCR),
+    size = convertedSizes,
+    align = 0
   )
 
   if (converted.cfg.read)

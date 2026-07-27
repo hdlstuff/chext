@@ -1,109 +1,116 @@
 package chext.amba.axi4.tracking.values
 
 import chext.amba.axi4
+import chext.amba.axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
 import chext.amba.axi4.tracking.Property
 
 /** Burst-related limits and capabilities carried by one read or write property. */
 final class BurstShape private[tracking] (
-    private var burstBeats_ : Int,
-    private var burstNarrow_ : Boolean,
-    private var burstTypes_ : Set[Int],
-    private var burstSizes_ : Set[Int]
+    private var len_ : Int,
+    private var tpe_ : Seq[Int],
+    private var size_ : Seq[Int],
+    private var align_ : Int
 ) {
-  def burstBeats: Int = burstBeats_
-  def burstNarrow: Boolean = burstNarrow_
-  def burstTypes: Set[Int] = burstTypes_
-  def burstSizes: Set[Int] = burstSizes_
+  def len: Int = len_
+  def tpe: Seq[Int] = tpe_
+  def size: Seq[Int] = size_
+  def align: Int = align_
 
   private[tracking] def copyValue(): BurstShape =
-    new BurstShape(burstBeats_, burstNarrow_, burstTypes_, burstSizes_)
+    new BurstShape(len_, tpe_, size_, align_)
 
-  private[tracking] def burstBeats_=(value: Int): Unit = burstBeats_ = value
-  private[tracking] def burstNarrow_=(value: Boolean): Unit = burstNarrow_ = value
-  private[tracking] def burstTypes_=(value: Set[Int]): Unit = burstTypes_ = value
-  private[tracking] def burstSizes_=(value: Set[Int]): Unit = burstSizes_ = value
+  private[tracking] def len_=(value: Int): Unit = len_ = value
+  private[tracking] def tpe_=(value: Seq[Int]): Unit =
+    tpe_ = BurstShape.normalize(value)
+  private[tracking] def size_=(value: Seq[Int]): Unit =
+    size_ = BurstShape.normalize(value)
+  private[tracking] def align_=(value: Int): Unit = align_ = value
 
   override def equals(other: Any): Boolean =
     other match {
       case that: BurstShape =>
-        burstBeats == that.burstBeats &&
-          burstNarrow == that.burstNarrow &&
-          burstTypes == that.burstTypes &&
-          burstSizes == that.burstSizes
+        len == that.len &&
+          tpe == that.tpe &&
+          size == that.size &&
+          align == that.align
       case _ => false
     }
 
   override def hashCode(): Int =
-    (burstBeats, burstNarrow, burstTypes, burstSizes).##
+    (len, tpe, size, align).##
 
   override def toString: String =
-    s"BurstShape(burstBeats=$burstBeats, burstNarrow=$burstNarrow, " +
-      s"burstTypes=$burstTypes, burstSizes=$burstSizes)"
+    s"BurstShape(len=$len, tpe=$tpe, size=$size, align=$align)"
 }
 
 object BurstShape {
-  private val fixed = axi4.BurstType.FIXED.litValue.toInt
-  private val incr = axi4.BurstType.INCR.litValue.toInt
-  private val wrap = axi4.BurstType.WRAP.litValue.toInt
+  private def normalize(values: Seq[Int]): Seq[Int] =
+    values.distinct.sorted
 
-  /** Creates a complete burst shape. Defaults describe an empty stream or capability. */
+  /** Creates a complete burst shape.
+    *
+    * `align` is the base-2 logarithm of the minimum byte alignment of every transaction's starting
+    * address. For example, `3` means 8-byte alignment. On a master property it is a guarantee; on
+    * a slave property it is a requirement.
+    *
+    * Defaults describe an empty stream or capability.
+    */
   def apply(
-      burstBeats: Int = 0,
-      burstNarrow: Boolean = false,
-      burstTypes: Set[Int] = Set.empty,
-      burstSizes: Set[Int] = Set.empty
+      len: Int = 0,
+      tpe: Seq[Int] = Seq.empty,
+      size: Seq[Int] = Seq.empty,
+      align: Int = 0
   ): BurstShape =
-    new BurstShape(burstBeats, burstNarrow, burstTypes, burstSizes)
+    new BurstShape(len, normalize(tpe), normalize(size), align)
 
-  def unapply(value: BurstShape): Option[(Int, Boolean, Set[Int], Set[Int])] =
-    Some((value.burstBeats, value.burstNarrow, value.burstTypes, value.burstSizes))
+  def unapply(value: BurstShape): Option[(Int, Seq[Int], Seq[Int], Int)] =
+    Some((value.len, value.tpe, value.size, value.align))
 
   /** AXI transfer-size encoding for one full-width beat. */
   def fullSize(wData: Int): Int =
     Integer.numberOfTrailingZeros(wData / 8)
 
   /** Transfer-size encodings representable on an interface. */
-  def validSizes(wData: Int): Set[Int] =
-    (0 to fullSize(wData)).toSet
+  def validSizes(wData: Int): Seq[Int] =
+    0 to fullSize(wData)
 
   /** Returns every internal-consistency or interface-specific validation problem. */
   def validationErrors(value: BurstShape, cfg: axi4.Config): Seq[String] = {
     val isEmpty =
-      value.burstBeats == 0 && !value.burstNarrow &&
-        value.burstTypes.isEmpty && value.burstSizes.isEmpty
+      value.len == 0 && value.tpe.isEmpty && value.size.isEmpty && value.align == 0
     val protocolMaxBeats =
       if (cfg.lite) 1 else if (cfg.axi3Compat) 16 else 256
-    val protocolTypes = if (cfg.lite) Set(incr) else Set(fixed, incr, wrap)
+    val protocolTypes = if (cfg.lite) Set(INCR) else Set(FIXED, INCR, WRAP)
     val interfaceSizes =
       if (cfg.lite) Set(fullSize(cfg.wData)) else validSizes(cfg.wData)
-    val expectedNarrow =
-      value.burstSizes.exists(_ < fullSize(cfg.wData))
 
     if (isEmpty)
       Seq.empty
     else
       Seq(
-        Option.when(value.burstBeats <= 0)(
-          s"burstBeats must be positive for a non-empty shape (got ${value.burstBeats})"
+        Option.when(value.len <= 0)(
+          s"len must be positive for a non-empty shape (got ${value.len})"
         ),
-        Option.when(value.burstBeats > protocolMaxBeats)(
-          s"burstBeats ${value.burstBeats} exceeds the protocol limit $protocolMaxBeats"
+        Option.when(value.len > protocolMaxBeats)(
+          s"len ${value.len} exceeds the protocol limit $protocolMaxBeats"
         ),
-        Option.when(value.burstTypes.isEmpty)(
-          "burstTypes must not be empty for a non-empty shape"
+        Option.when(value.tpe.isEmpty)(
+          "tpe must not be empty for a non-empty shape"
         ),
-        Option.when(value.burstSizes.isEmpty)(
-          "burstSizes must not be empty for a non-empty shape"
+        Option.when(value.size.isEmpty)(
+          "size must not be empty for a non-empty shape"
         ),
-        Option.when(!value.burstTypes.subsetOf(protocolTypes))(
-          s"burstTypes ${value.burstTypes} contain encodings outside $protocolTypes"
+        Option.when(value.align < 0)(
+          s"align must not be negative (got ${value.align})"
         ),
-        Option.when(!value.burstSizes.subsetOf(interfaceSizes))(
-          s"burstSizes ${value.burstSizes} contain encodings outside $interfaceSizes"
+        Option.when(value.align > cfg.wAddr)(
+          s"align ${value.align} exceeds address width ${cfg.wAddr}"
         ),
-        Option.when(value.burstNarrow != expectedNarrow)(
-          s"burstNarrow ${value.burstNarrow} does not agree with burstSizes " +
-            s"${value.burstSizes} at data width ${cfg.wData}"
+        Option.when(!value.tpe.toSet.subsetOf(protocolTypes))(
+          s"tpe ${value.tpe} contains encodings outside $protocolTypes"
+        ),
+        Option.when(!value.size.toSet.subsetOf(interfaceSizes.toSet))(
+          s"size ${value.size} contains encodings outside $interfaceSizes"
         )
       ).flatten
   }
@@ -111,17 +118,17 @@ object BurstShape {
   /** Returns all reasons why a master burst shape exceeds a slave capability. */
   def compatibilityErrors(master: BurstShape, slave: BurstShape): Seq[String] =
     Seq(
-      Option.when(master.burstBeats > slave.burstBeats)(
-        s"master burstBeats ${master.burstBeats} exceeds slave burstBeats ${slave.burstBeats}"
+      Option.when(master.len > slave.len)(
+        s"master len ${master.len} exceeds slave len ${slave.len}"
       ),
-      Option.when(master.burstNarrow && !slave.burstNarrow)(
-        "master may generate narrow bursts but slave does not accept them"
+      Option.when(!master.tpe.toSet.subsetOf(slave.tpe.toSet))(
+        s"master tpe ${master.tpe} is not a subset of slave tpe ${slave.tpe}"
       ),
-      Option.when(!master.burstTypes.subsetOf(slave.burstTypes))(
-        s"master burstTypes ${master.burstTypes} are not a subset of slave burstTypes ${slave.burstTypes}"
+      Option.when(!master.size.toSet.subsetOf(slave.size.toSet))(
+        s"master size ${master.size} is not a subset of slave size ${slave.size}"
       ),
-      Option.when(!master.burstSizes.subsetOf(slave.burstSizes))(
-        s"master burstSizes ${master.burstSizes} are not a subset of slave burstSizes ${slave.burstSizes}"
+      Option.when(master.len > 0 && master.align < slave.align)(
+        s"master align ${master.align} does not meet slave align ${slave.align}"
       )
     ).flatten
 
@@ -130,22 +137,22 @@ object BurstShape {
     private def current: BurstShape =
       property.valueOption.getOrElse(BurstShape())
 
-    def burstBeats: Int = current.burstBeats
-    def burstNarrow: Boolean = current.burstNarrow
-    def burstTypes: Set[Int] = current.burstTypes
-    def burstSizes: Set[Int] = current.burstSizes
+    def len: Int = current.len
+    def tpe: Seq[Int] = current.tpe
+    def size: Seq[Int] = current.size
+    def align: Int = current.align
 
-    def burstBeats_=(value: Int): Unit =
-      property.mutate(BurstShape(), _.copyValue())(_.burstBeats_ = value)
+    def len_=(value: Int): Unit =
+      property.mutate(BurstShape(), _.copyValue())(_.len_ = value)
 
-    def burstNarrow_=(value: Boolean): Unit =
-      property.mutate(BurstShape(), _.copyValue())(_.burstNarrow_ = value)
+    def tpe_=(value: Seq[Int]): Unit =
+      property.mutate(BurstShape(), _.copyValue())(_.tpe_ = value)
 
-    def burstTypes_=(value: Set[Int]): Unit =
-      property.mutate(BurstShape(), _.copyValue())(_.burstTypes_ = value)
+    def size_=(value: Seq[Int]): Unit =
+      property.mutate(BurstShape(), _.copyValue())(_.size_ = value)
 
-    def burstSizes_=(value: Set[Int]): Unit =
-      property.mutate(BurstShape(), _.copyValue())(_.burstSizes_ = value)
+    def align_=(value: Int): Unit =
+      property.mutate(BurstShape(), _.copyValue())(_.align_ = value)
   }
 }
 

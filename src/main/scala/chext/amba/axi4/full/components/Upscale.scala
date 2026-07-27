@@ -163,9 +163,6 @@ private final class Upscale_Resolver(owner: Upscale)(implicit sourceInfo: Source
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
-  private val slaveFullSize = values.BurstShape.fullSize(owner.cfg.axiSlaveCfg.wData)
-  private val masterFullSize = values.BurstShape.fullSize(owner.cfg.axiMasterCfg.wData)
-
   if (owner.cfg.axiSlaveCfg.read) {
     owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
       values.ThreadMode.SingleThread
@@ -180,29 +177,29 @@ private final class Upscale_Resolver(owner: Upscale)(implicit sourceInfo: Source
   }
 
   private def masterShape(input: values.BurstShape): values.BurstShape =
-    if (input.burstSizes.isEmpty)
+    if (input.size.isEmpty)
       values.BurstShape()
     else
       values.BurstShape(
-        burstBeats = input.burstBeats,
-        burstNarrow = input.burstSizes.exists(_ < masterFullSize),
-        burstTypes = input.burstTypes,
-        burstSizes = input.burstSizes
+        len = input.len,
+        tpe = input.tpe,
+        size = input.size,
+        align = input.align
       )
 
   private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
     val sizes =
-      downstream.burstSizes.intersect(
+      downstream.size.intersect(
         values.BurstShape.validSizes(owner.cfg.axiSlaveCfg.wData)
       )
     if (sizes.isEmpty)
       values.BurstShape()
     else
       values.BurstShape(
-        burstBeats = downstream.burstBeats,
-        burstNarrow = sizes.exists(_ < slaveFullSize),
-        burstTypes = downstream.burstTypes,
-        burstSizes = sizes
+        len = downstream.len,
+        tpe = downstream.tpe,
+        size = sizes,
+        align = downstream.align
       )
   }
 

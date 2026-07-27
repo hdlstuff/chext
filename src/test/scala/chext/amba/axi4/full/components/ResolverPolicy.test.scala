@@ -3,6 +3,7 @@ package chext.amba.axi4.full.components
 import chisel3._
 
 import chext.amba.axi4
+import chext.amba.axi4.BurstType.Encoding.{INCR, WRAP}
 import chext.amba.axi4.tracking.{PropertyState, ResolveRequest, ResolveResult, Resolver}
 import chext.amba.axi4.tracking.properties.{Master, Slave}
 import chext.amba.axi4.tracking.values.{BurstShape, MemoryMap, ThreadMode}
@@ -21,10 +22,10 @@ class DemuxResolverPolicyTestTop
       )
     ) {
   private val burstShape = BurstShape(
-    burstBeats = 16,
-    burstNarrow = true,
-    burstTypes = Set(1, 2),
-    burstSizes = Set(0, 1, 2, 3)
+    len = 16,
+    tpe = Seq(INCR, WRAP),
+    size = Seq(0, 1, 2, 3),
+    align = 0
   )
   private val masterReadThreadMode = ThreadMode.SingleThread
   s_axi.masterProps(Master.ReadBurstShape) = burstShape
@@ -87,15 +88,15 @@ class MuxResolverPolicyTestTop
       )
     ) {
   private val acceptedBurstShape = BurstShape(
-    burstBeats = 16,
-    burstNarrow = true,
-    burstTypes = Set(1),
-    burstSizes = Set(0, 1, 2, 3)
+    len = 16,
+    tpe = Seq(INCR),
+    size = Seq(0, 1, 2, 3),
+    align = 0
   )
   m_axi.slaveProps(Slave.ReadBurstShape) = acceptedBurstShape
   s_axi(0).masterProps(Master.ReadBurstShape) = acceptedBurstShape
   s_axi(1).masterProps(Master.ReadBurstShape) =
-    BurstShape(16, true, Set(1, 2), Set(0, 1, 2, 3))
+    BurstShape(16, Seq(INCR, WRAP), Seq(0, 1, 2, 3), 0)
 
   s_axi.foreach { input =>
     val slaveRequest = ResolveRequest(input, Slave.ReadBurstShape)
@@ -139,7 +140,7 @@ class IdDemuxResolverPolicyTestTop
       )
     ) {
   private val shape =
-    BurstShape(8, true, Set(1, 2), Set(0, 1, 2, 3))
+    BurstShape(8, Seq(INCR, WRAP), Seq(0, 1, 2, 3), 0)
   s_axi.masterProps(Master.ReadBurstShape) = shape
   s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.UniqueThreads
 
@@ -171,7 +172,7 @@ class IdMuxResolverPolicyTestTop(wIdSel: Int)
       )
     ) {
   private val accepted =
-    BurstShape(16, true, Set(1), Set(0, 1, 2, 3))
+    BurstShape(16, Seq(INCR), Seq(0, 1, 2, 3), 0)
   m_axi.slaveProps(Slave.ReadBurstShape) = accepted
   s_axi.foreach(_.masterProps(Master.ReadThreadMode) = ThreadMode.SingleThread)
 
@@ -202,10 +203,10 @@ class ProtocolConverterResolverPolicyTestTop
       )
     ) {
   private val outputShape = BurstShape(
-    burstBeats = 1,
-    burstNarrow = false,
-    burstTypes = Set(1),
-    burstSizes = Set(BurstShape.fullSize(m_axi.cfg.wData))
+    len = 1,
+    tpe = Seq(INCR),
+    size = Seq(BurstShape.fullSize(m_axi.cfg.wData)),
+    align = 0
   )
   private val memoryMap = MemoryMap(size = 0x100)
 
@@ -226,6 +227,143 @@ class ProtocolConverterResolverPolicyTestTop
   private val outputRequest = ResolveRequest(m_axi, Master.ReadBurstShape)
   assert(Resolver.resolve(outputRequest).result == ResolveResult.Success())
   assert(outputRequest.valueOption.contains(BurstShape()))
+}
+
+class DownscaleAlignmentResolverPolicyTestTop
+    extends Downscale(
+      DownscaleConfig(
+        axiSlaveCfg =
+          axi4.Config(wId = 0, wAddr = 16, wData = 64, write = false),
+        wDataMaster = 32
+      )
+    ) {
+  private val inputShape = BurstShape(
+    len = 1,
+    tpe = Seq(INCR),
+    size = Seq(3),
+    align = 3
+  )
+  private val downstreamShape = BurstShape(
+    len = 2,
+    tpe = Seq(INCR),
+    size = Seq(2),
+    align = 2
+  )
+  s_axi.masterProps(Master.ReadBurstShape) = inputShape
+  s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+  m_axi.slaveProps(Slave.ReadBurstShape) = downstreamShape
+  m_axi.slaveProps(Slave.ReadThreadMode) = ThreadMode.Unconstrained
+  m_axi.slaveProps(Slave.MemoryMap) = MemoryMap(size = 0x100)
+
+  private val masterRequest = ResolveRequest(m_axi, Master.ReadBurstShape)
+  assert(Resolver.resolve(masterRequest).result == ResolveResult.Success())
+  assert(masterRequest.valueOption.exists(_.align == 3))
+
+  private val slaveRequest = ResolveRequest(s_axi, Slave.ReadBurstShape)
+  assert(Resolver.resolve(slaveRequest).result == ResolveResult.Success())
+  assert(slaveRequest.valueOption.exists(_.align == 2))
+}
+
+class UpscaleAlignmentResolverPolicyTestTop
+    extends Upscale(
+      UpscaleConfig(
+        axiSlaveCfg =
+          axi4.Config(wId = 0, wAddr = 16, wData = 32, write = false),
+        wDataMaster = 64
+      )
+    ) {
+  private val inputShape = BurstShape(
+    len = 4,
+    tpe = Seq(INCR),
+    size = Seq(2),
+    align = 2
+  )
+  private val downstreamShape = BurstShape(
+    len = 4,
+    tpe = Seq(INCR),
+    size = Seq(2),
+    align = 1
+  )
+  s_axi.masterProps(Master.ReadBurstShape) = inputShape
+  s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+  m_axi.slaveProps(Slave.ReadBurstShape) = downstreamShape
+  m_axi.slaveProps(Slave.ReadThreadMode) = ThreadMode.Unconstrained
+  m_axi.slaveProps(Slave.MemoryMap) = MemoryMap(size = 0x100)
+
+  private val masterRequest = ResolveRequest(m_axi, Master.ReadBurstShape)
+  assert(Resolver.resolve(masterRequest).result == ResolveResult.Success())
+  assert(masterRequest.valueOption.exists(_.align == 2))
+
+  private val slaveRequest = ResolveRequest(s_axi, Slave.ReadBurstShape)
+  assert(Resolver.resolve(slaveRequest).result == ResolveResult.Success())
+  assert(slaveRequest.valueOption.exists(_.align == 1))
+}
+
+class UnburstAlignmentResolverPolicyTestTop
+    extends Unburst(
+      UnburstConfig(
+        axiCfg = axi4.Config(wId = 0, wAddr = 16, wData = 64, write = false)
+      )
+    ) {
+  private val inputShape = BurstShape(
+    len = 4,
+    tpe = Seq(INCR),
+    size = Seq(2, 3),
+    align = 3
+  )
+  private val downstreamShape = BurstShape(
+    len = 1,
+    tpe = Seq(INCR),
+    size = Seq(2, 3),
+    align = 2
+  )
+  s_axi.masterProps(Master.ReadBurstShape) = inputShape
+  s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+  m_axi.slaveProps(Slave.ReadBurstShape) = downstreamShape
+  m_axi.slaveProps(Slave.ReadThreadMode) = ThreadMode.Unconstrained
+  m_axi.slaveProps(Slave.MemoryMap) = MemoryMap(size = 0x100)
+
+  private val masterRequest = ResolveRequest(m_axi, Master.ReadBurstShape)
+  assert(Resolver.resolve(masterRequest).result == ResolveResult.Success())
+  assert(masterRequest.valueOption.exists(_.align == 2))
+
+  private val slaveRequest = ResolveRequest(s_axi, Slave.ReadBurstShape)
+  assert(Resolver.resolve(slaveRequest).result == ResolveResult.Success())
+  assert(slaveRequest.valueOption.exists(_.align == 2))
+  assert(slaveRequest.valueOption.exists(_.size == Seq(2, 3)))
+}
+
+class WidenAlignmentResolverPolicyTestTop
+    extends Widen(
+      WidenConfig(
+        axiCfg = axi4.Config(wId = 0, wAddr = 16, wData = 64, write = false)
+      )
+    ) {
+  private val inputShape = BurstShape(
+    len = 4,
+    tpe = Seq(INCR),
+    size = Seq(2),
+    align = 2
+  )
+  private val downstreamShape = BurstShape(
+    len = 16,
+    tpe = Seq(INCR),
+    size = Seq(3),
+    align = 1
+  )
+  s_axi.masterProps(Master.ReadBurstShape) = inputShape
+  s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+  m_axi.slaveProps(Slave.ReadBurstShape) = downstreamShape
+  m_axi.slaveProps(Slave.ReadThreadMode) = ThreadMode.Unconstrained
+  m_axi.slaveProps(Slave.MemoryMap) = MemoryMap(size = 0x100)
+
+  private val masterRequest = ResolveRequest(m_axi, Master.ReadBurstShape)
+  assert(Resolver.resolve(masterRequest).result == ResolveResult.Success())
+  assert(masterRequest.valueOption.exists(_.align == 2))
+
+  private val slaveRequest = ResolveRequest(s_axi, Slave.ReadBurstShape)
+  assert(Resolver.resolve(slaveRequest).result == ResolveResult.Success())
+  assert(slaveRequest.valueOption.exists(_.align == 1))
 }
 
 class LiteDemuxResolverPolicyTestTop
@@ -301,6 +439,22 @@ object ResolverPolicy_Test extends App with ElaborationTest {
   test(
     name = "protocol_converter",
     gen = () => new ProtocolConverterResolverPolicyTestTop
+  )
+  test(
+    name = "downscale_alignment",
+    gen = () => new DownscaleAlignmentResolverPolicyTestTop
+  )
+  test(
+    name = "upscale_alignment",
+    gen = () => new UpscaleAlignmentResolverPolicyTestTop
+  )
+  test(
+    name = "unburst_alignment",
+    gen = () => new UnburstAlignmentResolverPolicyTestTop
+  )
+  test(
+    name = "widen_alignment",
+    gen = () => new WidenAlignmentResolverPolicyTestTop
   )
   test(name = "lite_demux", expected = Failure, gen = () => new LiteDemuxResolverPolicyTestTop)
   test(

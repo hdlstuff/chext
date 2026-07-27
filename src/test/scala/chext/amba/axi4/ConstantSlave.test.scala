@@ -93,6 +93,13 @@ object ConstantSlave_Test extends App with ElaborationTest {
   private val fullCfg = Config(wId = 4, wAddr = 32, wData = 64)
   private val liteCfg = Config(wAddr = 32, wData = 32, lite = true)
 
+  assert(
+    ResponseFlag.Encoding.OKAY == 0 &&
+      ResponseFlag.Encoding.EXOKAY == 1 &&
+      ResponseFlag.Encoding.SLVERR == 2 &&
+      ResponseFlag.Encoding.DECERR == 3
+  )
+
   suite(
     name = "constant-slave",
     outputDir = Path.of("output", "constant_slave")

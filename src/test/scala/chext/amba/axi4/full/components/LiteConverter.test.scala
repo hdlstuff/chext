@@ -6,6 +6,7 @@ import chisel3.experimental.prefix
 import java.nio.file.Path
 
 import chext.amba.axi4
+import chext.amba.axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
 import chext.amba.axi4.full.ConnectOp._
 import chext.amba.axi4.lite.{ConnectOp => LiteConnectOp}
 import chext.amba.axi4.lite.components.RegisterBlock
@@ -58,10 +59,10 @@ private class LiteConverterTestTop(
   )
   m_axil.slaveProps(Slave.MemoryMap) = terminalMap
   private val fullInputShape = BurstShape(
-    burstBeats = 256,
-    burstNarrow = false,
-    burstTypes = Set(0, 1, 2),
-    burstSizes = Set(BurstShape.fullSize(wDataSlave))
+    len = 256,
+    tpe = Seq(FIXED, INCR, WRAP),
+    size = Seq(BurstShape.fullSize(wDataSlave)),
+    align = BurstShape.fullSize(wDataSlave)
   )
   s_axi.masterProps(Master.ReadBurstShape) = fullInputShape
   s_axi.masterProps(Master.WriteBurstShape) = fullInputShape
@@ -86,7 +87,11 @@ private class LiteConverterTestTop(
     converter.s_axi.slaveProps(Slave.ReadThreadMode).get ==
       ThreadMode.SingleThread
   )
-  assert(converter.s_axi.slaveProps(Slave.ReadBurstShape).get.burstBeats == 256)
+  assert(converter.s_axi.slaveProps(Slave.ReadBurstShape).get.len == 256)
+  assert(
+    converter.s_axi.slaveProps(Slave.ReadBurstShape).get.align ==
+      BurstShape.fullSize(wDataSlave)
+  )
 }
 
 private class RegisterBlockTestTop(completeMode: Int)

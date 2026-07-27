@@ -11,16 +11,31 @@ import chext.util.NamedVec
 // TODO may support ACE as well?
 
 object BurstType {
-  val FIXED = 0x0.U(2.W)
-  val INCR = 0x1.U(2.W)
-  val WRAP = 0x2.U(2.W)
+  /** Integer encodings for metadata and other non-hardware representations. */
+  object Encoding {
+    final val FIXED = 0x0
+    final val INCR = 0x1
+    final val WRAP = 0x2
+  }
+
+  val FIXED = Encoding.FIXED.U(2.W)
+  val INCR = Encoding.INCR.U(2.W)
+  val WRAP = Encoding.WRAP.U(2.W)
 }
 
 object ResponseFlag {
-  val OKAY = 0x0.U(2.W)
-  val EXOKAY = 0x1.U(2.W)
-  val SLVERR = 0x2.U(2.W)
-  val DECERR = 0x3.U(2.W)
+  /** Integer encodings for metadata and other non-hardware representations. */
+  object Encoding {
+    final val OKAY = 0x0
+    final val EXOKAY = 0x1
+    final val SLVERR = 0x2
+    final val DECERR = 0x3
+  }
+
+  val OKAY = Encoding.OKAY.U(2.W)
+  val EXOKAY = Encoding.EXOKAY.U(2.W)
+  val SLVERR = Encoding.SLVERR.U(2.W)
+  val DECERR = Encoding.DECERR.U(2.W)
 }
 
 /** AXI4 interface configuration.

@@ -258,15 +258,13 @@ class Downscale(val cfg: DownscaleConfig) extends Module with chext.AnnotatedMod
 private final class Downscale_Resolver(owner: Downscale)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.BurstType.Encoding.{FIXED, INCR}
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
-  private val slaveFullSize = values.BurstShape.fullSize(owner.cfg.axiSlaveCfg.wData)
   private val masterFullSize = values.BurstShape.fullSize(owner.cfg.axiMasterCfg.wData)
-  private val incr = axi4.BurstType.INCR.litValue.toInt
-  private val inputTypes =
-    Set(axi4.BurstType.FIXED.litValue.toInt, incr)
+  private val inputTypes = Seq(FIXED, INCR)
 
   if (owner.cfg.axiSlaveCfg.read) {
     owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
@@ -288,37 +286,37 @@ private final class Downscale_Resolver(owner: Downscale)(implicit sourceInfo: So
     1 << ((inputSize - masterFullSize) max 0)
 
   private def masterShape(input: values.BurstShape): values.BurstShape = {
-    val sizes = input.burstSizes.map(outputSize)
+    val sizes = input.size.map(outputSize)
     if (sizes.isEmpty)
       values.BurstShape()
     else
       values.BurstShape(
-        burstBeats = input.burstSizes.map(outputBeats).max,
-        burstNarrow = sizes.exists(_ < masterFullSize),
-        burstTypes = Set(incr),
-        burstSizes = sizes
+        len = input.size.map(outputBeats).max,
+        tpe = Seq(INCR),
+        size = sizes,
+        align = input.align
       )
   }
 
   private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
-    val acceptsIncr = downstream.burstTypes.contains(incr)
+    val acceptsIncr = downstream.tpe.contains(INCR)
     val sizes =
       values.BurstShape
         .validSizes(owner.cfg.axiSlaveCfg.wData)
         .filter { inputSize =>
           acceptsIncr &&
-          downstream.burstSizes.contains(outputSize(inputSize)) &&
-          downstream.burstBeats >= outputBeats(inputSize)
+          downstream.size.contains(outputSize(inputSize)) &&
+          downstream.len >= outputBeats(inputSize)
         }
 
     if (sizes.isEmpty)
       values.BurstShape()
     else
       values.BurstShape(
-        burstBeats = 1,
-        burstNarrow = sizes.exists(_ < slaveFullSize),
-        burstTypes = inputTypes,
-        burstSizes = sizes
+        len = 1,
+        tpe = inputTypes,
+        size = sizes,
+        align = downstream.align
       )
   }
 
