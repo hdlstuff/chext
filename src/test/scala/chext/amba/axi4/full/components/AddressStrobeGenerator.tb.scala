@@ -1,7 +1,6 @@
 package chext.amba.axi4.full.components
 
 import chisel3._
-import chisel3.util._
 
 import chext.elastic
 import elastic.ConnectOp._

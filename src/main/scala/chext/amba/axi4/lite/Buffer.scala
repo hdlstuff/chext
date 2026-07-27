@@ -1,7 +1,6 @@
 package chext.amba.axi4.lite
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.prefix
 import chisel3.experimental.SourceInfo
 
@@ -318,23 +317,20 @@ object RightBuffer {
 
 private final class Buffer_Resolver(owner: Buffer)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
-  import axi4.tracking.{ResolveRequest, ResolveResult}
+  import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.master)
-  private val MasterRequests = bindMaster(owner.slave)
-
-  override def kind: String = "buffer"
-  override def resolver: String = "BufferResolver"
+  bindSlave(owner.master)
+  bindMaster(owner.slave)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
+      case Request(TrafficProfile()) =>
+        request.incomplete()
       case SlaveRequests(_) =>
         forwardTo(request, owner.slave)
       case MasterRequests(_) =>
         forwardTo(request, owner.master)
       case _ =>
-        request.failure(
-          s"AXI buffer resolver cannot forward '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

@@ -10,6 +10,9 @@ object Tag extends tracking.Tag {
   /** Stable domain name used by the unified tracking manager. */
   val name: String = "axi4"
 
+  /** Forces registration of this tracking domain before module completion. */
+  def initialize(): Unit = ()
+
   /** Creates the AXI tracking state associated with one registered module. */
   def newModuleState(moduleInfo: tracking.ModuleInfo): ModuleState =
     new ModuleState(moduleInfo)

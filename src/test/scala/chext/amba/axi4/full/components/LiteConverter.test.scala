@@ -2,7 +2,6 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.experimental.prefix
-import chisel3.util.log2Ceil
 
 import java.nio.file.Path
 
@@ -10,9 +9,9 @@ import chext.amba.axi4
 import chext.amba.axi4.full.ConnectOp._
 import chext.amba.axi4.lite.{ConnectOp => LiteConnectOp}
 import chext.amba.axi4.lite.components.RegisterBlock
-import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, Resolver}
+import chext.amba.axi4.tracking.{PropertyState, ResolveRequest, ResolveResult, Resolver}
 import chext.amba.axi4.tracking.properties.{Master, Slave}
-import chext.amba.axi4.util.MemoryMap
+import chext.amba.axi4.tracking.values.{BurstShape, MemoryMap, ThreadMode}
 import chext.util.{ElaborationTest, SimulationCheck}
 
 private class LiteConverterTestTop(
@@ -58,27 +57,36 @@ private class LiteConverterTestTop(
     segments = Seq(MemoryMap.Segment(Seq("all"), 0, 0x100))
   )
   m_axil.slaveProps(Slave.MemoryMap) = terminalMap
+  private val fullInputShape = BurstShape(
+    burstBeats = 256,
+    burstNarrow = false,
+    burstTypes = Set(0, 1, 2),
+    burstSizes = Set(BurstShape.fullSize(wDataSlave))
+  )
+  s_axi.masterProps(Master.ReadBurstShape) = fullInputShape
+  s_axi.masterProps(Master.WriteBurstShape) = fullInputShape
+  s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleThread
+  s_axi.masterProps(Master.WriteThreadMode) = ThreadMode.SingleThread
+  m_axil.slaveProps(Slave.ReadThreadMode) = ThreadMode.SingleThread
+  m_axil.slaveProps(Slave.WriteThreadMode) = ThreadMode.SingleThread
 
   private val request = ResolveRequest(s_axi, Slave.MemoryMap)
   assert(Resolver.resolve(request).result == ResolveResult.Success())
   assert(request.valueOption.contains(terminalMap))
 
-  assert(converter.m_axil.masterProps(Master.ReadThreads).get == 1)
-  assert(converter.m_axil.masterProps(Master.ReadBurstBeats).get == 1)
   assert(
-    converter.m_axil.masterProps(Master.ReadBurstSizes).get ==
-      Set(log2Ceil(wDataMaster / 8))
+    converter.m_axil.masterProps(Master.ReadThreadMode).get ==
+      ThreadMode.SingleThread
   )
-  private val expectedMasterOutstanding =
-    if (wDataSlave > wDataMaster) 2 * (wDataSlave / wDataMaster)
-    else if (wDataSlave < wDataMaster) 2
-    else 2 * 256
   assert(
-    converter.m_axil.masterProps(Master.ReadOutstandingTransactions).get ==
-      expectedMasterOutstanding
+    converter.m_axil.masterProps(Master.ReadBurstShape).state ==
+      PropertyState.Undefined
   )
-  assert(converter.s_axi.slaveProps(Slave.ReadThreads).get == 1)
-  assert(converter.s_axi.slaveProps(Slave.ReadBurstBeats).get == 256)
+  assert(
+    converter.s_axi.slaveProps(Slave.ReadThreadMode).get ==
+      ThreadMode.SingleThread
+  )
+  assert(converter.s_axi.slaveProps(Slave.ReadBurstShape).get.burstBeats == 256)
 }
 
 private class RegisterBlockTestTop(completeMode: Int)
@@ -97,6 +105,8 @@ private class RegisterBlockTestTop(completeMode: Int)
     new RegisterBlock(wAddr = 16, wData = 32, wMask = 8, memoryMapPath = Seq("leaf"))
   }
   s_axil :=> registerBlock.s_axil
+  s_axil.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+  s_axil.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
 
   private val storage = RegInit(0.U(32.W))
   private val status = WireDefault(0x1234.U(32.W))
@@ -112,7 +122,10 @@ private class RegisterBlockTestTop(completeMode: Int)
       case _: IllegalStateException => true
     }
   assert(memoryMapUnavailable)
-  assert(registerBlock.s_axil.slaveProps(Slave.ReadThreads).get == 1)
+  assert(
+    registerBlock.s_axil.slaveProps(Slave.ReadThreadMode).get ==
+      ThreadMode.SingleTransaction
+  )
 
   private val earlyRequest = Option.when(completeMode == 3) {
     ResolveRequest(registerBlock.s_axil, Slave.MemoryMap)

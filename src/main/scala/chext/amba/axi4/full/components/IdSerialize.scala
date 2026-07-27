@@ -1,14 +1,12 @@
 package chext.amba.axi4.full.components
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.elastic
 import elastic.ConnectOp._
 
 import chext.amba.axi4
-import axi4.Casts._
 
 
 case class IdSerializeConfig(
@@ -89,24 +87,35 @@ class IdSerialize(val cfg: IdSerializeConfig) extends Module with chext.Annotate
 
 private final class IdSerialize_Resolver(owner: IdSerialize)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
-  import axi4.tracking.{ResolveRequest, ResolveResult}
-  import axi4.tracking.properties.Slave
+  import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi)
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi)
 
-  override def kind: String = "id-serialize"
-  override def resolver: String = "IdSerializeResolver"
+  if (owner.cfg.axiSlaveCfg.read) {
+    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
+      values.ThreadMode.Unconstrained
+    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
+      values.ThreadMode.SingleThread
+  }
+  if (owner.cfg.axiSlaveCfg.write) {
+    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
+      values.ThreadMode.Unconstrained
+    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
+      values.ThreadMode.SingleThread
+  }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap) =>
+      case SlaveRequests(MemoryMap()) =>
         forwardTo(request, owner.m_axi)
-      case SlaveRequests(_) | MasterRequests(_) =>
+      case Request(TrafficProfile()) =>
         request.incomplete()
+      case SlaveRequests(BurstShape()) =>
+        forwardTo(request, owner.m_axi)
+      case MasterRequests(BurstShape()) =>
+        forwardTo(request, owner.s_axi)
       case _ =>
-        request.failure(
-          s"IdSerialize cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

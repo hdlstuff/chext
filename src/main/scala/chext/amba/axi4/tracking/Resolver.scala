@@ -247,6 +247,67 @@ object ResolveResult {
   * `BaseModule` constructor for module-owned resolvers.
   */
 abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
+  Tag.initialize()
+
+  /** Stable value-family extractors shared by standard component resolver policies. */
+  protected final val MemoryMap = PropertyValueType[values.MemoryMap]
+  protected final val BurstShape = PropertyValueType[values.BurstShape]
+  protected final val ThreadMode = PropertyValueType[values.ThreadMode]
+  protected final val TrafficProfile = PropertyValueType[values.TrafficProfile]
+
+  private val masterInterfaces = mutable.ArrayBuffer.empty[Tracked]
+  private val slaveInterfaces = mutable.ArrayBuffer.empty[Tracked]
+
+  /** Exposes a request's property key to a nested value-family extractor.
+    *
+    * Resolver selection has already established the applicable interface and master/slave family,
+    * allowing family-independent policies to read as `Request(TrafficProfile())`.
+    */
+  protected object Request {
+    def unapply[T](request: ResolveRequest[T]): Some[PropertyKey[T]] =
+      Some(request.key)
+  }
+
+  /** Matches a master-property request registered on this resolver. */
+  protected object MasterRequests {
+    def unapply[T](request: ResolveRequest[T]): Option[PropertyKey[T]] =
+      if (
+        masterInterfaces.exists(_ eq request.interface) &&
+        MasterProperty.accepts(request.key)
+      )
+        Some(request.key)
+      else
+        None
+
+    /** Matches a master request and also extracts its bound interface. */
+    object withInterface {
+      def unapply[T](
+          request: ResolveRequest[T]
+      ): Option[(Tracked, PropertyKey[T])] =
+        MasterRequests.unapply(request).map(request.interface -> _)
+    }
+  }
+
+  /** Matches a slave-property request registered on this resolver. */
+  protected object SlaveRequests {
+    def unapply[T](request: ResolveRequest[T]): Option[PropertyKey[T]] =
+      if (
+        slaveInterfaces.exists(_ eq request.interface) &&
+        SlaveProperty.accepts(request.key)
+      )
+        Some(request.key)
+      else
+        None
+
+    /** Matches a slave request and also extracts its bound interface. */
+    object withInterface {
+      def unapply[T](
+          request: ResolveRequest[T]
+      ): Option[(Tracked, PropertyKey[T])] =
+        SlaveRequests.unapply(request).map(request.interface -> _)
+    }
+  }
+
   /** Creates a resolver owned by a unified Chext component. */
   def this(owner: Component) =
     this(Resolver.Owner.ComponentOwner(owner))
@@ -258,11 +319,24 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
   private[tracking] final lazy val hierarchyDepth: Int =
     owner.hierarchyDepth
 
-  /** Stable category recorded in each resolution-trace hop. */
-  def kind: String = "resolver"
+  private lazy val inferredResolverName =
+    Resolver.defaultResolverName(getClass.getSimpleName)
 
-  /** Stable implementation name recorded in each resolution-trace hop. */
-  def resolver: String = "Resolver"
+  private lazy val inferredKind =
+    Resolver.defaultKind(resolver)
+
+  /** Stable category recorded in each resolution-trace hop.
+    *
+    * By default this is the kebab-case resolver class name without its `_Resolver` or `Resolver`
+    * suffix. Override only when the public category intentionally differs from that spelling.
+    */
+  def kind: String = inferredKind
+
+  /** Stable implementation name recorded in each resolution-trace hop.
+    *
+    * By default this normalizes the runtime class name to `<Name>Resolver`.
+    */
+  def resolver: String = inferredResolverName
 
   /** Absolute path of the owning component or module. */
   final lazy val resolverPath: String = owner.resolverPath
@@ -277,63 +351,68 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
 
   /** Registers this resolver for master properties on one interface.
     *
-    * The returned binding keeps registration and dispatch consistent: concrete resolvers match
-    * requests through the binding instead of repeating interface-identity and family checks.
+    * Concrete resolvers match registered requests through the inherited [[MasterRequests]]
+    * extractor.
     */
   protected final def bindMaster(
       interface: Tracked
-  )(implicit sourceInfo: SourceInfo): Resolver.Binding = {
+  )(implicit sourceInfo: SourceInfo): Unit = {
     initializeMasterApplicability(interface)
     interface.addMasterResolver(this)
-    new Resolver.Binding(interface, MasterProperty.accepts)
+    masterInterfaces += interface
   }
 
-  /** Registers this resolver for master properties on every interface in `interfaces`.
-    *
-    * The grouped matcher exposes both the matched interface and its typed property key. This keeps
-    * multi-port resolvers in the same request-matching style as single-port resolvers without
-    * repeating interface-identity tests in component code.
-    */
+  /** Registers this resolver for master properties on every interface in `interfaces`. */
   protected final def bindMaster(
       interfaces: Seq[Tracked]
-  )(implicit sourceInfo: SourceInfo): Resolver.Bindings = {
-    interfaces.foreach { interface =>
-      initializeMasterApplicability(interface)
-      interface.addMasterResolver(this)
-    }
-    new Resolver.Bindings(interfaces, MasterProperty.accepts)
-  }
+  )(implicit sourceInfo: SourceInfo): Unit =
+    interfaces.foreach(interface => bindMaster(interface))
 
   /** Registers this resolver for slave properties on one interface. */
   protected final def bindSlave(
       interface: Tracked
-  )(implicit sourceInfo: SourceInfo): Resolver.Binding = {
+  )(implicit sourceInfo: SourceInfo): Unit = {
     initializeSlaveApplicability(interface)
     interface.addSlaveResolver(this)
-    new Resolver.Binding(interface, SlaveProperty.accepts)
+    slaveInterfaces += interface
   }
 
   /** Registers this resolver for slave properties on every interface in `interfaces`. */
   protected final def bindSlave(
       interfaces: Seq[Tracked]
-  )(implicit sourceInfo: SourceInfo): Resolver.Bindings = {
-    interfaces.foreach { interface =>
-      initializeSlaveApplicability(interface)
-      interface.addSlaveResolver(this)
-    }
-    new Resolver.Bindings(interfaces, SlaveProperty.accepts)
-  }
+  )(implicit sourceInfo: SourceInfo): Unit =
+    interfaces.foreach(interface => bindSlave(interface))
 
-  /** Eagerly classifies standard master properties disabled by the interface configuration. */
+  /** Fails a request which reached the catch-all branch of this resolver's policy.
+    *
+    * The diagnostic identifies the derived resolver implementation and kind, so concrete
+    * resolvers do not need to repeat endpoint-specific boilerplate.
+    */
+  protected final def missingCase[T](
+      request: ResolveRequest[T]
+  ): ResolveResult =
+    request.failure(
+      s"Resolver '$resolver' (kind '$kind') has no case for '${request.qualifiedName}'"
+    )
+
+  /** Eagerly classifies inapplicable standard master properties from the interface configuration. */
   private def initializeMasterApplicability(interface: Tracked): Unit = {
+    if (interface.cfg.lite)
+      interface.masterProps.markUndefined(
+        Seq(Master.ReadBurstShape, Master.WriteBurstShape)
+      )
     if (!interface.cfg.read)
       interface.masterProps.markUndefined(Master.readProperties)
     if (!interface.cfg.write)
       interface.masterProps.markUndefined(Master.writeProperties)
   }
 
-  /** Eagerly classifies standard slave properties disabled by the interface configuration. */
+  /** Eagerly classifies inapplicable standard slave properties from the interface configuration. */
   private def initializeSlaveApplicability(interface: Tracked): Unit = {
+    if (interface.cfg.lite)
+      interface.slaveProps.markUndefined(
+        Seq(Slave.ReadBurstShape, Slave.WriteBurstShape)
+      )
     if (!interface.cfg.read)
       interface.slaveProps.markUndefined(Slave.readProperties)
     if (!interface.cfg.write)
@@ -348,7 +427,14 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
   protected final def forwardTo[T](
       request: ResolveRequest[T],
       target: Tracked
-  ): ResolveResult = {
+  ): ResolveResult =
+    mapFrom(request, target)(identity)
+
+  /** Resolves a dependency for the same key and transforms its value at this boundary. */
+  protected final def mapFrom[T](
+      request: ResolveRequest[T],
+      target: Tracked
+  )(transform: T => T): ResolveResult = {
     val dependency = request.retarget(target)
     if (!dependency.isResolved)
       request.retry(Seq(dependency))
@@ -356,7 +442,7 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
       dependency.valueOption match {
         case Some(value) =>
           request.calculate(
-            value,
+            transform(value),
             this,
             ResolutionStep(
               interfaceFrom = TrackingPath.interface(request.interface),
@@ -383,35 +469,34 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
 
 /** Recursive coordination for [[Resolver]] implementations. */
 object Resolver {
-  /** Typed matcher for requests registered on one interface and property family.
-    *
-    * Bindings compare interfaces by object identity and expose the request's key with its original
-    * value type. Matching a singleton property key can therefore refine `ResolveRequest[T]` in a
-    * concrete resolver.
-    */
-  final class Binding private[tracking] (
-      interface: Tracked,
-      accepts: PropertyKey[_] => Boolean
-  ) {
-    def unapply[T](request: ResolveRequest[T]): Option[PropertyKey[T]] =
-      if ((request.interface eq interface) && accepts(request.key))
-        Some(request.key)
-      else
-        None
+  private[tracking] def defaultResolverName(simpleClassName: String): String = {
+    val normalizedClassName = simpleClassName.stripSuffix("$")
+    if (
+      normalizedClassName.isEmpty ||
+      normalizedClassName.contains("$anon")
+    )
+      "Resolver"
+    else {
+      val baseName =
+        if (normalizedClassName.endsWith("_Resolver"))
+          normalizedClassName.stripSuffix("_Resolver")
+        else
+          normalizedClassName.stripSuffix("Resolver")
+
+      if (baseName.isEmpty) "Resolver"
+      else s"${baseName}Resolver"
+    }
   }
 
-  /** Typed matcher for requests registered on any member of an interface collection. */
-  final class Bindings private[tracking] (
-      interfaces: Seq[Tracked],
-      accepts: PropertyKey[_] => Boolean
-  ) {
-    def unapply[T](
-        request: ResolveRequest[T]
-    ): Option[(Tracked, PropertyKey[T])] =
-      interfaces
-        .find(interface => request.interface.eq(interface))
-        .filter(_ => accepts(request.key))
-        .map(interface => interface -> request.key)
+  private[tracking] def defaultKind(resolverName: String): String = {
+    val baseName = resolverName.stripSuffix("Resolver")
+    if (baseName.isEmpty)
+      "resolver"
+    else
+      baseName
+        .replaceAll("([A-Z]+)([A-Z][a-z])", "$1-$2")
+        .replaceAll("([a-z0-9])([A-Z])", "$1-$2")
+        .toLowerCase(java.util.Locale.ROOT)
   }
 
   /** Result of resolution together with the final calculated trace.

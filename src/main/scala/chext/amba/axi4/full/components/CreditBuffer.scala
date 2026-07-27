@@ -115,27 +115,20 @@ class CreditBuffer(val cfg: CreditBufferConfig) extends Module with chext.Annota
 
 private final class CreditBuffer_Resolver(owner: CreditBuffer)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
-  import axi4.tracking.{ResolveRequest, ResolveResult}
-  import axi4.tracking.properties.{Master, Slave}
-
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi)
-
-  override def kind: String = "credit-buffer"
-  override def resolver: String = "CreditBufferResolver"
+  import axi4.tracking._
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap | Slave.ShapeProperty()) =>
-        forwardTo(request, owner.m_axi)
-      case MasterRequests(Master.ShapeProperty()) =>
-        forwardTo(request, owner.s_axi)
-      case SlaveRequests(_) | MasterRequests(_) =>
+      case Request(TrafficProfile()) =>
         request.incomplete()
+      case SlaveRequests(MemoryMap() | BurstShape() | ThreadMode()) =>
+        forwardTo(request, owner.m_axi)
+      case MasterRequests(BurstShape() | ThreadMode()) =>
+        forwardTo(request, owner.s_axi)
       case _ =>
-        request.failure(
-          s"CreditBuffer cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }
 

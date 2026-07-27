@@ -7,11 +7,9 @@ import chisel3.experimental.{prefix, SourceInfo}
 import chext.elastic
 import elastic.ConnectOp._
 
-import chext.bundles
 import chext.bundles._
 
 import chext.amba.axi4
-import axi4.Casts._
 import axi4.lite.{SlaveBuffered, MasterBuffered}
 
 case class DemuxConfig(
@@ -154,45 +152,24 @@ class Demux(val cfg: DemuxConfig) extends Module with chext.AnnotatedModule {
 private final class Demux_Resolver(owner: Demux)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
-  import axi4.tracking.properties.Slave
 
-  private val SlaveRequests = bindSlave(owner.s_axil)
-  private val MasterRequests = bindMaster(owner.m_axil.toSeq)
+  bindSlave(owner.s_axil)
+  bindMaster(owner.m_axil.toSeq)
 
-  override def kind: String = "demux"
-  override def resolver: String = "DemuxResolver"
-
-  private val readOutstanding = owner.cfg.capacityPortQueueR
-  private val writeOutstanding =
-    owner.cfg.capacityPortQueueW min owner.cfg.capacityPortQueueB
   private val noSlaveAggregate =
     "Demux keeps each downstream slave capability separate instead of aggregating them"
 
-  private val read = owner.cfg.axiSlaveCfg.read
-  private val write = owner.cfg.axiSlaveCfg.write
-
-  if (read) {
-    owner.s_axil.slaveProps(Slave.ReadOutstandingTransactions) =
-      readOutstanding
-    owner.s_axil.slaveProps(Slave.ReadThreads) = 1
-  }
-  if (write) {
-    owner.s_axil.slaveProps(Slave.WriteOutstandingTransactions) =
-      writeOutstanding
-    owner.s_axil.slaveProps(Slave.WriteThreads) = 1
-  }
-
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap) =>
+      case SlaveRequests(MemoryMap()) =>
         request.incomplete()
-      case SlaveRequests(_) =>
+      case Request(TrafficProfile()) =>
+        request.incomplete()
+      case SlaveRequests(ThreadMode()) =>
         request.dontCare(noSlaveAggregate)
-      case MasterRequests(_, _) =>
+      case MasterRequests(ThreadMode()) =>
         forwardTo(request, owner.s_axil)
       case _ =>
-        request.failure(
-          s"Demux cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

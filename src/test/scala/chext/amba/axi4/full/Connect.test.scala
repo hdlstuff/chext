@@ -6,6 +6,8 @@ import java.nio.file.Path
 import chext.amba.axi4
 import chext.amba.axi4.full.components.CreditBufferConfig
 import chext.amba.axi4.full.ConnectOp._
+import chext.amba.axi4.tracking.properties.{Master => MasterProps, Slave => SlaveProps}
+import chext.amba.axi4.tracking.values.{BurstShape, MemoryMap, ThreadMode}
 import chext.util.{ElaborationTest, SimulationCheck}
 
 private class StrictMismatchTop extends Module {
@@ -56,10 +58,15 @@ private class Axi3SimulationCheckTop extends Module {
   )
 }
 
-private class BufferedConnectTop extends Module {
+private class BufferedConnectTop extends Module with chext.AnnotatedModule {
   val cfg = axi4.Config()
   val master = IO(Slave(cfg))
   val slave = IO(Master(cfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(master)
+  declareAxi4Interface(slave)
 
   val creditBuffer = Module(
     new components.CreditBuffer(
@@ -74,6 +81,16 @@ private class BufferedConnectTop extends Module {
 
   master :=> creditBuffer.s_axi
   creditBuffer.m_axi :=> slave
+
+  master.masterProps(MasterProps.ReadBurstShape) = BurstShape()
+  master.masterProps(MasterProps.WriteBurstShape) = BurstShape()
+  master.masterProps(MasterProps.ReadThreadMode) = ThreadMode.SingleTransaction
+  master.masterProps(MasterProps.WriteThreadMode) = ThreadMode.SingleTransaction
+  slave.slaveProps(SlaveProps.ReadBurstShape) = BurstShape()
+  slave.slaveProps(SlaveProps.WriteBurstShape) = BurstShape()
+  slave.slaveProps(SlaveProps.ReadThreadMode) = ThreadMode.Unconstrained
+  slave.slaveProps(SlaveProps.WriteThreadMode) = ThreadMode.Unconstrained
+  slave.slaveProps(SlaveProps.MemoryMap) = MemoryMap(size = 0)
 }
 
 private class TieOffWarningTop extends Module {

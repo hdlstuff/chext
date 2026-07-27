@@ -1,7 +1,6 @@
 package chext.amba.axi4.full.components.helpers
 
 import chisel3._
-import chisel3.util._
 
 /** Manages (1) the number of outstanding requests, (2) the port that a thread is associated with.
   *

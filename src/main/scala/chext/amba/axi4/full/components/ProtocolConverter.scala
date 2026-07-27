@@ -1,7 +1,6 @@
 package chext.amba.axi4.full.components
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.SourceInfo
 
 import chext.elastic
@@ -164,25 +163,42 @@ private class AxiFullStages {
 private final class ProtocolConverter_Resolver(owner: ProtocolConverter)(implicit
     sourceInfo: SourceInfo
 ) extends axi4.tracking.Resolver(owner) {
-  import axi4.tracking.{ResolveRequest, ResolveResult}
-  import axi4.tracking.properties.Slave
+  import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi)
-
-  override def kind: String = "protocol-converter"
-  override def resolver: String = "ProtocolConverterResolver"
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap) =>
-        forwardTo(request, owner.m_axi)
-      case SlaveRequests(_) | MasterRequests(_) =>
+      case Request(TrafficProfile()) =>
         request.incomplete()
+      case SlaveRequests(MemoryMap() | BurstShape() | ThreadMode()) =>
+        forwardTo(request, owner.slaveResolutionTarget)
+      case MasterRequests(BurstShape() | ThreadMode()) =>
+        forwardTo(request, owner.masterResolutionTarget)
       case _ =>
-        request.failure(
-          s"ProtocolConverter cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
+  }
+}
+
+/** Propagates slave facts across the manually wired internal-to-external master boundary. */
+private final class ProtocolConverterBridge_Resolver(
+    owner: ProtocolConverter,
+    internal: axi4.full.Interface
+)(implicit sourceInfo: SourceInfo)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking._
+
+  bindSlave(internal)
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case Request(TrafficProfile()) =>
+        request.incomplete()
+      case SlaveRequests(MemoryMap() | BurstShape() | ThreadMode()) =>
+        forwardTo(request, owner.m_axi)
+      case _ =>
+        missingCase(request)
     }
 }
 
@@ -198,6 +214,8 @@ class ProtocolConverter(val cfg: ProtocolConverterConfig) extends Module with ch
   declareAxi4Interface(m_axi)
 
   private val resolver = new ProtocolConverter_Resolver(this)
+  private[components] var slaveResolutionTarget: axi4.full.Interface = m_axi
+  private[components] var masterResolutionTarget: axi4.full.Interface = s_axi
 
   if (isPassthrough) {
     s_axi :=> m_axi
@@ -206,6 +224,9 @@ class ProtocolConverter(val cfg: ProtocolConverterConfig) extends Module with ch
 
     val s_axi_internal = Wire(axi4.full.Interface(axiSlaveCfgInternal))
     val m_axi_internal = Wire(axi4.full.Interface(axiMasterCfgInternal))
+    slaveResolutionTarget = s_axi_internal
+    masterResolutionTarget = m_axi_internal
+    val bridgeResolver = new ProtocolConverterBridge_Resolver(this, m_axi_internal)
 
     // drives the internal wire
     s_axi :=> s_axi_internal

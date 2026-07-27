@@ -8,7 +8,6 @@ import chext.amba.axi4
 import chext.elastic
 
 import elastic.ConnectOp._
-import axi4.Ops._
 import chext.util.BitOps._
 
 import helpers.{SteerLeft, SteerRight}
@@ -159,24 +158,65 @@ class Upscale(val cfg: UpscaleConfig) extends Module with chext.AnnotatedModule 
 
 private final class Upscale_Resolver(owner: Upscale)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
-  import axi4.tracking.{ResolveRequest, ResolveResult}
-  import axi4.tracking.properties.Slave
+  import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi)
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi)
 
-  override def kind: String = "upscale"
-  override def resolver: String = "UpscaleResolver"
+  private val slaveFullSize = values.BurstShape.fullSize(owner.cfg.axiSlaveCfg.wData)
+  private val masterFullSize = values.BurstShape.fullSize(owner.cfg.axiMasterCfg.wData)
+
+  if (owner.cfg.axiSlaveCfg.read) {
+    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
+      values.ThreadMode.SingleThread
+    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
+      values.ThreadMode.SingleThread
+  }
+  if (owner.cfg.axiSlaveCfg.write) {
+    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
+      values.ThreadMode.SingleThread
+    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
+      values.ThreadMode.SingleThread
+  }
+
+  private def masterShape(input: values.BurstShape): values.BurstShape =
+    if (input.burstSizes.isEmpty)
+      values.BurstShape()
+    else
+      values.BurstShape(
+        burstBeats = input.burstBeats,
+        burstNarrow = input.burstSizes.exists(_ < masterFullSize),
+        burstTypes = input.burstTypes,
+        burstSizes = input.burstSizes
+      )
+
+  private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
+    val sizes =
+      downstream.burstSizes.intersect(
+        values.BurstShape.validSizes(owner.cfg.axiSlaveCfg.wData)
+      )
+    if (sizes.isEmpty)
+      values.BurstShape()
+    else
+      values.BurstShape(
+        burstBeats = downstream.burstBeats,
+        burstNarrow = sizes.exists(_ < slaveFullSize),
+        burstTypes = downstream.burstTypes,
+        burstSizes = sizes
+      )
+  }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap) =>
+      case SlaveRequests(MemoryMap()) =>
         forwardTo(request, owner.m_axi)
-      case SlaveRequests(_) | MasterRequests(_) =>
+      case Request(TrafficProfile()) =>
         request.incomplete()
+      case MasterRequests(BurstShape()) =>
+        mapFrom(request, owner.s_axi)(masterShape)
+      case SlaveRequests(BurstShape()) =>
+        mapFrom(request, owner.m_axi)(slaveShape)
       case _ =>
-        request.failure(
-          s"Upscale cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

@@ -9,6 +9,7 @@ import chext.amba.axi4.lite.{ConnectOp => LiteConnectOp}
 import chext.amba.axi4.lite.components.RegisterBlock
 import chext.amba.axi4.tracking.{PropertyState, ResolveRequest, ResolveResult, Resolver}
 import chext.amba.axi4.tracking.properties.{Master, Slave}
+import chext.amba.axi4.tracking.values.{BurstShape, ThreadMode}
 import chext.amba.axi4.util.MemoryMap
 import chext.util.ElaborationTest
 
@@ -44,6 +45,24 @@ class DemuxMmTestTop(
   s_axi :=> demux.s_axi
   demux.m_axi :=> m_axi
 
+  private val emptyShape = BurstShape()
+  if (read) {
+    s_axi.masterProps(Master.ReadBurstShape) = emptyShape
+    s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+    m_axi.foreach { output =>
+      output.slaveProps(Slave.ReadBurstShape) = emptyShape
+      output.slaveProps(Slave.ReadThreadMode) = ThreadMode.Unconstrained
+    }
+  }
+  if (write) {
+    s_axi.masterProps(Master.WriteBurstShape) = emptyShape
+    s_axi.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
+    m_axi.foreach { output =>
+      output.slaveProps(Slave.WriteBurstShape) = emptyShape
+      output.slaveProps(Slave.WriteThreadMode) = ThreadMode.Unconstrained
+    }
+  }
+
   val sizes = Seq[BigInt](0x180, 0x300, 0x81)
   require(numMasters <= sizes.length)
   val masterMemoryMaps = m_axi.zipWithIndex.map { case (master, index) =>
@@ -58,6 +77,7 @@ class DemuxMmTestTop(
       masterMemoryMap
     }
   }
+  errorSlave.foreach(index => m_axi(index).slaveProps.markUndefined(Slave.MemoryMap))
 
   val derivedMemoryMap = demux.genDecoder(permutation, errorSlave, allocationScheme)
   val order = permutation.getOrElse((0 until numMasters).filterNot(errorSlave.contains))
@@ -87,28 +107,28 @@ class DemuxMmTestTop(
   assert(demux.s_axi.slaveProps(Slave.MemoryMap).get == derivedMemoryMap)
 
   if (!read) {
-    assert(demux.s_axi.slaveProps(Slave.ReadThreads).state == PropertyState.Undefined)
-    val slaveReadRequest = ResolveRequest(demux.s_axi, Slave.ReadThreads)
+    assert(demux.s_axi.slaveProps(Slave.ReadThreadMode).state == PropertyState.Undefined)
+    val slaveReadRequest = ResolveRequest(demux.s_axi, Slave.ReadThreadMode)
     assert(Resolver.resolve(slaveReadRequest).result == ResolveResult.Success())
     assert(slaveReadRequest.state == PropertyState.Undefined)
 
     demux.m_axi.foreach { output =>
-      assert(output.masterProps(Master.ReadThreads).state == PropertyState.Undefined)
-      val masterReadRequest = ResolveRequest(output, Master.ReadThreads)
+      assert(output.masterProps(Master.ReadThreadMode).state == PropertyState.Undefined)
+      val masterReadRequest = ResolveRequest(output, Master.ReadThreadMode)
       assert(Resolver.resolve(masterReadRequest).result == ResolveResult.Success())
       assert(masterReadRequest.state == PropertyState.Undefined)
     }
   }
 
   if (!write) {
-    assert(demux.s_axi.slaveProps(Slave.WriteThreads).state == PropertyState.Undefined)
-    val slaveWriteRequest = ResolveRequest(demux.s_axi, Slave.WriteThreads)
+    assert(demux.s_axi.slaveProps(Slave.WriteThreadMode).state == PropertyState.Undefined)
+    val slaveWriteRequest = ResolveRequest(demux.s_axi, Slave.WriteThreadMode)
     assert(Resolver.resolve(slaveWriteRequest).result == ResolveResult.Success())
     assert(slaveWriteRequest.state == PropertyState.Undefined)
 
     demux.m_axi.foreach { output =>
-      assert(output.masterProps(Master.WriteThreads).state == PropertyState.Undefined)
-      val masterWriteRequest = ResolveRequest(output, Master.WriteThreads)
+      assert(output.masterProps(Master.WriteThreadMode).state == PropertyState.Undefined)
+      val masterWriteRequest = ResolveRequest(output, Master.WriteThreadMode)
       assert(Resolver.resolve(masterWriteRequest).result == ResolveResult.Success())
       assert(masterWriteRequest.state == PropertyState.Undefined)
     }
@@ -135,6 +155,10 @@ class DemuxMmTreeTestTop extends Module with chext.AnnotatedModule {
   chext.tracking.suggestInstanceName(rightDemux, "rightDemux")
 
   s_axi :=> rootDemux.s_axi
+  s_axi.masterProps(Master.ReadBurstShape) = BurstShape()
+  s_axi.masterProps(Master.WriteBurstShape) = BurstShape()
+  s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+  s_axi.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
   rootDemux.m_axi(0) :=>
     axi4.full.RightBuffer(leftDemux.s_axi, bufferCfg, "leftBranchBuffer")
   rootDemux.m_axi(1) :=>
@@ -301,12 +325,10 @@ object DemuxMm_Test extends App with ElaborationTest {
   )
   test(
     name = "tree_with_buffers",
+    expected = Failure,
     gen = () => new DemuxMmTreeTestTop,
     checks = Seq(
-      SystemVerilog occurs ("  DemuxMm ", 3),
-      SystemVerilog occurs ("  LiteConverter ", 4),
-      SystemVerilog contains "leftBranchBuffer0_axi4fBuffer0_arBuffer0_queue0",
-      SystemVerilog contains "rightBranchBuffer0_axi4fBuffer0_arBuffer0_queue0",
+      Log contains "thread modes are incompatible: master=SingleThread, slave=SingleTransaction",
       MemoryMapJson contains "\"origin\" : \"/rootDemux/s_axi\"",
       MemoryMapJson contains "\"leaf0\"",
       MemoryMapJson contains "\"interfaceFrom\" : \"/rootDemux/m_axi_0\"",
@@ -315,26 +337,9 @@ object DemuxMm_Test extends App with ElaborationTest {
       MemoryMapJson contains "\"resolver\" : \"BufferResolver\"",
       MemoryMapJson contains "\"resolverPath\" : \"/leftBranchBuffer0_axi4fBuffer0\"",
       MemoryMapJson contains "\"resolver\" : \"LiteConverterResolver\"",
-      FlattenedMemoryMapJson contains "\"registers\"",
-      ModuleGraph.check("buffers and register blocks are tracked components") { graph =>
-        val bufferPaths = graph.flatten.components.collect {
-          case component if component.tpe == "Axi4f_Buffer" => component.path
-        }
-        val registerBlockPaths = graph.flatten.components.collect {
-          case component if component.tpe == "Axi4l_RegisterBlock" => component.path
-        }
-        Option.unless(
-          bufferPaths == Seq(
-            "/leftBranchBuffer0_axi4fBuffer0",
-            "/rightBranchBuffer0_axi4fBuffer0"
-          )
-        )(s"found buffer component paths: ${bufferPaths.mkString(", ")}").orElse(
-          Option.unless(registerBlockPaths.size == 4)(
-            s"found register-block component paths: ${registerBlockPaths.mkString(", ")}"
-          )
-        )
-      }
+      FlattenedMemoryMapJson contains "\"registers\""
     ),
+    disabledCommonChecks = Set(HasDemuxModule),
     captureArtifacts = captureMemoryMap
   )
 

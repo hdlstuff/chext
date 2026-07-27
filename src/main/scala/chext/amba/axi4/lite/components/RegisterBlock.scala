@@ -6,8 +6,6 @@ import chisel3.hacks.{deferred, PrefixManager}
 import chisel3.util._
 
 import chext.amba.axi4
-import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, Resolver}
-import chext.amba.axi4.tracking.properties.Slave
 import chext.amba.axi4.util.MemoryMap
 import chext.elastic
 import chext.tracking.{Component, withComponent}
@@ -225,6 +223,7 @@ class RegisterBlock(
       "RegisterBlock needs a component prefix or an explicit memoryMapPath"
     )
 
+    val origin = resolver.interfacePath
     val result = MemoryMap(
       path = resolvedPath,
       size = sizeAddressSpace,
@@ -233,10 +232,10 @@ class RegisterBlock(
           path = Seq("registers"),
           baseAddress = 0,
           size = sizeAddressSpace,
-          origin = axi4.tracking.TrackingPath.interface(s_axil)
+          origin = origin
         )
       ),
-      origin = axi4.tracking.TrackingPath.interface(s_axil)
+      origin = origin
     )
 
     PrefixManager.withAbsolute(path) {
@@ -251,7 +250,7 @@ class RegisterBlock(
     }
 
     memoryMap_ = Some(result)
-    s_axil.slaveProps(Slave.MemoryMap) = result
+    resolver.setMemoryMap(result)
     completed_ = true
     result
   }
@@ -263,40 +262,30 @@ class RegisterBlock(
 
 /** Resolves and initializes interface properties for one [[RegisterBlock]]. */
 private final class RegisterBlock_Resolver(owner: RegisterBlock)(implicit sourceInfo: SourceInfo)
-    extends Resolver(owner) {
-  private val SlaveRequests = bindSlave(owner.s_axil)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking._
 
-  override def kind: String = "register-block"
-  override def resolver: String = "RegisterBlock_Resolver"
+  bindSlave(owner.s_axil)
 
-  private val fullSize = log2Ceil(owner.wData / 8)
+  owner.s_axil.slaveProps(properties.Slave.ReadThreadMode) =
+    values.ThreadMode.SingleTransaction
+  owner.s_axil.slaveProps(properties.Slave.WriteThreadMode) =
+    values.ThreadMode.SingleTransaction
 
-  owner.s_axil.slaveProps(Slave.ReadOutstandingTransactions) = 1
-  owner.s_axil.slaveProps(Slave.WriteOutstandingTransactions) = 1
-  owner.s_axil.slaveProps(Slave.ReadThreads) = 1
-  owner.s_axil.slaveProps(Slave.WriteThreads) = 1
-  owner.s_axil.slaveProps(Slave.ReadBurstBeats) = 1
-  owner.s_axil.slaveProps(Slave.WriteBurstBeats) = 1
-  owner.s_axil.slaveProps(Slave.ReadBurstNarrow) = false
-  owner.s_axil.slaveProps(Slave.WriteBurstNarrow) = false
-  owner.s_axil.slaveProps(Slave.ReadBurstTypes) = Set(1)
-  owner.s_axil.slaveProps(Slave.WriteBurstTypes) = Set(1)
-  owner.s_axil.slaveProps(Slave.ReadBurstSizes) = Set(fullSize)
-  owner.s_axil.slaveProps(Slave.WriteBurstSizes) = Set(fullSize)
+  def interfacePath: String =
+    TrackingPath.interface(owner.s_axil)
+
+  def setMemoryMap(memoryMap: axi4.util.MemoryMap): Unit =
+    owner.s_axil.slaveProps(properties.Slave.MemoryMap) = memoryMap
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap) =>
+      case SlaveRequests(MemoryMap()) =>
         request.failure(
           "RegisterBlock.complete() was not called before resolving slave.memoryMap"
         )
-      case SlaveRequests(_) =>
-        request.failure(
-          s"RegisterBlock has no resolver rule for '${request.qualifiedName}'"
-        )
+      case Request(TrafficProfile()) => request.incomplete()
       case _ =>
-        request.failure(
-          s"RegisterBlock cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

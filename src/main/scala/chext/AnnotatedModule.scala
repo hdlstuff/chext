@@ -169,8 +169,6 @@ trait AnnotatedModule extends HasHdlinfoModule {
     result
   }
 
-  import chisel3.reflect.DataMirror
-
   final def declareArg[T: io.circe.Encoder](
       name: String,
       typedObject: hdlinfo.TypedObject
@@ -360,6 +358,14 @@ trait AnnotatedModule extends HasHdlinfoModule {
       kind: String,
       args: Map[String, hdlinfo.TypedObject]
   )(implicit si: SourceInfo): Unit = {
+    interface match {
+      case tracked: chext.amba.axi4.full.Interface =>
+        chext.amba.axi4.tracking.registerInterface(tracked)
+      case tracked: chext.amba.axi4.lite.Interface =>
+        chext.amba.axi4.tracking.registerInterface(tracked)
+      case _ => ()
+    }
+
     val name = nameFor(interface, interfaceName)
     require_.here(
       !hasInterfaceNamed(name),
@@ -617,8 +623,6 @@ trait AnnotatedModule extends HasHdlinfoModule {
   }
 
   final def hdlinfoModule: hdlinfo.Module = {
-    import io.circe.generic.auto._
-
     val portsSeq = ports.toSeq
     val interfacesSeq = interfaces.toSeq
 

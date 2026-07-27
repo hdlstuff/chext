@@ -2,16 +2,13 @@ package chext.amba.axi4.full.components
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.BundleLiterals._
 
 import chext.elastic
-import elastic.{Source, Sink, SourceBuffer, SinkBuffer}
+import elastic.{Source, Sink}
 import elastic.ConnectOp._
 
 import chext.amba.axi4
 import axi4.BurstType
-import axi4.full.{AddressChannel, ReadAddressChannel, WriteAddressChannel}
-import axi4.Casts._
 
 class AddrLenSizeBurstBundle[T <: Data](
     val wAddr: Int,

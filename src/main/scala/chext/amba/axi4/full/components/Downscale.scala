@@ -10,7 +10,6 @@ import chext.util.SimulationCheck
 
 import chext.util.BitOps._
 import elastic.ConnectOp._
-import axi4.Ops._
 
 import helpers.{SteerLeft, SteerRight}
 
@@ -258,24 +257,82 @@ class Downscale(val cfg: DownscaleConfig) extends Module with chext.AnnotatedMod
 
 private final class Downscale_Resolver(owner: Downscale)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
-  import axi4.tracking.{ResolveRequest, ResolveResult}
-  import axi4.tracking.properties.Slave
+  import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi)
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi)
 
-  override def kind: String = "downscale"
-  override def resolver: String = "DownscaleResolver"
+  private val slaveFullSize = values.BurstShape.fullSize(owner.cfg.axiSlaveCfg.wData)
+  private val masterFullSize = values.BurstShape.fullSize(owner.cfg.axiMasterCfg.wData)
+  private val incr = axi4.BurstType.INCR.litValue.toInt
+  private val inputTypes =
+    Set(axi4.BurstType.FIXED.litValue.toInt, incr)
+
+  if (owner.cfg.axiSlaveCfg.read) {
+    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
+      values.ThreadMode.SingleThread
+    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
+      values.ThreadMode.SingleThread
+  }
+  if (owner.cfg.axiSlaveCfg.write) {
+    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
+      values.ThreadMode.SingleThread
+    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
+      values.ThreadMode.SingleThread
+  }
+
+  private def outputSize(inputSize: Int): Int =
+    inputSize min masterFullSize
+
+  private def outputBeats(inputSize: Int): Int =
+    1 << ((inputSize - masterFullSize) max 0)
+
+  private def masterShape(input: values.BurstShape): values.BurstShape = {
+    val sizes = input.burstSizes.map(outputSize)
+    if (sizes.isEmpty)
+      values.BurstShape()
+    else
+      values.BurstShape(
+        burstBeats = input.burstSizes.map(outputBeats).max,
+        burstNarrow = sizes.exists(_ < masterFullSize),
+        burstTypes = Set(incr),
+        burstSizes = sizes
+      )
+  }
+
+  private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
+    val acceptsIncr = downstream.burstTypes.contains(incr)
+    val sizes =
+      values.BurstShape
+        .validSizes(owner.cfg.axiSlaveCfg.wData)
+        .filter { inputSize =>
+          acceptsIncr &&
+          downstream.burstSizes.contains(outputSize(inputSize)) &&
+          downstream.burstBeats >= outputBeats(inputSize)
+        }
+
+    if (sizes.isEmpty)
+      values.BurstShape()
+    else
+      values.BurstShape(
+        burstBeats = 1,
+        burstNarrow = sizes.exists(_ < slaveFullSize),
+        burstTypes = inputTypes,
+        burstSizes = sizes
+      )
+  }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap) =>
+      case SlaveRequests(MemoryMap()) =>
         forwardTo(request, owner.m_axi)
-      case SlaveRequests(_) | MasterRequests(_) =>
+      case Request(TrafficProfile()) =>
         request.incomplete()
+      case MasterRequests(BurstShape()) =>
+        mapFrom(request, owner.s_axi)(masterShape)
+      case SlaveRequests(BurstShape()) =>
+        mapFrom(request, owner.m_axi)(slaveShape)
       case _ =>
-        request.failure(
-          s"Downscale cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

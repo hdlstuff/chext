@@ -1,7 +1,6 @@
 package chext.amba.axi4.full
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.SourceInfo
 import chisel3.experimental.dataview.{PartialDataView, DataView}
 import chisel3.reflect.DataMirror
@@ -167,6 +166,7 @@ abstract class Interface extends Bundle with axi4.tracking.Tracked {
 
 object Interface {
   def apply(cfg: axi4.Config)(implicit si: SourceInfo): Interface = {
+    axi4.tracking.register()
     assert(!cfg.lite)
     implicit val _cfg: axi4.Config = cfg
 

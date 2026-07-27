@@ -6,6 +6,8 @@ import java.nio.file.Path
 import chext.amba.axi4
 import chext.amba.axi4.lite.components.CreditBufferConfig
 import chext.amba.axi4.lite.ConnectOp._
+import chext.amba.axi4.tracking.properties.{Master => MasterProps, Slave => SlaveProps}
+import chext.amba.axi4.tracking.values.{MemoryMap, ThreadMode}
 import chext.util.{ElaborationTest, SimulationCheck}
 
 private class StrictMismatchTop extends Module {
@@ -34,10 +36,15 @@ private class AddressSimulationCheckTop extends Module {
   )
 }
 
-private class BufferedConnectTop extends Module {
+private class BufferedConnectTop extends Module with chext.AnnotatedModule {
   val cfg = axi4.Config(lite = true)
   val master = IO(Slave(cfg))
   val slave = IO(Master(cfg))
+
+  declareClock(clock)
+  declareReset(reset)
+  declareAxi4Interface(master)
+  declareAxi4Interface(slave)
 
   val creditBuffer = Module(
     new components.CreditBuffer(
@@ -52,6 +59,12 @@ private class BufferedConnectTop extends Module {
 
   master :=> creditBuffer.s_axi
   creditBuffer.m_axi :=> slave
+
+  master.masterProps(MasterProps.ReadThreadMode) = ThreadMode.SingleTransaction
+  master.masterProps(MasterProps.WriteThreadMode) = ThreadMode.SingleTransaction
+  slave.slaveProps(SlaveProps.ReadThreadMode) = ThreadMode.SingleThread
+  slave.slaveProps(SlaveProps.WriteThreadMode) = ThreadMode.SingleThread
+  slave.slaveProps(SlaveProps.MemoryMap) = MemoryMap(size = 0)
 }
 
 private class TieOffWarningTop extends Module {

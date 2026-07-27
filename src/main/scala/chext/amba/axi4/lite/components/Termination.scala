@@ -2,16 +2,8 @@ package chext.amba.axi4.lite.components
 
 import chisel3._
 import chisel3.experimental.{prefix, SourceInfo}
-import chisel3.util.log2Ceil
 
 import chext.amba.axi4
-import chext.amba.axi4.tracking.{
-  ResolveRequest,
-  ResolveResult,
-  Resolver
-}
-import chext.amba.axi4.tracking.properties.{Master, Slave}
-import chext.amba.axi4.util.MemoryMap
 import chext.elastic
 
 /** AXI4-Lite slave that returns a constant value and response.
@@ -135,112 +127,76 @@ class IdleMaster(val axiCfg: axi4.Config) extends Module with chext.AnnotatedMod
 }
 
 private final class ConstantSlave_Resolver(owner: ConstantSlave)(implicit sourceInfo: SourceInfo)
-    extends Resolver(owner) {
-  private val SlaveRequests = bindSlave(owner.s_axil)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking._
 
-  override def kind: String = "constant-slave"
-  override def resolver: String = "ConstantSlaveResolver"
-
-  private val fullSize = log2Ceil(owner.axiCfg.wData / 8)
+  bindSlave(owner.s_axil)
 
   if (owner.axiCfg.read) {
-    owner.s_axil.slaveProps(Slave.ReadOutstandingTransactions) = 1
-    owner.s_axil.slaveProps(Slave.ReadThreads) = 1
-    owner.s_axil.slaveProps(Slave.ReadBurstBeats) = 1
-    owner.s_axil.slaveProps(Slave.ReadBurstNarrow) = false
-    owner.s_axil.slaveProps(Slave.ReadBurstTypes) = Set(1)
-    owner.s_axil.slaveProps(Slave.ReadBurstSizes) = Set(fullSize)
+    owner.s_axil.slaveProps(properties.Slave.ReadThreadMode) =
+      values.ThreadMode.SingleTransaction
   }
   if (owner.axiCfg.write) {
-    owner.s_axil.slaveProps(Slave.WriteOutstandingTransactions) = 1
-    owner.s_axil.slaveProps(Slave.WriteThreads) = 1
-    owner.s_axil.slaveProps(Slave.WriteBurstBeats) = 1
-    owner.s_axil.slaveProps(Slave.WriteBurstNarrow) = false
-    owner.s_axil.slaveProps(Slave.WriteBurstTypes) = Set(1)
-    owner.s_axil.slaveProps(Slave.WriteBurstSizes) = Set(fullSize)
+    owner.s_axil.slaveProps(properties.Slave.WriteThreadMode) =
+      values.ThreadMode.SingleTransaction
   }
   if (owner.responseValue <= axi4.ResponseFlag.EXOKAY.litValue)
-    owner.s_axil.slaveProps(Slave.MemoryMap) =
-      MemoryMap(size = BigInt(1) << owner.axiCfg.wAddr)
+    owner.s_axil.slaveProps(properties.Slave.MemoryMap) =
+      values.MemoryMap(size = BigInt(1) << owner.axiCfg.wAddr)
   else
-    owner.s_axil.slaveProps.markUndefined(Slave.MemoryMap)
+    owner.s_axil.slaveProps.markUndefined(properties.Slave.MemoryMap)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(_) =>
-        request.undefined()
+      case Request(TrafficProfile()) => request.incomplete()
       case _ =>
-        request.failure(
-          s"ConstantSlave cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }
 
 private final class StallSlave_Resolver(owner: StallSlave)(implicit sourceInfo: SourceInfo)
-    extends Resolver(owner) {
-  private val SlaveRequests = bindSlave(owner.s_axil)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking._
 
-  override def kind: String = "stall-slave"
-  override def resolver: String = "StallSlaveResolver"
+  bindSlave(owner.s_axil)
 
   if (owner.axiCfg.read) {
-    owner.s_axil.slaveProps(Slave.ReadOutstandingTransactions) = 0
-    owner.s_axil.slaveProps(Slave.ReadThreads) = 0
-    owner.s_axil.slaveProps(Slave.ReadBurstBeats) = 0
-    owner.s_axil.slaveProps(Slave.ReadBurstNarrow) = false
-    owner.s_axil.slaveProps(Slave.ReadBurstTypes) = Set.empty[Int]
-    owner.s_axil.slaveProps(Slave.ReadBurstSizes) = Set.empty[Int]
+    owner.s_axil.slaveProps(properties.Slave.ReadThreadMode) =
+      values.ThreadMode.SingleThread
   }
   if (owner.axiCfg.write) {
-    owner.s_axil.slaveProps(Slave.WriteOutstandingTransactions) = 0
-    owner.s_axil.slaveProps(Slave.WriteThreads) = 0
-    owner.s_axil.slaveProps(Slave.WriteBurstBeats) = 0
-    owner.s_axil.slaveProps(Slave.WriteBurstNarrow) = false
-    owner.s_axil.slaveProps(Slave.WriteBurstTypes) = Set.empty[Int]
-    owner.s_axil.slaveProps(Slave.WriteBurstSizes) = Set.empty[Int]
+    owner.s_axil.slaveProps(properties.Slave.WriteThreadMode) =
+      values.ThreadMode.SingleThread
   }
-  owner.s_axil.slaveProps.markUndefined(Slave.MemoryMap)
+  owner.s_axil.slaveProps.markUndefined(properties.Slave.MemoryMap)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(_) => request.undefined()
+      case Request(TrafficProfile()) => request.incomplete()
       case _ =>
-        request.failure(
-          s"StallSlave cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }
 
 private final class IdleMaster_Resolver(owner: IdleMaster)(implicit sourceInfo: SourceInfo)
-    extends Resolver(owner) {
-  private val MasterRequests = bindMaster(owner.m_axil)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking._
 
-  override def kind: String = "idle-master"
-  override def resolver: String = "IdleMasterResolver"
+  bindMaster(owner.m_axil)
 
   if (owner.axiCfg.read) {
-    owner.m_axil.masterProps(Master.ReadOutstandingTransactions) = 0
-    owner.m_axil.masterProps(Master.ReadThreads) = 0
-    owner.m_axil.masterProps(Master.ReadBurstBeats) = 0
-    owner.m_axil.masterProps(Master.ReadBurstNarrow) = false
-    owner.m_axil.masterProps(Master.ReadBurstTypes) = Set.empty[Int]
-    owner.m_axil.masterProps(Master.ReadBurstSizes) = Set.empty[Int]
+    owner.m_axil.masterProps(properties.Master.ReadThreadMode) =
+      values.ThreadMode.SingleTransaction
   }
   if (owner.axiCfg.write) {
-    owner.m_axil.masterProps(Master.WriteOutstandingTransactions) = 0
-    owner.m_axil.masterProps(Master.WriteThreads) = 0
-    owner.m_axil.masterProps(Master.WriteBurstBeats) = 0
-    owner.m_axil.masterProps(Master.WriteBurstNarrow) = false
-    owner.m_axil.masterProps(Master.WriteBurstTypes) = Set.empty[Int]
-    owner.m_axil.masterProps(Master.WriteBurstSizes) = Set.empty[Int]
+    owner.m_axil.masterProps(properties.Master.WriteThreadMode) =
+      values.ThreadMode.SingleTransaction
   }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case MasterRequests(_) => request.undefined()
+      case Request(TrafficProfile()) => request.incomplete()
       case _ =>
-        request.failure(
-          s"IdleMaster cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

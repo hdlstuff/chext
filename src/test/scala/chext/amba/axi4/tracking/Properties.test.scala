@@ -2,616 +2,517 @@ package chext.amba.axi4.tracking
 
 import chisel3.experimental.BaseModule
 
+import java.io.{ByteArrayOutputStream, PrintStream}
+
+import chext.amba.axi4
 import chext.amba.axi4.tracking.properties.{Master, Slave}
-import chext.amba.axi4.util.MemoryMap
-import chext.util.MathUtils
+import chext.amba.axi4.tracking.values.{
+  BurstShape,
+  MemoryMap,
+  ThreadMode,
+  TrafficProfile
+}
 
 object Properties_Test extends App {
-  assert(MathUtils.nextPowerOfTwo(0x100) == 0x100)
-  assert(MathUtils.nextPowerOfTwo(0x180) == 0x200)
-  assert(MathUtils.alignUp(0x200, 0x400) == 0x400)
-  assert(MathUtils.alignUp(0x401, 0x100) == 0x500)
+  private final class MissingCase_Resolver
+      extends Resolver(null.asInstanceOf[BaseModule]) {
+    def resolve[T](request: ResolveRequest[T]): ResolveResult =
+      missingCase(request)
+  }
 
-  val memoryMap = MemoryMap(
-    offset = 0x1000,
+  private val cfg = axi4.Config(wId = 4, wAddr = 16, wData = 64)
+  private val fullSize = BurstShape.fullSize(cfg.wData)
+  private val allTypes = Set(0, 1, 2)
+  private val allSizes = BurstShape.validSizes(cfg.wData)
+  private val shape = BurstShape(
+    burstBeats = 16,
+    burstNarrow = true,
+    burstTypes = allTypes,
+    burstSizes = allSizes
+  )
+
+  // MemoryMap remains the original immutable type through the values namespace.
+  val map: MemoryMap = MemoryMap(
     size = 0x400,
     children = Seq(
       MemoryMap(
         path = Seq("peripheral"),
-        offset = 0x200,
+        offset = 0x100,
         size = 0x100,
         segments = Seq(MemoryMap.Segment(Seq("control"), 0x10, 0x20))
       )
-    ),
-    segments = Seq(MemoryMap.Segment(Seq("status"), 0x80, 0x10))
+    )
   )
-  assert(memoryMap.offset == 0x1000)
-  assert(memoryMap.segments.head.baseAddress == 0x80)
-  assert(memoryMap.children.head.offset == 0x200)
-  assert(memoryMap.children.head.segments.head.size == 0x20)
+  assert(map.validate == MemoryMap.ValidationResult.Success)
+  assert(map.flatten.segments.head.path == Seq("peripheral", "control"))
 
-  val hierarchicalMemoryMap = MemoryMap(
-    offset = 0x1000,
-    size = 0x400,
-    segments = Seq(MemoryMap.Segment(Seq("root"), 0x10, 0x10)),
-    children = Seq(
-      MemoryMap(
-        path = Seq("peripheral"),
-        offset = 0x200,
-        size = 0x200,
-        segments = Seq(MemoryMap.Segment(Seq("status"), 0x20, 0x10)),
-        children = Seq(
-          MemoryMap(
-            path = Seq("registers"),
-            offset = 0x80,
-            size = 0x100,
-            segments = Seq(MemoryMap.Segment(Seq("control"), 0x08, 0x10))
-          )
-        )
+  // Runtime value-type extractors distinguish aggregate property families.
+  val BurstShapeProperty = PropertyValueType[BurstShape]
+  val ThreadModeProperty = PropertyValueType[ThreadMode]
+  val TrafficProfileProperty = PropertyValueType[TrafficProfile]
+  val MemoryMapProperty = PropertyValueType[MemoryMap]
+  assert(BurstShapeProperty.unapply(Master.ReadBurstShape))
+  assert(BurstShapeProperty.unapply(Slave.WriteBurstShape))
+  assert(!BurstShapeProperty.accepts(Master.ReadThreadMode))
+  assert(ThreadModeProperty.unapply(Master.WriteThreadMode))
+  assert(TrafficProfileProperty.unapply(Slave.ReadTrafficProfile))
+  assert(MemoryMapProperty.unapply(Slave.MemoryMap))
+
+  // Resolver trace metadata follows the conventional implementation class name.
+  assert(Resolver.defaultResolverName("Buffer_Resolver") == "BufferResolver")
+  assert(
+    Resolver.defaultResolverName("CreditBuffer_Resolver") ==
+      "CreditBufferResolver"
+  )
+  assert(Resolver.defaultResolverName("DemuxMm_Resolver") == "DemuxMmResolver")
+  assert(Resolver.defaultResolverName("") == "Resolver")
+  assert(Resolver.defaultKind("CreditBufferResolver") == "credit-buffer")
+  assert(Resolver.defaultKind("DemuxMmResolver") == "demux-mm")
+  assert(Resolver.defaultKind("URLParserResolver") == "url-parser")
+  assert(Resolver.defaultKind("Resolver") == "resolver")
+
+  private val missingCaseResolver = new MissingCase_Resolver
+  private val missingCaseRequest =
+    ResolveRequest(new Tracked { val cfg = Properties_Test.cfg }, Master.ReadBurstShape)
+  assert(
+    missingCaseResolver.resolve(missingCaseRequest) ==
+      ResolveResult.Failure(
+        "Resolver 'MissingCaseResolver' (kind 'missing-case') has no case for " +
+          "'master.read_burstShape'",
+        missingCaseRequest
       )
-    )
-  )
-  val flattenedOnce = hierarchicalMemoryMap.flattenOnce
-  assert(flattenedOnce.offset == 0x1000)
-  assert(flattenedOnce.children.map(_.path) == Seq(Seq("peripheral", "registers")))
-  assert(flattenedOnce.children.map(_.offset) == Seq(0x280))
-  assert(
-    flattenedOnce.segments.map(_.path) ==
-      Seq(Seq("root"), Seq("peripheral", "status"))
-  )
-  assert(flattenedOnce.segments.map(_.baseAddress) == Seq(0x10, 0x220))
-
-  val flattened = hierarchicalMemoryMap.flatten
-  assert(flattened.children.isEmpty)
-  assert(
-    flattened.segments.map(segment => segment.path -> segment.baseAddress) == Seq(
-      Seq("root") -> BigInt(0x10),
-      Seq("peripheral", "status") -> BigInt(0x220),
-      Seq("peripheral", "registers", "control") -> BigInt(0x288)
-    )
-  )
-  assert(
-    flattened.segments.map(_.renderedPath) ==
-      Seq("/root", "/peripheral/status", "/peripheral/registers/control")
   )
 
-  val aggregated = MemoryMap.aggregate(
-    Seq(
-      MemoryMap(
-        path = Seq("first"),
-        size = 0x180,
-        segments = Seq(MemoryMap.Segment(Seq("memory"), 0, 0x180))
-      ),
-      MemoryMap(
-        path = Seq("second"),
-        size = 0x300,
-        segments = Seq(MemoryMap.Segment(Seq("memory"), 0, 0x300))
-      ),
-      MemoryMap(
-        path = Seq("third"),
-        size = 0x81,
-        segments = Seq(MemoryMap.Segment(Seq("memory"), 0, 0x81))
-      )
-    )
-  )
-  assert(aggregated.children.map(_.offset) == Seq(0, 0x400, 0x800))
-  assert(aggregated.occupiedSize == 0x881)
-  assert(aggregated.allocatedSize == 0x900)
-  assert(aggregated.alignedSize == 0x1000)
-  assert(aggregated.validate == MemoryMap.ValidationResult.Success)
+  assert(Master.size == 6)
+  assert(Slave.size == 7)
+  assert(Master.readProperties == Master.all.collect {
+    case key @ ReadProperty() => key
+  }.toSet)
+  assert(Master.writeProperties == Master.all.collect {
+    case key @ WriteProperty() => key
+  }.toSet)
+  assert(Slave.readProperties == Slave.all.collect {
+    case key @ ReadProperty() => key
+  }.toSet)
+  assert(Slave.writeProperties == Slave.all.collect {
+    case key @ WriteProperty() => key
+  }.toSet)
 
-  val alignedLargest = MemoryMap.aggregate(
-    aggregated.children.map(_.copy(offset = 0)),
-    MemoryMap.AllocationScheme.AlignedLargest
-  )
-  assert(alignedLargest.children.map(_.offset) == Seq(0, 0x400, 0x800))
-  assert(alignedLargest.allocatedSize == 0xc00)
-
-  val tight = MemoryMap.aggregate(
-    aggregated.children.map(_.copy(offset = 0)),
-    MemoryMap.AllocationScheme.Tight
-  )
-  assert(tight.children.map(_.offset) == Seq(0, 0x180, 0x480))
-  assert(tight.allocatedSize == 0x501)
-
-  val overallocated = MemoryMap(
-    path = Seq("overallocated"),
-    size = 0x100,
-    segments = Seq(MemoryMap.Segment(Seq("memory"), 0x80, 0x81))
-  ).validate
-  assert(
-    overallocated == MemoryMap.ValidationResult.Failure(
-      id = MemoryMap.FailureId.Overallocated,
-      path = Seq("overallocated", "memory"),
-      kind = MemoryMap.EntryKind.Segment,
-      offset = 0x80,
-      size = 0x81,
-      limit = Some(0x100)
-    )
-  )
-
-  val overlapping = MemoryMap(
-    size = 0x400,
-    children = Seq(
-      MemoryMap(path = Seq("registers"), offset = 0x100, size = 0x100)
-    ),
-    segments = Seq(MemoryMap.Segment(Seq("memory"), 0x180, 0x100))
-  ).validate
-  assert(
-    overlapping == MemoryMap.ValidationResult.Failure(
-      id = MemoryMap.FailureId.Overlap,
-      path = Seq("memory"),
-      kind = MemoryMap.EntryKind.Segment,
-      offset = 0x180,
-      size = 0x100,
-      conflictingPath = Some(Seq("registers"))
-    )
-  )
-
+  // Field updates own the lifecycle transition and never expose public mutable fields.
   val properties = new PropertyManager
-
-  properties(Master.ReadOutstandingTransactions) = 8
-  properties(Master.ReadBurstBeats) = 16
-  properties(Slave.ReadOutstandingTransactions) = 12
-
-  val masterOutstanding = properties(Master.ReadOutstandingTransactions)
-  val masterBurstBeats = properties(Master.ReadBurstBeats)
-  val slaveOutstanding = properties(Slave.ReadOutstandingTransactions)
-  val masterWriteThreads = properties(Master.WriteThreads)
-
-  assert(masterOutstanding.get == 8)
-  assert(masterOutstanding.state == PropertyState.Enforced(8))
-  assert(masterBurstBeats.get == 16)
-  assert(slaveOutstanding.get == 12)
-  assert(masterWriteThreads.getOrElse(1) == 1)
-
-  masterOutstanding.enforce(8)
-  masterOutstanding.enforce(9)
-  masterWriteThreads.enforce(2)
-  assert(masterOutstanding.get == 8)
-  assert(masterWriteThreads.get == 2)
-
+  val burstProperty = properties(Master.ReadBurstShape)
+  burstProperty.burstBeats = 8
+  assert(burstProperty.state == PropertyState.Enforced(BurstShape(burstBeats = 8)))
+  burstProperty.burstNarrow = true
+  burstProperty.burstTypes = Set(1, 2)
+  burstProperty.burstSizes = allSizes
   assert(
-    properties.iterator.map(_.key.qualifiedName).toSeq == Seq(
-      "master.read_outstandingTransactions",
-      "master.read_burstBeats",
-      "slave.read_outstandingTransactions",
-      "master.write_threads"
-    )
+    burstProperty.get ==
+      BurstShape(8, true, Set(1, 2), allSizes)
   )
 
-  assert(
-    Master.iterator.map(_.name).toSeq == Slave.iterator.drop(1).map(_.name).toSeq
-  )
-  assert(Master.forall(_.description.nonEmpty))
-  assert(Slave.forall(_.description.nonEmpty))
-  assert(Master.size == 12)
-  assert(Slave.size == 13)
-  val shapePropertyNames = Set(
-    "read_burstBeats",
-    "write_burstBeats",
-    "read_burstNarrow",
-    "write_burstNarrow",
-    "read_burstTypes",
-    "write_burstTypes",
-    "read_burstSizes",
-    "write_burstSizes"
-  )
-  val readPropertyNames = Set(
-    "read_outstandingTransactions",
-    "read_threads",
-    "read_burstBeats",
-    "read_burstNarrow",
-    "read_burstTypes",
-    "read_burstSizes"
-  )
-  val writePropertyNames = Set(
-    "write_outstandingTransactions",
-    "write_threads",
-    "write_burstBeats",
-    "write_burstNarrow",
-    "write_burstTypes",
-    "write_burstSizes"
-  )
-  assert(Master.readProperties.map(_.name) == readPropertyNames)
-  assert(Master.writeProperties.map(_.name) == writePropertyNames)
-  assert(Slave.readProperties.map(_.name) == readPropertyNames)
-  assert(Slave.writeProperties.map(_.name) == writePropertyNames)
-  assert(Master.shapeProperties.map(_.name) == shapePropertyNames)
-  assert(Slave.shapeProperties.map(_.name) == shapePropertyNames)
-  assert(
-    Master.shapeProperties.forall {
-      case Master.ShapeProperty() => true
-      case _                      => false
-    }
-  )
-  assert(
-    Slave.shapeProperties.forall {
-      case Slave.ShapeProperty() => true
-      case _                     => false
-    }
-  )
-  assert(
-    Slave.MemoryMap match {
-      case Slave.ShapeProperty() => false
-      case _                     => true
-    }
-  )
-  assert(
-    Master.forall {
-      case MasterProperty() => true
-      case _                => false
-    }
-  )
-  assert(
-    Slave.forall {
-      case SlaveProperty() => true
-      case _               => false
-    }
-  )
-  assert(
-    Master.forall {
-      case SlaveProperty() => false
-      case _               => true
-    }
-  )
-  assert(
-    Slave.forall {
-      case MasterProperty() => false
-      case _                => true
-    }
-  )
-  assert(
-    Master.count {
-      case ReadProperty() => true
-      case _              => false
-    } == 6
-  )
-  assert(
-    Master.count {
-      case WriteProperty() => true
-      case _               => false
-    } == 6
-  )
-  assert(
-    Slave.count {
-      case ReadProperty() => true
-      case _              => false
-    } == 6
-  )
-  assert(
-    Slave.count {
-      case WriteProperty() => true
-      case _               => false
-    } == 6
-  )
-  assert(
-    Slave.MemoryMap match {
-      case ReadProperty() | WriteProperty() => false
-      case _                                => true
-    }
-  )
-  val duplicateName = "test_duplicate_property_name"
-  new MasterPropertyKey[Int](duplicateName, "Master test property.") {}
-  new SlavePropertyKey[String](duplicateName, "Slave test property with the same local name.") {}
+  val trafficProperty = properties(Master.ReadTrafficProfile)
+  trafficProperty.outstandingTransactions = 4
+  trafficProperty.threads = 2
+  trafficProperty.latencyCycles = Some(3.5)
+  assert(trafficProperty.get == TrafficProfile(4, 2, Some(3.5)))
+  assert(TrafficProfile.validationErrors(trafficProperty.get).isEmpty)
 
-  val duplicateRejected =
+  val dummyResolver =
+    new Resolver(null.asInstanceOf[BaseModule]) {
+      def resolve[T](request: ResolveRequest[T]): ResolveResult =
+        request.failure("not used")
+    }
+  val calculated = properties(Master.WriteBurstShape)
+  val calculatedStep =
+    ResolutionStep("/calculated", "/source", "test", "TestResolver", "/")
+  assert(
+    calculated.calculate(shape, dummyResolver, Seq(calculatedStep)) ==
+      CalculateResult.Success
+  )
+  assert(calculated.state == PropertyState.Calculated(shape, dummyResolver))
+  calculated.burstBeats = 12
+  assert(calculated.state == PropertyState.Enforced(shape.copyForTest(burstBeats = 12)))
+  assert(calculated.resolutionSteps.isEmpty)
+
+  val terminalTracked = new Tracked { val cfg = Properties_Test.cfg }
+  val terminalRequest = ResolveRequest(terminalTracked, Slave.ReadBurstShape)
+  terminalRequest.incomplete()
+  terminalTracked.slaveProps(Slave.ReadBurstShape).burstBeats = 1
+  assert(
+    terminalTracked.slaveProps(Slave.ReadBurstShape).state ==
+      PropertyState.Enforced(BurstShape(burstBeats = 1))
+  )
+
+  val dontCareTracked = new Tracked { val cfg = Properties_Test.cfg }
+  ResolveRequest(dontCareTracked, Slave.ReadBurstShape).dontCare("test")
+  dontCareTracked.slaveProps(Slave.ReadBurstShape).burstTypes = Set(1)
+  assert(
+    dontCareTracked.slaveProps(Slave.ReadBurstShape).state ==
+      PropertyState.Enforced(BurstShape(burstTypes = Set(1)))
+  )
+
+  val undefinedTracked = new Tracked { val cfg = Properties_Test.cfg }
+  ResolveRequest(undefinedTracked, Slave.ReadBurstShape).undefined()
+  undefinedTracked.slaveProps(Slave.ReadBurstShape).burstSizes = Set(fullSize)
+  assert(
+    undefinedTracked.slaveProps(Slave.ReadBurstShape).state ==
+      PropertyState.Enforced(BurstShape(burstSizes = Set(fullSize)))
+  )
+
+  val authoritative = properties(Slave.ReadBurstShape).enforce(shape)
+  authoritative.enforce(shape)
+  val conflictingReenforcementRejected =
     try {
-      new MasterPropertyKey[String](duplicateName, "Duplicate master test property.") {}
+      authoritative.enforce(BurstShape(8, true, allTypes, allSizes))
       false
     } catch {
-      case _: IllegalArgumentException => true
+      case _: IllegalStateException => true
     }
+  assert(conflictingReenforcementRejected)
 
-  assert(duplicateRejected)
-
-  val staticallyUndefined = new Tracked {
-    val cfg = chext.amba.axi4.Config()
-  }
-  staticallyUndefined.masterProps.markUndefined(Master.readProperties)
-  staticallyUndefined.slaveProps.markUndefined(Slave.WriteThreads)
+  // Validation and compatibility return every applicable problem.
+  assert(BurstShape.validationErrors(BurstShape(), cfg).isEmpty)
+  private val liteCfg = cfg.copy(wId = 0, wData = 32, lite = true)
   assert(
-    Master.readProperties.forall(key =>
-      staticallyUndefined.masterProps(key).state == PropertyState.Undefined
-    )
+    BurstShape
+      .validationErrors(
+        BurstShape(1, false, Set(1), Set(BurstShape.fullSize(liteCfg.wData))),
+        liteCfg
+      )
+      .isEmpty
   )
   assert(
-    staticallyUndefined.slaveProps(Slave.WriteThreads).state ==
-      PropertyState.Undefined
+    BurstShape
+      .validationErrors(BurstShape(2, false, Set(0), Set(0)), liteCfg)
+      .length == 4
   )
-
-  val tracked = new Tracked {
-    val cfg = chext.amba.axi4.Config()
-  }
-  assert(tracked.masterProps eq tracked.properties)
-  assert(tracked.slaveProps eq tracked.properties)
-  assert(tracked.properties.isEmpty)
-
-  val trackedProperty = tracked.properties(Master.ReadBurstBeats)
-  val testResolver =
-    new Resolver(null.asInstanceOf[BaseModule]) {
-      def resolve[T](request: ResolveRequest[T]): ResolveResult = {
-        assert(
-          request.calculate(Master.ReadBurstBeats, 4, this) ==
-            CalculateResult.Success
-        )
-        ResolveResult.Success()
-      }
-    }
-
-  val otherResolver =
-    new Resolver(null.asInstanceOf[BaseModule]) {
-      def resolve[T](request: ResolveRequest[T]): ResolveResult =
-        request.failure("unexpected fallback resolver")
-    }
-
-  tracked
-    .addMasterResolver(otherResolver)
-    .addMasterResolver(testResolver)
-    .addMasterResolver(testResolver)
-  tracked.addSlaveResolver(otherResolver)
-
-  val request = ResolveRequest(tracked, trackedProperty)
-  assert(request.interface eq tracked)
-  assert(request.cfg == tracked.cfg)
-  assert(request.properties eq tracked.properties)
-  assert(request.property eq trackedProperty)
-  assert(request.key eq Master.ReadBurstBeats)
-  assert(
-    request.key match {
-      case MasterProperty() => true
-      case _                => false
-    }
+  val invalidShape = BurstShape(
+    burstBeats = 300,
+    burstNarrow = true,
+    burstTypes = Set(3),
+    burstSizes = Set(fullSize + 1)
   )
-  assert(request.name == "read_burstBeats")
-  assert(request.qualifiedName == "master.read_burstBeats")
-  assert(request.description == Master.ReadBurstBeats.description)
-  assert(request.state == PropertyState.Unresolved)
+  assert(BurstShape.validationErrors(invalidShape, cfg).length == 4)
 
-  assert(Resolver.resolve(request).result == ResolveResult.Success())
-  assert(request.state == PropertyState.Calculated(4, testResolver))
-  assert(request.valueOption.contains(4))
-  assert(
-    request.calculate(Master.ReadBurstBeats, 5, testResolver) ==
-      CalculateResult.AlreadyCalculated
+  val masterMismatch = BurstShape(
+    burstBeats = 32,
+    burstNarrow = true,
+    burstTypes = Set(0, 1, 2),
+    burstSizes = Set(0, 1, 2, 3)
   )
-  assert(request.valueOption.contains(4))
-
-  val bound = new Tracked { val cfg = chext.amba.axi4.Config() }
-  val unbound = new Tracked { val cfg = chext.amba.axi4.Config() }
-  val bindingResolver =
-    new Resolver(null.asInstanceOf[BaseModule]) {
-      private val MasterRequests = bindMaster(bound)
-
-      def resolve[T](request: ResolveRequest[T]): ResolveResult =
-        request match {
-          case MasterRequests(Master.ReadBurstBeats) =>
-            request.calculate(8, this)
-            ResolveResult.Success()
-          case MasterRequests(_) =>
-            request.undefined()
-          case _ =>
-            request.failure("request did not match the registered binding")
-        }
-    }
-
-  val boundRequest = ResolveRequest(bound, Master.ReadBurstBeats)
-  assert(Resolver.resolve(boundRequest).result == ResolveResult.Success())
-  assert(boundRequest.valueOption.contains(8))
-
-  val unboundRequest = ResolveRequest(unbound, Master.ReadBurstBeats)
-  bindingResolver.resolve(unboundRequest) match {
-    case ResolveResult.Failure(message, failedRequest) =>
-      assert(message.contains("did not match"))
-      assert(failedRequest == unboundRequest)
-    case result =>
-      throw new AssertionError(s"expected binding mismatch failure, got $result")
-  }
-
-  val wrongFamilyRequest = ResolveRequest(bound, Slave.ReadBurstBeats)
-  bindingResolver.resolve(wrongFamilyRequest) match {
-    case ResolveResult.Failure(message, failedRequest) =>
-      assert(message.contains("did not match"))
-      assert(failedRequest == wrongFamilyRequest)
-    case result =>
-      throw new AssertionError(s"expected property-family mismatch failure, got $result")
-  }
-
-  val grouped0 = new Tracked { val cfg = chext.amba.axi4.Config() }
-  val grouped1 = new Tracked { val cfg = chext.amba.axi4.Config() }
-  val groupedBindingResolver =
-    new Resolver(null.asInstanceOf[BaseModule]) {
-      private val MasterRequests = bindMaster(Seq(grouped0, grouped1))
-
-      def resolve[T](request: ResolveRequest[T]): ResolveResult =
-        request match {
-          case MasterRequests(_, Master.ReadThreads) =>
-            request.calculate(3, this)
-            ResolveResult.Success()
-          case MasterRequests(_, _) =>
-            request.undefined()
-          case _ =>
-            request.failure("request did not match the grouped binding")
-        }
-    }
-
-  Seq(grouped0, grouped1).foreach { interface =>
-    val groupedRequest = ResolveRequest(interface, Master.ReadThreads)
-    assert(Resolver.resolve(groupedRequest).result == ResolveResult.Success())
-    assert(groupedRequest.valueOption.contains(3))
-  }
-
-  val enforcedProperty = tracked.masterProps(Master.ReadThreads)
-  enforcedProperty.enforce(2)
-  val enforcedRequest = ResolveRequest(tracked, enforcedProperty)
-  assert(
-    enforcedRequest.calculate(Master.ReadThreads, 3, testResolver) ==
-      CalculateResult.AlreadyEnforced
+  val slaveMismatch = BurstShape(
+    burstBeats = 8,
+    burstNarrow = false,
+    burstTypes = Set(1),
+    burstSizes = Set(3)
   )
-  assert(enforcedProperty.state == PropertyState.Enforced(2))
+  assert(BurstShape.compatibilityErrors(masterMismatch, slaveMismatch).length == 4)
 
-  val undefinedProperty = tracked.slaveProps(Slave.WriteThreads)
-  val undefinedRequest = ResolveRequest(tracked, undefinedProperty)
-  assert(undefinedRequest.undefined() == ResolveResult.Success())
-  assert(undefinedRequest.state == PropertyState.Undefined)
-  assert(undefinedRequest.isResolved)
-  assert(
-    undefinedRequest.calculate(Slave.WriteThreads, 1, testResolver) ==
-      CalculateResult.Undefined
+  val modes = Seq(
+    ThreadMode.SingleTransaction,
+    ThreadMode.SingleThread,
+    ThreadMode.UniqueThreads,
+    ThreadMode.Unconstrained
   )
-
-  val incompleteProperty = tracked.slaveProps(Slave.ReadThreads)
-  val incompleteRequest = ResolveRequest(tracked, incompleteProperty)
-  assert(incompleteRequest.incomplete() == ResolveResult.Success())
-  assert(incompleteRequest.state == PropertyState.Incomplete)
-  assert(
-    incompleteRequest.calculate(Slave.ReadThreads, 1, testResolver) ==
-      CalculateResult.Incomplete
+  val compatibleModes = Map[ThreadMode, Set[ThreadMode]](
+    ThreadMode.SingleTransaction -> modes.toSet,
+    ThreadMode.SingleThread -> Set(ThreadMode.SingleThread, ThreadMode.Unconstrained),
+    ThreadMode.UniqueThreads -> Set(ThreadMode.UniqueThreads, ThreadMode.Unconstrained),
+    ThreadMode.Unconstrained -> Set(ThreadMode.Unconstrained)
   )
-
-  val dontCareMessage = "No synthetic aggregate is needed for this boundary"
-  val dontCareProperty = tracked.slaveProps(Slave.ReadBurstTypes)
-  val dontCareRequest = ResolveRequest(tracked, dontCareProperty)
-  assert(dontCareRequest.dontCare(dontCareMessage) == ResolveResult.Success())
-  assert(dontCareRequest.state == PropertyState.DontCare(dontCareMessage))
-  assert(dontCareRequest.isResolved)
-  assert(dontCareRequest.valueOption.isEmpty)
-  assert(
-    dontCareRequest.calculate(Slave.ReadBurstTypes, Set(1), testResolver) ==
-      CalculateResult.DontCare(dontCareMessage)
-  )
-
-  val dontCareSource = new Tracked {
-    val cfg = chext.amba.axi4.Config()
-  }
-  val dontCareSink = new Tracked {
-    val cfg = chext.amba.axi4.Config()
-  }
-  val dontCareSourceResolver =
-    new Resolver(null.asInstanceOf[BaseModule]) {
-      private val MasterRequests = bindMaster(dontCareSource)
-
-      def resolve[T](request: ResolveRequest[T]): ResolveResult =
-        request match {
-          case MasterRequests(_) => request.dontCare(dontCareMessage)
-          case _                 => request.failure("unexpected source request")
-        }
+  modes.foreach { master =>
+    modes.foreach { slave =>
+      assert(
+        ThreadMode.compatible(master, slave) ==
+          compatibleModes(master).contains(slave),
+        s"$master -> $slave"
+      )
     }
-  val dontCareSinkResolver =
-    new Resolver(null.asInstanceOf[BaseModule]) {
-      private val MasterRequests = bindMaster(dontCareSink)
-
-      def resolve[T](request: ResolveRequest[T]): ResolveResult =
-        request match {
-          case MasterRequests(_) => forwardTo(request, dontCareSource)
-          case _                 => request.failure("unexpected sink request")
-        }
-    }
-  val forwardedDontCare = ResolveRequest(dontCareSink, Master.ReadBurstTypes)
-  assert(Resolver.resolve(forwardedDontCare).result == ResolveResult.Success())
-  assert(forwardedDontCare.state == PropertyState.DontCare(dontCareMessage))
-
-  val dependency = new Tracked {
-    val cfg = chext.amba.axi4.Config()
-  }
-  val dependent = new Tracked {
-    val cfg = chext.amba.axi4.Config()
-  }
-  val dependencyRequest = ResolveRequest(dependency, Master.ReadThreads)
-  val dependentRequest = ResolveRequest(dependent, Master.ReadBurstBeats)
-
-  val dependencyResolver =
-    new Resolver(null.asInstanceOf[BaseModule]) {
-      def resolve[T](request: ResolveRequest[T]): ResolveResult = {
-        request.calculate(Master.ReadThreads, 7, this)
-        ResolveResult.Success()
-      }
-    }
-  val dependentResolver =
-    new Resolver(null.asInstanceOf[BaseModule]) {
-      def resolve[T](request: ResolveRequest[T]): ResolveResult =
-        if (!dependencyRequest.isResolved)
-          request.retry(Seq(dependencyRequest))
-        else {
-          request.calculate(
-            Master.ReadBurstBeats,
-            dependency.properties(Master.ReadThreads).get * 2,
-            this
-          )
-          ResolveResult.Success()
-        }
-    }
-
-  dependency.addMasterResolver(dependencyResolver)
-  dependent.addMasterResolver(dependentResolver)
-  assert(Resolver.resolve(dependentRequest).result == ResolveResult.Success())
-  assert(dependencyRequest.valueOption.contains(7))
-  assert(dependentRequest.valueOption.contains(14))
-
-  // A dependency path exercises recursive resolution at the configured depth limit.
-  val resolutionDepth = 64
-  val resolutionTracked: Vector[Tracked] =
-    Vector.fill(resolutionDepth)(new Tracked { val cfg = chext.amba.axi4.Config() })
-  val resolutionRequests =
-    resolutionTracked.map(interface => ResolveRequest(interface, Master.ReadThreads))
-  resolutionTracked.last.masterProps(Master.ReadThreads) = 1
-  resolutionTracked.indices.dropRight(1).foreach { index =>
-    val dependencyRequest = resolutionRequests(index + 1)
-    resolutionTracked(index).addMasterResolver(
-      new Resolver(null.asInstanceOf[BaseModule]) {
-        def resolve[T](request: ResolveRequest[T]): ResolveResult =
-          if (!dependencyRequest.isResolved)
-            request.retry(Seq(dependencyRequest))
-          else {
-            request.calculate(
-              Master.ReadThreads,
-              dependencyRequest.valueOption.get + 1,
-              this
-            )
-            ResolveResult.Success()
-          }
-      }
-    )
   }
   assert(
-    Resolver.resolve(resolutionRequests.head, maxStackSize = resolutionDepth).result ==
-      ResolveResult.Success()
+    ThreadMode.validationErrors(ThreadMode.SingleTransaction, liteCfg).isEmpty
   )
-  assert(resolutionRequests.head.valueOption.contains(resolutionDepth))
+  assert(ThreadMode.validationErrors(ThreadMode.SingleThread, liteCfg).isEmpty)
+  assert(
+    ThreadMode.validationErrors(ThreadMode.UniqueThreads, liteCfg).nonEmpty
+  )
+  assert(
+    ThreadMode.validationErrors(ThreadMode.Unconstrained, liteCfg).nonEmpty
+  )
+  assert(
+    modes.forall(ThreadMode.validationErrors(_, cfg).isEmpty)
+  )
 
-  val stalled = new Tracked { val cfg = chext.amba.axi4.Config() }
-  val resolvedDependency = new Tracked { val cfg = chext.amba.axi4.Config() }
-  val stalledRequest = ResolveRequest(stalled, Master.ReadThreads)
-  val resolvedDependencyRequest =
-    ResolveRequest(resolvedDependency, Master.ReadThreads)
-  resolvedDependency.properties(Master.ReadThreads) = 1
-  stalled.addMasterResolver(new Resolver(null.asInstanceOf[BaseModule]) {
+  // Disabled property catalogs are classified automatically by resolver binding.
+  val writeOnly = new Tracked {
+    val cfg = Properties_Test.cfg.copy(read = false, write = true)
+  }
+  new Resolver(null.asInstanceOf[BaseModule]) {
+    bindMaster(writeOnly)
+    bindSlave(writeOnly)
     def resolve[T](request: ResolveRequest[T]): ResolveResult =
-      request.retry(Seq(resolvedDependencyRequest))
-  })
+      request match {
+        case MasterRequests(_) | SlaveRequests(_) => request.incomplete()
+        case _                                     => request.failure("wrong endpoint")
+      }
+  }
+  assert(
+    Master.readProperties.forall(
+      writeOnly.masterProps(_).state == PropertyState.Undefined
+    )
+  )
+  assert(
+    Slave.readProperties.forall(
+      writeOnly.slaveProps(_).state == PropertyState.Undefined
+    )
+  )
 
-  Resolver.resolve(stalledRequest).result match {
-    case ResolveResult.Failure(message, failedRequest) =>
-      assert(message.contains("repeated the same Retry"))
-      assert(failedRequest == stalledRequest)
-    case result => assert(false, result)
+  // AXI4-Lite has no burst-shape signals; binding classifies those properties as inapplicable.
+  val liteBound = new Tracked {
+    val cfg = Properties_Test.cfg.copy(wId = 0, lite = true)
+  }
+  new Resolver(null.asInstanceOf[BaseModule]) {
+    bindMaster(liteBound)
+    bindSlave(liteBound)
+    def resolve[T](request: ResolveRequest[T]): ResolveResult =
+      missingCase(request)
+  }
+  assert(
+    Seq(Master.ReadBurstShape, Master.WriteBurstShape).forall(
+      liteBound.masterProps(_).state == PropertyState.Undefined
+    )
+  )
+  assert(
+    Seq(Slave.ReadBurstShape, Slave.WriteBurstShape).forall(
+      liteBound.slaveProps(_).state == PropertyState.Undefined
+    )
+  )
+  liteBound.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+  liteBound.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
+  liteBound.slaveProps(Slave.ReadThreadMode) = ThreadMode.SingleThread
+  liteBound.slaveProps(Slave.WriteThreadMode) = ThreadMode.SingleThread
+  liteBound.slaveProps.markUndefined(Slave.MemoryMap)
+  CompatibilityChecker.check(Seq(liteBound))
+
+  // Interface-aware family extractors identify the matching member of a sequence binding.
+  val interfaceAware = Seq.fill(2)(new Tracked { val cfg = Properties_Test.cfg })
+  var extractedSlaveInterface = Option.empty[Tracked]
+  var extractedMasterInterface = Option.empty[Tracked]
+  val interfaceAwareResolver =
+    new Resolver(null.asInstanceOf[BaseModule]) {
+      bindSlave(interfaceAware)
+      bindMaster(interfaceAware)
+
+      def resolve[T](request: ResolveRequest[T]): ResolveResult =
+        request match {
+          case SlaveRequests.withInterface(interface, Slave.MemoryMap) =>
+            extractedSlaveInterface = Some(interface)
+            request.incomplete()
+          case MasterRequests.withInterface(interface, Master.ReadBurstShape) =>
+            extractedMasterInterface = Some(interface)
+            request.incomplete()
+          case _ => request.failure("unexpected interface-aware request")
+        }
+    }
+
+  assert(
+    interfaceAwareResolver.resolve(
+      ResolveRequest(interfaceAware(1), Slave.MemoryMap)
+    ) == ResolveResult.Success()
+  )
+  assert(extractedSlaveInterface.exists(_ eq interfaceAware(1)))
+  assert(
+    interfaceAwareResolver.resolve(
+      ResolveRequest(interfaceAware.head, Master.ReadBurstShape)
+    ) == ResolveResult.Success()
+  )
+  assert(extractedMasterInterface.exists(_ eq interfaceAware.head))
+
+  // The exhaustive checker visits every interface and every initially checked property.
+  val visited = scala.collection.mutable.ArrayBuffer.empty[(Tracked, String)]
+  val interfaces = Seq.fill(3)(new Tracked { val cfg = Properties_Test.cfg })
+  interfaces.foreach { interface =>
+    val resolver =
+      new Resolver(null.asInstanceOf[BaseModule]) {
+        bindMaster(interface)
+        bindSlave(interface)
+
+        def resolve[T](request: ResolveRequest[T]): ResolveResult = {
+          visited += interface -> request.qualifiedName
+          request match {
+            case MasterRequests(Master.ReadBurstShape) =>
+              request.calculate(Master.ReadBurstShape, shape, this)
+              ResolveResult.Success()
+            case MasterRequests(Master.WriteBurstShape) =>
+              request.calculate(Master.WriteBurstShape, shape, this)
+              ResolveResult.Success()
+            case SlaveRequests(Slave.ReadBurstShape) =>
+              request.calculate(Slave.ReadBurstShape, shape, this)
+              ResolveResult.Success()
+            case SlaveRequests(Slave.WriteBurstShape) =>
+              request.calculate(Slave.WriteBurstShape, shape, this)
+              ResolveResult.Success()
+            case MasterRequests(Master.ReadThreadMode) =>
+              request.calculate(
+                Master.ReadThreadMode,
+                values.ThreadMode.SingleTransaction,
+                this
+              )
+              ResolveResult.Success()
+            case MasterRequests(Master.WriteThreadMode) =>
+              request.calculate(
+                Master.WriteThreadMode,
+                values.ThreadMode.SingleTransaction,
+                this
+              )
+              ResolveResult.Success()
+            case SlaveRequests(Slave.ReadThreadMode) =>
+              request.calculate(
+                Slave.ReadThreadMode,
+                values.ThreadMode.Unconstrained,
+                this
+              )
+              ResolveResult.Success()
+            case SlaveRequests(Slave.WriteThreadMode) =>
+              request.calculate(
+                Slave.WriteThreadMode,
+                values.ThreadMode.Unconstrained,
+                this
+              )
+              ResolveResult.Success()
+            case SlaveRequests(Slave.MemoryMap) =>
+              request.calculate(
+                Slave.MemoryMap,
+                values.MemoryMap(size = 0x100),
+                this
+              )
+              ResolveResult.Success()
+            case _ => request.failure("unexpected checked property")
+          }
+        }
+      }
+  }
+  CompatibilityChecker.check(interfaces)
+  assert(visited.groupBy(_._1).values.forall(_.length == 9))
+
+  // Resolution diagnostics distinguish missing, incomplete, undefined, and incompatibility,
+  // and failed comparisons print provenance from both sides.
+  def capturedFailure(body: => Unit): String = {
+    val bytes = new ByteArrayOutputStream()
+    val stream = new PrintStream(bytes)
+    val failed =
+      try {
+        Console.withOut(stream)(body)
+        false
+      } catch {
+        case _: IllegalArgumentException => true
+      }
+    stream.flush()
+    assert(failed)
+    bytes.toString("UTF-8")
   }
 
-  val cycleA = new Tracked { val cfg = chext.amba.axi4.Config() }
-  val cycleB = new Tracked { val cfg = chext.amba.axi4.Config() }
-  val cycleARequest = ResolveRequest(cycleA, Master.ReadThreads)
-  val cycleBRequest = ResolveRequest(cycleB, Master.ReadThreads)
-  cycleA.addMasterResolver(new Resolver(null.asInstanceOf[BaseModule]) {
-    def resolve[T](request: ResolveRequest[T]): ResolveResult = request.retry(Seq(cycleBRequest))
-  })
-  cycleB.addMasterResolver(new Resolver(null.asInstanceOf[BaseModule]) {
-    def resolve[T](request: ResolveRequest[T]): ResolveResult = request.retry(Seq(cycleARequest))
-  })
+  val missing = new Tracked { val cfg = Properties_Test.cfg }
+  val missingLog = capturedFailure(CompatibilityChecker.check(Seq(missing)))
+  assert(missingLog.contains("no resolver is registered"))
 
-  Resolver.resolve(cycleARequest).result match {
-    case ResolveResult.Failure(message, failedRequest) =>
-      assert(message.contains("cycle"))
-      assert(failedRequest == cycleARequest)
-    case result => assert(false, result)
+  val invalidLiteModes = new Tracked {
+    val cfg = Properties_Test.liteCfg
+  }
+  new Resolver(null.asInstanceOf[BaseModule]) {
+    bindMaster(invalidLiteModes)
+    bindSlave(invalidLiteModes)
+    def resolve[T](request: ResolveRequest[T]): ResolveResult =
+      missingCase(request)
+  }
+  invalidLiteModes.masterProps(Master.ReadThreadMode) = ThreadMode.UniqueThreads
+  invalidLiteModes.slaveProps(Slave.ReadThreadMode) = ThreadMode.SingleThread
+  invalidLiteModes.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
+  invalidLiteModes.slaveProps(Slave.WriteThreadMode) = ThreadMode.Unconstrained
+  invalidLiteModes.slaveProps.markUndefined(Slave.MemoryMap)
+  val invalidLiteLog =
+    capturedFailure(CompatibilityChecker.check(Seq(invalidLiteModes)))
+  assert(
+    invalidLiteLog.contains(
+      "master.read_threadMode: AXI4-Lite thread mode UniqueThreads is invalid"
+    )
+  )
+  assert(
+    invalidLiteLog.contains(
+      "slave.write_threadMode: AXI4-Lite thread mode Unconstrained is invalid"
+    )
+  )
+
+  val invalidResolvedLiteMode = new Tracked {
+    val cfg = Properties_Test.liteCfg.copy(write = false)
+  }
+  new Resolver(null.asInstanceOf[BaseModule]) {
+    bindMaster(invalidResolvedLiteMode)
+    bindSlave(invalidResolvedLiteMode)
+
+    def resolve[T](request: ResolveRequest[T]): ResolveResult =
+      request match {
+        case MasterRequests(ThreadModeProperty()) =>
+          request.calculate(values.ThreadMode.UniqueThreads, this)
+          ResolveResult.Success()
+        case SlaveRequests(ThreadModeProperty()) =>
+          request.calculate(values.ThreadMode.SingleThread, this)
+          ResolveResult.Success()
+        case _ =>
+          missingCase(request)
+      }
+  }
+  invalidResolvedLiteMode.slaveProps.markUndefined(Slave.MemoryMap)
+  val invalidResolvedLiteLog =
+    capturedFailure(CompatibilityChecker.check(Seq(invalidResolvedLiteMode)))
+  assert(
+    invalidResolvedLiteLog.contains(
+      "master.read_threadMode: AXI4-Lite thread mode UniqueThreads is invalid"
+    )
+  )
+
+  val stateDiagnostics = new Tracked { val cfg = Properties_Test.cfg }
+  stateDiagnostics.masterProps(Master.ReadBurstShape).enforce(shape)
+  stateDiagnostics.slaveProps(Slave.ReadBurstShape).markUndefined()
+  stateDiagnostics.masterProps(Master.ReadThreadMode).enforce(ThreadMode.SingleTransaction)
+  stateDiagnostics.slaveProps(Slave.ReadThreadMode).enforce(ThreadMode.Unconstrained)
+  stateDiagnostics.masterProps(Master.WriteBurstShape).enforce(shape)
+  ResolveRequest(stateDiagnostics, Slave.WriteBurstShape).incomplete()
+  stateDiagnostics.masterProps(Master.WriteThreadMode).enforce(ThreadMode.SingleTransaction)
+  stateDiagnostics.slaveProps(Slave.WriteThreadMode).enforce(ThreadMode.Unconstrained)
+  stateDiagnostics.slaveProps(Slave.MemoryMap).markUndefined()
+  val stateLog = capturedFailure(CompatibilityChecker.check(Seq(stateDiagnostics)))
+  assert(stateLog.contains("property is undefined"))
+  assert(stateLog.contains("property resolution is incomplete"))
+
+  val traced = new Tracked { val cfg = Properties_Test.cfg.copy(write = false) }
+  val masterTrace = ResolutionStep("/checked", "/master", "test", "MasterResolver", "/master")
+  val slaveTrace = ResolutionStep("/checked", "/slave", "test", "SlaveResolver", "/slave")
+  traced
+    .masterProps(Master.ReadBurstShape)
+    .calculate(masterMismatch, dummyResolver, Seq(masterTrace))
+  traced
+    .slaveProps(Slave.ReadBurstShape)
+    .calculate(slaveMismatch, dummyResolver, Seq(slaveTrace))
+  traced
+    .masterProps(Master.ReadThreadMode)
+    .enforce(ThreadMode.SingleTransaction)
+  traced.slaveProps(Slave.ReadThreadMode).enforce(ThreadMode.Unconstrained)
+  traced.slaveProps(Slave.MemoryMap).markUndefined()
+  val traceLog = capturedFailure(CompatibilityChecker.check(Seq(traced)))
+  assert(traceLog.contains("master trace"))
+  assert(traceLog.contains("slave trace"))
+  assert(traceLog.contains("MasterResolver"))
+  assert(traceLog.contains("SlaveResolver"))
+
+  implicit final class BurstShapeTestOps(private val value: BurstShape) extends AnyVal {
+    def copyForTest(
+        burstBeats: Int = value.burstBeats,
+        burstNarrow: Boolean = value.burstNarrow,
+        burstTypes: Set[Int] = value.burstTypes,
+        burstSizes: Set[Int] = value.burstSizes
+    ): BurstShape =
+      BurstShape(burstBeats, burstNarrow, burstTypes, burstSizes)
   }
 }

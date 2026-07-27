@@ -1,7 +1,6 @@
 package chext.amba.axi4.full
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.prefix
 
 import chext.amba.axi4

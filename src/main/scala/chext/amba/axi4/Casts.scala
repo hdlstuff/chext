@@ -114,6 +114,7 @@ trait Casts {
       val view = x.viewAs[full.Interface]
       enforceFullRoles(view, x)
       t.registerView(view, x, sourceInfo = Some(si))
+      tracking.registerView(view)
       view
     }
 
@@ -122,6 +123,7 @@ trait Casts {
       val view = x.viewAs[lite.Interface]
       enforceLiteRoles(view, x)
       t.registerView(view, x, sourceInfo = Some(si))
+      tracking.registerView(view)
       view
     }
   }

@@ -1,6 +1,7 @@
 package chext.amba.axi4.tracking
 
 import scala.collection.mutable
+import scala.reflect.ClassTag
 
 /** Typed identity and documentation for one AXI tracking property.
   *
@@ -16,11 +17,15 @@ import scala.collection.mutable
   * @param description
   *   nonempty human-readable meaning of the property
   */
-sealed abstract class PropertyKey[T](
+sealed abstract class PropertyKey[T: ClassTag](
     val name: String,
     val description: String
 ) {
   PropertyKey.register(this)
+
+  /** Runtime token used by resolver policies that operate on an aggregate value family. */
+  final val valueClass: Class[_] =
+    implicitly[ClassTag[T]].runtimeClass
 
   /** Stable namespace supplied by the key's master/slave base class. */
   private[tracking] def namespace: String
@@ -28,6 +33,24 @@ sealed abstract class PropertyKey[T](
   /** Stable family-qualified name used in diagnostics. */
   final def qualifiedName: String = s"$namespace.$name"
   final override def toString: String = qualifiedName
+}
+
+/** Extracts property keys by their runtime value type. */
+final class PropertyValueType[T: ClassTag] {
+  private val expected = implicitly[ClassTag[T]].runtimeClass
+
+  /** Tests an arbitrary property key without requiring compile-time value-type agreement. */
+  def accepts(key: PropertyKey[_]): Boolean =
+    key.valueClass == expected
+
+  /** Typed pattern extractor that preserves the key's value type in the matched branch. */
+  def unapply(key: PropertyKey[T]): Boolean =
+    accepts(key)
+}
+
+object PropertyValueType {
+  def apply[T: ClassTag]: PropertyValueType[T] =
+    new PropertyValueType[T]
 }
 
 /** Registry that prevents ambiguous family-qualified property names. */
@@ -96,36 +119,36 @@ object SlaveProperty {
 }
 
 /** Convenience base for master-property keys. */
-abstract class MasterPropertyKey[T](name: String, description: String)
+abstract class MasterPropertyKey[T: ClassTag](name: String, description: String)
     extends PropertyKey[T](name, description)
     with MasterProperty {
   private[tracking] final override def namespace: String = "master"
 }
 
 /** Convenience base for slave-property keys. */
-abstract class SlavePropertyKey[T](name: String, description: String)
+abstract class SlavePropertyKey[T: ClassTag](name: String, description: String)
     extends PropertyKey[T](name, description)
     with SlaveProperty {
   private[tracking] final override def namespace: String = "slave"
 }
 
 /** Convenience base for master read-property keys. */
-abstract class MasterReadProperty[T](name: String, description: String)
+abstract class MasterReadProperty[T: ClassTag](name: String, description: String)
     extends MasterPropertyKey[T](name, description)
     with ReadProperty
 
 /** Convenience base for master write-property keys. */
-abstract class MasterWriteProperty[T](name: String, description: String)
+abstract class MasterWriteProperty[T: ClassTag](name: String, description: String)
     extends MasterPropertyKey[T](name, description)
     with WriteProperty
 
 /** Convenience base for slave read-property keys. */
-abstract class SlaveReadProperty[T](name: String, description: String)
+abstract class SlaveReadProperty[T: ClassTag](name: String, description: String)
     extends SlavePropertyKey[T](name, description)
     with ReadProperty
 
 /** Convenience base for slave write-property keys. */
-abstract class SlaveWriteProperty[T](name: String, description: String)
+abstract class SlaveWriteProperty[T: ClassTag](name: String, description: String)
     extends SlavePropertyKey[T](name, description)
     with WriteProperty
 
@@ -258,8 +281,8 @@ final class Property[T] private[tracking] (val key: PropertyKey[T]) {
   /** Stores an authoritative value.
     *
     * Enforcement may replace a calculated, don't-care, incomplete, or undefined state and clears
-    * any resolution trace. Re-enforcing an already enforced property is intentionally idempotent
-    * and keeps the original value.
+    * any resolution trace. Re-enforcing an equal value is idempotent; re-enforcing a different
+    * authoritative value is an error.
     *
     * @return
     *   this property, allowing calls to be chained
@@ -269,9 +292,36 @@ final class Property[T] private[tracking] (val key: PropertyKey[T]) {
       case Unresolved | Calculated(_, _) | DontCare(_) | Incomplete | Undefined =>
         state_ = Enforced(value)
         resolutionSteps_ = Seq.empty
-      case Enforced(_) => ()
+      case Enforced(existing) if existing == value => ()
+      case Enforced(existing) =>
+        throw new IllegalStateException(
+          s"AXI4 property '${key.qualifiedName}' is already enforced as $existing; " +
+            s"cannot enforce conflicting value $value"
+        )
     }
     this
+  }
+
+  /** Applies one controlled field update and leaves this property authoritatively enforced.
+    *
+    * Aggregate-value companions use this operation to provide assignment syntax without exposing
+    * public mutable fields. Copying before mutation prevents a value shared by multiple properties
+    * from being modified through the wrong owner.
+    */
+  private[tracking] def mutate(
+      default: => T,
+      copyValue: T => T
+  )(mutation: T => Unit): Unit = {
+    val value =
+      state_ match {
+        case Enforced(existing)      => copyValue(existing)
+        case Calculated(existing, _) => copyValue(existing)
+        case Unresolved | DontCare(_) | Incomplete | Undefined => default
+      }
+
+    mutation(value)
+    state_ = Enforced(value)
+    resolutionSteps_ = Seq.empty
   }
 
   /** Attempts the resolver-only transition from unresolved to calculated. */

@@ -8,7 +8,6 @@ import chext.elastic
 import elastic.ConnectOp._
 
 import chext.amba.axi4
-import axi4.Casts._
 import axi4.lite.{SlaveBuffered, MasterBuffered}
 
 case class MuxConfig(
@@ -133,24 +132,19 @@ private final class Mux_Resolver(owner: Mux)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.s_axil.toSeq)
-  private val MasterRequests = bindMaster(owner.m_axil)
-
-  override def kind: String = "mux"
-  override def resolver: String = "MuxResolver"
-
-  private val noMasterAggregate =
-    "Mux keeps each upstream master's traffic properties separate instead of aggregating them"
+  bindSlave(owner.s_axil.toSeq)
+  bindMaster(owner.m_axil)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(_, _) =>
+      case Request(TrafficProfile()) =>
+        request.incomplete()
+      case SlaveRequests(MemoryMap() | ThreadMode()) =>
         forwardTo(request, owner.m_axil)
-      case MasterRequests(_) =>
-        request.dontCare(noMasterAggregate)
+      case MasterRequests(ThreadMode()) =>
+        request.calculate(values.ThreadMode.SingleThread, this)
+        ResolveResult.Success()
       case _ =>
-        request.failure(
-          s"Mux cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

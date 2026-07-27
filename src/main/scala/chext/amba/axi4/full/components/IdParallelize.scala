@@ -5,15 +5,12 @@ import chisel3.util._
 import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.util.BitOps._
-import chext.bundles.BundleN
 
 import chext.amba.axi4
 import chext.elastic
 
-import elastic.{Source, Sink, SinkBuffered}
+import elastic.SinkBuffered
 import elastic.ConnectOp._
-
-import chext.memory
 
 case class IdParallelizeConfig(
     val axiSlaveCfg: axi4.Config = axi4.Config(wId = 0, wAddr = 12, wData = 64),
@@ -307,24 +304,35 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig())
 
 private final class IdParallelize_Resolver(owner: IdParallelize)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
-  import axi4.tracking.{ResolveRequest, ResolveResult}
-  import axi4.tracking.properties.Slave
+  import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi)
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi)
 
-  override def kind: String = "id-parallelize"
-  override def resolver: String = "IdParallelizeResolver"
+  if (owner.s_axi.cfg.read) {
+    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
+      values.ThreadMode.SingleThread
+    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
+      values.ThreadMode.UniqueThreads
+  }
+  if (owner.s_axi.cfg.write) {
+    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
+      values.ThreadMode.SingleThread
+    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
+      values.ThreadMode.UniqueThreads
+  }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap) =>
+      case SlaveRequests(MemoryMap()) =>
         forwardTo(request, owner.m_axi)
-      case SlaveRequests(_) | MasterRequests(_) =>
+      case Request(TrafficProfile()) =>
         request.incomplete()
+      case SlaveRequests(BurstShape()) =>
+        forwardTo(request, owner.m_axi)
+      case MasterRequests(BurstShape()) =>
+        forwardTo(request, owner.s_axi)
       case _ =>
-        request.failure(
-          s"IdParallelize cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

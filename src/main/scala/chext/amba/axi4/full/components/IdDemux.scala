@@ -1,7 +1,6 @@
 package chext.amba.axi4.full.components
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.amba.axi4
@@ -11,12 +10,7 @@ import elastic.ConnectOp._
 import chext.util.BitOps._
 
 import axi4.full.{
-  AddressChannel,
-  WriteDataChannel,
-  ReadDataChannel,
-  WriteResponseChannel,
-  SlaveBuffer,
-  MasterBuffer
+  WriteDataChannel
 }
 
 case class IdDemuxConfig(
@@ -169,24 +163,21 @@ private final class IdDemux_Resolver(owner: IdDemux)(implicit sourceInfo: Source
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi.toSeq)
-
-  override def kind: String = "id-demux"
-  override def resolver: String = "IdDemuxResolver"
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi.toSeq)
 
   private val noSlaveAggregate =
     "IdDemux keeps each downstream slave capability separate instead of aggregating them"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(_) =>
+      case Request(TrafficProfile()) =>
+        request.incomplete()
+      case SlaveRequests(MemoryMap() | BurstShape() | ThreadMode()) =>
         request.dontCare(noSlaveAggregate)
-      case MasterRequests(_, _) =>
+      case MasterRequests(BurstShape() | ThreadMode()) =>
         forwardTo(request, owner.s_axi)
       case _ =>
-        request.failure(
-          s"IdDemux cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

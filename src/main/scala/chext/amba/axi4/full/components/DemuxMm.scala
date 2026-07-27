@@ -6,13 +6,6 @@ import chisel3.util._
 
 import chext.amba.axi4
 import chext.amba.axi4.full.WriteDataChannel
-import chext.amba.axi4.tracking.{
-  ResolveRequest,
-  ResolveResult,
-  ResolutionTrace,
-  Resolver
-}
-import chext.amba.axi4.tracking.properties.Slave
 import chext.amba.axi4.util.{Decoder, MemoryMap}
 import chext.bundles._
 import chext.elastic
@@ -251,48 +244,17 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
     )
 
     val memoryMaps = order.map { index =>
-      resolveMemoryMap(m_axi(index), s"m_axi($index)", captureResolutionTrace)
+      resolver.resolveMemoryMap(m_axi(index), s"m_axi($index)", captureResolutionTrace)
     }
     val aggregatedMemoryMap =
       if (memoryMaps.nonEmpty)
         MemoryMap.aggregate(memoryMaps, allocationScheme).copy(path = memoryMapPath)
       else MemoryMap(path = memoryMapPath, size = 0)
     val memoryMap = aggregatedMemoryMap.copy(
-      origin = axi4.tracking.TrackingPath.interface(s_axi)
+      origin = resolver.interfacePath(s_axi)
     )
     val defaultPort = errorSlave.getOrElse(order.head)
     genDecoder(memoryMap, memoryMap.children.zip(order), defaultPort)
-  }
-
-  private def resolveMemoryMap(
-      interface: axi4.tracking.Tracked,
-      name: String,
-      captureResolutionTrace: Boolean
-  ): MemoryMap = {
-    val request = ResolveRequest(interface, Slave.MemoryMap)
-    val resolution = Resolver.resolve(request)
-    resolution.result match {
-      case ResolveResult.Success() => ()
-      case ResolveResult.Failure(message, _) =>
-        throw new IllegalArgumentException(s"Could not resolve $name slave memory map: $message")
-      case ResolveResult.Retry(_) =>
-        throw new AssertionError("recursive memory-map resolution unexpectedly returned Retry")
-    }
-
-    val memoryMap = request.valueOption.getOrElse {
-      throw new IllegalArgumentException(s"Resolved $name slave memory map has no value")
-    }
-    val origin = resolution.steps.lastOption
-      .map(_.interfaceTo)
-      .getOrElse(axi4.tracking.TrackingPath.interface(interface))
-    val traceArgs =
-      if (captureResolutionTrace && resolution.steps.nonEmpty)
-        Map("resolutionTrace" -> hdlinfo.TypedObject(ResolutionTrace(resolution.steps)))
-      else Map.empty[String, hdlinfo.TypedObject]
-
-    memoryMap
-      .withDefaultOrigin(origin)
-      .copy(args = memoryMap.args ++ traceArgs)
   }
 
   private def genDecoder(
@@ -344,31 +306,48 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
 
 /** Resolves and initializes interface properties for one [[DemuxMm]]. */
 private final class DemuxMm_Resolver(owner: DemuxMm)(implicit sourceInfo: SourceInfo)
-    extends Resolver(owner) {
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi.toSeq)
+    extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking._
 
-  override def kind: String = "demux-mm"
-  override def resolver: String = "DemuxMm_Resolver"
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi.toSeq)
 
   private var memoryMapOption = Option.empty[MemoryMap]
   private val noSlaveAggregate =
     "DemuxMm keeps each downstream slave capability separate instead of aggregating them"
 
-  private val read = owner.cfg.axiSlaveCfg.read
-  private val write = owner.cfg.axiSlaveCfg.write
+  def interfacePath(interface: axi4.tracking.Tracked): String =
+    TrackingPath.interface(interface)
 
-  if (read) {
-    owner.s_axi.slaveProps(Slave.ReadOutstandingTransactions) =
-      owner.cfg.numOutstandingRead
-    owner.s_axi.slaveProps(Slave.ReadThreads) =
-      owner.cfg.numIdsTrackedRead
-  }
-  if (write) {
-    owner.s_axi.slaveProps(Slave.WriteOutstandingTransactions) =
-      owner.cfg.numOutstandingWrite
-    owner.s_axi.slaveProps(Slave.WriteThreads) =
-      owner.cfg.numIdsTrackedWrite
+  def resolveMemoryMap(
+      interface: axi4.tracking.Tracked,
+      name: String,
+      captureResolutionTrace: Boolean
+  ): MemoryMap = {
+    val request = ResolveRequest(interface, properties.Slave.MemoryMap)
+    val resolution = Resolver.resolve(request)
+    resolution.result match {
+      case ResolveResult.Success() => ()
+      case ResolveResult.Failure(message, _) =>
+        throw new IllegalArgumentException(s"Could not resolve $name slave memory map: $message")
+      case ResolveResult.Retry(_) =>
+        throw new AssertionError("recursive memory-map resolution unexpectedly returned Retry")
+    }
+
+    val memoryMap = request.valueOption.getOrElse {
+      throw new IllegalArgumentException(s"Resolved $name slave memory map has no value")
+    }
+    val origin = resolution.steps.lastOption
+      .map(_.interfaceTo)
+      .getOrElse(TrackingPath.interface(interface))
+    val traceArgs =
+      if (captureResolutionTrace && resolution.steps.nonEmpty)
+        Map("resolutionTrace" -> hdlinfo.TypedObject(ResolutionTrace(resolution.steps)))
+      else Map.empty[String, hdlinfo.TypedObject]
+
+    memoryMap
+      .withDefaultOrigin(origin)
+      .copy(args = memoryMap.args ++ traceArgs)
   }
 
   def setMemoryMap(memoryMap: MemoryMap): Unit = {
@@ -379,22 +358,22 @@ private final class DemuxMm_Resolver(owner: DemuxMm)(implicit sourceInfo: Source
       )
     }
     memoryMapOption = Some(memoryMap)
-    owner.s_axi.slaveProps(Slave.MemoryMap).enforce(memoryMap)
+    owner.s_axi.slaveProps(properties.Slave.MemoryMap).enforce(memoryMap)
   }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap) =>
+      case SlaveRequests(MemoryMap()) =>
         request.failure(
           "DemuxMm.genDecoder() was not called before resolving slave.memoryMap"
         )
-      case SlaveRequests(_) =>
+      case Request(TrafficProfile()) =>
+        request.incomplete()
+      case SlaveRequests(BurstShape() | ThreadMode()) =>
         request.dontCare(noSlaveAggregate)
-      case MasterRequests(_, _) =>
+      case MasterRequests(BurstShape() | ThreadMode()) =>
         forwardTo(request, owner.s_axi)
       case _ =>
-        request.failure(
-          s"DemuxMm cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

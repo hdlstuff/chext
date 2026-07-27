@@ -1,15 +1,13 @@
 package chext.amba.axi4.full.components
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.elastic
 import elastic.ConnectOp._
 
 import chext.amba.axi4
-import axi4.Casts._
-import axi4.full.{SlaveBuffer, MasterBuffer, WriteDataChannel}
+import axi4.full.WriteDataChannel
 
 case class IdMuxConfig(
     val axiSlaveCfg: axi4.Config,
@@ -122,24 +120,27 @@ private final class IdMux_Resolver(owner: IdMux)(implicit sourceInfo: SourceInfo
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.s_axi.toSeq)
-  private val MasterRequests = bindMaster(owner.m_axi)
-
-  override def kind: String = "id-mux"
-  override def resolver: String = "IdMuxResolver"
+  bindSlave(owner.s_axi.toSeq)
+  bindMaster(owner.m_axi)
 
   private val noMasterAggregate =
     "IdMux keeps each upstream master's traffic properties separate instead of aggregating them"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(_, _) =>
+      case Request(TrafficProfile()) =>
+        request.incomplete()
+      case SlaveRequests(MemoryMap() | BurstShape() | ThreadMode()) =>
         forwardTo(request, owner.m_axi)
-      case MasterRequests(_) =>
+      case MasterRequests(ThreadMode()) =>
+        if (owner.s_axi.length == 1) forwardTo(request, owner.s_axi.head)
+        else {
+          request.calculate(values.ThreadMode.Unconstrained, this)
+          ResolveResult.Success()
+        }
+      case MasterRequests(BurstShape()) =>
         request.dontCare(noMasterAggregate)
       case _ =>
-        request.failure(
-          s"IdMux cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

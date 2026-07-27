@@ -361,24 +361,78 @@ class Widen(val cfg: WidenConfig) extends Module with chext.AnnotatedModule {
 
 private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
-  import axi4.tracking.{ResolveRequest, ResolveResult}
-  import axi4.tracking.properties.Slave
+  import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi)
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi)
 
-  override def kind: String = "widen"
-  override def resolver: String = "WidenResolver"
+  private val fullSize = values.BurstShape.fullSize(owner.cfg.axiCfg.wData)
+  private val fixed = axi4.BurstType.FIXED.litValue.toInt
+  private val supportedTypes = Set(
+    axi4.BurstType.INCR.litValue.toInt,
+    axi4.BurstType.WRAP.litValue.toInt
+  )
+  private val protocolBeats =
+    if (owner.cfg.axiCfg.axi3Compat) 16 else 256
+
+  private def widenedBeats(beats: Int, size: Int): Int = {
+    val outputBytes = BigInt(1) << fullSize
+    val inputBytes = BigInt(1) << size
+    val bytes = BigInt(beats) * inputBytes + (outputBytes - inputBytes)
+    ((bytes + outputBytes - 1) / outputBytes).toInt
+  }
+
+  private def masterShape(input: values.BurstShape): values.BurstShape = {
+    val types = input.burstTypes - fixed
+    if (input.burstSizes.isEmpty || types.isEmpty)
+      values.BurstShape()
+    else
+      values.BurstShape(
+        burstBeats =
+          input.burstSizes.map(size => widenedBeats(input.burstBeats, size)).max,
+        burstNarrow = false,
+        burstTypes = types,
+        burstSizes = Set(fullSize)
+      )
+  }
+
+  private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
+    val types = downstream.burstTypes.intersect(supportedTypes)
+    val sizes =
+      if (downstream.burstSizes.contains(fullSize))
+        values.BurstShape.validSizes(owner.cfg.axiCfg.wData)
+      else Set.empty[Int]
+    val beats =
+      (0 to protocolBeats).reverse.find { candidate =>
+        sizes.forall(size => widenedBeats(candidate, size) <= downstream.burstBeats)
+      }.getOrElse(0)
+
+    if (sizes.isEmpty || types.isEmpty || beats == 0)
+      values.BurstShape()
+    else
+      values.BurstShape(
+        burstBeats = beats,
+        burstNarrow = sizes.exists(_ < fullSize),
+        burstTypes = types,
+        burstSizes = sizes
+      )
+  }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(Slave.MemoryMap) =>
+      case SlaveRequests(MemoryMap()) =>
         forwardTo(request, owner.m_axi)
-      case SlaveRequests(_) | MasterRequests(_) =>
+      case Request(TrafficProfile()) =>
         request.incomplete()
+      case SlaveRequests(ThreadMode()) =>
+        forwardTo(request, owner.m_axi)
+      case MasterRequests(ThreadMode()) =>
+        forwardTo(request, owner.s_axi)
+      case MasterRequests(BurstShape()) =>
+        mapFrom(request, owner.s_axi)(masterShape)
+      case SlaveRequests(BurstShape()) =>
+        mapFrom(request, owner.m_axi)(slaveShape)
       case _ =>
-        request.failure(
-          s"Widen cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

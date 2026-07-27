@@ -387,23 +387,20 @@ object ConnectOp extends ConnectOp
 
 private final class Connect_Resolver(owner: Connect)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
-  import axi4.tracking.{ResolveRequest, ResolveResult}
+  import axi4.tracking._
 
-  private val SlaveRequests = bindSlave(owner.master)
-  private val MasterRequests = bindMaster(owner.slave)
-
-  override def kind: String = "connect"
-  override def resolver: String = "ConnectResolver"
+  bindSlave(owner.master)
+  bindMaster(owner.slave)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
+      case Request(TrafficProfile()) =>
+        request.incomplete()
       case SlaveRequests(_) =>
         forwardTo(request, owner.slave)
       case MasterRequests(_) =>
         forwardTo(request, owner.master)
       case _ =>
-        request.failure(
-          s"AXI connect resolver cannot forward '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }

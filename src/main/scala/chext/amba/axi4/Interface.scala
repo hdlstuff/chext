@@ -3,7 +3,6 @@ package chext.amba.axi4
 import chisel3._
 import chisel3.util._
 import chisel3.experimental.SourceInfo
-import chisel3.reflect.DataMirror
 
 import chext.amba.axi4
 import chext.util.NamedVec

@@ -8,10 +8,6 @@ import chisel3.util._
 import chisel3.experimental.SourceInfo
 import chisel3.experimental.BundleLiterals._
 
-import axi4.lite.WriteResponseChannel
-import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, Resolver}
-import chext.amba.axi4.tracking.properties.Slave
-import chext.amba.axi4.util.MemoryMap
 
 class SyncReadMemController(
     val log2numElements: Int,
@@ -123,42 +119,30 @@ class SyncReadMemController(
 
 private final class SyncReadMemController_Resolver(owner: SyncReadMemController)(implicit
     sourceInfo: SourceInfo
-) extends Resolver(owner) {
-  private val SlaveRequests = bindSlave(owner.s_axil)
+) extends axi4.tracking.Resolver(owner) {
+  import axi4.tracking._
+
+  bindSlave(owner.s_axil)
 
   override def kind: String = "sync-read-memory-controller"
-  override def resolver: String = "SyncReadMemControllerResolver"
-
-  private val fullSize = log2Ceil(owner.axiCfg.wData / 8)
 
   if (owner.axiCfg.read) {
-    owner.s_axil.slaveProps(Slave.ReadOutstandingTransactions) = 4
-    owner.s_axil.slaveProps(Slave.ReadThreads) = 1
-    owner.s_axil.slaveProps(Slave.ReadBurstBeats) = 1
-    owner.s_axil.slaveProps(Slave.ReadBurstNarrow) = false
-    owner.s_axil.slaveProps(Slave.ReadBurstTypes) = Set(1)
-    owner.s_axil.slaveProps(Slave.ReadBurstSizes) = Set(fullSize)
+    owner.s_axil.slaveProps(properties.Slave.ReadThreadMode) =
+      values.ThreadMode.SingleThread
   }
   if (owner.axiCfg.write) {
-    owner.s_axil.slaveProps(Slave.WriteOutstandingTransactions) = 4
-    owner.s_axil.slaveProps(Slave.WriteThreads) = 1
-    owner.s_axil.slaveProps(Slave.WriteBurstBeats) = 1
-    owner.s_axil.slaveProps(Slave.WriteBurstNarrow) = false
-    owner.s_axil.slaveProps(Slave.WriteBurstTypes) = Set(1)
-    owner.s_axil.slaveProps(Slave.WriteBurstSizes) = Set(fullSize)
+    owner.s_axil.slaveProps(properties.Slave.WriteThreadMode) =
+      values.ThreadMode.SingleThread
   }
-  owner.s_axil.slaveProps(Slave.MemoryMap) =
-    MemoryMap(
+  owner.s_axil.slaveProps(properties.Slave.MemoryMap) =
+    values.MemoryMap(
       size = BigInt(1) << (owner.log2numElements + owner.addrBitLow)
     )
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(_) =>
-        request.undefined()
+      case Request(TrafficProfile()) => request.incomplete()
       case _ =>
-        request.failure(
-          s"SyncReadMemController cannot resolve '${request.qualifiedName}' from this endpoint"
-        )
+        missingCase(request)
     }
 }
