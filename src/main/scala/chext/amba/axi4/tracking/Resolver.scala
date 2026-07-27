@@ -228,9 +228,9 @@ object ResolveResult {
 
 /** Derives AXI tracking properties for one component or module boundary.
   *
-  * A resolver is registered on one or more [[Tracked]] interfaces with the dedicated common,
-  * master, or slave registration method. Registration is family-specific: slave properties
-  * conventionally flow downstream-to-upstream,
+  * A resolver is registered on one or more [[Tracked]] interfaces with the dedicated master or
+  * slave registration method. Registration is family-specific: slave properties conventionally
+  * flow downstream-to-upstream,
   * while master properties flow upstream-to-downstream. When multiple resolvers are registered for
   * the same interface and family, the tracking layer selects the resolver owned by the shallowest
   * hierarchy node so that an enclosing boundary controls propagation. The latest registration
@@ -274,22 +274,6 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
     * [[ResolveRequest.retry]] so the coordinator can detect cycles and enforce its depth bound.
     */
   def resolve[T](request: ResolveRequest[T]): ResolveResult
-
-  /** Registers this resolver for common properties on one interface. */
-  protected final def bindCommon(
-      interface: Tracked
-  )(implicit sourceInfo: SourceInfo): Resolver.Binding = {
-    interface.addCommonResolver(this)
-    new Resolver.Binding(interface, CommonProperty.accepts)
-  }
-
-  /** Registers this resolver for common properties on every interface in `interfaces`. */
-  protected final def bindCommon(
-      interfaces: Seq[Tracked]
-  )(implicit sourceInfo: SourceInfo): Resolver.Bindings = {
-    interfaces.foreach(_.addCommonResolver(this))
-    new Resolver.Bindings(interfaces, CommonProperty.accepts)
-  }
 
   /** Registers this resolver for master properties on one interface.
     *

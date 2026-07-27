@@ -6,8 +6,8 @@ import scala.collection.mutable
   *
   * Keys are normally declared as singleton objects. Object identity, rather than a string lookup,
   * preserves the relationship between the key and its value type `T`. Every key derives from one
-  * of the common-, master-, or slave-property bases below. Construction registers the key globally
-  * and rejects empty metadata or a second key with the same qualified name.
+  * of the master- or slave-property bases below. Construction registers the key globally and
+  * rejects empty metadata or a second key with the same qualified name.
   *
   * @tparam T
   *   value type stored for this property
@@ -22,7 +22,7 @@ sealed abstract class PropertyKey[T](
 ) {
   PropertyKey.register(this)
 
-  /** Stable namespace supplied by the key's common/master/slave base class. */
+  /** Stable namespace supplied by the key's master/slave base class. */
   private[tracking] def namespace: String
 
   /** Stable family-qualified name used in diagnostics. */
@@ -73,17 +73,6 @@ object WriteProperty {
     key.isInstanceOf[WriteProperty]
 }
 
-/** Marker shared by keys that describe an AXI interface itself. */
-sealed trait CommonProperty
-
-/** Boolean extractor and internal predicate for common-property keys. */
-object CommonProperty {
-  def unapply(key: PropertyKey[_]): Boolean = accepts(key)
-
-  private[tracking] def accepts(key: PropertyKey[_]): Boolean =
-    key.isInstanceOf[CommonProperty]
-}
-
 /** Marker shared by requirements or capabilities originating at an AXI master. */
 sealed trait MasterProperty
 
@@ -104,13 +93,6 @@ object SlaveProperty {
 
   private[tracking] def accepts(key: PropertyKey[_]): Boolean =
     key.isInstanceOf[SlaveProperty]
-}
-
-/** Convenience base for common-property keys. */
-abstract class CommonPropertyKey[T](name: String, description: String)
-    extends PropertyKey[T](name, description)
-    with CommonProperty {
-  private[tracking] final override def namespace: String = "common"
 }
 
 /** Convenience base for master-property keys. */

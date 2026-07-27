@@ -4,37 +4,24 @@ import chisel3.experimental.SourceInfo
 
 import scala.collection.mutable.ArrayBuffer
 
-import chext.amba.axi4.tracking.properties.Common
-
 /** Property-tracking capability mixed into AXI interfaces.
   *
-  * Every tracked interface lazily owns one [[PropertyManager]]. The `commonProps`, `masterProps`,
-  * and `slaveProps` accessors are family-oriented views of that same manager rather than separate
-  * stores; each [[PropertyKey]] carries its family through a sealed marker.
+  * Every tracked interface lazily owns one [[PropertyManager]]. The `masterProps` and `slaveProps`
+  * accessors are family-oriented views of that same manager rather than separate stores; each
+  * [[PropertyKey]] carries its family through a sealed marker.
   *
-  * Common, master, and slave resolvers are registered through distinct methods. More than one
-  * component boundary may register a candidate for the same property family as an interface is
-  * connected into a hierarchy. The selected resolver is the candidate with the smallest owner
-  * hierarchy depth. At equal depth, the most recently registered candidate takes precedence.
-  * Duplicate registration of the same resolver in one family is ignored.
+  * Master and slave resolvers are registered through distinct methods. More than one component
+  * boundary may register a candidate for the same property family as an interface is connected into
+  * a hierarchy. The selected resolver is the candidate with the smallest owner hierarchy depth. At
+  * equal depth, the most recently registered candidate takes precedence. Duplicate registration of
+  * the same resolver in one family is ignored.
   */
 trait Tracked {
-  /** Static AXI interface configuration, also enforced as `Common.Config`. */
+  /** Static AXI interface configuration. */
   def cfg: chext.amba.axi4.Config
 
-  /** Lazily realized property store for this interface.
-    *
-    * Initialization enforces `Common.Config` from [[cfg]], making the
-    * interface configuration available through the same typed property mechanism as derived facts.
-    */
-  final lazy val properties: PropertyManager = {
-    val result = new PropertyManager
-    result(Common.Config).enforce(cfg)
-    result
-  }
-
-  /** Common-property view of [[properties]]. */
-  final def commonProps: PropertyManager = properties
+  /** Lazily realized property store for this interface. */
+  final lazy val properties: PropertyManager = new PropertyManager
 
   /** Master-property view of [[properties]]. */
   final def masterProps: PropertyManager = properties
@@ -42,37 +29,20 @@ trait Tracked {
   /** Slave-property view of [[properties]]. */
   final def slaveProps: PropertyManager = properties
 
-  private val commonResolverRegistrations_ =
-    ArrayBuffer.empty[(Resolver, SourceInfo)]
   private val masterResolverRegistrations_ =
     ArrayBuffer.empty[(Resolver, SourceInfo)]
   private val slaveResolverRegistrations_ =
     ArrayBuffer.empty[(Resolver, SourceInfo)]
 
-  private var commonResolver = Option.empty[Resolver]
   private var masterResolver = Option.empty[Resolver]
   private var slaveResolver = Option.empty[Resolver]
 
   /** Returns the selected resolver for the family carried by `key`. */
   private[tracking] final def resolverOption(key: PropertyKey[_]): Option[Resolver] =
     key match {
-      case _: CommonPropertyKey[_] => commonResolver
       case _: MasterPropertyKey[_] => masterResolver
       case _: SlavePropertyKey[_]  => slaveResolver
     }
-
-  /** Registers a resolver candidate for common properties. */
-  final def addCommonResolver(resolver: Resolver)(implicit
-      sourceInfo: SourceInfo
-  ): this.type = {
-    commonResolver = registerResolver(
-      commonResolverRegistrations_,
-      commonResolver,
-      resolver,
-      sourceInfo
-    )
-    this
-  }
 
   /** Registers a resolver candidate for master properties. */
   final def addMasterResolver(resolver: Resolver)(implicit

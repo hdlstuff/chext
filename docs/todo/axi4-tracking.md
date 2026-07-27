@@ -44,42 +44,39 @@ The initial implementation provides:
 - `Resolver`, owned by either a Chisel `BaseModule` or unified Chext `Component`.
 - `Tracked`, mixed into raw, full, and Lite AXI4 interface representations.
 - Private `X_Resolver(owner: X)(implicit sourceInfo: SourceInfo)` implementations beside every
-  Full or Lite component/module that declares a tracked AXI interface. `Resolver.bindCommon`,
-  `bindMaster`, and `bindSlave` register either one interface or a sequence of interfaces and
-  return a typed request matcher, keeping registration and dispatch consistent without
-  endpoint-identity or role-tag tests in concrete resolvers. Behavioral resolvers are not defined
-  in the generic `tracking` package. Full and Lite AXI `Connect` and `Buffer` resolvers propagate
-  unchanged properties; component-specific resolvers own terminal values and transformations.
-  Fan-in/fan-out resolvers preserve the individual boundaries needed by later checks instead of
-  synthesizing aggregate traffic profiles.
+  Full or Lite component/module that declares a tracked AXI interface. `Resolver.bindMaster` and
+  `bindSlave` register either one interface or a sequence of interfaces and return a typed request
+  matcher, keeping registration and dispatch consistent without endpoint-identity or role-tag
+  tests in concrete resolvers. Behavioral resolvers are not defined in the generic `tracking`
+  package. Full and Lite AXI `Connect` and `Buffer` resolvers propagate unchanged properties;
+  component-specific resolvers own terminal values and transformations. Fan-in/fan-out resolvers
+  preserve the individual boundaries needed by later checks instead of synthesizing aggregate
+  traffic profiles.
 - Absolute tracking paths for modules, components, and interfaces, plus typed `ResolutionStep`
   records for forwarded properties.
-- Separate internal common/master/slave `(Resolver, SourceInfo)` registrations plus one cached
-  selected resolver for each property family.
-- One interface-wide `PropertyManager`, exposed as `properties`. The compatibility accessors
-  `commonProps`, `masterProps`, and `slaveProps` all return that same store.
-- `properties.Common.Config`, enforced from the interface's `axi4.Config`.
-- Standard key catalogs are organized in the `tracking.properties` subpackage as `Common`,
-  `Master`, and `Slave`; the reusable property framework remains directly under `tracking`.
+- Separate internal master/slave `(Resolver, SourceInfo)` registrations plus one cached selected
+  resolver for each property family.
+- One interface-wide `PropertyManager`, exposed as `properties`. The `masterProps` and `slaveProps`
+  accessors both return that same store.
+- Standard key catalogs are organized in the `tracking.properties` subpackage as `Master` and
+  `Slave`; the reusable property framework remains directly under `tracking`.
 - `Master.shapeProperties` and `Slave.shapeProperties` collect the burst shape keys, with nested
   `ShapeProperty()` Boolean extractors for resolver patterns. `Slave.MemoryMap` remains separate
   because address topology is not traffic shape.
 - `Master.readProperties` / `writeProperties` and the corresponding `Slave` collections enumerate
   the standard access-specific keys. `bindMaster` and `bindSlave` eagerly mark a disabled
   interface direction `Undefined` from those catalogs.
-- Sealed common/master/slave and read/write key markers, descriptions, and family-qualified
-  diagnostic names.
-- Four family/access-specific standard key bases and composable `CommonProperty()` /
-  `MasterProperty()` / `SlaveProperty()` / `ReadProperty()` / `WriteProperty()` Boolean
-  extractors.
+- Sealed master/slave and read/write key markers, descriptions, and family-qualified diagnostic
+  names.
+- Four family/access-specific standard key bases and composable `MasterProperty()` /
+  `SlaveProperty()` / `ReadProperty()` / `WriteProperty()` Boolean extractors.
 - Per-property `PropertyState`: `Unresolved`, `Enforced`, `Calculated`, `DontCare(message)`,
   `Incomplete`, or `Undefined`.
 - Insertion-ordered iteration over the properties instantiated in a manager.
-- Iteration over all standard definitions through `properties.Common`, `properties.Master`, and
-  `properties.Slave`.
-- Internal retention of common/master/slave resolver registrations on each `Tracked`, including
-  their call-site source information. The shallowest candidate is selected; the most recently
-  registered candidate wins at equal depth.
+- Iteration over all standard definitions through `properties.Master` and `properties.Slave`.
+- Internal retention of master/slave resolver registrations on each `Tracked`, including their
+  call-site source information. The shallowest candidate is selected; the most recently registered
+  candidate wins at equal depth.
 - Lazy depth-based resolver selection. A module-owned resolver has depth zero; each parent in the
   unified Chext `Component` hierarchy adds one.
 - Hierarchical `MemoryMap` values with absolute origins and optional typed resolution traces.
@@ -93,7 +90,7 @@ Raw interfaces and their `.asFull`/`.asLite` DataViews currently have distinct `
 objects. Actual resolution needs a canonical identity or explicit aliasing so every representation
 of the same hardware interface shares property and resolver state.
 
-## Common, master, and slave property families
+## Master and slave property families
 
 Master and slave describe AXI protocol roles, not Chisel input/output direction:
 
@@ -101,9 +98,9 @@ Master and slave describe AXI protocol roles, not Chisel input/output direction:
 - Slave properties describe traffic that may be accepted or supported.
 
 The family is represented by a sealed marker inherited from the key's specialized base class; it
-is not a separate runtime tag or constructor argument. One store therefore contains common,
-master, and slave properties. The key namespace makes the intended family explicit in diagnostics,
-while generic code can still iterate and manipulate every property uniformly.
+is not a separate runtime tag or constructor argument. One store therefore contains master and
+slave properties. The key namespace makes the intended family explicit in diagnostics, while
+generic code can still iterate and manipulate every property uniformly.
 
 ```scala
 trait Tracked {
@@ -111,7 +108,6 @@ trait Tracked {
 
   val properties: PropertyManager
 
-  def addCommonResolver(resolver: Resolver)(implicit sourceInfo: SourceInfo): this.type
   def addMasterResolver(resolver: Resolver)(implicit sourceInfo: SourceInfo): this.type
   def addSlaveResolver(resolver: Resolver)(implicit sourceInfo: SourceInfo): this.type
 }
@@ -149,18 +145,13 @@ at a time. Parent connections may not exist when a child module body completes.
 ## Property keys and managers
 
 A property key contains a value type, a local name, a description, and one family marker inherited
-from its base class. There is no `Role` value and no `CommonTag`, `MasterTag`, or `SlaveTag`:
+from its base class. There is no `Role` value, `MasterTag`, or `SlaveTag`:
 
 ```scala
 abstract class PropertyKey[T](
     val name: String,
     val description: String
 )
-
-sealed trait CommonProperty
-object CommonProperty {
-  def unapply(key: PropertyKey[_]): Boolean
-}
 
 sealed trait MasterProperty
 object MasterProperty {
@@ -182,7 +173,6 @@ object WriteProperty {
   def unapply(key: PropertyKey[_]): Boolean
 }
 
-abstract class CommonPropertyKey[T](name: String, description: String)
 abstract class MasterPropertyKey[T](name: String, description: String)
 abstract class SlavePropertyKey[T](name: String, description: String)
 abstract class MasterReadProperty[T](name: String, description: String)
@@ -220,10 +210,10 @@ Slave.writeProperties
 interface.slaveProps.markUndefined(Slave.readProperties)
 ```
 
-Interface-wide keys such as `Common.Config` and `Slave.MemoryMap` implement neither marker. The
-marker bases prevent standard keys from acquiring independent or contradictory read/write Boolean
-fields. Resolver bindings use the catalog groups to eagerly classify every standard property in a
-direction disabled by `axi4.Config`.
+Interface-wide keys such as `Slave.MemoryMap` implement neither access marker. The marker bases
+prevent standard keys from acquiring independent or contradictory read/write Boolean fields.
+Resolver bindings use the catalog groups to eagerly classify every standard property in a direction
+disabled by `axi4.Config`.
 
 Names need only be unique within a family, so master and slave keys intentionally share concise names
 such as `read_burstBeats`. Diagnostics and serialized output use qualified names such as
@@ -239,9 +229,9 @@ for (property <- interface.properties) {
 }
 ```
 
-The `properties.Common`, `properties.Master`, and `properties.Slave` namespaces are themselves
-iterable when a caller needs to inspect all definitions, including keys that have not been realized
-in a particular interface store.
+The `properties.Master` and `properties.Slave` namespaces are themselves iterable when a caller
+needs to inspect all definitions, including keys that have not been realized in a particular
+interface store.
 
 The unavoidable cast for heterogeneous storage is localized inside `PropertyManager.apply`.
 
@@ -265,17 +255,6 @@ interface.properties(Slave.ReadBurstBeats) = 256
 
 External libraries may add keys by extending the appropriate family base, plus corresponding
 extension methods, without modifying `Tracked`.
-
-`axi4.Config` is a common property shared by both directions:
-
-```scala
-import chext.amba.axi4.tracking.properties.Common
-
-val cfg = interface.properties(Common.Config).get
-```
-
-`Tracked.properties` initializes `common.config` from the interface's `cfg`. The store is lazy so
-the abstract interface configuration is fully constructed before it is enforced.
 
 ## Initial standard properties
 
@@ -520,19 +499,18 @@ handling uses `request.undefined()`, a useful property that cannot currently be 
 `request.incomplete()`, and an intentionally unnecessary synthetic property uses
 `request.dontCare(message)`.
 
-Each `Tracked` internally retains separate common/master/slave registration sequences. Each
-registration records `(Resolver, SourceInfo)`; no public accessor exposes that implementation
-detail. Concrete resolvers normally register through `bindCommon`, `bindMaster`, or `bindSlave`;
-`Binding` handles one interface, while `Bindings` handles a sequence and returns the matched
-interface with its typed key. Both extractors encapsulate interface identity and property-family
-matching. Internally they receive the named `accepts` predicate from the appropriate marker
-companion; resolver call sites never pass `.unapply`. The resolver's implicit constructor
-`SourceInfo` is passed through to every binding registration. Adding a candidate updates the
-corresponding cached `commonResolver`, `masterResolver`, or `slaveResolver` when the new resolver
-is shallower or is the latest candidate at the same depth. The recursive coordinator selects the
-cache directly from the request key's sealed family base. Resolver hierarchy depth is a `lazy val`:
-component parentage is fixed by the time the resolver is used, so repeated selection does not
-rescan the hierarchy.
+Each `Tracked` internally retains separate master/slave registration sequences. Each registration
+records `(Resolver, SourceInfo)`; no public accessor exposes that implementation detail. Concrete
+resolvers normally register through `bindMaster` or `bindSlave`; `Binding` handles one interface,
+while `Bindings` handles a sequence and returns the matched interface with its typed key. Both
+extractors encapsulate interface identity and property-family matching. Internally they receive the
+named `accepts` predicate from the appropriate marker companion; resolver call sites never pass
+`.unapply`. The resolver's implicit constructor `SourceInfo` is passed through to every binding
+registration. Adding a candidate updates the corresponding cached `masterResolver` or
+`slaveResolver` when the new resolver is shallower or is the latest candidate at the same depth.
+The recursive coordinator selects the cache directly from the request key's sealed family base.
+Resolver hierarchy depth is a `lazy val`: component parentage is fixed by the time the resolver is
+used, so repeated selection does not rescan the hierarchy.
 
 ## Depth-first dependency resolution
 

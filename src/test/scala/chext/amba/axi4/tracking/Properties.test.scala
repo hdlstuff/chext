@@ -2,7 +2,7 @@ package chext.amba.axi4.tracking
 
 import chisel3.experimental.BaseModule
 
-import chext.amba.axi4.tracking.properties.{Common, Master, Slave}
+import chext.amba.axi4.tracking.properties.{Master, Slave}
 import chext.amba.axi4.util.MemoryMap
 import chext.util.MathUtils
 
@@ -187,7 +187,6 @@ object Properties_Test extends App {
   assert(Slave.forall(_.description.nonEmpty))
   assert(Master.size == 12)
   assert(Slave.size == 13)
-  assert(Common.iterator.map(_.name).toSeq == Seq("config"))
   val shapePropertyNames = Set(
     "read_burstBeats",
     "write_burstBeats",
@@ -239,12 +238,6 @@ object Properties_Test extends App {
     }
   )
   assert(
-    Common.forall {
-      case CommonProperty() => true
-      case _                => false
-    }
-  )
-  assert(
     Master.forall {
       case MasterProperty() => true
       case _                => false
@@ -258,14 +251,14 @@ object Properties_Test extends App {
   )
   assert(
     Master.forall {
-      case SlaveProperty() | CommonProperty() => false
-      case _                                  => true
+      case SlaveProperty() => false
+      case _               => true
     }
   )
   assert(
     Slave.forall {
-      case MasterProperty() | CommonProperty() => false
-      case _                                   => true
+      case MasterProperty() => false
+      case _                => true
     }
   )
   assert(
@@ -298,14 +291,6 @@ object Properties_Test extends App {
       case _                                => true
     }
   )
-  assert(
-    Common.Config match {
-      case MasterProperty() | SlaveProperty() | ReadProperty() | WriteProperty() => false
-      case CommonProperty()                                                      => true
-      case _                                                                     => false
-    }
-  )
-
   val duplicateName = "test_duplicate_property_name"
   new MasterPropertyKey[Int](duplicateName, "Master test property.") {}
   new SlavePropertyKey[String](duplicateName, "Slave test property with the same local name.") {}
@@ -338,16 +323,9 @@ object Properties_Test extends App {
   val tracked = new Tracked {
     val cfg = chext.amba.axi4.Config()
   }
-  assert(tracked.commonProps eq tracked.properties)
   assert(tracked.masterProps eq tracked.properties)
   assert(tracked.slaveProps eq tracked.properties)
-  assert(tracked.properties(Common.Config).get == tracked.cfg)
-  assert(
-    tracked.properties(Common.Config).key match {
-      case CommonProperty() => true
-      case _                => false
-    }
-  )
+  assert(tracked.properties.isEmpty)
 
   val trackedProperty = tracked.properties(Master.ReadBurstBeats)
   val testResolver =
@@ -367,7 +345,6 @@ object Properties_Test extends App {
         request.failure("unexpected fallback resolver")
     }
 
-  tracked.addCommonResolver(testResolver)
   tracked
     .addMasterResolver(otherResolver)
     .addMasterResolver(testResolver)
