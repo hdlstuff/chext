@@ -45,8 +45,9 @@ The initial implementation provides:
 - `Tracked`, mixed into raw, full, and Lite AXI4 interface representations.
 - Private `X_Resolver(owner: X)(implicit sourceInfo: SourceInfo)` implementations beside every
   Full or Lite component/module that declares a tracked AXI interface. `Resolver.bindMaster` and
-  `bindSlave` register either one interface or a sequence of interfaces and return a typed request
-  matcher, keeping registration and dispatch consistent without endpoint-identity or role-tag
+  `bindSlave` register either one interface or a sequence of interfaces. The inherited
+  `MasterRequests` and `SlaveRequests` extractors match typed requests for every corresponding
+  binding, keeping registration and dispatch consistent without endpoint-identity or role-tag
   tests in concrete resolvers. Behavioral resolvers are not defined in the generic `tracking`
   package. Full and Lite AXI `Connect` and `Buffer` resolvers propagate unchanged properties;
   component-specific resolvers own terminal values and transformations. Fan-in/fan-out resolvers
@@ -114,24 +115,40 @@ trait Tracked {
 ```
 
 A concrete resolver accepts its registration source implicitly and binds each participating
-interface/property-family pair. The sequence overload returns the matched interface together with
-the typed property key:
+interface/property-family pair. The inherited family extractors expose the typed property key for
+both single-interface and sequence bindings:
 
 ```scala
 private final class X_Resolver(owner: X)(implicit sourceInfo: SourceInfo)
     extends Resolver(owner) {
-  private val SlaveRequests = bindSlave(owner.s_axi)
-  private val MasterRequests = bindMaster(owner.m_axi.toSeq)
+  bindSlave(owner.s_axi)
+  bindMaster(owner.m_axi.toSeq)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
       case SlaveRequests(Slave.MemoryMap) => resolveMemoryMap(request)
-      case MasterRequests(_, _)           => forwardTo(request, owner.s_axi)
+      case MasterRequests(_)              => forwardTo(request, owner.s_axi)
       case SlaveRequests(_) =>
         request.dontCare("downstream slave capabilities remain separate")
-      case _                              => request.failure("unsupported request")
+      case _                              => missingCase(request)
     }
 }
+```
+
+When a policy needs to distinguish members of a sequence binding, the nested
+`withInterface` extractor also returns the matched interface:
+
+```scala
+case MasterRequests.withInterface(interface, BurstShape()) =>
+  require(interface eq expectedInterface)
+```
+
+Use an `eq` guard when a branch must target one exact interface:
+
+```scala
+case SlaveRequests.withInterface(interface, MemoryMap())
+    if interface eq owner.s_axi =>
+  resolveMemoryMap(request)
 ```
 
 Property families without registrations use a future structural/default resolution strategy. A module or
@@ -430,6 +447,11 @@ forwarding step can record the absolute source and target interface paths, relat
 resolver name, and resolver-owner path. `DemuxMm` optionally stores those steps on resolved child
 memory maps.
 
+`Resolver` derives trace metadata from the implementation class name by default. For example,
+`CreditBuffer_Resolver` produces resolver name `CreditBufferResolver` and kind `credit-buffer`.
+Concrete resolvers override these methods only when their public category intentionally differs
+from the class-name spelling, such as expanding `Mem` to `memory`.
+
 Implemented component behavior includes:
 
 - `Mux`/`IdMux`: forward the common downstream slave's capabilities to every input. A master
@@ -439,12 +461,15 @@ Implemented component behavior includes:
   intersect downstream slave capabilities. Ordinary `Demux` and `DemuxMm` publish their configured
   outstanding-transaction and tracked-ID limits only as local slave capabilities at the common
   input as eager `Enforced` values; output master properties always preserve the upstream values.
-  Binding eagerly classifies disabled standard channel groups as `Undefined`. Arbitrary decode
-  functions leave the combined memory map incomplete, while `DemuxMm` publishes the map built by
-  `genDecoder()`.
-- Lite `Demux` publishes its response-routing queue capacities as local slave-side
-  outstanding-transaction limits eagerly, forwards all upstream master properties to every output,
-  and otherwise follows the same non-aggregating fan-out and eager disabled-channel policy.
+  Binding an interface eagerly classifies disabled standard channel groups as `Undefined`.
+  Binding an AXI4-Lite interface also classifies every master/slave `BurstShape` as `Undefined`
+  because those signals do not exist in Lite. Lite thread modes are validated separately:
+  `SingleTransaction` and `SingleThread` are accepted, while `UniqueThreads` and `Unconstrained`
+  produce elaboration diagnostics with their resolution provenance.
+  Arbitrary decode functions leave the combined memory map incomplete, while `DemuxMm` publishes
+  the map built by `genDecoder()`.
+- Lite `Demux` forwards upstream thread modes to every output and otherwise follows the same
+  non-aggregating fan-out and eager disabled-channel policy. Lite burst shapes remain `Undefined`.
 - `CreditBuffer`: matches the shared `Master.ShapeProperty()` / `Slave.ShapeProperty()` catalog
   groups and forwards those unchanged burst-shape facts. It forwards `Slave.MemoryMap` separately,
   while credit-sensitive outstanding/thread facts remain incomplete until their exact capacity
@@ -452,8 +477,9 @@ Implemented component behavior includes:
 - `Unburst`, width converters, ID converters, and `ProtocolConverter`: currently forward only the
   invariant memory map and explicitly mark unimplemented traffic transformations incomplete rather
   than treating the boundary as transparent.
-- Constant/stall/idle terminations and Lite memory controllers provide their terminal properties
-  directly in their owner-specific resolvers.
+- Constant/stall/idle terminations and Lite memory controllers provide their applicable terminal
+  properties directly in their owner-specific resolvers; Lite variants do not publish burst
+  shapes.
 
 One resolver should represent one architectural relationship, not one property. Its individual
 properties still make progress independently.
@@ -474,40 +500,43 @@ object ResolveResult {
 }
 ```
 
-A resolver takes a request directly. A binding extracts `PropertyKey[T]`, so matching a singleton
-key refines the request's value type:
+A resolver takes a request directly. The inherited request-family extractor exposes
+`PropertyKey[T]`; both typed value-family extractors and singleton-key matches refine the request's
+value type:
 
 ```scala
-private val SlaveRequests = bindSlave(owner.s_axi)
+bindSlave(owner.s_axi)
 
 def resolve[T](request: ResolveRequest[T]): ResolveResult =
   request match {
-    case SlaveRequests(MyProperties.Key) =>
+    case SlaveRequests(BurstShape()) =>
       request.calculate(calculatedValue, this)
       ResolveResult.Success()
     case SlaveRequests(_) =>
       forwardTo(request, owner.m_axi)
     case _ =>
-      request.failure("unsupported request")
+      missingCase(request)
 }
 ```
 
 `request.retry(dependencies)` constructs `Retry(dependencies :+ request)`, guaranteeing that the
 original request is at the back. The coordinator validates this invariant even for manually built
-`Retry` values. `request.failure(message)` attaches the current request to a failure. Applicability
-handling uses `request.undefined()`, a useful property that cannot currently be derived uses
-`request.incomplete()`, and an intentionally unnecessary synthetic property uses
-`request.dontCare(message)`.
+`Retry` values. `request.failure(message)` attaches the current request to a policy-specific
+failure, while `missingCase(request)` produces the standard catch-all failure from the resolver's
+derived name and kind. Applicability handling uses `request.undefined()`, a useful property that
+cannot currently be derived uses `request.incomplete()`, and an intentionally unnecessary
+synthetic property uses `request.dontCare(message)`.
 
 Each `Tracked` internally retains separate master/slave registration sequences. Each registration
 records `(Resolver, SourceInfo)`; no public accessor exposes that implementation detail. Concrete
-resolvers normally register through `bindMaster` or `bindSlave`; `Binding` handles one interface,
-while `Bindings` handles a sequence and returns the matched interface with its typed key. Both
-extractors encapsulate interface identity and property-family matching. Internally they receive the
-named `accepts` predicate from the appropriate marker companion; resolver call sites never pass
-`.unapply`. The resolver's implicit constructor `SourceInfo` is passed through to every binding
-registration. Adding a candidate updates the corresponding cached `masterResolver` or
-`slaveResolver` when the new resolver is shallower or is the latest candidate at the same depth.
+resolvers register through `bindMaster` or `bindSlave`. Each resolver records those interfaces by
+identity; its inherited `MasterRequests` and `SlaveRequests` extractors match the corresponding
+property family and expose the typed key. The same extractor shape handles both one interface and
+a sequence. When a policy does need the selected interface,
+`MasterRequests.withInterface` and `SlaveRequests.withInterface` expose it alongside the typed key.
+The resolver's implicit constructor `SourceInfo` is passed through to every registration. Adding a
+candidate updates the corresponding cached `masterResolver` or `slaveResolver` when the new
+resolver is shallower or is the latest candidate at the same depth.
 The recursive coordinator selects the cache directly from the request key's sealed family base.
 Resolver hierarchy depth is a `lazy val`: component parentage is fixed by the time the resolver is
 used, so repeated selection does not rescan the hierarchy.

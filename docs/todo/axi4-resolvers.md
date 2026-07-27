@@ -1,8 +1,40 @@
-# AXI4-Full Resolver and Shape-Property Flow
+# AXI4 Property Resolution and Compatibility
 
-This document specifies the intended property flow for every resolver-owning
-AXI4-Full component. The broader tracking and resolution model is described in
-[AXI4 Tracking Design](axi4-tracking.md).
+This document specifies the intended AXI4 property model, resolver flow, and
+system-wide compatibility checks. The broader tracking and resolution model is
+described in [AXI4 Tracking Design](axi4-tracking.md).
+
+## Goals
+
+The standard AXI4 property values are deliberately coarse:
+
+- the existing `MemoryMap`;
+- `BurstShape`;
+- `ThreadMode`; and
+- `TrafficProfile`.
+
+Read and write properties remain separate. Master properties describe traffic
+that may be generated, while slave properties describe traffic that may be
+accepted.
+
+At the end of elaboration, tracking visits every registered AXI interface,
+resolves every applicable property selected for checking, and checks the
+master value against the slave value when both sides provide values.
+Compatibility checking does not use a separate delegation graph.
+
+A property belonging to a direction disabled by `axi4.Config` is `Undefined`.
+`BurstShape` is also `Undefined` for every AXI4-Lite interface because Lite has
+no burst-shape signals; `bindMaster(...)` and `bindSlave(...)` apply both rules
+eagerly. For the initially checked properties, `Unresolved` and `Incomplete`
+are errors.
+`DontCare` means that no compatibility check is needed at that particular
+interface because the component's resolver policy preserves the check at other
+interfaces. Since the checker visits every interface, no explicit delegation
+graph is needed.
+
+`TrafficProfile` is not part of the initial compatibility pass. Until its
+semantics are implemented, resolvers terminate traffic-profile requests with
+`incomplete()`.
 
 ## Conventions
 
@@ -10,68 +42,334 @@ For a module with `s_axi` and `m_axi` ports:
 
 - `s_axi` is the upstream-facing slave port.
 - `m_axi` is the downstream-facing master port.
-- Master properties describe traffic that is generated. They normally flow
-  from `s_axi.masterProps` to `m_axi.masterProps`.
-- Slave properties describe traffic that is accepted. They normally flow in
-  the opposite direction, from `m_axi.slaveProps` to `s_axi.slaveProps`.
-- Forwarding always stays within one property family. A master property is
-  forwarded to the same master key, and likewise for a slave property.
+- Master properties normally flow from `s_axi.masterProps` to
+  `m_axi.masterProps`.
+- Slave properties normally flow from `m_axi.slaveProps` to
+  `s_axi.slaveProps`.
+- Forwarding always remains within the same property family.
+- Production AXI component files keep imports from `axi4.tracking`, including
+  `properties` and `values`, inside their resolver classes. Component APIs use
+  the underlying domain type, such as `axi4.util.MemoryMap`, when that type is
+  independently meaningful outside property resolution.
+- Resolver bodies use only `import axi4.tracking._` for tracking symbols.
+  Property catalogs are qualified through `properties.Master` and
+  `properties.Slave`; property values are qualified through
+  `values.MemoryMap`, `values.BurstShape`, `values.ThreadMode`, and
+  `values.TrafficProfile`.
 
-All read and write rules below apply independently. A property belonging to a
-direction disabled by `axi4.Config` is `Undefined`.
+All read and write rules below apply independently.
 
-The rules describe shape-property resolution. Existing traffic-property
-behavior is retained where it is called out explicitly. A residual `DontCare`
-means that the component deliberately leaves an aggregate value unspecified;
-it does not discard a property that is forwarded to a later compatibility
-check.
+## Property value namespace
 
-## Properties
+New property value types live separately from the master and slave key
+catalogs:
 
-The standard shape properties are:
+```scala
+package chext.amba.axi4.tracking.values
+```
 
-- maximum burst length in beats;
-- whether narrow bursts may be generated or accepted;
-- the set of burst types;
-- the set of transfer sizes; and
-- `ThreadMode`.
+This namespace initially contains:
 
-Outstanding-transaction and numeric thread-count properties remain traffic
-properties and are outside the main scope of this work.
+```scala
+BurstShape
+ThreadMode
+TrafficProfile
+MemoryMap
+```
 
-### Shape-property marker
+`MemoryMap` keeps its existing implementation in `chext.amba.axi4.util`, but
+is re-exported from the property-value namespace:
 
-Add a sealed `ShapeProperty` marker in the same style as `MasterProperty`,
-`SlaveProperty`, `ReadProperty`, and `WriteProperty`. Define the four
-shape-specific key bases (`MasterReadShapeProperty`, `MasterWriteShapeProperty`,
-`SlaveReadShapeProperty`, and `SlaveWriteShapeProperty`) beside the sealed
-marker, and make every standard shape key extend the applicable base. This
-keeps extension of the sealed marker in its defining source file.
+```scala
+package chext.amba.axi4.tracking
 
-`ShapeProperty()` is the common extractor used by generic resolver policies;
-the existing `Master.ShapeProperty()` and `Slave.ShapeProperty()` extractors may
-remain as family-specific conveniences.
+package object values {
+  type MemoryMap = chext.amba.axi4.util.MemoryMap
 
-### ThreadMode
+  val MemoryMap: chext.amba.axi4.util.MemoryMap.type =
+    chext.amba.axi4.util.MemoryMap
+}
+```
 
-`ThreadMode` is one value type used by four directional property keys:
+The type alias preserves type identity, and the stable companion alias keeps
+construction and nested members available through the same import:
 
-- `Master.ReadThreadMode` and `Master.WriteThreadMode`;
-- `Slave.ReadThreadMode` and `Slave.WriteThreadMode`.
+```scala
+import chext.amba.axi4.tracking.values._
 
-Its values describe simultaneously outstanding transactions:
+val map: MemoryMap =
+  MemoryMap(segments = Seq(MemoryMap.Segment(...)))
+```
+
+Existing code may continue to import `chext.amba.axi4.util.MemoryMap`. No
+wrapper and no separate `AddressMap` type are introduced.
+
+The keys remain in:
+
+```scala
+chext.amba.axi4.tracking.properties.Master
+chext.amba.axi4.tracking.properties.Slave
+```
+
+## Value-type extractors
+
+Resolver policies frequently care about the value type of a property rather
+than a separate property-kind marker trait. `PropertyKey[T]` therefore retains
+a runtime value-type token, initially implemented with `ClassTag[T]`:
+
+```scala
+abstract class PropertyKey[T: ClassTag](
+    val name: String,
+    val description: String
+) {
+  final val valueClass: Class[_] =
+    implicitly[ClassTag[T]].runtimeClass
+}
+```
+
+`PropertyValueType[T]` is a reusable extractor:
+
+```scala
+final class PropertyValueType[T: ClassTag] {
+  private val expected = implicitly[ClassTag[T]].runtimeClass
+
+  def accepts(key: PropertyKey[_]): Boolean =
+    key.valueClass == expected
+
+  def unapply(key: PropertyKey[T]): Boolean =
+    accepts(key)
+}
+
+object PropertyValueType {
+  def apply[T: ClassTag]: PropertyValueType[T] =
+    new PropertyValueType[T]
+}
+```
+
+`Resolver` provides stable `MemoryMap`, `BurstShape`, `ThreadMode`, and
+`TrafficProfile` value-family extractors together with `Request`,
+`MasterRequests`, and `SlaveRequests`. A concrete resolver registers its
+interfaces and uses the inherited extractors in ordinary match statements:
+
+```scala
+bindSlave(owner.s_axi)
+bindMaster(owner.m_axi)
+
+def resolve[T](request: ResolveRequest[T]): ResolveResult =
+  request match {
+    case Request(TrafficProfile()) =>
+      request.incomplete()
+
+    case SlaveRequests(MemoryMap()) =>
+      forwardTo(request, owner.m_axi)
+
+    case MasterRequests(BurstShape()) =>
+      forwardTo(request, owner.s_axi)
+
+    case MasterRequests(ThreadMode()) =>
+      request.incomplete()
+
+    case _ =>
+      missingCase(request)
+}
+```
+
+The default trace metadata is also derived from the implementation class name:
+`CreditBuffer_Resolver` becomes resolver `CreditBufferResolver` with kind
+`credit-buffer`. Explicit `kind` or `resolver` overrides are reserved for names
+that intentionally do not follow this convention. `missingCase(request)` uses
+that metadata to produce the standard catch-all resolution failure.
+
+For a policy that needs the selected endpoint, append `.withInterface`:
+
+```scala
+case SlaveRequests.withInterface(interface, MemoryMap())
+    if interface eq owner.s_axi =>
+  forwardTo(request, owner.m_axi)
+```
+
+The typed `unapply` signature preserves the request value type, so the same
+family pattern works for forwarding, transformations, terminal states, and
+calculation:
+
+```scala
+case MasterRequests(ThreadMode()) =>
+  request.calculate(values.ThreadMode.Unconstrained, this)
+  ResolveResult.Success()
+```
+
+Use an exact singleton key only when policy truly differs between individual
+keys rather than between value families.
+
+No `AddressMapProperty`, `BurstShapeProperty`, `ThreadModeProperty`, or
+`TrafficProperty` marker traits, and no corresponding four-way specialized key
+bases, are needed.
+
+## Standard keys
+
+The master catalog contains:
+
+```scala
+Master.ReadBurstShape
+Master.WriteBurstShape
+Master.ReadThreadMode
+Master.WriteThreadMode
+Master.ReadTrafficProfile
+Master.WriteTrafficProfile
+```
+
+The slave catalog contains:
+
+```scala
+Slave.MemoryMap
+Slave.ReadBurstShape
+Slave.WriteBurstShape
+Slave.ReadThreadMode
+Slave.WriteThreadMode
+Slave.ReadTrafficProfile
+Slave.WriteTrafficProfile
+```
+
+`Master.readProperties`, `Master.writeProperties`, `Slave.readProperties`, and
+`Slave.writeProperties` are derived from their `all` catalogs using the
+existing `ReadProperty` and `WriteProperty` extractors. This keeps disabled
+direction handling synchronized automatically.
+
+## Mutable value API
+
+Aggregate values support field-oriented construction and adjustment. A caller
+may enforce a complete value:
+
+```scala
+interface.masterProps(Master.ReadBurstShape) = shape
+```
+
+It may also update an individual field directly:
+
+```scala
+interface.masterProps(Master.ReadBurstShape).burstTypes = Set(
+  axi4.BurstType.FIXED.litValue.toInt,
+  axi4.BurstType.INCR.litValue.toInt
+)
+```
+
+Type-specific operations on `Property[BurstShape]` and
+`Property[TrafficProfile]` provide this syntax. They perform a controlled
+property mutation rather than exposing an untracked mutable value:
+
+- the first field update creates the type's empty/default value and changes
+  the property to `Enforced`;
+- later field updates mutate the enforced value;
+- updating a calculated value changes it to `Enforced` and clears its
+  resolution trace;
+- updating `Undefined`, `Incomplete`, or `DontCare` replaces that terminal
+  state with an enforced value;
+- final compatibility checking validates that the resulting value is
+  internally consistent.
+
+The mutable fields of the value itself are not public. Mutation goes through
+the typed `Property` operations so lifecycle state and traces remain correct.
+The type-specific operations can live in the value companion objects, putting
+them in implicit scope for `Property[BurstShape]` and
+`Property[TrafficProfile]`.
+
+Re-enforcing an equal complete value is idempotent. Re-enforcing a different
+complete value is an error; contradictory authoritative declarations must not
+be silently ignored.
+
+`MemoryMap` remains immutable. Incrementally constructed maps use an explicit
+builder or an owner such as `RegisterBlock`, and only the completed immutable
+map is published as a property.
+
+## BurstShape
+
+`BurstShape` contains the burst-related values:
+
+```scala
+final class BurstShape private[tracking] (
+    private var burstBeats_ : Int,
+    private var burstNarrow_ : Boolean,
+    private var burstTypes_ : Set[Int],
+    private var burstSizes_ : Set[Int]
+) {
+  def burstBeats: Int
+  def burstNarrow: Boolean
+  def burstTypes: Set[Int]
+  def burstSizes: Set[Int]
+}
+```
+
+The fields mean:
+
+- `burstBeats`: maximum burst length in beats;
+- `burstNarrow`: whether narrow bursts may be generated or accepted;
+- `burstTypes`: AXI burst type encodings that may be generated or accepted;
+- `burstSizes`: AXI transfer-size encodings that may be generated or accepted.
+
+Initially, encodings remain `Int` to avoid coupling this property overhaul to a
+separate AXI enumeration refactor.
+
+An empty shape has zero beats, `burstNarrow = false`, and empty type and size
+sets. Non-empty shapes must have positive `burstBeats` and non-empty type and
+size sets. Validation also checks protocol burst limits and transfer sizes
+against the interface configuration.
+
+For a data width `W` in bits:
+
+```text
+fullSize(W)   = log2(W / 8)
+validSizes(W) = { 0, ..., fullSize(W) }
+```
+
+`burstNarrow` must agree with `burstSizes` relative to the interface:
+
+```text
+burstNarrow == burstSizes.exists(_ < fullSize(W))
+```
+
+Compatibility is:
+
+```text
+master.burstBeats  <= slave.burstBeats
+master.burstNarrow implies slave.burstNarrow
+master.burstTypes  subsetOf slave.burstTypes
+master.burstSizes  subsetOf slave.burstSizes
+```
+
+Compatibility returns every mismatch rather than stopping at the first one.
+
+## ThreadMode
+
+`ThreadMode` remains separate from `BurstShape`:
+
+```scala
+sealed trait ThreadMode
+
+object ThreadMode {
+  case object SingleTransaction extends ThreadMode
+  case object SingleThread extends ThreadMode
+  case object UniqueThreads extends ThreadMode
+  case object Unconstrained extends ThreadMode
+}
+```
+
+The values describe simultaneously outstanding transactions:
 
 - `SingleTransaction`: at most one transaction is outstanding. Its ID is not
   otherwise constrained.
 - `SingleThread`: multiple transactions may be outstanding, but they all have
-  the same ID. A new ID may be used after the outstanding set becomes empty.
+  the same ID.
 - `UniqueThreads`: simultaneously outstanding transactions have distinct IDs.
-  An ID may be reused after its earlier transaction completes.
 - `Unconstrained`: neither sharing nor uniqueness is guaranteed.
 
-Read and write modes are independent. For reads, a transaction is outstanding
-from the AR handshake through the final R handshake. For writes, it is
-outstanding from the AW handshake through the B handshake.
+AXI4-Lite has one implicit ID, so only `SingleTransaction` and `SingleThread`
+are valid there. The checker validates both resolved master and slave modes
+before comparing them; `UniqueThreads` or `Unconstrained` on a Lite interface
+is an elaboration error whose diagnostic includes the resolution trace.
+
+For reads, a transaction is outstanding from the AR handshake through the
+final R handshake. For writes, it is outstanding from the AW handshake through
+the B handshake.
 
 The compatibility rules are:
 
@@ -82,292 +380,356 @@ The compatibility rules are:
 | `UniqueThreads` | `UniqueThreads`, `Unconstrained` |
 | `Unconstrained` | `Unconstrained` |
 
-`SingleThread` and `UniqueThreads` are intentionally incomparable.
+`SingleThread` and `UniqueThreads` are incomparable.
 
-### Transfer-size notation
+## TrafficProfile
 
-For a data width `W` in bits, define:
+`TrafficProfile` keeps concurrency and latency together for now:
 
-- `fullSize(W) = log2(W / 8)`;
-- `validSizes(W) = { 0, ..., fullSize(W) }`.
+```scala
+final class TrafficProfile private[tracking] (
+    private var outstandingTransactions_ : Int,
+    private var threads_ : Int,
+    private var latencyCycles_ : Option[Double]
+) {
+  def outstandingTransactions: Int
+  def threads: Int
+  def latencyCycles: Option[Double]
+}
+```
 
-When a resolver calculates `BurstSizes`, it also calculates `BurstNarrow`
-relative to the destination interface: the narrow flag is true exactly when
-the calculated size set contains a value below that interface's `fullSize`.
+The same value type is used by the read/write master and slave keys. Master
+counts describe traffic that may be generated; slave counts describe traffic
+that may be accepted.
+
+The latency field is simply named `latencyCycles`: being part of
+`TrafficProfile` already makes it clear that it is an expected traffic
+characteristic.
+
+For the first implementation, traffic profiles are placeholders. Resolver
+branches recognize the value type and return:
+
+```scala
+case Request(TrafficProfile()) =>
+  request.incomplete()
+```
+
+The exhaustive compatibility pass does not request or check `TrafficProfile`
+yet. Its count compatibility, latency meaning, and component aggregation rules
+will be defined together when traffic checking is implemented.
+
+## MemoryMap
+
+`Slave.MemoryMap` continues to use the existing immutable recursive
+`chext.amba.axi4.util.MemoryMap`, publicly re-exported as
+`chext.amba.axi4.tracking.values.MemoryMap`.
+
+Maps retain:
+
+- component paths, offsets, and explicit sizes;
+- child maps and segments;
+- absolute origins;
+- typed arguments and optional resolution traces;
+- overlap and bounds validation;
+- `AlignedPacked`, `AlignedLargest`, and `Tight` aggregation.
+
+Every resolved map is checked to fit within the interface address width.
+`ErrorSlave` and components that intentionally provide no successful address
+space may use `Undefined`.
+
+An arbitrary address-function demux cannot derive a correct aggregate
+`MemoryMap`; it remains `Incomplete` unless the user explicitly supplies one.
+Consequently, a design containing such a demux does not pass strict memory-map
+checking.
+
+## System-wide checking
+
+AXI tracking registers every Full and Lite `Tracked` interface by object
+identity. Registration includes vector elements and DataView-created
+interfaces.
+
+After the root module has completed construction and all parent connections
+and resolver registrations exist, the checker visits every registered
+interface.
+
+For each enabled AXI4-Full read direction it:
+
+1. resolves `Master.ReadBurstShape` and `Slave.ReadBurstShape`;
+2. checks burst compatibility when both resolutions contain values;
+3. resolves `Master.ReadThreadMode` and `Slave.ReadThreadMode`;
+4. checks thread compatibility when both resolutions contain values.
+
+For AXI4-Lite it skips the burst-shape steps and checks only the enabled
+read/write thread modes. It performs the corresponding operations for writes,
+and resolves and validates `Slave.MemoryMap` once for every interface.
+
+Resolved values are cached by the existing property state, so later visits to
+the same dependency are inexpensive.
+
+`DontCare` suppresses only the local comparison for that property. The checker
+still visits all other interfaces, so the existing mux/demux policies place the
+comparison at the interfaces where the unaggregated facts remain available.
+There is no compatibility-check delegation.
+
+`TrafficProfile` is excluded from this initial pass; direct traffic requests
+resolve to `Incomplete`.
 
 ## AXI4-Full resolvers
 
-### Buffer
+### Buffer and Connect
 
-`Buffer` does not change transaction shape or addressing:
+For the initially checked properties, both are transparent:
 
-- Master properties flow unchanged from the upstream `master` interface to the
-  downstream `slave` interface.
-- Slave properties, including `MemoryMap`, flow unchanged from `slave` to
-  `master`.
-- This remains a transparent policy for traffic and extension properties too;
-  there is no `DontCare` or `Incomplete` fallback for a bound property.
-
-### Connect
-
-`Connect` is transparent after its configuration checks and optional connection
-adaptations:
-
-- Master properties flow unchanged from the connected master interface to the
-  connected slave interface.
-- Slave properties, including `MemoryMap`, flow unchanged from the slave
-  interface to the master interface.
-- Traffic and extension properties retain the same transparent behavior.
+- master `BurstShape` and `ThreadMode` flow upstream to downstream;
+- slave `BurstShape`, `ThreadMode`, and `MemoryMap` flow downstream to
+  upstream;
+- `TrafficProfile` requests return `Incomplete` for now.
 
 ### CreditBuffer
 
-Credit management changes when requests may proceed but not their shape:
-
-- Every master shape property, including both thread modes, flows unchanged
-  from `s_axi` to `m_axi`.
-- Every slave shape property flows unchanged from `m_axi` to `s_axi`.
-- `Slave.MemoryMap` flows from `m_axi` to `s_axi`.
-- Existing non-shape traffic requests remain `Incomplete`; their values must
-  eventually account for the configured R, W, and B capacities.
+- Master and slave `BurstShape` values flow unchanged.
+- Master and slave `ThreadMode` values flow unchanged.
+- `Slave.MemoryMap` flows unchanged.
+- Every `TrafficProfile` request returns `Incomplete`.
 
 ### Demux
 
-- Every master property on each `m_axi(i)` is forwarded from the same master
-  property on `s_axi`. In particular, master shape and `ThreadMode` values are
-  copied to every output before each output is checked against its connected
-  downstream slave.
-- No `Slave.ThreadMode` is enforced on `s_axi`. It remains covered by the
-  existing slave-side `DontCare`, because the relevant constraint is checked
-  after master-property propagation at the selected downstream path.
-- `Slave.ReadOutstandingTransactions`, `Slave.WriteOutstandingTransactions`,
-  `Slave.ReadThreads`, and `Slave.WriteThreads` retain their existing locally
-  enforced tracker-capacity values.
-- `Slave.MemoryMap` remains `Incomplete` because an address-function demux does
-  not synthesize an aggregate map.
-- All other slave properties remain `DontCare`; downstream capabilities stay
-  separate rather than being aggregated at `s_axi`.
+- Every master `BurstShape` and `ThreadMode` on each `m_axi(i)` is forwarded
+  from the same property on `s_axi`.
+- No slave `BurstShape` or `ThreadMode` is aggregated on `s_axi`; these
+  properties remain `DontCare`. The relevant compatibility checks run on the
+  selected downstream paths after master-property propagation.
+- `Slave.MemoryMap` remains `Incomplete` because an arbitrary address decode
+  function does not synthesize an aggregate map.
+- Every `TrafficProfile` request returns `Incomplete`.
 
 ### DemuxMm
 
-- Master properties, including `ThreadMode`, flow from `s_axi` to every
-  `m_axi(i)` exactly as for `Demux`.
-- No slave thread mode is enforced; non-memory-map slave shape properties stay
-  `DontCare` and are checked downstream after propagation.
+- Master `BurstShape` and `ThreadMode` flow from `s_axi` to every `m_axi(i)`
+  exactly as for `Demux`.
+- Slave `BurstShape` and `ThreadMode` on `s_axi` remain `DontCare`; downstream
+  capabilities remain separate and are checked at the outputs.
 - `genDecoder()` resolves every downstream `Slave.MemoryMap`, aggregates the
-  non-error-port maps in routing order, and enforces the resulting map on
-  `s_axi`. Resolving it before `genDecoder()` is an error.
-- The existing local outstanding-transaction and numeric-thread tracker
-  capacities remain enforced. Other slave properties remain `DontCare`.
-
-The future `uniqueThreads` optimization may remove the transaction tracker, but
-must preserve this externally visible property flow and enforce whatever input
-thread mode makes tracker removal safe.
-
-### Downscale
-
-Let `S = fullSize(s_axi.wData)`, `M = fullSize(m_axi.wData)`, where `S > M`.
-For one accepted input transfer size `x`, the emitted shape is:
-
-- output size `f(x) = min(x, M)`;
-- output beats `e(x) = 2 ^ max(0, x - M)`;
-- output burst type `INCR`.
-
-The resolver therefore behaves as follows:
-
-- Enforce `SingleThread` on the read/write slave thread modes of `s_axi` and on
-  the read/write master thread modes of `m_axi`; both interfaces have `wId == 0`.
-- Enforce slave `BurstBeats = 1` on `s_axi`.
-- Enforce master `BurstTypes = { INCR }` on `m_axi`.
-- Calculate master `BurstSizes` as `inputSizes.map(f)` and master `BurstBeats`
-  as `max(inputSizes.map(e))`. Calculate master `BurstNarrow` from the mapped
-  size set relative to `M`.
-- The locally valid single-beat input burst types are `FIXED` and `INCR`;
-  single-beat `WRAP` is not a legal AXI burst. Input size `x` is accepted only
-  when the downstream slave accepts `f(x)` and at least `e(x)` beats. Slave
-  `BurstSizes` is the set of all such `x` in `validSizes(s_axi.wData)`, and
-  slave `BurstNarrow` is calculated from that set relative to `S`.
-- `Slave.MemoryMap` flows unchanged from `m_axi` to `s_axi`.
-- Residual traffic properties stay `Incomplete`.
-
-### IdDemux
-
-`IdDemux` selects `m_axi(i)` with the low `wIdSel` ID bits and removes those bits
-from the downstream ID:
-
-- Every master property flows from `s_axi` to every `m_axi(i)`.
-- `ThreadMode` is preserved on each output. For a fixed output index, removing
-  the selector bits is injective: two distinct input IDs routed to that output
-  still have distinct remaining ID bits.
-- All slave properties remain `DontCare`; the capabilities and memory maps of
-  the downstream ports stay separate and are not aggregated.
-
-### IdMux
-
-`IdMux` prefixes each input ID with its input-port index:
-
-- Every slave property, including `MemoryMap` and slave `ThreadMode`, flows from
-  `m_axi` to every `s_axi(i)`.
-- With one input, master `ThreadMode` is forwarded from that input. With
-  multiple inputs, master `ThreadMode` is conservatively `Unconstrained`:
-  transactions within one input may share an ID while transactions from other
-  inputs receive different prefixed IDs.
-- Other master properties retain the existing `DontCare` result because the
-  resolver does not yet aggregate the separate upstream traffic descriptions.
-
-### IdParallelize
-
-- Enforce slave `ThreadMode = SingleThread` on `s_axi`, whose ID width is zero.
-- Enforce master `ThreadMode = UniqueThreads` on `m_axi`. A fresh ID is assigned
-  to every accepted transaction and is not reused while transactions remain
-  outstanding.
-- All other master shape properties flow unchanged from `s_axi` to `m_axi`.
-- All other slave shape properties and `MemoryMap` flow unchanged from `m_axi`
-  to `s_axi`.
-- Residual traffic properties stay `Incomplete`.
-
-### IdSerialize
-
-- Enforce slave `ThreadMode = Unconstrained` on `s_axi`; the component accepts
-  arbitrary input IDs and records them for response restoration.
-- Enforce master `ThreadMode = SingleThread` on `m_axi`; every downstream
-  transaction uses ID zero.
-- All other master shape properties flow unchanged from `s_axi` to `m_axi`.
-- All other slave shape properties and `MemoryMap` flow unchanged from `m_axi`
-  to `s_axi`.
-- Residual traffic properties stay `Incomplete`.
-
-### LiteConverter
-
-The Full-side interface is ID-free and accepts only naturally aligned,
-full-width transfers. Its shape is authoritative rather than forwarded:
-
-- On `s_axi`, enforce `ThreadMode = SingleThread`, protocol maximum
-  `BurstBeats`, `BurstNarrow = false`, `BurstTypes = { FIXED, INCR, WRAP }`, and
-  `BurstSizes = { fullSize(s_axi.wData) }`.
-- On `m_axil`, enforce `ThreadMode = SingleThread`, `BurstBeats = 1`,
-  `BurstNarrow = false`, `BurstTypes = { INCR }`, and
-  `BurstSizes = { fullSize(m_axil.wData) }`.
-- Keep the existing configured outstanding-transaction and numeric-thread
-  values on both sides.
-- `Slave.MemoryMap` and any other non-enforced slave property flow from
-  `m_axil` to `s_axi`; non-enforced master properties flow from `s_axi` to
-  `m_axil`.
+  non-error-port maps in routing order, and enforces the result on `s_axi`.
+  Resolving it before `genDecoder()` is an error.
+- Every `TrafficProfile` request returns `Incomplete`.
 
 ### Mux
 
-- Every slave property, including `MemoryMap` and slave `ThreadMode`, flows from
-  `m_axi` to every `s_axi(i)`.
-- With one input, master `ThreadMode` is forwarded from that input. With
-  multiple inputs, enforce master `ThreadMode = Unconstrained`; combining
-  streams can produce repeated IDs within one input and different IDs between
-  inputs.
-- Other master properties retain the existing `DontCare` result. This is
-  deliberate until union/max aggregation of the separate input shape
-  properties is implemented.
+- Slave `BurstShape`, `ThreadMode`, and `MemoryMap` flow from `m_axi` to every
+  `s_axi(i)`.
+- With one input, master `ThreadMode` is forwarded from that input.
+- With multiple inputs, master `ThreadMode` is enforced as `Unconstrained`;
+  combining streams can produce repeated IDs within one input and different
+  IDs between inputs.
+- Master `BurstShape` retains the existing `DontCare` result. Its compatibility
+  is checked independently at every input after the downstream slave shape is
+  propagated backward.
+- Every `TrafficProfile` request returns `Incomplete`.
 
-### ProtocolConverter
+### IdDemux
 
-The externally visible result is the composition of the selected internal
-stages, not an independent approximation in the outer resolver:
+`IdDemux` selects `m_axi(i)` with the low `wIdSel` ID bits and removes those
+bits from the downstream ID.
 
-- In passthrough mode, master shape flows unchanged from `s_axi` to `m_axi`,
-  and slave shape plus `MemoryMap` flows unchanged from `m_axi` to `s_axi`.
-- Otherwise, master properties are composed in this order:
-  `IdDemux`, optional `IdSerialize`, optional `Upscale`, optional first
-  `Unburst`, optional `Downscale`, optional second `Unburst`, and `IdMux`.
-- Slave properties are composed through the same stages in reverse order.
-- Each stage applies the rules in its section above or below. For example, a
-  selected `Unburst` forces one-beat INCR output, while a selected ID serializer
-  forces `SingleThread` output.
-- `Slave.MemoryMap` ultimately flows from external `m_axi` to external `s_axi`.
-- Traffic properties for which a selected stage has no implemented rule remain
-  `Incomplete`; the outer resolver must not replace a resolvable stage result
-  with a blanket `Incomplete`.
+- Every master `BurstShape` flows from `s_axi` to every output.
+- Master `ThreadMode` is preserved on each output because selector-bit removal
+  is injective for a fixed output.
+- All slave `BurstShape`, `ThreadMode`, and `MemoryMap` properties remain
+  `DontCare`; downstream capabilities and maps stay separate rather than being
+  aggregated.
+- Every `TrafficProfile` request returns `Incomplete`.
 
-### ConstantSlave
+### IdMux
 
-- For each enabled direction, enforce `ThreadMode = SingleTransaction`, because
-  the implementation services at most one transaction at a time.
-- Retain the existing authoritative shape: protocol maximum `BurstBeats`,
-  `BurstNarrow = true`, all three burst types, and every size in
-  `validSizes(s_axi.wData)`.
-- Retain the existing outstanding and numeric-thread capacity of one.
-- `ZeroSlave`, and a constant slave returning `OKAY` or `EXOKAY`, provide a
-  whole-address-space `MemoryMap`. `ErrorSlave` (`SLVERR` or `DECERR`) leaves
-  `MemoryMap` `Undefined`.
-- Any remaining slave property is `Undefined`; there is no downstream flow.
+`IdMux` prefixes each input ID with its input-port index.
 
-### StallSlave
+- Slave `BurstShape`, `ThreadMode`, and `MemoryMap` flow from `m_axi` to every
+  input.
+- With one input, master `ThreadMode` is forwarded from that input.
+- With multiple inputs, master `ThreadMode` is conservatively `Unconstrained`:
+  transactions within one input may share an ID while transactions from other
+  inputs receive different prefixed IDs.
+- Master `BurstShape` retains the existing `DontCare` result because separate
+  upstream burst shapes are not aggregated.
+- Every `TrafficProfile` request returns `Incomplete`.
 
-- Retain zero outstanding capacity, zero numeric threads, zero burst beats,
-  `BurstNarrow = false`, and empty burst-type and transfer-size sets.
-- Use slave `ThreadMode = Unconstrained`: ID shape adds no restriction because
-  the slave accepts no transaction; the zero traffic capacity is represented
-  by the traffic properties.
-- `MemoryMap` and any remaining property are `Undefined`.
+### IdParallelize
 
-### IdleMaster
+- Enforce slave `ThreadMode = SingleThread` on `s_axi`.
+- Enforce master `ThreadMode = UniqueThreads` on `m_axi`.
+- Master and slave `BurstShape` flow unchanged.
+- `Slave.MemoryMap` flows unchanged.
+- Every `TrafficProfile` request returns `Incomplete`.
 
-- Retain zero outstanding transactions, zero numeric threads, zero burst beats,
-  `BurstNarrow = false`, and empty burst-type and transfer-size sets.
-- Use master `ThreadMode = SingleTransaction`. An idle stream satisfies the
-  strongest master guarantee and is therefore compatible with every slave
-  thread mode.
-- Any remaining master property is `Undefined`; there is no upstream source.
+### IdSerialize
+
+- Enforce slave `ThreadMode = Unconstrained` on `s_axi`.
+- Enforce master `ThreadMode = SingleThread` on `m_axi`.
+- Master and slave `BurstShape` flow unchanged.
+- `Slave.MemoryMap` flows unchanged.
+- Every `TrafficProfile` request returns `Incomplete`.
+
+### Downscale
+
+Let `S = fullSize(s_axi.wData)` and `M = fullSize(m_axi.wData)`, where `S > M`.
+For one accepted input size `x`:
+
+```text
+output size  f(x) = min(x, M)
+output beats e(x) = 2 ^ max(0, x - M)
+output type       = INCR
+```
+
+- Enforce `SingleThread` on both sides.
+- Enforce slave `BurstShape.burstBeats = 1` on `s_axi`.
+- Enforce master burst types `{ INCR }` on `m_axi`.
+- Calculate master sizes as `inputSizes.map(f)` and master beats as
+  `max(inputSizes.map(e))`.
+- Calculate accepted input sizes from downstream acceptance of `f(x)` and
+  `e(x)`.
+- Calculate both narrow flags from the resulting size sets.
+- `Slave.MemoryMap` flows unchanged.
+- Every `TrafficProfile` request returns `Incomplete`.
 
 ### Unburst
 
-- Enforce slave `ThreadMode = SingleThread` on `s_axi` and master
-  `ThreadMode = SingleThread` on `m_axi`; the component is ID-free and may have
-  several same-ID transactions outstanding.
-- On `m_axi`, enforce `BurstBeats = 1` and `BurstTypes = { INCR }`.
-- Master `BurstSizes` flows from `s_axi` to `m_axi`; master `BurstNarrow` is
-  unchanged because the data width and transfer size do not change.
-- If the downstream slave accepts one-beat INCR transfers, `s_axi` may accept
-  the protocol maximum burst length and all legal input burst types. Accepted
-  slave transfer sizes are the downstream accepted sizes, and slave narrow
-  support follows those sizes. If one-beat INCR is not accepted downstream,
-  the corresponding accepted input sets are empty.
-- `Slave.MemoryMap` flows from `m_axi` to `s_axi`.
-- Residual traffic properties stay `Incomplete`.
+- Enforce `SingleThread` on both sides.
+- On `m_axi`, enforce a one-beat `{ INCR }` burst shape.
+- Master sizes flow from `s_axi`; narrow support is unchanged.
+- Accepted input shapes are calculated from downstream acceptance of one-beat
+  INCR transfers.
+- `Slave.MemoryMap` flows unchanged.
+- Every `TrafficProfile` request returns `Incomplete`.
 
 ### Upscale
 
 Let `S = fullSize(s_axi.wData)` and `M = fullSize(m_axi.wData)`, where `S < M`.
-The address-channel fields are otherwise unchanged:
 
-- Enforce `SingleThread` on both sides because both interfaces have `wId == 0`.
-- Master `BurstBeats`, `BurstTypes`, and `BurstSizes` flow unchanged from
-  `s_axi` to `m_axi`.
-- Calculate master `BurstNarrow` relative to `M`. Every nonempty valid output
-  size set is narrow because its largest possible value is `S < M`.
-- In the slave direction, burst length and type flow unchanged from `m_axi` to
-  `s_axi`. Accepted sizes are downstream accepted sizes intersected with
-  `validSizes(s_axi.wData)`; because every emitted transfer is narrow on
-  `m_axi`, the downstream slave must support narrow transfers for this set to
-  be usable. Calculate slave `BurstNarrow` from the accepted set relative to
-  `S`.
-- `Slave.MemoryMap` flows from `m_axi` to `s_axi`.
-- Residual traffic properties stay `Incomplete`.
+- Enforce `SingleThread` on both sides.
+- Master beats, types, and sizes flow unchanged.
+- Recalculate master narrow support relative to `M`.
+- Slave beats and types flow unchanged.
+- Intersect accepted sizes with `validSizes(s_axi.wData)` and recalculate narrow
+  support relative to `S`.
+- `Slave.MemoryMap` flows unchanged.
+- Every `TrafficProfile` request returns `Incomplete`.
 
 ### Widen
 
-Let `F = fullSize(axiCfg.wData)`. `Widen` maps one input transaction to one
-output transaction, preserves its ID, and makes every output beat full-width:
+Let `F = fullSize(axiCfg.wData)`.
 
-- Master and slave `ThreadMode` flow unchanged through the component.
-- On `m_axi`, enforce `BurstSizes = { F }` and `BurstNarrow = false`.
-- Master burst types flow from `s_axi` to `m_axi`, subject to the local rule that
-  `FIXED` is unsupported.
-- For an input burst of at most `N` beats and size `x`, the worst-case number of
-  output beats over all legal starting alignments is
-  `g(N, x) = ceil((N * 2^x + (2^F - 2^x)) / 2^F)`. Master `BurstBeats` is the
-  maximum `g(N, x)` over the input master size set.
-- In the slave direction, accepted burst types are the downstream accepted
-  types intersected with `{ INCR, WRAP }`. If the downstream accepts size `F`,
-  the component can accept input sizes in `validSizes(axiCfg.wData)`; otherwise
-  the accepted size set is empty. Calculate slave narrow support from that set.
-- Slave `BurstBeats` is the largest input maximum `N` for which `g(N, x)` does
-  not exceed the downstream slave maximum for every accepted input size `x`.
-- `Slave.MemoryMap` flows from `m_axi` to `s_axi`.
-- Residual traffic properties stay `Incomplete`.
+- Master and slave `ThreadMode` flow unchanged.
+- On `m_axi`, enforce sizes `{ F }` and `burstNarrow = false`.
+- Master burst types flow subject to removal of `FIXED`.
+- Calculate output beats using the existing worst-case alignment function.
+- Calculate accepted input types, sizes, and beats from downstream acceptance.
+- `Slave.MemoryMap` flows unchanged.
+- Every `TrafficProfile` request returns `Incomplete`.
+
+### LiteConverter
+
+The Full-side input is ID-free and accepts naturally aligned, full-width
+transfers.
+
+- Enforce `SingleThread` on both sides.
+- Enforce the authoritative Full input burst shape; the Lite output burst
+  properties remain `Undefined`.
+- Publish the protocol-implied one-beat shape on the internal Full interface at
+  the manual Full-to-Lite bridge.
+- Forward `Slave.MemoryMap` from Lite to Full.
+- Compose any non-enforced aggregate property through the internal stages.
+- Every `TrafficProfile` request returns `Incomplete`.
+
+### ProtocolConverter
+
+The externally visible values are the composition of the selected internal
+stages:
+
+```text
+IdDemux
+optional IdSerialize
+optional Upscale
+optional first Unburst
+optional Downscale
+optional second Unburst
+IdMux
+```
+
+Master properties compose in that order and slave properties in reverse.
+`Slave.MemoryMap` ultimately flows from external `m_axi` to external `s_axi`.
+The outer resolver must not replace a resolvable stage value with a blanket
+`Incomplete`, except that `TrafficProfile` is deliberately `Incomplete` in the
+initial implementation.
+
+### ConstantSlave
+
+For each enabled direction:
+
+- enforce `ThreadMode = SingleTransaction`;
+- on Full AXI, enforce protocol-maximum beats, narrow support, all legal burst
+  types, and every valid transfer size; Lite burst shapes remain `Undefined`.
+
+Successful constant slaves publish a whole-address-space `MemoryMap`.
+`ErrorSlave` leaves it `Undefined`.
+Every `TrafficProfile` request returns `Incomplete`.
+
+### StallSlave
+
+For each enabled direction:
+
+- on Full AXI, enforce an empty slave `BurstShape` and
+  `ThreadMode = Unconstrained`;
+- on AXI4-Lite, leave burst shape `Undefined` and enforce
+  `ThreadMode = SingleThread`.
+
+`MemoryMap` is `Undefined`.
+Every `TrafficProfile` request returns `Incomplete`.
+
+### IdleMaster
+
+For each enabled direction:
+
+- on Full AXI, enforce an empty master `BurstShape`; Lite burst shapes remain
+  `Undefined`;
+- enforce `ThreadMode = SingleTransaction`.
+
+There is no upstream source.
+Every `TrafficProfile` request returns `Incomplete`.
+
+## Implementation plan
+
+Breaking changes are acceptable; no compatibility layer for the scalar keys is
+required.
+
+1. Add the value namespace; re-export the existing `MemoryMap`; and implement
+   `BurstShape`, `ThreadMode`, and `TrafficProfile`, including validation and
+   typed property field operations.
+2. Add the runtime value type token and `PropertyValueType[T]` extractor to
+   `PropertyKey`.
+3. Replace scalar burst, outstanding, and thread-count keys with the aggregate
+   standard keys in one change.
+4. Change conflicting re-enforcement to an error.
+5. Migrate transparent connections and buffers.
+6. Migrate terminals and authoritative endpoints.
+7. Migrate mux/demux and ID mux/demux while preserving their existing
+   propagation and `DontCare` policies.
+8. Migrate width, burst, and ID transformers.
+9. Migrate `LiteConverter` and `ProtocolConverter`.
+10. Register all Full and Lite interfaces and add the root-level exhaustive
+    resolver/checker pass.
+11. Enable strict burst-shape, thread-mode, and memory-map checking.
+12. Leave all traffic profiles `Incomplete` and defer traffic compatibility
+    until its semantics and component equations are defined.
+
+Unit tests cover:
+
+- value-type extractor matches and mismatches;
+- direct field mutation and property lifecycle transitions;
+- all burst compatibility dimensions;
+- the complete 4-by-4 thread compatibility table;
+- mux and ID-mux burst `DontCare` plus the existing `ThreadMode` rules;
+- demux and ID-demux master propagation plus slave-side `DontCare`;
+- every registered interface being visited;
+- missing, incomplete, undefined, and incompatible property diagnostics;
+- resolution traces for both sides of a failed compatibility check.
