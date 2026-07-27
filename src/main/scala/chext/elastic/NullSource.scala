@@ -11,7 +11,7 @@ final class NullSource[T <: Data](
 )(implicit si_ : SourceInfo)
     extends Component {
   private val elasticState = trackingState(t.Tag)
-  import elasticState.{addSource, addSink}
+  import elasticState.addSink
 
   addSink("sink", sink)
 

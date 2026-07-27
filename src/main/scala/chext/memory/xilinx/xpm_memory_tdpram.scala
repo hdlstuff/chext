@@ -3,7 +3,6 @@ package chext.memory.xilinx
 import chext.memory
 
 import chisel3._
-import chisel3.util._
 
 case class xpm_memory_tdpram_config(
     val addrWidthA: Int = 6,
@@ -47,7 +46,7 @@ case class xpm_memory_tdpram_config(
   val writeEnabledWidthB = writeDataWidthB / byteWriteWidthB
 
   def toParams: Map[String, chisel3.Param] = {
-    import chisel3.{Param, IntParam, StringParam}
+    import chisel3.{IntParam, StringParam}
 
     // NOTE: Commented out variables are not present in Xilinx 2022.2
     Map(

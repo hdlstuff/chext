@@ -1,11 +1,9 @@
 package chext.stream
 
 import chisel3._
-import chisel3.experimental.AffectsChiselPrefix
 
 import chext.elastic
 
-import chext.amba.axi4
 
 case class ChunkConfig[Tuser <: Data](
     val wAddress: Int,

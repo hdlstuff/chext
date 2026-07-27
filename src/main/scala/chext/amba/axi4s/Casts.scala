@@ -10,7 +10,6 @@ import chisel3.hacks.DataInternals
 import chisel3.hacks.ModuleInternals
 import chext.elastic
 import chext.elastic.{tracking => t}
-import chext.tracking
 import chext.util.Logger
 import chext.util.sourceInfoToString
 

@@ -1,7 +1,6 @@
 package chext.util
 
 import chisel3._
-import chisel3.util._
 
 object BitOps {
   private val require_ = chext.util.Require.inferred()

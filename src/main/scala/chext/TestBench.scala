@@ -1,7 +1,6 @@
 package chext
 
 import chisel3._
-import chisel3.experimental.SourceInfo
 
 object exportIO {
   def module(parentModule: Module, childModule: Module) = {

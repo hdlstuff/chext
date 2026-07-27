@@ -1,7 +1,6 @@
 package chext.memory
 
 import chisel3._
-import chisel3.util._
 
 case class RawMemConfig(
     val wAddr: Int = 10,

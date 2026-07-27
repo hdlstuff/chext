@@ -3,7 +3,6 @@ package chisel3.hacks
 import chisel3.Module
 import chisel3.RawModule
 import chisel3.experimental.BaseModule
-import chisel3.ChiselException
 
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.PriorityQueue

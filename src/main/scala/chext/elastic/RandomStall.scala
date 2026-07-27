@@ -2,7 +2,6 @@ package chext.elastic
 
 import chisel3._
 import chisel3.experimental.SourceInfo
-import chisel3.hacks.deferred
 import chisel3.util._
 
 import chext.tracking.{Component, withComponent}

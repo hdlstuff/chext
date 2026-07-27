@@ -2,7 +2,6 @@ package chext.elastic
 
 import chisel3._
 
-import chext.elastic
 
 class Arbiter_Tbtop extends Module with chext.AnnotatedModule {
   val rr_sources = IO(Source.many(16, UInt(32.W)))

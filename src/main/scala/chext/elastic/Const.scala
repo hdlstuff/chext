@@ -15,7 +15,7 @@ abstract class Const[Tin <: Data, Tout <: Data](
   protected def fireSink: Interface[Tout] = sink
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState.{addSource, addSink}
+  import elasticState.addSink
 
   addSink("sink", sink)
 

@@ -38,7 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package hardfloat
 
 import chisel3._
-import chisel3.util._
 
 /*----------------------------------------------------------------------------
 | In the result, no more than one of 'isNaN', 'isInf', and 'isZero' will be
@@ -62,4 +61,3 @@ object rawFloatFromRecFN
         out
     }
 }
-

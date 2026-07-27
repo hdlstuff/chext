@@ -1,7 +1,6 @@
 package chext.float
 
 import chisel3._
-import chisel3.util._
 
 import chext.elastic
 import elastic.ConnectOp._

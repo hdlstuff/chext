@@ -9,7 +9,6 @@ import chext.amba.axi4
 
 import axi4.full.components._
 
-import elastic.ConnectOp._
 
 private class IdLastBundle(wId: Int) extends Bundle {
   val id = UInt(wId.W)

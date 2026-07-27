@@ -1,7 +1,6 @@
 package chext.float
 
 import chisel3._
-import chisel3.util._
 
 class OpMultiply(val genFp: FloatingPoint, val combinational: Boolean = false)
     extends Module //

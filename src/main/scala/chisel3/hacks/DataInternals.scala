@@ -9,7 +9,6 @@ import chisel3.internal.binding.{
   WireBinding,
   AggregateViewBinding
 }
-import chisel3.internal.HasId
 import scala.annotation.nowarn
 
 import scala.reflect.ClassTag

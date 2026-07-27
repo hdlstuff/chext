@@ -48,7 +48,7 @@ final class Counter(
   require_(start < maxValueExclusive_)
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState.{addSource, addSink}
+  import elasticState.addSink
 
   addSink("sink", sink)
 

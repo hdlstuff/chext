@@ -39,7 +39,6 @@ package hardfloat
 
 import chisel3._
 import chisel3.util._
-import consts._
 
 
 //----------------------------------------------------------------------------
@@ -127,4 +126,3 @@ class MulRecFN(expWidth: Int, sigWidth: Int) extends chisel3.RawModule
     io.out            := roundRawFNToRecFN.io.out
     io.exceptionFlags := roundRawFNToRecFN.io.exceptionFlags
 }
-

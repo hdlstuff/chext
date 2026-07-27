@@ -32,7 +32,7 @@ class Once[T <: Data](val sink: Interface[T])(implicit si_ : SourceInfo)
   protected val out = sink.$bits
 
   private val elasticState = trackingState(t.Tag)
-  import elasticState.{addSource, addSink}
+  import elasticState.addSink
 
   addSink("sink", sink)
 

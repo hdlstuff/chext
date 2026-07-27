@@ -7,8 +7,6 @@ import chext.elastic
 import elastic.ConnectOp._
 
 import chext.amba.axi4
-import axi4.Ops._
-import chext.elastic.RandomStall
 
 private class AxiTestSlave(axiCfg: axi4.Config) extends Module {
   private val require_ = chext.util.Require.inferred()

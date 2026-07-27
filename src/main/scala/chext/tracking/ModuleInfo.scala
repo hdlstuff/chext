@@ -1,6 +1,6 @@
 package chext.tracking
 
-import chisel3.experimental.{BaseModule, SourceInfo}
+import chisel3.experimental.BaseModule
 
 import chisel3.hacks.ModuleInternals
 import chisel3.hacks.PrefixManager

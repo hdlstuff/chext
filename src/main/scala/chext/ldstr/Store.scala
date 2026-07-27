@@ -8,7 +8,6 @@ import chext.elastic
 import elastic.ConnectOp._
 
 import chext.amba.axi4
-import axi4.Ops._
 
 case class StoreConfig[Tuser <: Data](
     val axiCfg: axi4.Config,
