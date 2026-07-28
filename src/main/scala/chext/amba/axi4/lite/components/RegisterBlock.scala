@@ -6,6 +6,7 @@ import chisel3.hacks.{deferred, PrefixManager}
 import chisel3.util._
 
 import chext.amba.axi4
+import chext.amba.axi4.tracking.{properties => p}
 import chext.amba.axi4.util.MemoryMap
 import chext.elastic
 import chext.tracking.{Component, withComponent}
@@ -223,7 +224,7 @@ class RegisterBlock(
       "RegisterBlock needs a component prefix or an explicit memoryMapPath"
     )
 
-    val origin = resolver.interfacePath
+    val origin = s_axil.trackingPath
     val result = MemoryMap(
       path = resolvedPath,
       size = sizeAddressSpace,
@@ -250,7 +251,7 @@ class RegisterBlock(
     }
 
     memoryMap_ = Some(result)
-    resolver.setMemoryMap(result)
+    s_axil.properties(p.SlaveMemoryMap) = result
     completed_ = true
     result
   }
@@ -270,12 +271,6 @@ private final class RegisterBlock_Resolver(owner: RegisterBlock)(implicit source
 
   owner.s_axil.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleTransaction
   owner.s_axil.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleTransaction
-
-  def interfacePath: String =
-    owner.s_axil.trackingPath
-
-  def setMemoryMap(memoryMap: axi4.util.MemoryMap): Unit =
-    owner.s_axil.properties(p.SlaveMemoryMap) = memoryMap
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {

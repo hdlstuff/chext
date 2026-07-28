@@ -250,7 +250,7 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
         MemoryMap.aggregate(memoryMaps, allocationScheme).copy(path = memoryMapPath)
       else MemoryMap(path = memoryMapPath, size = 0)
     val memoryMap = aggregatedMemoryMap.copy(
-      origin = resolver.interfacePath(s_axi)
+      origin = s_axi.trackingPath
     )
     val defaultPort = errorSlave.getOrElse(order.head)
     genDecoder(memoryMap, memoryMap.children.zip(order), defaultPort)
@@ -315,9 +315,6 @@ private final class DemuxMm_Resolver(owner: DemuxMm)(implicit sourceInfo: Source
   private var memoryMapOption = Option.empty[MemoryMap]
   private val noSlaveAggregate =
     "DemuxMm keeps each downstream slave capability separate instead of aggregating them"
-
-  def interfacePath(interface: axi4.tracking.Tracked): String =
-    interface.trackingPath
 
   def resolveMemoryMap(
       interface: axi4.tracking.Tracked,

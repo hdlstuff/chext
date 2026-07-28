@@ -182,8 +182,8 @@ private final class ConstantSlave_Resolver(owner: ConstantSlave)(implicit source
   private val sizes = v.BurstShape.supportedSizesFor(owner.axiCfg)
   private val burstShape = v.BurstShape(
     maxBeats = v.BurstShape.maxBeatsFor(owner.axiCfg),
-    burstTypes = v.BurstShape.supportedTypesFor(owner.axiCfg),
-    transferSizes = sizes,
+    types = v.BurstShape.supportedTypesFor(owner.axiCfg),
+    sizes = sizes,
     aligned = false
   )
 

@@ -372,8 +372,8 @@ private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo
 
   private val inputShape = v.BurstShape(
     maxBeats = v.BurstShape.maxBeatsFor(owner.s_axi.cfg),
-    burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg).filterNot(_ == FIXED),
-    transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+    types = v.BurstShape.supportedTypesFor(owner.s_axi.cfg).filterNot(_ == FIXED),
+    sizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
     aligned = false
   )
 
@@ -381,13 +381,6 @@ private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo
     owner.s_axi.properties(p.SlaveReadBurstShape) = inputShape
   if (owner.s_axi.cfg.write)
     owner.s_axi.properties(p.SlaveWriteBurstShape) = inputShape
-
-  private def widenedBeats(beats: Int, size: Int): Int = {
-    val outputBytes = BigInt(1) << fullSize
-    val inputBytes = BigInt(1) << size
-    val bytes = BigInt(beats) * inputBytes + (outputBytes - inputBytes)
-    ((bytes + outputBytes - 1) / outputBytes).toInt
-  }
 
   private val noLocalRequirement =
     "Widen imposes no additional local requirement for this property"
@@ -402,16 +395,23 @@ private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo
         request.forwardTo(owner.s_axi)
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.mapFrom(owner.s_axi, p.BurstShape) { input =>
-          val types = input.burstTypes.filterNot(_ == FIXED)
-          if (input.transferSizes.isEmpty || types.isEmpty)
+          val types = input.types.filterNot(_ == FIXED)
+          if (input.sizes.isEmpty || types.isEmpty)
             v.BurstShape()
-          else
+          else {
+            val outputBytes = BigInt(1) << fullSize
+            val maxBeats = input.sizes.map { size =>
+              val inputBytes = BigInt(1) << size
+              val bytes = BigInt(input.maxBeats) * inputBytes + (outputBytes - inputBytes)
+              ((bytes + outputBytes - 1) / outputBytes).toInt
+            }.max
             v.BurstShape(
-              maxBeats = input.transferSizes.map(size => widenedBeats(input.maxBeats, size)).max,
-              burstTypes = types,
-              transferSizes = Seq(fullSize),
+              maxBeats = maxBeats,
+              types = types,
+              sizes = Seq(fullSize),
               aligned = false
             )
+          }
         }
       case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
         request.incomplete()

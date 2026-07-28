@@ -229,31 +229,21 @@ private final class LiteConverter_Resolver(owner: LiteConverter)(implicit source
   private val fullSizeSlave = v.BurstShape.fullSize(axiSlaveCfg.wData)
   private val fullShape = v.BurstShape(
     maxBeats = v.BurstShape.maxBeatsFor(axiSlaveCfg),
-    burstTypes = v.BurstShape.supportedTypesFor(axiSlaveCfg),
-    transferSizes = Seq(fullSizeSlave),
+    types = v.BurstShape.supportedTypesFor(axiSlaveCfg),
+    sizes = Seq(fullSizeSlave),
     aligned = true
   )
 
-  private def enforceMasterProperties(): Unit = {
-    if (axiMasterCfg.read)
-      owner.m_axil.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleThread
-    if (axiMasterCfg.write)
-      owner.m_axil.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
+  if (axiSlaveCfg.read) {
+    owner.s_axi.properties(p.SlaveReadBurstShape) = fullShape
+    owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
+    owner.m_axil.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleThread
   }
-
-  private def enforceSlaveProperties(): Unit = {
-    if (axiSlaveCfg.read) {
-      owner.s_axi.properties(p.SlaveReadBurstShape) = fullShape
-      owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
-    }
-    if (axiSlaveCfg.write) {
-      owner.s_axi.properties(p.SlaveWriteBurstShape) = fullShape
-      owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
-    }
+  if (axiSlaveCfg.write) {
+    owner.s_axi.properties(p.SlaveWriteBurstShape) = fullShape
+    owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
+    owner.m_axil.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
   }
-
-  enforceMasterProperties()
-  enforceSlaveProperties()
 
   private val noLocalRequirement =
     "LiteConverter imposes no additional local traffic-profile requirement"
@@ -287,8 +277,8 @@ private final class LiteConverterBridge_Resolver(
   private val convertedSizes = v.BurstShape.supportedSizesFor(converted.cfg)
   private val fullBridgeShape = v.BurstShape(
     maxBeats = 1,
-    burstTypes = Seq(INCR),
-    transferSizes = convertedSizes,
+    types = Seq(INCR),
+    sizes = convertedSizes,
     aligned = false
   )
 

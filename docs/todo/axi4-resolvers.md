@@ -242,7 +242,7 @@ To adjust an existing value, copy it and enforce the complete replacement:
 val current = interface.properties(p.MasterReadBurstShape).get
 interface.properties(p.MasterReadBurstShape) =
   current.copy(
-    burstTypes = Seq(
+    types = Seq(
       axi4.BurstType.Encoding.FIXED,
       axi4.BurstType.Encoding.INCR
     )
@@ -269,8 +269,8 @@ map is published as a property.
 ```scala
 final case class BurstShape private (
     maxBeats: Int,
-    burstTypes: Seq[Int],
-    transferSizes: Seq[Int],
+    types: Seq[Int],
+    sizes: Seq[Int],
     aligned: Boolean
 )
 ```
@@ -278,8 +278,8 @@ final case class BurstShape private (
 The fields mean:
 
 - `maxBeats`: maximum burst length in beats;
-- `burstTypes`: AXI burst-type encodings that may be generated or accepted;
-- `transferSizes`: AXI transfer-size encodings that may be generated or accepted;
+- `types`: AXI burst-type encodings that may be generated or accepted;
+- `sizes`: AXI transfer-size encodings that may be generated or accepted;
 - `aligned`: whether every transaction is naturally aligned, meaning
   `AxADDR % (1 << AxSIZE) == 0`.
 
@@ -293,9 +293,9 @@ Burst-type and transfer-size encodings use `Int`. `axi4.BurstType.Encoding`
 provides the shared `FIXED`, `INCR`, and `WRAP` integer constants; resolver
 code does not convert Chisel literals.
 
-An empty shape has `maxBeats = 0`, empty `burstTypes` and `transferSizes`
+An empty shape has `maxBeats = 0`, empty `types` and `sizes`
 sequences, and `aligned = false`. Non-empty shapes must have positive
-`maxBeats` and non-empty `burstTypes` and `transferSizes`. Validation also
+`maxBeats` and non-empty `types` and `sizes`. Validation also
 checks protocol burst limits and transfer sizes against the interface
 configuration. Sequences are normalized to sorted, distinct values.
 
@@ -312,8 +312,8 @@ Compatibility is:
 
 ```text
 master.maxBeats       <= slave.maxBeats
-master.burstTypes     subsetOf slave.burstTypes
-master.transferSizes  subsetOf slave.transferSizes
+master.types     subsetOf slave.types
+master.sizes  subsetOf slave.sizes
 !slave.aligned || master.aligned
 ```
 
@@ -608,7 +608,7 @@ Let `F = fullSize(axiCfg.wData)`.
   types except `FIXED`; other slave properties are `DontCare`.
 - Master `ThreadMode` flows unchanged.
 - Calculate the `m_axi` shape with transfer sizes `{ F }` and the input
-  `burstTypes` minus `FIXED`.
+  `types` minus `FIXED`.
 - Calculate output beats for the worst-case starting offset.
 - Set output `aligned = false`: natural alignment to a narrow input size does
   not imply natural alignment to the widened full-width size.

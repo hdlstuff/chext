@@ -129,8 +129,8 @@ private final class CreditBuffer_Resolver(owner: CreditBuffer)(implicit sourceIn
         owner.cfg.rBuffer,
         v.BurstShape.maxBeatsFor(owner.s_axi.cfg)
       ),
-      burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
-      transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+      types = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
+      sizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
       aligned = false
     )
   }
@@ -141,8 +141,8 @@ private final class CreditBuffer_Resolver(owner: CreditBuffer)(implicit sourceIn
         owner.cfg.wBuffer,
         v.BurstShape.maxBeatsFor(owner.s_axi.cfg)
       ),
-      burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
-      transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+      types = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
+      sizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
       aligned = false
     )
   }

@@ -60,8 +60,8 @@ private class LiteConverterTestTop(
   m_axil.properties(p.SlaveMemoryMap) = terminalMap
   private val fullInputShape = BurstShape(
     maxBeats = 256,
-    burstTypes = Seq(FIXED, INCR, WRAP),
-    transferSizes = Seq(BurstShape.fullSize(wDataSlave)),
+    types = Seq(FIXED, INCR, WRAP),
+    sizes = Seq(BurstShape.fullSize(wDataSlave)),
     aligned = true
   )
   s_axi.properties(p.MasterReadBurstShape) = fullInputShape

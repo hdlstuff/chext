@@ -306,27 +306,27 @@ no successful address space.
 `BurstShape` is an immutable case class containing:
 
 - `maxBeats`, the maximum burst length in beats;
-- `burstTypes`, the supported AXI burst-type encodings;
-- `transferSizes`, the supported transfer-size encodings; and
+- `types`, the supported AXI burst-type encodings;
+- `sizes`, the supported transfer-size encodings; and
 - `aligned`, whether every transaction is naturally aligned:
   `AxADDR % (1 << AxSIZE) == 0`.
 
-A nonempty shape must have positive `maxBeats` and nonempty `burstTypes` and
-`transferSizes` sequences. Validation checks protocol limits and interface
+A nonempty shape must have positive `maxBeats` and nonempty `types` and
+`sizes` sequences. Validation checks protocol limits and interface
 transfer sizes.
 
 On a master property, `aligned = false` means transactions may be unaligned.
 On a slave property, `aligned = false` means unaligned transactions are
 accepted; it does not mean transactions must be unaligned. A slave with
-`aligned = true` requires natural alignment. The `burstTypes` and
-`transferSizes` sequences are normalized to sorted, distinct values.
+`aligned = true` requires natural alignment. The `types` and
+`sizes` sequences are normalized to sorted, distinct values.
 
 A master shape is compatible with a slave shape when:
 
 ```text
 master.maxBeats       <= slave.maxBeats
-master.burstTypes     subsetOf slave.burstTypes
-master.transferSizes  subsetOf slave.transferSizes
+master.types     subsetOf slave.types
+master.sizes  subsetOf slave.sizes
 !slave.aligned || master.aligned
 ```
 

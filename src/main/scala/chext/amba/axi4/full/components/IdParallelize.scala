@@ -321,8 +321,8 @@ private final class IdParallelize_Resolver(owner: IdParallelize)(implicit source
         owner.readResponseCapacity,
         v.BurstShape.maxBeatsFor(owner.s_axi.cfg)
       ),
-      burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
-      transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+      types = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
+      sizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
       aligned = false
     )
     owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread

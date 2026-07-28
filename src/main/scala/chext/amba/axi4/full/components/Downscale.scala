@@ -267,8 +267,8 @@ private final class Downscale_Resolver(owner: Downscale)(implicit sourceInfo: So
   private val masterFullSize = v.BurstShape.fullSize(owner.cfg.axiMasterCfg.wData)
   private val acceptedInputShape = v.BurstShape(
     maxBeats = 1,
-    burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
-    transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+    types = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
+    sizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
     aligned = false
   )
 
@@ -292,13 +292,13 @@ private final class Downscale_Resolver(owner: Downscale)(implicit sourceInfo: So
         request.dontCare(noLocalRequirement)
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.mapFrom(owner.s_axi, p.BurstShape) { input =>
-          if (input.transferSizes.isEmpty)
+          if (input.sizes.isEmpty)
             v.BurstShape()
           else
             v.BurstShape(
               maxBeats = v.BurstShape.maxBeatsFor(owner.m_axi.cfg),
-              burstTypes = Seq(INCR),
-              transferSizes = input.transferSizes.map(_ min masterFullSize).distinct,
+              types = Seq(INCR),
+              sizes = input.sizes.map(_ min masterFullSize).distinct,
               aligned = input.aligned
             )
         }

@@ -200,13 +200,13 @@ private final class Unburst_Resolver(owner: Unburst)(implicit sourceInfo: Source
         request.dontCare(noLocalRequirement)
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.mapFrom(owner.s_axi, p.BurstShape) { input =>
-          if (input.transferSizes.isEmpty)
+          if (input.sizes.isEmpty)
             v.BurstShape()
           else
             v.BurstShape(
               maxBeats = 1,
-              burstTypes = Seq(INCR),
-              transferSizes = input.transferSizes,
+              types = Seq(INCR),
+              sizes = input.sizes,
               aligned = input.aligned
             )
         }

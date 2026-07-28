@@ -23,8 +23,8 @@ class DemuxResolverPolicyTestTop
     ) {
   private val burstShape = BurstShape(
     maxBeats = 16,
-    burstTypes = Seq(INCR, WRAP),
-    transferSizes = Seq(0, 1, 2, 3),
+    types = Seq(INCR, WRAP),
+    sizes = Seq(0, 1, 2, 3),
     aligned = true
   )
   private val masterReadThreadMode = ThreadMode.SingleThread
@@ -88,8 +88,8 @@ class MuxResolverPolicyTestTop
     ) {
   private val acceptedBurstShape = BurstShape(
     maxBeats = 16,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(0, 1, 2, 3),
+    types = Seq(INCR),
+    sizes = Seq(0, 1, 2, 3),
     aligned = false
   )
   m_axi.properties(p.SlaveReadBurstShape) = acceptedBurstShape
@@ -260,8 +260,8 @@ class IdParallelizeResolverPolicyTestTop
     slaveBurstRequest.cell.valueOption.contains(
       BurstShape(
         maxBeats = 8,
-        burstTypes = BurstShape.supportedTypesFor(s_axi.cfg),
-        transferSizes = BurstShape.supportedSizesFor(s_axi.cfg),
+        types = BurstShape.supportedTypesFor(s_axi.cfg),
+        sizes = BurstShape.supportedSizesFor(s_axi.cfg),
         aligned = false
       )
     )
@@ -299,8 +299,8 @@ class CreditBufferResolverPolicyTestTop
     slaveBurstRequest.cell.valueOption.contains(
       BurstShape(
         maxBeats = 7,
-        burstTypes = BurstShape.supportedTypesFor(s_axi.cfg),
-        transferSizes = BurstShape.supportedSizesFor(s_axi.cfg),
+        types = BurstShape.supportedTypesFor(s_axi.cfg),
+        sizes = BurstShape.supportedSizesFor(s_axi.cfg),
         aligned = false
       )
     )
@@ -325,8 +325,8 @@ class CreditBufferResolverPolicyTestTop
     slaveWriteBurstRequest.cell.valueOption.contains(
       BurstShape(
         maxBeats = 5,
-        burstTypes = BurstShape.supportedTypesFor(s_axi.cfg),
-        transferSizes = BurstShape.supportedSizesFor(s_axi.cfg),
+        types = BurstShape.supportedTypesFor(s_axi.cfg),
+        sizes = BurstShape.supportedSizesFor(s_axi.cfg),
         aligned = false
       )
     )
@@ -352,8 +352,8 @@ class ProtocolConverterResolverPolicyTestTop
     ) {
   private val outputShape = BurstShape(
     maxBeats = 1,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(BurstShape.fullSize(m_axi.cfg.wData)),
+    types = Seq(INCR),
+    sizes = Seq(BurstShape.fullSize(m_axi.cfg.wData)),
     aligned = false
   )
   private val memoryMap = MemoryMap(size = 0x100)
@@ -386,14 +386,14 @@ class DownscaleAlignmentResolverPolicyTestTop
     ) {
   private val inputShape = BurstShape(
     maxBeats = 1,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(3),
+    types = Seq(INCR),
+    sizes = Seq(3),
     aligned = true
   )
   private val downstreamShape = BurstShape(
     maxBeats = BurstShape.maxBeatsFor(m_axi.cfg),
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(2),
+    types = Seq(INCR),
+    sizes = Seq(2),
     aligned = true
   )
   s_axi.properties(p.MasterReadBurstShape) = inputShape
@@ -405,7 +405,7 @@ class DownscaleAlignmentResolverPolicyTestTop
   private val masterRequest = ResolveRequest(m_axi, p.MasterReadBurstShape)
   assert(Resolver.resolve(masterRequest).result == ResolveResult.Success())
   assert(masterRequest.cell.valueOption.exists(_.maxBeats == BurstShape.maxBeatsFor(m_axi.cfg)))
-  assert(masterRequest.cell.valueOption.exists(_.burstTypes == Seq(INCR)))
+  assert(masterRequest.cell.valueOption.exists(_.types == Seq(INCR)))
   assert(masterRequest.cell.valueOption.exists(_.aligned))
 
   private val slaveRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
@@ -414,8 +414,8 @@ class DownscaleAlignmentResolverPolicyTestTop
     slaveRequest.cell.valueOption.contains(
       BurstShape(
         maxBeats = 1,
-        burstTypes = BurstShape.supportedTypesFor(s_axi.cfg),
-        transferSizes = BurstShape.supportedSizesFor(s_axi.cfg),
+        types = BurstShape.supportedTypesFor(s_axi.cfg),
+        sizes = BurstShape.supportedSizesFor(s_axi.cfg),
         aligned = false
       )
     )
@@ -440,14 +440,14 @@ class UpscaleAlignmentResolverPolicyTestTop
     ) {
   private val inputShape = BurstShape(
     maxBeats = 4,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(2),
+    types = Seq(INCR),
+    sizes = Seq(2),
     aligned = true
   )
   private val downstreamShape = BurstShape(
     maxBeats = 4,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(2),
+    types = Seq(INCR),
+    sizes = Seq(2),
     aligned = false
   )
   s_axi.properties(p.MasterReadBurstShape) = inputShape
@@ -489,14 +489,14 @@ class UnburstAlignmentResolverPolicyTestTop
     ) {
   private val inputShape = BurstShape(
     maxBeats = 4,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(2, 3),
+    types = Seq(INCR),
+    sizes = Seq(2, 3),
     aligned = true
   )
   private val downstreamShape = BurstShape(
     maxBeats = 1,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(2, 3),
+    types = Seq(INCR),
+    sizes = Seq(2, 3),
     aligned = true
   )
   s_axi.properties(p.MasterReadBurstShape) = inputShape
@@ -526,14 +526,14 @@ class WidenAlignmentResolverPolicyTestTop
     ) {
   private val inputShape = BurstShape(
     maxBeats = 4,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(2),
+    types = Seq(INCR),
+    sizes = Seq(2),
     aligned = true
   )
   private val downstreamShape = BurstShape(
     maxBeats = 16,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(3),
+    types = Seq(INCR),
+    sizes = Seq(3),
     aligned = false
   )
   s_axi.properties(p.MasterReadBurstShape) = inputShape
@@ -552,12 +552,12 @@ class WidenAlignmentResolverPolicyTestTop
     slaveRequest.cell.valueOption.contains(
       BurstShape(
         maxBeats = BurstShape.maxBeatsFor(s_axi.cfg),
-        burstTypes = BurstShape
+        types = BurstShape
           .supportedTypesFor(s_axi.cfg)
           .filterNot(
             _ == axi4.BurstType.Encoding.FIXED
           ),
-        transferSizes = BurstShape.supportedSizesFor(s_axi.cfg),
+        sizes = BurstShape.supportedSizesFor(s_axi.cfg),
         aligned = false
       )
     )

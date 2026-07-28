@@ -851,8 +851,8 @@ import chext.amba.axi4.tracking.{properties => p, values => v}
 
 s_axi.properties(p.MasterReadBurstShape) = v.BurstShape(
   maxBeats = 16,
-  burstTypes = Seq(FIXED, INCR, WRAP),
-  transferSizes = v.BurstShape.supportedSizesFor(s_axi.cfg),
+  types = Seq(FIXED, INCR, WRAP),
+  sizes = v.BurstShape.supportedSizesFor(s_axi.cfg),
   aligned = true // Every transaction is naturally aligned to its AxSIZE.
 )
 s_axi.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleThread
@@ -872,7 +872,7 @@ request match {
 }
 ```
 
-**Details:** Scala. Property keys are flat values in `tracking.properties`: for example, `p.MasterReadBurstShape` and `p.SlaveMemoryMap`. `p.KnownKeys` contains the standard catalog. Every `p.Key[T]` carries a `Role`, `Access`, and typed `ValueType[T]`; their package aliases (`p.Master`, `p.Read`, `p.BurstShape`, and so on) are both selectors and stable pattern values. `Manager.select` accepts one selector and returns matching `Cell` instances. `ResolveRequest[T]` is the transparent case class `(tracked, cell)`, so resolvers pattern-match it directly with `p.Key(role, access, valueType)` and may bind the original cell. Scala 2 does not refine `T` from a stable value-type pattern, so a resolver that calculates or transforms a type selected this way supplies the tag to `calculate` or `mapFrom`. `BurstShape` and placeholder `TrafficProfile` are immutable value case classes under `tracking.values`; actual values conventionally use the `v` alias. `BurstShape` uses maximum beat count `maxBeats`, normalized `burstTypes` and `transferSizes` sequences, and Boolean `aligned`, which means every transaction satisfies `AxADDR % (1 << AxSIZE) == 0`. Values are enforced as complete replacements; equal re-enforcement is idempotent, while conflicting re-enforcement fails. At root completion, `Checker` validates Full burst shapes, Full/Lite thread modes, and each interface's memory map. AXI4-Lite burst shapes are `Undefined`; `TrafficProfile` is not checked.
+**Details:** Scala. Property keys are flat values in `tracking.properties`: for example, `p.MasterReadBurstShape` and `p.SlaveMemoryMap`. `p.KnownKeys` contains the standard catalog. Every `p.Key[T]` carries a `Role`, `Access`, and typed `ValueType[T]`; their package aliases (`p.Master`, `p.Read`, `p.BurstShape`, and so on) are both selectors and stable pattern values. `Manager.select` accepts one selector and returns matching `Cell` instances. `ResolveRequest[T]` is the transparent case class `(tracked, cell)`, so resolvers pattern-match it directly with `p.Key(role, access, valueType)` and may bind the original cell. Scala 2 does not refine `T` from a stable value-type pattern, so `calculate` checks the inferred value against the key's runtime type while `mapFrom` receives the selected value type explicitly. `BurstShape` and placeholder `TrafficProfile` are immutable value case classes under `tracking.values`; actual values conventionally use the `v` alias. `BurstShape` uses maximum beat count `maxBeats`, normalized `types` and `sizes` sequences, and Boolean `aligned`, which means every transaction satisfies `AxADDR % (1 << AxSIZE) == 0`. Values are enforced as complete replacements; equal re-enforcement is idempotent, while conflicting re-enforcement fails. At root completion, `Checker` validates Full burst shapes, Full/Lite thread modes, and each interface's memory map. AXI4-Lite burst shapes are `Undefined`; `TrafficProfile` is not checked.
 
 ---
 

@@ -20,8 +20,8 @@ object Properties_Test extends App {
   private val allSizes = v.BurstShape.supportedSizesFor(cfg)
   private val shape = v.BurstShape(
     maxBeats = 16,
-    burstTypes = allTypes,
-    transferSizes = allSizes,
+    types = allTypes,
+    sizes = allSizes,
     aligned = true
   )
   assert(FIXED == 0 && INCR == 1 && WRAP == 2)
@@ -37,13 +37,13 @@ object Properties_Test extends App {
   assert(
     v.BurstShape(
       maxBeats = 1,
-      burstTypes = Seq(WRAP, INCR, INCR),
-      transferSizes = Seq(2, 0, 2),
+      types = Seq(WRAP, INCR, INCR),
+      sizes = Seq(2, 0, 2),
       aligned = false
     ) == v.BurstShape(
       maxBeats = 1,
-      burstTypes = Seq(INCR, WRAP),
-      transferSizes = Seq(0, 2),
+      types = Seq(INCR, WRAP),
+      sizes = Seq(0, 2),
       aligned = false
     )
   )
@@ -140,8 +140,8 @@ object Properties_Test extends App {
 
   val adjustedShape = v.BurstShape(
     maxBeats = 8,
-    burstTypes = Seq(INCR, WRAP),
-    transferSizes = allSizes,
+    types = Seq(INCR, WRAP),
+    sizes = allSizes,
     aligned = true
   )
   burstProperty.enforce(adjustedShape)
@@ -236,11 +236,11 @@ object Properties_Test extends App {
   dontCareTracked
     .properties(p.SlaveReadBurstShape)
     .enforce(
-      v.BurstShape(burstTypes = Seq(INCR))
+      v.BurstShape(types = Seq(INCR))
     )
   assert(
     dontCareTracked.properties(p.SlaveReadBurstShape).state ==
-      p.State.Enforced(v.BurstShape(burstTypes = Seq(INCR)))
+      p.State.Enforced(v.BurstShape(types = Seq(INCR)))
   )
 
   val undefinedTracked = new Tracked { val cfg = Properties_Test.cfg }
@@ -248,11 +248,11 @@ object Properties_Test extends App {
   undefinedTracked
     .properties(p.SlaveReadBurstShape)
     .enforce(
-      v.BurstShape(transferSizes = Seq(fullSize))
+      v.BurstShape(sizes = Seq(fullSize))
     )
   assert(
     undefinedTracked.properties(p.SlaveReadBurstShape).state ==
-      p.State.Enforced(v.BurstShape(transferSizes = Seq(fullSize)))
+      p.State.Enforced(v.BurstShape(sizes = Seq(fullSize)))
   )
 
   val authoritative = properties(p.SlaveReadBurstShape).enforce(shape)
@@ -289,22 +289,22 @@ object Properties_Test extends App {
   )
   val invalidShape = v.BurstShape(
     maxBeats = 300,
-    burstTypes = Seq(3),
-    transferSizes = Seq(fullSize + 1),
+    types = Seq(3),
+    sizes = Seq(fullSize + 1),
     aligned = false
   )
   assert(v.BurstShape.validationErrors(invalidShape, cfg).length == 3)
 
   val masterMismatch = v.BurstShape(
     maxBeats = 32,
-    burstTypes = Seq(FIXED, INCR, WRAP),
-    transferSizes = Seq(0, 1, 2, 3),
+    types = Seq(FIXED, INCR, WRAP),
+    sizes = Seq(0, 1, 2, 3),
     aligned = false
   )
   val slaveMismatch = v.BurstShape(
     maxBeats = 8,
-    burstTypes = Seq(INCR),
-    transferSizes = Seq(3),
+    types = Seq(INCR),
+    sizes = Seq(3),
     aligned = true
   )
   assert(v.BurstShape.compatibilityErrors(masterMismatch, slaveMismatch).length == 4)
