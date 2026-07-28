@@ -29,7 +29,7 @@ Tracking follows four steps:
    participating interface.
 3. At root-module completion, `ModuleState` gathers all registered interfaces
    in the module tree and removes duplicate Scala objects by identity.
-4. `CompatibilityChecker` resolves and validates the supported properties on
+4. `Checker` resolves and validates the supported properties on
    every interface.
 
 Child modules do not run the checker independently. Waiting for root completion
@@ -47,36 +47,47 @@ Master and slave describe AXI protocol roles, not Chisel port directions:
 - master properties describe traffic that may be generated;
 - slave properties describe traffic that may be accepted.
 
-Each `PropertyKey[T]` carries:
+Each `properties.Key[T]` carries:
 
-- a family marker (`MasterProperty` or `SlaveProperty`);
-- an optional access marker (`ReadProperty` or `WriteProperty`);
-- a family-qualified diagnostic name; and
-- a runtime value-class token used by `PropertyValueType[T]`.
+- a `Role`: `Master`, `Slave`, or `None`;
+- an `Access`: `Read`, `Write`, or `None`;
+- a typed `ValueType[T]`; and
+- its diagnostic name and description.
 
 The standard keys are:
 
 | Value type | Master keys | Slave keys |
 |---|---|---|
-| `BurstShape` | `ReadBurstShape`, `WriteBurstShape` | `ReadBurstShape`, `WriteBurstShape` |
-| `ThreadMode` | `ReadThreadMode`, `WriteThreadMode` | `ReadThreadMode`, `WriteThreadMode` |
-| `TrafficProfile` | `ReadTrafficProfile`, `WriteTrafficProfile` | `ReadTrafficProfile`, `WriteTrafficProfile` |
-| `MemoryMap` | — | `MemoryMap` |
+| `BurstShape` | `MasterReadBurstShape`, `MasterWriteBurstShape` | `SlaveReadBurstShape`, `SlaveWriteBurstShape` |
+| `ThreadMode` | `MasterReadThreadMode`, `MasterWriteThreadMode` | `SlaveReadThreadMode`, `SlaveWriteThreadMode` |
+| `TrafficProfile` | `MasterReadTrafficProfile`, `MasterWriteTrafficProfile` | `SlaveReadTrafficProfile`, `SlaveWriteTrafficProfile` |
+| `MemoryMap` | — | `SlaveMemoryMap` |
 
-Keys live in `tracking.properties.Master` and
-`tracking.properties.Slave`. Values live in `tracking.values`;
-`values.MemoryMap` re-exports the existing `axi4.util.MemoryMap` type and
-companion.
+Keys and selector aliases live directly in `tracking.properties`; values live
+in `tracking.values`. The conventional imports are:
 
-`Master.readProperties`, `Master.writeProperties`, and the corresponding slave
-collections are derived from the complete catalogs. Resolver binding uses these
-collections to mark properties on disabled channel groups `Undefined`.
-AXI4-Lite burst-shape properties are also `Undefined`.
+```scala
+import chext.amba.axi4.tracking.{properties => p, values => v}
+```
+
+`p.KnownKeys` is the complete standard-key catalog. `p.Master`, `p.Read`, and
+`p.BurstShape` are selectors as well as stable pattern values. A manager can
+select all matching cells:
+
+```scala
+val reads: Seq[p.Cell[_]] = interface.properties.select(p.Read)
+val shapes: Seq[p.Cell[v.BurstShape]] =
+  interface.properties.select(p.BurstShape)
+```
+
+Resolver binding uses the key metadata to mark disabled read/write groups
+`Undefined`. AXI4-Lite burst-shape properties are also `Undefined`.
 
 ## Property storage and state
 
-Each `Tracked` interface owns one `PropertyManager`. `masterProps` and
-`slaveProps` are family-oriented views of that same manager.
+Each `Tracked` interface owns one `properties.Manager`, exposed as `properties`.
+The key passed to the manager fixes the value type of the returned
+`properties.Cell[T]`.
 
 A realized property has one of these states:
 
@@ -95,23 +106,25 @@ Only `Unresolved` is nonterminal. `valueOption` returns a value only for
 Assignment enforces a value:
 
 ```scala
-interface.masterProps(properties.Master.ReadThreadMode) =
-  values.ThreadMode.SingleThread
+interface.properties(p.MasterReadThreadMode) =
+  v.ThreadMode.SingleThread
 ```
 
 Re-enforcing an equal value is idempotent. Re-enforcing a different value
 fails. Enforcement may replace a calculated or valueless state and clears its
 resolution trace.
 
-`BurstShape` and `TrafficProfile` also provide controlled field updates:
+Aggregate property values are immutable. Adjust a value with `copy` and enforce
+the complete replacement:
 
 ```scala
-interface.masterProps(properties.Master.ReadBurstShape).len = 16
+val current = interface.properties(p.MasterReadBurstShape).get
+interface.properties(p.MasterReadBurstShape) =
+  current.copy(maxBeats = 16)
 ```
 
-The update copies any existing aggregate value, applies the mutation, and
-stores the result as `Enforced`. This prevents one shared value instance from
-being mutated through the wrong property.
+Enforcing a replacement for a calculated or valueless state changes it to
+`Enforced` and clears its resolution trace.
 
 ## Resolver registration and matching
 
@@ -123,49 +136,49 @@ private final class Example_Resolver(owner: Example)(implicit
     sourceInfo: SourceInfo
 ) extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p}
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
 
-      case SlaveRequests(MemoryMap()) =>
-        forwardTo(request, owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axi)
 
-      case MasterRequests(BurstShape() | ThreadMode()) =>
-        forwardTo(request, owner.s_axi)
+      case ResolveRequest(
+            _,
+            p.Key(p.Master, _, p.BurstShape | p.ThreadMode)
+          ) =>
+        request.forwardTo(owner.s_axi)
 
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }
 ```
 
-The inherited extractors have distinct roles:
-
-- `Request(ValueType())` matches a value family without selecting a
-  master/slave family.
-- `MasterRequests(ValueType())` matches master requests on interfaces bound
-  with `bindMaster`.
-- `SlaveRequests(ValueType())` matches slave requests on interfaces bound with
-  `bindSlave`.
-- `.withInterface(interface, ValueType())` also extracts the selected
-  interface.
-
-Use an identity guard when a branch applies to one exact endpoint:
+`p.Key(role, access, valueType)` extracts all three classifications from
+the original cell. `_` leaves a classification unrestricted, and
+normal pattern alternatives combine alternatives. Bind the original cell when
+it is useful:
 
 ```scala
-case SlaveRequests.withInterface(interface, MemoryMap())
+case ResolveRequest(
+      interface,
+      cell @ p.Key(p.Slave, p.NoAccess, p.MemoryMap)
+    )
     if interface eq owner.s_axi =>
-  forwardTo(request, owner.m_axi)
+  inspect(cell)
+  request.forwardTo(owner.m_axi)
 ```
 
-`bindMaster` and `bindSlave` accept one interface or a sequence. Resolver
-selection prefers the candidate owned by the shallowest hierarchy node. The
-most recently registered candidate wins at equal depth.
+`bindMaster`, `bindSlave`, and the symmetric `bindNoRole` accept one interface
+or a sequence. Resolver selection prefers the candidate owned by the shallowest
+hierarchy node. The most recently registered candidate wins at equal depth.
 
 Resolver trace metadata defaults from the implementation class name. For
 example, `CreditBuffer_Resolver` becomes `CreditBufferResolver` with kind
@@ -174,9 +187,38 @@ differ.
 
 ## Resolution protocol
 
-`ResolveRequest[T]` identifies one realized property on one interface. Requests
-compare by interface and property identity, so independently constructed
-requests for the same property compare equal.
+`ResolveRequest[T]` is the transparent case class
+`ResolveRequest(tracked, cell)`. Its generated extractor provides direct
+pattern matching, and `ResolveRequest(tracked, key)` remains a convenience
+constructor that realizes the cell through the interface's manager.
+
+Every concrete `Resolver` inherits an implicit `RequestOps[T]` class. This
+adds the complete resolver policy API directly to a request without putting
+mutation primitives on `ResolveRequest` itself:
+
+```scala
+request.calculate(value)
+request.incomplete()
+request.dontCare(reason)
+request.undefined()
+request.failure(message)
+request.forwardTo(target)
+request.mapFrom(target)(transform)
+request.calculate(p.ThreadMode, value)
+request.mapFrom(target, p.BurstShape)(transform)
+request.missingCase()
+```
+
+Scala 2 does not refine the request's `T` from a stable value-type pattern such
+as `p.Key(_, _, p.ThreadMode)`. The overloads taking a `ValueType[T]`
+preserve static value typing for calculations and transformations after such a
+match.
+
+`RequestOps` is deliberately nested in `Resolver`: it captures the enclosing
+resolver for calculation ownership, trace metadata, and diagnostics, so call
+sites do not pass `this`. It cannot extend `AnyVal` because Scala value classes
+cannot be members of another class; a nested instance also necessarily carries
+the enclosing `Resolver` reference.
 
 A resolver completes one step by returning:
 
@@ -193,22 +235,22 @@ object ResolveResult {
 }
 ```
 
-Request helpers provide the terminal transitions:
+Request operations provide the terminal transitions:
 
-- `calculate(value, resolver)` stores a derived value;
+- `calculate(value)` stores a derived value;
 - `dontCare(message)` marks the boundary intentionally irrelevant;
 - `incomplete()` records insufficient information;
 - `undefined()` records inapplicability;
-- `failure(message)` returns a request-specific error; and
-- `retry(dependencies)` asks the coordinator to resolve dependencies and then
-  process the original request again.
+- `failure(message)` returns a request-specific error.
 
-`forwardTo(request, target)` implements transparent propagation. It retargets
-the same key, retries while the dependency is unresolved, copies a resolved
-value, and propagates valueless terminal states. `mapFrom` follows the same
-protocol but transforms a resolved value.
+`request.forwardTo(target)` implements transparent propagation. It creates a
+dependency for the same key, asks the coordinator to retry while that
+dependency is unresolved, copies a resolved value, and propagates valueless
+terminal states. `request.mapFrom(target)(transform)` follows the same protocol
+but transforms a resolved value. Retry construction remains internal to these
+operations.
 
-`missingCase(request)` is the standard catch-all failure. Its message includes
+`request.missingCase()` is the standard catch-all failure. Its message includes
 the derived resolver name, kind, and requested property.
 
 ## Dependency coordinator
@@ -250,40 +292,42 @@ The checker processes each enabled Full read and write direction independently:
 4. compare their thread guarantees.
 
 AXI4-Lite skips burst checks and checks only `ThreadMode`. Every interface also
-resolves and validates `Slave.MemoryMap`. `TrafficProfile` is not requested.
+resolves and validates `p.SlaveMemoryMap`. `TrafficProfile` is not requested.
 
 `DontCare` skips only the local comparison. The checker still visits every
 other registered interface, where a component's resolver policy preserves the
 relevant facts. `Incomplete`, unexpected `Undefined`, unresolved properties,
 resolution failures, invalid values, and incompatibilities are diagnostics.
-`Slave.MemoryMap` may be `Undefined` for endpoints that intentionally provide
+`p.SlaveMemoryMap` may be `Undefined` for endpoints that intentionally provide
 no successful address space.
 
 ### BurstShape
 
-`BurstShape` contains:
+`BurstShape` is an immutable case class containing:
 
-- `len`, the maximum burst length in beats;
-- `tpe`, the supported AXI burst-type encodings;
-- `size`, the supported transfer-size encodings; and
-- `align`, the base-2 logarithm of the minimum byte alignment of every
-  transaction's starting address (`3` means 8-byte alignment).
+- `maxBeats`, the maximum burst length in beats;
+- `burstTypes`, the supported AXI burst-type encodings;
+- `transferSizes`, the supported transfer-size encodings; and
+- `aligned`, whether every transaction is naturally aligned:
+  `AxADDR % (1 << AxSIZE) == 0`.
 
-A nonempty shape must have positive `len` and nonempty `tpe` and `size`
-sequences. Validation checks protocol limits and interface transfer sizes. It
-also requires `0 <= align <= wAddr`.
+A nonempty shape must have positive `maxBeats` and nonempty `burstTypes` and
+`transferSizes` sequences. Validation checks protocol limits and interface
+transfer sizes.
 
-On a master property, `align` is a guarantee. On a slave property, it is a
-requirement. The `tpe` and `size` sequences are normalized to sorted, distinct
-values.
+On a master property, `aligned = false` means transactions may be unaligned.
+On a slave property, `aligned = false` means unaligned transactions are
+accepted; it does not mean transactions must be unaligned. A slave with
+`aligned = true` requires natural alignment. The `burstTypes` and
+`transferSizes` sequences are normalized to sorted, distinct values.
 
 A master shape is compatible with a slave shape when:
 
 ```text
-master.len   <= slave.len
-master.tpe   subsetOf slave.tpe
-master.size  subsetOf slave.size
-master.align >= slave.align
+master.maxBeats       <= slave.maxBeats
+master.burstTypes     subsetOf slave.burstTypes
+master.transferSizes  subsetOf slave.transferSizes
+!slave.aligned || master.aligned
 ```
 
 An empty master shape has no transfers and therefore satisfies any alignment

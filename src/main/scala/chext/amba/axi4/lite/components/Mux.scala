@@ -131,20 +131,20 @@ class Mux(val cfg: MuxConfig) extends Module with chext.AnnotatedModule {
 private final class Mux_Resolver(owner: Mux)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axil.toSeq)
   bindMaster(owner.m_axil)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(MemoryMap() | ThreadMode()) =>
-        forwardTo(request, owner.m_axil)
-      case MasterRequests(ThreadMode()) =>
-        request.calculate(values.ThreadMode.SingleThread, this)
-        ResolveResult.Success()
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap | p.ThreadMode)) =>
+        request.forwardTo(owner.m_axil)
+      case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
+        request.calculate(p.ThreadMode, v.ThreadMode.SingleThread)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

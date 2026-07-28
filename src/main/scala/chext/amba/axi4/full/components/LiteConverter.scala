@@ -11,9 +11,9 @@ import axi4.full.ConnectOp._
 
 /** Configuration for [[LiteConverter]].
   *
-  * Stage-enable parameters permit hardware to be omitted when the corresponding restriction is
-  * The Full interface must be ID-free (`wId == 0`). Burst and width-conversion stages are inferred
-  * from the interface shapes and are instantiated whenever required. Simulation-check parameters
+  * Stage-enable parameters permit hardware to be omitted when the corresponding restriction is The
+  * Full interface must be ID-free (`wId == 0`). Burst and width-conversion stages are inferred from
+  * the interface shapes and are instantiated whenever required. Simulation-check parameters
   * optionally verify that input transfers are full-width and naturally aligned.
   */
 case class LiteConverterConfig(
@@ -65,15 +65,13 @@ case class LiteConverterConfig(
 /** Converts an AXI4-Full slave interface into an AXI4-Lite master interface.
   *
   * The Full interface must have `wId == 0`; this converter does not instantiate `IdSerialize`.
-  * Input bursts are always decomposed before width conversion. `Upscale` steers read data and shifts
-  * write data and strobes into the addressed wider lanes. `Downscale` can create a new burst, so its
-  * output is unbursted again. Input transfers must be full-width and naturally aligned; simulation
-  * checks are controlled by [[LiteConverterConfig.simCheckNarrow]] and
+  * Input bursts are always decomposed before width conversion. `Upscale` steers read data and
+  * shifts write data and strobes into the addressed wider lanes. `Downscale` can create a new
+  * burst, so its output is unbursted again. Input transfers must be full-width and naturally
+  * aligned; simulation checks are controlled by [[LiteConverterConfig.simCheckNarrow]] and
   * [[LiteConverterConfig.simCheckAligned]].
   */
-class LiteConverter(val cfg: LiteConverterConfig)
-    extends Module
-    with chext.AnnotatedModule {
+class LiteConverter(val cfg: LiteConverterConfig) extends Module with chext.AnnotatedModule {
   import cfg._
 
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
@@ -215,62 +213,62 @@ class LiteConverter(val cfg: LiteConverterConfig)
 
 /** Resolves properties and initializes interface properties for one [[LiteConverter]].
   *
-  * Slave properties, most importantly `properties.Slave.MemoryMap`, flow from the Lite master
-  * interface to the Full slave interface, while master properties flow in the opposite direction.
- */
+  * Slave properties, most importantly `p.SlaveMemoryMap`, flow from the Lite master interface to
+  * the Full slave interface, while master properties flow in the opposite direction.
+  */
 private final class LiteConverter_Resolver(owner: LiteConverter)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
-  import axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
+  import axi4.tracking.{properties => p, values => v}
 
   import owner.cfg._
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axil)
 
-  private val fullSizeSlave = values.BurstShape.fullSize(axiSlaveCfg.wData)
-  private val maxBurstBeats = if (axiSlaveCfg.axi3Compat) 16 else 256
-  private val fullShape = values.BurstShape(
-    len = maxBurstBeats,
-    tpe = Seq(FIXED, INCR, WRAP),
-    size = Seq(fullSizeSlave),
-    align = fullSizeSlave
+  private val fullSizeSlave = v.BurstShape.fullSize(axiSlaveCfg.wData)
+  private val fullShape = v.BurstShape(
+    maxBeats = v.BurstShape.maxBeatsFor(axiSlaveCfg),
+    burstTypes = v.BurstShape.supportedTypesFor(axiSlaveCfg),
+    transferSizes = Seq(fullSizeSlave),
+    aligned = true
   )
 
   private def enforceMasterProperties(): Unit = {
     if (axiMasterCfg.read)
-      owner.m_axil.masterProps(properties.Master.ReadThreadMode) =
-        values.ThreadMode.SingleThread
+      owner.m_axil.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleThread
     if (axiMasterCfg.write)
-      owner.m_axil.masterProps(properties.Master.WriteThreadMode) =
-        values.ThreadMode.SingleThread
+      owner.m_axil.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
   }
 
   private def enforceSlaveProperties(): Unit = {
     if (axiSlaveCfg.read) {
-      owner.s_axi.slaveProps(properties.Slave.ReadBurstShape) = fullShape
-      owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
-        values.ThreadMode.SingleThread
+      owner.s_axi.properties(p.SlaveReadBurstShape) = fullShape
+      owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
     }
     if (axiSlaveCfg.write) {
-      owner.s_axi.slaveProps(properties.Slave.WriteBurstShape) = fullShape
-      owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
-        values.ThreadMode.SingleThread
+      owner.s_axi.properties(p.SlaveWriteBurstShape) = fullShape
+      owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
     }
   }
 
   enforceMasterProperties()
   enforceSlaveProperties()
 
+  private val noLocalRequirement =
+    "LiteConverter imposes no additional local traffic-profile requirement"
+
   /** Forwards one non-traffic-shape property across the protocol boundary. */
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axil)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.TrafficProfile)) =>
+        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(MemoryMap()) =>
-        forwardTo(request, owner.m_axil)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }
 
@@ -281,30 +279,34 @@ private final class LiteConverterBridge_Resolver(
 )(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
   import axi4.BurstType.Encoding.INCR
 
   bindSlave(converted)
 
-  private val convertedSizes = values.BurstShape.validSizes(converted.cfg.wData)
-  private val fullBridgeShape = values.BurstShape(
-    len = 1,
-    tpe = Seq(INCR),
-    size = convertedSizes,
-    align = 0
+  private val convertedSizes = v.BurstShape.supportedSizesFor(converted.cfg)
+  private val fullBridgeShape = v.BurstShape(
+    maxBeats = 1,
+    burstTypes = Seq(INCR),
+    transferSizes = convertedSizes,
+    aligned = false
   )
 
   if (converted.cfg.read)
-    converted.slaveProps(properties.Slave.ReadBurstShape) = fullBridgeShape
+    converted.properties(p.SlaveReadBurstShape) = fullBridgeShape
   if (converted.cfg.write)
-    converted.slaveProps(properties.Slave.WriteBurstShape) = fullBridgeShape
+    converted.properties(p.SlaveWriteBurstShape) = fullBridgeShape
+
+  private val noLocalRequirement =
+    "LiteConverter bridge imposes no additional local requirement for this property"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) =>
-        request.incomplete()
-      case SlaveRequests(MemoryMap() | ThreadMode()) =>
-        forwardTo(request, owner.m_axil)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axil)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.ThreadMode | p.TrafficProfile)) =>
+        request.dontCare(noLocalRequirement)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

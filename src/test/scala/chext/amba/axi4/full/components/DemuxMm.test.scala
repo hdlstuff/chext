@@ -7,8 +7,8 @@ import chext.amba.axi4
 import chext.amba.axi4.full.ConnectOp._
 import chext.amba.axi4.lite.{ConnectOp => LiteConnectOp}
 import chext.amba.axi4.lite.components.RegisterBlock
-import chext.amba.axi4.tracking.{PropertyState, ResolveRequest, ResolveResult, Resolver}
-import chext.amba.axi4.tracking.properties.{Master, Slave}
+import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, Resolver}
+import chext.amba.axi4.tracking.{properties => p}
 import chext.amba.axi4.tracking.values.{BurstShape, ThreadMode}
 import chext.amba.axi4.util.MemoryMap
 import chext.util.ElaborationTest
@@ -25,8 +25,7 @@ class DemuxMmTestTop(
     val permutation: Option[Seq[Int]] = None,
     val errorSlave: Option[Int] = None,
     val overallocatedMaster: Option[Int] = None,
-    val allocationScheme: MemoryMap.AllocationScheme =
-      MemoryMap.AllocationScheme.AlignedPacked
+    val allocationScheme: MemoryMap.AllocationScheme = MemoryMap.AllocationScheme.AlignedPacked
 ) extends Module
     with chext.AnnotatedModule {
   private val axiCfg =
@@ -47,19 +46,19 @@ class DemuxMmTestTop(
 
   private val emptyShape = BurstShape()
   if (read) {
-    s_axi.masterProps(Master.ReadBurstShape) = emptyShape
-    s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+    s_axi.properties(p.MasterReadBurstShape) = emptyShape
+    s_axi.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
     m_axi.foreach { output =>
-      output.slaveProps(Slave.ReadBurstShape) = emptyShape
-      output.slaveProps(Slave.ReadThreadMode) = ThreadMode.Unconstrained
+      output.properties(p.SlaveReadBurstShape) = emptyShape
+      output.properties(p.SlaveReadThreadMode) = ThreadMode.Unconstrained
     }
   }
   if (write) {
-    s_axi.masterProps(Master.WriteBurstShape) = emptyShape
-    s_axi.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
+    s_axi.properties(p.MasterWriteBurstShape) = emptyShape
+    s_axi.properties(p.MasterWriteThreadMode) = ThreadMode.SingleTransaction
     m_axi.foreach { output =>
-      output.slaveProps(Slave.WriteBurstShape) = emptyShape
-      output.slaveProps(Slave.WriteThreadMode) = ThreadMode.Unconstrained
+      output.properties(p.SlaveWriteBurstShape) = emptyShape
+      output.properties(p.SlaveWriteThreadMode) = ThreadMode.Unconstrained
     }
   }
 
@@ -70,14 +69,15 @@ class DemuxMmTestTop(
       val masterMemoryMap = MemoryMap(
         path = Seq(s"master$index"),
         offset = 0x1000,
-        size = sizes(index) - Option.when(overallocatedMaster.contains(index))(BigInt(1)).getOrElse(0),
+        size =
+          sizes(index) - Option.when(overallocatedMaster.contains(index))(BigInt(1)).getOrElse(0),
         segments = Seq(MemoryMap.Segment(Seq("memory"), 0, sizes(index)))
       )
-      master.slaveProps(Slave.MemoryMap) = masterMemoryMap
+      master.properties(p.SlaveMemoryMap) = masterMemoryMap
       masterMemoryMap
     }
   }
-  errorSlave.foreach(index => m_axi(index).slaveProps.markUndefined(Slave.MemoryMap))
+  errorSlave.foreach(index => m_axi(index).properties.markUndefined(p.SlaveMemoryMap))
 
   val derivedMemoryMap = demux.genDecoder(permutation, errorSlave, allocationScheme)
   val order = permutation.getOrElse((0 until numMasters).filterNot(errorSlave.contains))
@@ -104,33 +104,33 @@ class DemuxMmTestTop(
     derivedMemoryMap.children.map(logicalSegments) ==
       order.map(index => logicalSegments(masterMemoryMaps(index).get))
   )
-  assert(demux.s_axi.slaveProps(Slave.MemoryMap).get == derivedMemoryMap)
+  assert(demux.s_axi.properties(p.SlaveMemoryMap).get == derivedMemoryMap)
 
   if (!read) {
-    assert(demux.s_axi.slaveProps(Slave.ReadThreadMode).state == PropertyState.Undefined)
-    val slaveReadRequest = ResolveRequest(demux.s_axi, Slave.ReadThreadMode)
+    assert(demux.s_axi.properties(p.SlaveReadThreadMode).state == p.State.Undefined)
+    val slaveReadRequest = ResolveRequest(demux.s_axi, p.SlaveReadThreadMode)
     assert(Resolver.resolve(slaveReadRequest).result == ResolveResult.Success())
-    assert(slaveReadRequest.state == PropertyState.Undefined)
+    assert(slaveReadRequest.cell.state == p.State.Undefined)
 
     demux.m_axi.foreach { output =>
-      assert(output.masterProps(Master.ReadThreadMode).state == PropertyState.Undefined)
-      val masterReadRequest = ResolveRequest(output, Master.ReadThreadMode)
+      assert(output.properties(p.MasterReadThreadMode).state == p.State.Undefined)
+      val masterReadRequest = ResolveRequest(output, p.MasterReadThreadMode)
       assert(Resolver.resolve(masterReadRequest).result == ResolveResult.Success())
-      assert(masterReadRequest.state == PropertyState.Undefined)
+      assert(masterReadRequest.cell.state == p.State.Undefined)
     }
   }
 
   if (!write) {
-    assert(demux.s_axi.slaveProps(Slave.WriteThreadMode).state == PropertyState.Undefined)
-    val slaveWriteRequest = ResolveRequest(demux.s_axi, Slave.WriteThreadMode)
+    assert(demux.s_axi.properties(p.SlaveWriteThreadMode).state == p.State.Undefined)
+    val slaveWriteRequest = ResolveRequest(demux.s_axi, p.SlaveWriteThreadMode)
     assert(Resolver.resolve(slaveWriteRequest).result == ResolveResult.Success())
-    assert(slaveWriteRequest.state == PropertyState.Undefined)
+    assert(slaveWriteRequest.cell.state == p.State.Undefined)
 
     demux.m_axi.foreach { output =>
-      assert(output.masterProps(Master.WriteThreadMode).state == PropertyState.Undefined)
-      val masterWriteRequest = ResolveRequest(output, Master.WriteThreadMode)
+      assert(output.properties(p.MasterWriteThreadMode).state == p.State.Undefined)
+      val masterWriteRequest = ResolveRequest(output, p.MasterWriteThreadMode)
       assert(Resolver.resolve(masterWriteRequest).result == ResolveResult.Success())
-      assert(masterWriteRequest.state == PropertyState.Undefined)
+      assert(masterWriteRequest.cell.state == p.State.Undefined)
     }
   }
 }
@@ -155,10 +155,10 @@ class DemuxMmTreeTestTop extends Module with chext.AnnotatedModule {
   chext.tracking.suggestInstanceName(rightDemux, "rightDemux")
 
   s_axi :=> rootDemux.s_axi
-  s_axi.masterProps(Master.ReadBurstShape) = BurstShape()
-  s_axi.masterProps(Master.WriteBurstShape) = BurstShape()
-  s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
-  s_axi.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
+  s_axi.properties(p.MasterReadBurstShape) = BurstShape()
+  s_axi.properties(p.MasterWriteBurstShape) = BurstShape()
+  s_axi.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
+  s_axi.properties(p.MasterWriteThreadMode) = ThreadMode.SingleTransaction
   rootDemux.m_axi(0) :=>
     axi4.full.RightBuffer(leftDemux.s_axi, bufferCfg, "leftBranchBuffer")
   rootDemux.m_axi(1) :=>
@@ -231,11 +231,11 @@ object DemuxMm_Test extends App with ElaborationTest {
   private val captureMemoryMap: (RawModule, ElaborationTest.ArtifactOutput) => Unit =
     (module, artifacts) => {
       val (interface, expectedMemoryMap) = module match {
-        case top: DemuxMmTestTop => top.s_axi -> top.derivedMemoryMap
+        case top: DemuxMmTestTop     => top.s_axi -> top.derivedMemoryMap
         case top: DemuxMmTreeTestTop => top.s_axi -> top.rootMemoryMap
         case _ => throw new AssertionError(s"Unsupported DemuxMm test top: $module")
       }
-      val request = ResolveRequest(interface, Slave.MemoryMap)
+      val request = ResolveRequest(interface, p.SlaveMemoryMap)
       Resolver.resolve(request).result match {
         case ResolveResult.Success() => ()
         case ResolveResult.Failure(message, _) =>
@@ -243,7 +243,7 @@ object DemuxMm_Test extends App with ElaborationTest {
         case ResolveResult.Retry(_) =>
           throw new AssertionError("Top-level s_axi memory-map resolution returned Retry")
       }
-      val memoryMap = request.valueOption.getOrElse {
+      val memoryMap = request.cell.valueOption.getOrElse {
         throw new AssertionError("Resolved top-level s_axi memory map has no value")
       }
       assert(memoryMap == expectedMemoryMap)

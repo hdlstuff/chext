@@ -40,10 +40,10 @@ For a module with `s_axi` and `m_axi` ports:
 
 - `s_axi` is the upstream-facing slave port.
 - `m_axi` is the downstream-facing master port.
-- Master properties normally flow from `s_axi.masterProps` to
-  `m_axi.masterProps`.
-- Slave properties normally flow from `m_axi.slaveProps` to
-  `s_axi.slaveProps`.
+- Master properties normally flow from `s_axi.properties` to
+  `m_axi.properties`.
+- Slave properties normally flow from `m_axi.properties` to
+  `s_axi.properties`.
 - Forwarding always remains within the same property family.
 - Resolver bodies keep `import axi4.tracking._` local. They qualify catalogs as
   `properties.Master` / `properties.Slave` and values through `values`.
@@ -96,52 +96,43 @@ val map: MemoryMap =
 Code may also import `chext.amba.axi4.util.MemoryMap`. The property namespace
 adds no wrapper or separate `AddressMap` type.
 
-Keys live in:
+Keys and their match/select metadata live directly in:
 
 ```scala
-chext.amba.axi4.tracking.properties.Master
-chext.amba.axi4.tracking.properties.Slave
+import chext.amba.axi4.tracking.{properties => p, values => v}
+
+p.MasterReadBurstShape
+p.SlaveMemoryMap
 ```
 
-## Value-type extractors
+## Property selectors
 
 Resolver policies frequently care about the value type of a property rather
-than a separate property-kind marker trait. `PropertyKey[T]` therefore retains
-a runtime value-type token using `ClassTag[T]`:
+than one exact key. `p.Key[T]` carries explicit role, access, and value-type
+metadata:
 
 ```scala
-abstract class PropertyKey[T: ClassTag](
+final case class Key[T](
+    role: Role,
+    access: Access,
+    valueType: ValueType[T],
     val name: String,
     val description: String
-) {
-  final val valueClass: Class[_] =
-    implicitly[ClassTag[T]].runtimeClass
-}
+)
 ```
 
-`PropertyValueType[T]` is a reusable extractor:
+Each classification is also a selector. `Manager.select` realizes and returns
+the matching standard property cells:
 
 ```scala
-final class PropertyValueType[T: ClassTag] {
-  private val expected = implicitly[ClassTag[T]].runtimeClass
-
-  def accepts(key: PropertyKey[_]): Boolean =
-    key.valueClass == expected
-
-  def unapply(key: PropertyKey[T]): Boolean =
-    accepts(key)
-}
-
-object PropertyValueType {
-  def apply[T: ClassTag]: PropertyValueType[T] =
-    new PropertyValueType[T]
-}
+val reads: Seq[p.Cell[_]] = interface.properties.select(p.Read)
+val shapes: Seq[p.Cell[v.BurstShape]] =
+  interface.properties.select(p.BurstShape)
 ```
 
-`Resolver` provides stable `MemoryMap`, `BurstShape`, `ThreadMode`, and
-`TrafficProfile` value-family extractors together with `Request`,
-`MasterRequests`, and `SlaveRequests`. A concrete resolver registers its
-interfaces and uses the inherited extractors in ordinary match statements:
+`p.Key(role, access, valueType)` extracts the three classifications from a
+property cell. A concrete resolver registers its interfaces and uses it with
+the transparent `ResolveRequest` case class:
 
 ```scala
 bindSlave(owner.s_axi)
@@ -149,117 +140,119 @@ bindMaster(owner.m_axi)
 
 def resolve[T](request: ResolveRequest[T]): ResolveResult =
   request match {
-    case Request(TrafficProfile()) =>
+    case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
       request.incomplete()
 
-    case SlaveRequests(MemoryMap()) =>
-      forwardTo(request, owner.m_axi)
+    case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+      request.forwardTo(owner.m_axi)
 
-    case MasterRequests(BurstShape()) =>
-      forwardTo(request, owner.s_axi)
+    case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
+      request.forwardTo(owner.s_axi)
 
-    case MasterRequests(ThreadMode()) =>
-      request.incomplete()
+    case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
+      request.calculate(p.ThreadMode, v.ThreadMode.SingleThread)
 
     case _ =>
-      missingCase(request)
+      request.missingCase()
 }
 ```
 
 Default trace metadata is derived from the implementation class name. For
 example, `CreditBuffer_Resolver` becomes `CreditBufferResolver` with kind
 `credit-buffer`. Explicit `kind` or `resolver` overrides are reserved for names
-that do not follow this convention. `missingCase(request)` uses that metadata
+that do not follow this convention. `request.missingCase()` uses that metadata
 to produce the standard catch-all resolution failure.
 
-For a policy that needs the selected endpoint, append `.withInterface`:
+The request pattern directly exposes the selected endpoint and original
+cell:
 
 ```scala
-case SlaveRequests.withInterface(interface, MemoryMap())
+case ResolveRequest(
+      interface,
+      cell @ p.Key(p.Slave, p.NoAccess, p.MemoryMap)
+    )
     if interface eq owner.s_axi =>
-  forwardTo(request, owner.m_axi)
+  inspect(cell)
+  request.forwardTo(owner.m_axi)
 ```
 
-The typed `unapply` signature preserves the request value type, so the same
-family pattern works for forwarding, transformations, terminal states, and
-calculation:
+Stable values compose with normal pattern alternatives:
 
 ```scala
-case MasterRequests(ThreadMode()) =>
-  request.calculate(values.ThreadMode.SingleThread, this)
-  ResolveResult.Success()
+case ResolveRequest(
+      _,
+      p.Key(p.Master, _, p.BurstShape | p.ThreadMode)
+    ) =>
+  request.forwardTo(owner.s_axi)
 ```
 
-Use an exact singleton key only when policy truly differs between individual
-keys rather than between value families.
+Scala 2 does not refine the request's `T` from a stable value-type pattern.
+Typed calculations and transformations after such a pattern therefore pass the
+selected tag to `calculate` or `mapFrom`. Use an exact flat key when policy
+truly differs between individual keys.
+
+`ResolveRequest[T]` is exactly `ResolveRequest(tracked, cell)`, with a
+convenience overload accepting a key. The request-oriented methods are provided
+by an implicit `RequestOps[T]` class inherited from `Resolver`:
+`calculate`, `incomplete`, `dontCare`, `undefined`, `failure`, `forwardTo`,
+`mapFrom`, and `missingCase`. This keeps all resolver control operations in one
+API and keeps retry construction internal to dependency operations.
+
+`RequestOps` deliberately lives inside `Resolver` so it captures the enclosing
+resolver for calculation ownership, trace metadata, and diagnostics. It does
+not extend `AnyVal`: Scala value classes cannot be members of another class,
+and this nested operation wrapper necessarily carries the enclosing
+`Resolver` reference.
 
 ## Standard keys
 
-The master catalog contains:
+The flat standard catalog contains:
 
 ```scala
-Master.ReadBurstShape
-Master.WriteBurstShape
-Master.ReadThreadMode
-Master.WriteThreadMode
-Master.ReadTrafficProfile
-Master.WriteTrafficProfile
+p.MasterReadBurstShape
+p.MasterWriteBurstShape
+p.MasterReadThreadMode
+p.MasterWriteThreadMode
+p.MasterReadTrafficProfile
+p.MasterWriteTrafficProfile
+p.SlaveMemoryMap
+p.SlaveReadBurstShape
+p.SlaveWriteBurstShape
+p.SlaveReadThreadMode
+p.SlaveWriteThreadMode
+p.SlaveReadTrafficProfile
+p.SlaveWriteTrafficProfile
 ```
 
-The slave catalog contains:
+`p.KnownKeys` contains these keys. Role, access, and value type selectors replace
+separate family catalogs and marker extractors.
+
+## Immutable value API
+
+Aggregate values are immutable case classes. A caller enforces a complete
+value:
 
 ```scala
-Slave.MemoryMap
-Slave.ReadBurstShape
-Slave.WriteBurstShape
-Slave.ReadThreadMode
-Slave.WriteThreadMode
-Slave.ReadTrafficProfile
-Slave.WriteTrafficProfile
+interface.properties(p.MasterReadBurstShape) = shape
 ```
 
-`Master.readProperties`, `Master.writeProperties`, `Slave.readProperties`, and
-`Slave.writeProperties` are derived from their `all` catalogs using the
-existing `ReadProperty` and `WriteProperty` extractors. This keeps disabled
-direction handling synchronized automatically.
-
-## Mutable value API
-
-Aggregate values support field-oriented construction and adjustment. A caller
-may enforce a complete value:
+To adjust an existing value, copy it and enforce the complete replacement:
 
 ```scala
-interface.masterProps(Master.ReadBurstShape) = shape
+val current = interface.properties(p.MasterReadBurstShape).get
+interface.properties(p.MasterReadBurstShape) =
+  current.copy(
+    burstTypes = Seq(
+      axi4.BurstType.Encoding.FIXED,
+      axi4.BurstType.Encoding.INCR
+    )
+  )
 ```
 
-It may also update an individual field directly:
-
-```scala
-interface.masterProps(Master.ReadBurstShape).tpe = Seq(
-  axi4.BurstType.Encoding.FIXED,
-  axi4.BurstType.Encoding.INCR
-)
-```
-
-Type-specific operations on `Property[BurstShape]` and
-`Property[TrafficProfile]` provide this syntax. They perform a controlled
-property mutation rather than exposing an untracked mutable value:
-
-- the first field update creates the type's empty/default value and changes
-  the property to `Enforced`;
-- later field updates copy, modify, and replace the enforced value;
-- updating a calculated value changes it to `Enforced` and clears its
-  resolution trace;
-- updating `Undefined`, `Incomplete`, or `DontCare` replaces that terminal
-  state with an enforced value;
-- final compatibility checking validates that the resulting value is
-  internally consistent.
-
-The mutable fields of the value itself are not public. Mutation goes through
-the typed `Property` operations so lifecycle state and traces remain correct.
-The type-specific operations live in the value companion objects, putting them
-in implicit scope for `Property[BurstShape]` and
-`Property[TrafficProfile]`.
+Enforcing a replacement for a calculated value changes it to `Enforced` and
+clears its resolution trace. Enforcement may likewise replace `Undefined`,
+`Incomplete`, or `DontCare`. Final compatibility checking validates the
+complete value.
 
 Re-enforcing an equal complete value is idempotent. Re-enforcing a different
 complete value is an error; contradictory authoritative declarations must not
@@ -274,56 +267,59 @@ map is published as a property.
 `BurstShape` contains the burst-related values:
 
 ```scala
-final class BurstShape private[tracking] (
-    private var len_ : Int,
-    private var tpe_ : Seq[Int],
-    private var size_ : Seq[Int],
-    private var align_ : Int
-) {
-  def len: Int
-  def tpe: Seq[Int]
-  def size: Seq[Int]
-  def align: Int
-}
+final case class BurstShape private (
+    maxBeats: Int,
+    burstTypes: Seq[Int],
+    transferSizes: Seq[Int],
+    aligned: Boolean
+)
 ```
 
 The fields mean:
 
-- `len`: maximum burst length in beats;
-- `tpe`: AXI burst-type encodings that may be generated or accepted;
-- `size`: AXI transfer-size encodings that may be generated or accepted;
-- `align`: base-2 logarithm of the minimum byte alignment of every
-  transaction's starting address. For example, `3` means 8-byte alignment.
-  A master guarantees this alignment; a slave requires it.
+- `maxBeats`: maximum burst length in beats;
+- `burstTypes`: AXI burst-type encodings that may be generated or accepted;
+- `transferSizes`: AXI transfer-size encodings that may be generated or accepted;
+- `aligned`: whether every transaction is naturally aligned, meaning
+  `AxADDR % (1 << AxSIZE) == 0`.
 
-Burst-type, transfer-size, and alignment encodings use `Int`.
-`axi4.BurstType.Encoding` provides the shared `FIXED`, `INCR`, and `WRAP`
-integer constants; resolver code does not convert Chisel literals.
+The Boolean is directional. On a master property, `aligned = false` means
+transactions may be unaligned. On a slave property, `aligned = false` means
+unaligned transactions are accepted; it does not require them to be
+unaligned. A slave with `aligned = true` accepts only naturally aligned
+transactions.
 
-An empty shape has `len = 0`, empty `tpe` and `size` sequences, and
-`align = 0`. Non-empty shapes must have positive `len`, non-empty `tpe` and
-`size`, and `0 <= align <= wAddr`. Validation also checks protocol burst limits
-and transfer sizes against the interface configuration. Sequences are
-normalized to sorted, distinct values.
+Burst-type and transfer-size encodings use `Int`. `axi4.BurstType.Encoding`
+provides the shared `FIXED`, `INCR`, and `WRAP` integer constants; resolver
+code does not convert Chisel literals.
 
-For a data width `W` in bits:
+An empty shape has `maxBeats = 0`, empty `burstTypes` and `transferSizes`
+sequences, and `aligned = false`. Non-empty shapes must have positive
+`maxBeats` and non-empty `burstTypes` and `transferSizes`. Validation also
+checks protocol burst limits and transfer sizes against the interface
+configuration. Sequences are normalized to sorted, distinct values.
+
+The companion object exposes the protocol-mode maxima:
 
 ```text
-fullSize(W)   = log2(W / 8)
-validSizes(W) = { 0, ..., fullSize(W) }
+fullSize(W)             = log2(W / 8)
+supportedTypesFor(cfg)  = protocol-supported burst types
+supportedSizesFor(cfg)  = protocol- and width-supported transfer sizes
+maxBeatsFor(cfg)        = maximum protocol beat count
 ```
 
 Compatibility is:
 
 ```text
-master.len   <= slave.len
-master.tpe   subsetOf slave.tpe
-master.size  subsetOf slave.size
-master.align >= slave.align
+master.maxBeats       <= slave.maxBeats
+master.burstTypes     subsetOf slave.burstTypes
+master.transferSizes  subsetOf slave.transferSizes
+!slave.aligned || master.aligned
 ```
 
-The alignment comparison is vacuously satisfied by an empty master shape.
-Compatibility returns every mismatch rather than stopping at the first one.
+The natural-alignment comparison is vacuously satisfied by an empty master
+shape. Compatibility returns every mismatch rather than stopping at the first
+one.
 
 ## ThreadMode
 
@@ -374,15 +370,11 @@ The compatibility rules are:
 `TrafficProfile` groups concurrency and latency:
 
 ```scala
-final class TrafficProfile private[tracking] (
-    private var outstandingTransactions_ : Int,
-    private var threads_ : Int,
-    private var latencyCycles_ : Option[Double]
-) {
-  def outstandingTransactions: Int
-  def threads: Int
-  def latencyCycles: Option[Double]
-}
+final case class TrafficProfile(
+    outstandingTransactions: Int = 0,
+    threads: Int = 0,
+    latencyCycles: Option[Double] = None
+)
 ```
 
 The same value type is used by the read/write master and slave keys. Master
@@ -393,7 +385,7 @@ Traffic profiles are placeholders. Resolver branches recognize the value type
 and return:
 
 ```scala
-case Request(TrafficProfile()) =>
+case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
   request.incomplete()
 ```
 
@@ -402,7 +394,7 @@ and component-aggregation rules remain undefined.
 
 ## MemoryMap
 
-`Slave.MemoryMap` uses the immutable recursive
+`p.SlaveMemoryMap` uses the immutable recursive
 `chext.amba.axi4.util.MemoryMap`, publicly re-exported as
 `chext.amba.axi4.tracking.values.MemoryMap`.
 
@@ -436,14 +428,14 @@ interface.
 
 For each enabled AXI4-Full read direction, the checker:
 
-1. resolves `Master.ReadBurstShape` and `Slave.ReadBurstShape`;
+1. resolves `p.MasterReadBurstShape` and `p.SlaveReadBurstShape`;
 2. checks burst compatibility when both resolutions contain values;
-3. resolves `Master.ReadThreadMode` and `Slave.ReadThreadMode`;
+3. resolves `p.MasterReadThreadMode` and `p.SlaveReadThreadMode`;
 4. checks thread compatibility when both resolutions contain values.
 
 The checker performs the same steps for enabled writes. For AXI4-Lite, it skips
 burst shape and checks only the enabled read and write thread modes. It also
-resolves and validates `Slave.MemoryMap` once per interface.
+resolves and validates `p.SlaveMemoryMap` once per interface.
 
 Resolved values are cached by the existing property state, so later visits to
 the same dependency are inexpensive.
@@ -453,14 +445,16 @@ still visits all other interfaces, so mux/demux policies place the
 comparison at the interfaces where the unaggregated facts remain available.
 There is no compatibility-check delegation.
 
-`TrafficProfile` is excluded; direct traffic-profile requests resolve to
-`Incomplete`.
+`TrafficProfile` is excluded from the compatibility pass. Direct requests may
+be forwarded, marked `DontCare`, or resolve to `Incomplete` according to the
+component's transaction transformation.
 
 ## AXI4-Full resolvers
 
 ### Buffer and Connect
 
-For checked properties, both are transparent:
+Both transparently transport checked facts so component-owned wire interfaces
+reach a registered compatibility-check boundary:
 
 - master `BurstShape` and `ThreadMode` flow upstream to downstream;
 - slave `BurstShape`, `ThreadMode`, and `MemoryMap` flow downstream to
@@ -469,10 +463,13 @@ For checked properties, both are transparent:
 
 ### CreditBuffer
 
-- Master and slave `BurstShape` values flow unchanged.
-- Master and slave `ThreadMode` values flow unchanged.
-- `Slave.MemoryMap` flows unchanged.
-- Every `TrafficProfile` request returns `Incomplete`.
+- Master `BurstShape` and `ThreadMode` flow unchanged downstream.
+- `p.SlaveMemoryMap` flows unchanged upstream.
+- With read buffering enabled, slave `ReadBurstShape.maxBeats` is capped by the
+  response-buffer capacity; its types and sizes cover every protocol-supported
+  value, and `aligned = false` accepts unaligned transactions.
+- Other slave properties are `DontCare`.
+- Master `TrafficProfile` remains `Incomplete`.
 
 ### Demux
 
@@ -481,7 +478,7 @@ For checked properties, both are transparent:
 - No slave `BurstShape` or `ThreadMode` is aggregated on `s_axi`; these
   properties remain `DontCare`. The relevant compatibility checks run on the
   selected downstream paths after master-property propagation.
-- `Slave.MemoryMap` remains `Incomplete` because an arbitrary address decode
+- `p.SlaveMemoryMap` remains `Incomplete` because an arbitrary address decode
   function does not synthesize an aggregate map.
 - Every `TrafficProfile` request returns `Incomplete`.
 
@@ -491,7 +488,7 @@ For checked properties, both are transparent:
   exactly as for `Demux`.
 - Slave `BurstShape` and `ThreadMode` on `s_axi` remain `DontCare`; downstream
   capabilities remain separate and are checked at the outputs.
-- `genDecoder()` resolves every downstream `Slave.MemoryMap`, aggregates the
+- `genDecoder()` resolves every downstream `p.SlaveMemoryMap`, aggregates the
   non-error-port maps in routing order, and enforces the result on `s_axi`.
   Resolving it before `genDecoder()` is an error.
 - Every `TrafficProfile` request returns `Incomplete`.
@@ -515,12 +512,13 @@ For checked properties, both are transparent:
 bits from the downstream ID.
 
 - Every master `BurstShape` flows from `s_axi` to every output.
-- Master `ThreadMode` is preserved on each output because selector-bit removal
-  is injective for a fixed output.
-- All slave `BurstShape`, `ThreadMode`, and `MemoryMap` properties remain
-  `DontCare`; downstream capabilities and maps stay separate rather than being
-  aggregated.
-- Every `TrafficProfile` request returns `Incomplete`.
+- Master `ThreadMode` is preserved while output IDs remain. When selection
+  removes every ID bit, `SingleTransaction` is preserved and every other input
+  mode becomes `SingleThread`.
+- Slave burst, thread, and traffic properties remain `DontCare`; downstream
+  capabilities stay separate rather than being aggregated.
+- `p.SlaveMemoryMap` remains `Incomplete`.
+- Master `TrafficProfile` remains `Incomplete`.
 
 ### IdMux
 
@@ -539,18 +537,22 @@ bits from the downstream ID.
 ### IdParallelize
 
 - Enforce slave `ThreadMode = SingleThread` on `s_axi`.
+- Limit slave `ReadBurstShape.maxBeats` to the response-buffer capacity (or the
+  protocol maximum, whichever is smaller), while accepting every supported
+  type and size with `aligned = false`.
 - Enforce master `ThreadMode = UniqueThreads` on `m_axi`.
-- Master and slave `BurstShape` flow unchanged.
-- `Slave.MemoryMap` flows unchanged.
-- Every `TrafficProfile` request returns `Incomplete`.
+- Master `BurstShape` flows unchanged; remaining slave burst/traffic
+  properties are `DontCare`.
+- `p.SlaveMemoryMap` flows unchanged.
+- Master `TrafficProfile` remains `Incomplete`.
 
 ### IdSerialize
 
-- Enforce slave `ThreadMode = Unconstrained` on `s_axi`.
 - Enforce master `ThreadMode = SingleThread` on `m_axi`.
-- Master and slave `BurstShape` flow unchanged.
-- `Slave.MemoryMap` flows unchanged.
-- Every `TrafficProfile` request returns `Incomplete`.
+- Master `BurstShape` flows unchanged.
+- Slave burst/thread/traffic properties are `DontCare`.
+- `p.SlaveMemoryMap` flows unchanged.
+- Master `TrafficProfile` remains `Incomplete`.
 
 ### Downscale
 
@@ -563,57 +565,51 @@ output beats e(x) = 2 ^ max(0, x - M)
 output type       = INCR
 ```
 
-- Enforce `SingleThread` on both sides.
-- Calculate the master shape with type `{ INCR }`, sizes
-  `inputSizes.map(f)`, and beats `max(inputSizes.map(e))`.
-- Calculate the accepted input shape with one beat and the sizes supported by
-  downstream acceptance of `f(x)` and `e(x)`.
-- Preserve the input alignment guarantee forward and the downstream alignment
-  requirement backward because the transaction's starting address is
-  unchanged.
-- `Slave.MemoryMap` flows unchanged.
-- Every `TrafficProfile` request returns `Incomplete`.
+- Enforce `SingleThread` at `s_axi`.
+- Publish a one-beat slave shape with every supported type and size and
+  `aligned = false`.
+- Calculate the master shape with types `{ INCR }`, protocol-maximum
+  `maxBeats`, and transfer sizes `inputSizes.map(f)`.
+- Preserve the input natural-alignment guarantee forward.
+- Forward the incoming master thread mode unchanged.
+- `p.SlaveMemoryMap` flows unchanged.
+- Other slave properties are `DontCare`; master `TrafficProfile` remains
+  `Incomplete`.
 
 ### Unburst
 
 - Enforce `SingleThread` on both sides.
 - Calculate a one-beat `{ INCR }` burst shape on `m_axi`.
 - Master sizes flow from `s_axi`.
-- For a multi-beat `INCR` or `WRAP` input, the output alignment guarantee is
-  the lesser of the input start alignment and the smallest transfer size.
-  `FIXED` and one-beat inputs preserve the input alignment.
-- Accepted input shapes are calculated from downstream acceptance of one-beat
-  INCR transfers. Multi-beat input sizes smaller than the downstream alignment
-  requirement are excluded.
-- `Slave.MemoryMap` flows unchanged.
-- Every `TrafficProfile` request returns `Incomplete`.
+- Preserve the input natural-alignment guarantee.
+- Slave burst/traffic properties without a local requirement are `DontCare`.
+- `p.SlaveMemoryMap` flows unchanged.
+- Master `TrafficProfile` remains `Incomplete`.
 
 ### Upscale
 
 Let `S = fullSize(s_axi.wData)` and `M = fullSize(m_axi.wData)`, where `S < M`.
 
-- Enforce `SingleThread` on both sides.
-- Master `len`, `tpe`, and `size` flow unchanged.
-- Slave `len` and `tpe` flow unchanged.
-- Intersect accepted sizes with `validSizes(s_axi.wData)`.
-- Preserve alignment forward and backward because start addresses are
-  unchanged.
-- `Slave.MemoryMap` flows unchanged.
-- Every `TrafficProfile` request returns `Incomplete`.
+- Enforce `SingleThread` at `s_axi`.
+- Forward every master property unchanged, preserving stronger modes such as
+  `SingleTransaction`.
+- Mark other slave properties `DontCare`.
+- `p.SlaveMemoryMap` flows unchanged.
 
 ### Widen
 
 Let `F = fullSize(axiCfg.wData)`.
 
-- Master and slave `ThreadMode` flow unchanged.
-- Calculate the `m_axi` shape with size `{ F }` and the input `tpe` minus
-  `FIXED`.
-- Calculate output beats with the worst-case alignment function.
-- Calculate accepted input types, sizes, and beats from downstream acceptance.
-- Preserve alignment forward and backward because start addresses are
-  unchanged.
-- `Slave.MemoryMap` flows unchanged.
-- Every `TrafficProfile` request returns `Incomplete`.
+- Publish a protocol-maximum input burst shape with all supported sizes and all
+  types except `FIXED`; other slave properties are `DontCare`.
+- Master `ThreadMode` flows unchanged.
+- Calculate the `m_axi` shape with transfer sizes `{ F }` and the input
+  `burstTypes` minus `FIXED`.
+- Calculate output beats for the worst-case starting offset.
+- Set output `aligned = false`: natural alignment to a narrow input size does
+  not imply natural alignment to the widened full-width size.
+- `p.SlaveMemoryMap` flows unchanged.
+- Master `TrafficProfile` remains `Incomplete`.
 
 ### LiteConverter
 
@@ -625,9 +621,9 @@ transfers.
   full-width alignment; the Lite output burst properties remain `Undefined`.
 - Publish the protocol-implied one-beat shape on the internal Full interface at
   the manual Full-to-Lite bridge.
-- Forward `Slave.MemoryMap` from Lite to Full.
-- Compose any non-enforced aggregate property through the internal stages.
-- Every `TrafficProfile` request returns `Incomplete`.
+- Mark the bridge's slave thread/traffic properties `DontCare`.
+- Forward `p.SlaveMemoryMap` from Lite to Full.
+- Master `TrafficProfile` remains `Incomplete`.
 
 ### ProtocolConverter
 
@@ -644,18 +640,20 @@ optional second Unburst
 IdMux
 ```
 
-Master properties compose in that order and slave properties in reverse.
-`Slave.MemoryMap` ultimately flows from external `m_axi` to external `s_axi`.
-The outer resolver must not replace a resolvable stage value with a blanket
-`Incomplete`. `TrafficProfile` is the deliberate exception.
+Master burst/thread properties compose in that order. Intrinsic slave
+requirements are checked at the internal stage that imposes them, so external
+slave properties are `DontCare` except for `p.SlaveMemoryMap`, which flows
+directly from external `m_axi` to external `s_axi`. Master `TrafficProfile`
+remains `Incomplete`.
 
 ### ConstantSlave
 
 For each enabled direction:
 
 - enforce `ThreadMode = SingleTransaction`;
-- on Full AXI, enforce protocol-maximum `len`, all legal burst types, every
-  valid transfer size, and byte alignment; Lite burst shapes remain `Undefined`.
+- on Full AXI, enforce protocol-maximum `maxBeats`, all legal burst types, every
+  valid transfer size, and `aligned = false`; Lite burst shapes remain
+  `Undefined`.
 
 Successful constant slaves publish a whole-address-space `MemoryMap`.
 `ErrorSlave` leaves it `Undefined`.

@@ -1,7 +1,7 @@
 package chext.amba.axi4
 
 import chisel3._
-import chext.amba.axi4.tracking.properties.{Master, Slave}
+import chext.amba.axi4.tracking.{properties => p}
 import chext.amba.axi4.tracking.values.{BurstShape, MemoryMap, ThreadMode}
 import chext.util.ElaborationTest
 
@@ -19,12 +19,12 @@ private class FullSlaveTestTop(cfg: Config, endpointGen: => full.Interface)
 
   s_axi :=> endpointGen
   if (cfg.read) {
-    s_axi.masterProps(Master.ReadBurstShape) = BurstShape()
-    s_axi.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+    s_axi.properties(p.MasterReadBurstShape) = BurstShape()
+    s_axi.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
   }
   if (cfg.write) {
-    s_axi.masterProps(Master.WriteBurstShape) = BurstShape()
-    s_axi.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
+    s_axi.properties(p.MasterWriteBurstShape) = BurstShape()
+    s_axi.properties(p.MasterWriteThreadMode) = ThreadMode.SingleTransaction
   }
 }
 
@@ -40,14 +40,14 @@ private class FullMasterTestTop(cfg: Config, endpointGen: => full.Interface)
 
   endpointGen :=> m_axi
   if (cfg.read) {
-    m_axi.slaveProps(Slave.ReadBurstShape) = BurstShape()
-    m_axi.slaveProps(Slave.ReadThreadMode) = ThreadMode.Unconstrained
+    m_axi.properties(p.SlaveReadBurstShape) = BurstShape()
+    m_axi.properties(p.SlaveReadThreadMode) = ThreadMode.Unconstrained
   }
   if (cfg.write) {
-    m_axi.slaveProps(Slave.WriteBurstShape) = BurstShape()
-    m_axi.slaveProps(Slave.WriteThreadMode) = ThreadMode.Unconstrained
+    m_axi.properties(p.SlaveWriteBurstShape) = BurstShape()
+    m_axi.properties(p.SlaveWriteThreadMode) = ThreadMode.Unconstrained
   }
-  m_axi.slaveProps(Slave.MemoryMap) = MemoryMap(size = 0)
+  m_axi.properties(p.SlaveMemoryMap) = MemoryMap(size = 0)
 }
 
 private class LiteSlaveTestTop(cfg: Config, endpointGen: => lite.Interface)
@@ -62,10 +62,10 @@ private class LiteSlaveTestTop(cfg: Config, endpointGen: => lite.Interface)
 
   s_axil :=> endpointGen
   if (cfg.read) {
-    s_axil.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
+    s_axil.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
   }
   if (cfg.write) {
-    s_axil.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
+    s_axil.properties(p.MasterWriteThreadMode) = ThreadMode.SingleTransaction
   }
 }
 
@@ -81,12 +81,12 @@ private class LiteMasterTestTop(cfg: Config, endpointGen: => lite.Interface)
 
   endpointGen :=> m_axil
   if (cfg.read) {
-    m_axil.slaveProps(Slave.ReadThreadMode) = ThreadMode.SingleThread
+    m_axil.properties(p.SlaveReadThreadMode) = ThreadMode.SingleThread
   }
   if (cfg.write) {
-    m_axil.slaveProps(Slave.WriteThreadMode) = ThreadMode.SingleThread
+    m_axil.properties(p.SlaveWriteThreadMode) = ThreadMode.SingleThread
   }
-  m_axil.slaveProps(Slave.MemoryMap) = MemoryMap(size = 0)
+  m_axil.properties(p.SlaveMemoryMap) = MemoryMap(size = 0)
 }
 
 object ConstantSlave_Test extends App with ElaborationTest {
@@ -115,13 +115,11 @@ object ConstantSlave_Test extends App with ElaborationTest {
   )
   test(
     name = "full_zero_slave",
-    gen = () =>
-      new FullSlaveTestTop(fullCfg, Module(new full.components.ZeroSlave(fullCfg)).s_axi)
+    gen = () => new FullSlaveTestTop(fullCfg, Module(new full.components.ZeroSlave(fullCfg)).s_axi)
   )
   test(
     name = "full_error_slave",
-    gen = () =>
-      new FullSlaveTestTop(fullCfg, Module(new full.components.ErrorSlave(fullCfg)).s_axi)
+    gen = () => new FullSlaveTestTop(fullCfg, Module(new full.components.ErrorSlave(fullCfg)).s_axi)
   )
   test(
     name = "full_error_slave_slverr",
@@ -133,13 +131,12 @@ object ConstantSlave_Test extends App with ElaborationTest {
   )
   test(
     name = "full_stall_slave",
-    gen = () =>
-      new FullSlaveTestTop(fullCfg, Module(new full.components.StallSlave(fullCfg)).s_axi)
+    gen = () => new FullSlaveTestTop(fullCfg, Module(new full.components.StallSlave(fullCfg)).s_axi)
   )
   test(
     name = "full_idle_master",
-    gen = () =>
-      new FullMasterTestTop(fullCfg, Module(new full.components.IdleMaster(fullCfg)).m_axi)
+    gen =
+      () => new FullMasterTestTop(fullCfg, Module(new full.components.IdleMaster(fullCfg)).m_axi)
   )
   test(
     name = "full_zero_slave_read_only",
@@ -166,13 +163,12 @@ object ConstantSlave_Test extends App with ElaborationTest {
   )
   test(
     name = "lite_zero_slave",
-    gen = () =>
-      new LiteSlaveTestTop(liteCfg, Module(new lite.components.ZeroSlave(liteCfg)).s_axil)
+    gen = () => new LiteSlaveTestTop(liteCfg, Module(new lite.components.ZeroSlave(liteCfg)).s_axil)
   )
   test(
     name = "lite_error_slave",
-    gen = () =>
-      new LiteSlaveTestTop(liteCfg, Module(new lite.components.ErrorSlave(liteCfg)).s_axil)
+    gen =
+      () => new LiteSlaveTestTop(liteCfg, Module(new lite.components.ErrorSlave(liteCfg)).s_axil)
   )
   test(
     name = "lite_error_slave_slverr",
@@ -184,13 +180,13 @@ object ConstantSlave_Test extends App with ElaborationTest {
   )
   test(
     name = "lite_stall_slave",
-    gen = () =>
-      new LiteSlaveTestTop(liteCfg, Module(new lite.components.StallSlave(liteCfg)).s_axil)
+    gen =
+      () => new LiteSlaveTestTop(liteCfg, Module(new lite.components.StallSlave(liteCfg)).s_axil)
   )
   test(
     name = "lite_idle_master",
-    gen = () =>
-      new LiteMasterTestTop(liteCfg, Module(new lite.components.IdleMaster(liteCfg)).m_axil)
+    gen =
+      () => new LiteMasterTestTop(liteCfg, Module(new lite.components.IdleMaster(liteCfg)).m_axil)
   )
   test(
     name = "lite_zero_slave_read_only",

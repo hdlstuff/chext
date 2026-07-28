@@ -212,8 +212,8 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
 
   private var decoderGenerated = false
 
-  /** Aggregates the resolved `Slave.MemoryMap` property of each master interface, creates the
-    * applicable combinational decoders, and connects them to this demultiplexer. The optional
+  /** Aggregates the resolved `properties.SlaveMemoryMap` property of each master interface, creates
+    * the applicable combinational decoders, and connects them to this demultiplexer. The optional
     * permutation selects the order in which mapped master interfaces appear in the address map. An
     * optional error-slave interface is excluded from aggregation and selected for addresses outside
     * all mapped segments.
@@ -223,8 +223,7 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
   def genDecoder(
       permutation: Option[Seq[Int]] = None,
       errorSlave: Option[Int] = None,
-      allocationScheme: MemoryMap.AllocationScheme =
-        MemoryMap.AllocationScheme.AlignedPacked,
+      allocationScheme: MemoryMap.AllocationScheme = MemoryMap.AllocationScheme.AlignedPacked,
       memoryMapPath: Seq[String] = Seq.empty,
       captureResolutionTrace: Boolean = false
   ): MemoryMap = {
@@ -308,6 +307,7 @@ class DemuxMm(val cfg: DemuxMmConfig) extends Module with chext.AnnotatedModule 
 private final class DemuxMm_Resolver(owner: DemuxMm)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p}
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi.toSeq)
@@ -317,14 +317,14 @@ private final class DemuxMm_Resolver(owner: DemuxMm)(implicit sourceInfo: Source
     "DemuxMm keeps each downstream slave capability separate instead of aggregating them"
 
   def interfacePath(interface: axi4.tracking.Tracked): String =
-    TrackingPath.interface(interface)
+    interface.trackingPath
 
   def resolveMemoryMap(
       interface: axi4.tracking.Tracked,
       name: String,
       captureResolutionTrace: Boolean
   ): MemoryMap = {
-    val request = ResolveRequest(interface, properties.Slave.MemoryMap)
+    val request = ResolveRequest(interface, p.SlaveMemoryMap)
     val resolution = Resolver.resolve(request)
     resolution.result match {
       case ResolveResult.Success() => ()
@@ -334,12 +334,12 @@ private final class DemuxMm_Resolver(owner: DemuxMm)(implicit sourceInfo: Source
         throw new AssertionError("recursive memory-map resolution unexpectedly returned Retry")
     }
 
-    val memoryMap = request.valueOption.getOrElse {
+    val memoryMap = request.cell.valueOption.getOrElse {
       throw new IllegalArgumentException(s"Resolved $name slave memory map has no value")
     }
     val origin = resolution.steps.lastOption
       .map(_.interfaceTo)
-      .getOrElse(TrackingPath.interface(interface))
+      .getOrElse(interface.trackingPath)
     val traceArgs =
       if (captureResolutionTrace && resolution.steps.nonEmpty)
         Map("resolutionTrace" -> hdlinfo.TypedObject(ResolutionTrace(resolution.steps)))
@@ -358,22 +358,22 @@ private final class DemuxMm_Resolver(owner: DemuxMm)(implicit sourceInfo: Source
       )
     }
     memoryMapOption = Some(memoryMap)
-    owner.s_axi.slaveProps(properties.Slave.MemoryMap).enforce(memoryMap)
+    owner.s_axi.properties(p.SlaveMemoryMap).enforce(memoryMap)
   }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(MemoryMap()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
         request.failure(
           "DemuxMm.genDecoder() was not called before resolving slave.memoryMap"
         )
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(BurstShape() | ThreadMode()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.BurstShape | p.ThreadMode)) =>
         request.dontCare(noSlaveAggregate)
-      case MasterRequests(BurstShape() | ThreadMode()) =>
-        forwardTo(request, owner.s_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape | p.ThreadMode)) =>
+        request.forwardTo(owner.s_axi)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

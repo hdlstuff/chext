@@ -8,7 +8,6 @@ import elastic.ConnectOp._
 
 import chext.amba.axi4
 
-
 case class IdSerializeConfig(
     val axiSlaveCfg: axi4.Config,
     val numOutstandingRead: Int = 4,
@@ -88,34 +87,32 @@ class IdSerialize(val cfg: IdSerializeConfig) extends Module with chext.Annotate
 private final class IdSerialize_Resolver(owner: IdSerialize)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
   if (owner.cfg.axiSlaveCfg.read) {
-    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.Unconstrained
-    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.m_axi.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleThread
   }
   if (owner.cfg.axiSlaveCfg.write) {
-    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.Unconstrained
-    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.m_axi.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
   }
+
+  private val noLocalRequirement =
+    "IdSerialize imposes no local requirement for this property"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(MemoryMap()) =>
-        forwardTo(request, owner.m_axi)
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
+        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
+        request.forwardTo(owner.s_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(BurstShape()) =>
-        forwardTo(request, owner.m_axi)
-      case MasterRequests(BurstShape()) =>
-        forwardTo(request, owner.s_axi)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

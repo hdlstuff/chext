@@ -54,8 +54,7 @@ class ConstantSlave(
 }
 
 /** AXI4-Lite slave that returns zero data and OKAY responses. */
-class ZeroSlave(axiCfg: axi4.Config)
-    extends ConstantSlave(axiCfg, 0.U, axi4.ResponseFlag.OKAY)
+class ZeroSlave(axiCfg: axi4.Config) extends ConstantSlave(axiCfg, 0.U, axi4.ResponseFlag.OKAY)
 
 /** AXI4-Lite slave that returns zero data and SLVERR or DECERR responses. */
 class ErrorSlave(
@@ -71,7 +70,6 @@ class ErrorSlave(
     "errorResponse must be axi4.ResponseFlag.SLVERR or axi4.ResponseFlag.DECERR"
   )
 }
-
 
 /** AXI4-Lite slave that permanently backpressures requests and produces no responses. */
 class StallSlave(val axiCfg: axi4.Config) extends Module with chext.AnnotatedModule {
@@ -130,75 +128,71 @@ class IdleMaster(val axiCfg: axi4.Config) extends Module with chext.AnnotatedMod
 private final class ConstantSlave_Resolver(owner: ConstantSlave)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
   import axi4.ResponseFlag.Encoding.EXOKAY
 
   bindSlave(owner.s_axil)
 
   if (owner.axiCfg.read) {
-    owner.s_axil.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.SingleTransaction
+    owner.s_axil.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleTransaction
   }
   if (owner.axiCfg.write) {
-    owner.s_axil.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.SingleTransaction
+    owner.s_axil.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleTransaction
   }
   if (owner.responseValue <= EXOKAY)
-    owner.s_axil.slaveProps(properties.Slave.MemoryMap) =
-      values.MemoryMap(size = BigInt(1) << owner.axiCfg.wAddr)
+    owner.s_axil.properties(p.SlaveMemoryMap) = v.MemoryMap(size = BigInt(1) << owner.axiCfg.wAddr)
   else
-    owner.s_axil.slaveProps.markUndefined(properties.Slave.MemoryMap)
+    owner.s_axil.properties.markUndefined(p.SlaveMemoryMap)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) => request.incomplete()
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) => request.incomplete()
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }
 
 private final class StallSlave_Resolver(owner: StallSlave)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axil)
 
   if (owner.axiCfg.read) {
-    owner.s_axil.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.s_axil.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
   }
   if (owner.axiCfg.write) {
-    owner.s_axil.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.s_axil.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
   }
-  owner.s_axil.slaveProps.markUndefined(properties.Slave.MemoryMap)
+  owner.s_axil.properties.markUndefined(p.SlaveMemoryMap)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) => request.incomplete()
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) => request.incomplete()
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }
 
 private final class IdleMaster_Resolver(owner: IdleMaster)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindMaster(owner.m_axil)
 
   if (owner.axiCfg.read) {
-    owner.m_axil.masterProps(properties.Master.ReadThreadMode) =
-      values.ThreadMode.SingleTransaction
+    owner.m_axil.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleTransaction
   }
   if (owner.axiCfg.write) {
-    owner.m_axil.masterProps(properties.Master.WriteThreadMode) =
-      values.ThreadMode.SingleTransaction
+    owner.m_axil.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleTransaction
   }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) => request.incomplete()
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) => request.incomplete()
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

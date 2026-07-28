@@ -152,6 +152,7 @@ class Demux(val cfg: DemuxConfig) extends Module with chext.AnnotatedModule {
 private final class Demux_Resolver(owner: Demux)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p}
 
   bindSlave(owner.s_axil)
   bindMaster(owner.m_axil.toSeq)
@@ -161,15 +162,15 @@ private final class Demux_Resolver(owner: Demux)(implicit sourceInfo: SourceInfo
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(MemoryMap()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
         request.incomplete()
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(ThreadMode()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.ThreadMode)) =>
         request.dontCare(noSlaveAggregate)
-      case MasterRequests(ThreadMode()) =>
-        forwardTo(request, owner.s_axil)
+      case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
+        request.forwardTo(owner.s_axil)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

@@ -188,7 +188,7 @@ class Downscale(val cfg: DownscaleConfig) extends Module with chext.AnnotatedMod
       val fork0 = new elastic.Fork(awTransformed) {
         val transform0 = new elastic.Transform(
           fork(),
-          elastic.SinkBuffer( addressGenerator.source, numOutstandingWrite)
+          elastic.SinkBuffer(addressGenerator.source, numOutstandingWrite)
         ) {
           out.addr := in.addr
           out.len := in.len
@@ -258,79 +258,65 @@ class Downscale(val cfg: DownscaleConfig) extends Module with chext.AnnotatedMod
 private final class Downscale_Resolver(owner: Downscale)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
-  import axi4.BurstType.Encoding.{FIXED, INCR}
+  import axi4.tracking.{properties => p, values => v}
+  import axi4.BurstType.Encoding.INCR
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
-  private val masterFullSize = values.BurstShape.fullSize(owner.cfg.axiMasterCfg.wData)
-  private val inputTypes = Seq(FIXED, INCR)
+  private val masterFullSize = v.BurstShape.fullSize(owner.cfg.axiMasterCfg.wData)
+  private val acceptedInputShape = v.BurstShape(
+    maxBeats = 1,
+    burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
+    transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+    aligned = false
+  )
 
-  if (owner.cfg.axiSlaveCfg.read) {
-    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.SingleThread
-    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
-      values.ThreadMode.SingleThread
-  }
-  if (owner.cfg.axiSlaveCfg.write) {
-    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.SingleThread
-    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
-      values.ThreadMode.SingleThread
-  }
-
-  private def outputSize(inputSize: Int): Int =
-    inputSize min masterFullSize
-
-  private def outputBeats(inputSize: Int): Int =
-    1 << ((inputSize - masterFullSize) max 0)
-
-  private def masterShape(input: values.BurstShape): values.BurstShape = {
-    val sizes = input.size.map(outputSize)
-    if (sizes.isEmpty)
-      values.BurstShape()
-    else
-      values.BurstShape(
-        len = input.size.map(outputBeats).max,
-        tpe = Seq(INCR),
-        size = sizes,
-        align = input.align
-      )
+  private def enforceInputProperties(
+      burstShapeKey: p.Key[v.BurstShape],
+      threadModeKey: p.Key[v.ThreadMode]
+  ): Unit = {
+    owner.s_axi.properties(burstShapeKey) = acceptedInputShape
+    owner.s_axi.properties(threadModeKey) = v.ThreadMode.SingleThread
   }
 
-  private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
-    val acceptsIncr = downstream.tpe.contains(INCR)
-    val sizes =
-      values.BurstShape
-        .validSizes(owner.cfg.axiSlaveCfg.wData)
-        .filter { inputSize =>
-          acceptsIncr &&
-          downstream.size.contains(outputSize(inputSize)) &&
-          downstream.len >= outputBeats(inputSize)
-        }
+  if (owner.cfg.axiSlaveCfg.read)
+    enforceInputProperties(
+      p.SlaveReadBurstShape,
+      p.SlaveReadThreadMode
+    )
+  if (owner.cfg.axiSlaveCfg.write)
+    enforceInputProperties(
+      p.SlaveWriteBurstShape,
+      p.SlaveWriteThreadMode
+    )
 
-    if (sizes.isEmpty)
-      values.BurstShape()
-    else
-      values.BurstShape(
-        len = 1,
-        tpe = inputTypes,
-        size = sizes,
-        align = downstream.align
-      )
-  }
+  private val noLocalRequirement =
+    "Downscale imposes no additional local requirement for this property"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(MemoryMap()) =>
-        forwardTo(request, owner.m_axi)
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
+        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
+        request.mapFrom(owner.s_axi, p.BurstShape) { input =>
+          if (input.transferSizes.isEmpty)
+            v.BurstShape()
+          else
+            v.BurstShape(
+              maxBeats = v.BurstShape.maxBeatsFor(owner.m_axi.cfg),
+              burstTypes = Seq(INCR),
+              transferSizes = input.transferSizes.map(_ min masterFullSize).distinct,
+              aligned = input.aligned
+            )
+        }
+      case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
+        request.forwardTo(owner.s_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
         request.incomplete()
-      case MasterRequests(BurstShape()) =>
-        mapFrom(request, owner.s_axi)(masterShape)
-      case SlaveRequests(BurstShape()) =>
-        mapFrom(request, owner.m_axi)(slaveShape)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

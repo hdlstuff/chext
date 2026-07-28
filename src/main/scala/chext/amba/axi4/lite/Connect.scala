@@ -388,19 +388,20 @@ object ConnectOp extends ConnectOp
 private final class Connect_Resolver(owner: Connect)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p}
 
   bindSlave(owner.master)
   bindMaster(owner.slave)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(_) =>
-        forwardTo(request, owner.slave)
-      case MasterRequests(_) =>
-        forwardTo(request, owner.master)
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
+        request.forwardTo(owner.slave)
+      case ResolveRequest(_, p.Key(p.Master, _, _)) =>
+        request.forwardTo(owner.master)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

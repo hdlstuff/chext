@@ -116,19 +116,37 @@ class CreditBuffer(val cfg: CreditBufferConfig) extends Module with chext.Annota
 private final class CreditBuffer_Resolver(owner: CreditBuffer)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
+  private val noLocalRequirement =
+    "CreditBuffer imposes no local requirement for this property"
+
+  if (owner.cfg.axiCfg.read && owner.cfg.rBuffer > 0) {
+    owner.s_axi.properties(p.SlaveReadBurstShape) = v.BurstShape(
+      maxBeats = math.min(
+        owner.cfg.rBuffer,
+        v.BurstShape.maxBeatsFor(owner.s_axi.cfg)
+      ),
+      burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
+      transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+      aligned = false
+    )
+  }
+
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
+        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape | p.ThreadMode)) =>
+        request.forwardTo(owner.s_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(MemoryMap() | BurstShape() | ThreadMode()) =>
-        forwardTo(request, owner.m_axi)
-      case MasterRequests(BurstShape() | ThreadMode()) =>
-        forwardTo(request, owner.s_axi)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }
 
@@ -154,7 +172,9 @@ case class ReadResponseBufferConfig(
   * `s_*` are slave-side ports of this component; `m_*` are master-side ports. AR is forwarded only
   * when the local R buffer has room for the whole burst (`ar.len + 1` beats).
   */
-class ReadResponseBuffer(val cfg: ReadResponseBufferConfig) extends Module with chext.AnnotatedModule {
+class ReadResponseBuffer(val cfg: ReadResponseBufferConfig)
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 
@@ -215,7 +235,9 @@ case class WriteResponseBufferConfig(
   * `s_*` are slave-side ports of this component; `m_*` are master-side ports. AW is forwarded only
   * when one B-buffer entry can be reserved. The W channel is intentionally not included.
   */
-class WriteResponseBuffer(val cfg: WriteResponseBufferConfig) extends Module with chext.AnnotatedModule {
+class WriteResponseBuffer(val cfg: WriteResponseBufferConfig)
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 
@@ -273,9 +295,12 @@ case class WritePayloadBufferConfig(
 /** AXI4 write payload buffer.
   *
   * `s_*` are slave-side ports of this component; `m_*` are master-side ports. W is buffered, and AW
-  * is released only after the matching W burst is locally accepted. B is intentionally not included.
+  * is released only after the matching W burst is locally accepted. B is intentionally not
+  * included.
   */
-class WritePayloadBuffer(val cfg: WritePayloadBufferConfig) extends Module with chext.AnnotatedModule {
+class WritePayloadBuffer(val cfg: WritePayloadBufferConfig)
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 

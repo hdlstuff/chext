@@ -6,72 +6,75 @@ import java.io.{ByteArrayOutputStream, PrintStream}
 
 import chext.amba.axi4
 import chext.amba.axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
-import chext.amba.axi4.tracking.properties.{Master, Slave}
-import chext.amba.axi4.tracking.values.{
-  BurstShape,
-  MemoryMap,
-  ThreadMode,
-  TrafficProfile
-}
+import chext.amba.axi4.tracking.{properties => p, values => v}
 
 object Properties_Test extends App {
-  private final class MissingCase_Resolver
-      extends Resolver(null.asInstanceOf[BaseModule]) {
+  private final class MissingCase_Resolver extends Resolver(null.asInstanceOf[BaseModule]) {
     def resolve[T](request: ResolveRequest[T]): ResolveResult =
-      missingCase(request)
+      request.missingCase()
   }
 
   private val cfg = axi4.Config(wId = 4, wAddr = 16, wData = 64)
-  private val fullSize = BurstShape.fullSize(cfg.wData)
+  private val fullSize = v.BurstShape.fullSize(cfg.wData)
   private val allTypes = Seq(FIXED, INCR, WRAP)
-  private val allSizes = BurstShape.validSizes(cfg.wData)
-  private val shape = BurstShape(
-    len = 16,
-    tpe = allTypes,
-    size = allSizes,
-    align = 2
+  private val allSizes = v.BurstShape.supportedSizesFor(cfg)
+  private val shape = v.BurstShape(
+    maxBeats = 16,
+    burstTypes = allTypes,
+    transferSizes = allSizes,
+    aligned = true
   )
   assert(FIXED == 0 && INCR == 1 && WRAP == 2)
+  assert(v.BurstShape.supportedTypesFor(cfg) == allTypes)
+  assert(v.BurstShape.supportedSizesFor(cfg) == 0.to(fullSize))
+  assert(v.BurstShape.maxBeatsFor(cfg) == 256)
+  private val axi3Cfg = cfg.copy(axi3Compat = true)
+  assert(v.BurstShape.maxBeatsFor(axi3Cfg) == 16)
+  private val helperLiteCfg = cfg.copy(wId = 0, lite = true)
+  assert(v.BurstShape.supportedTypesFor(helperLiteCfg) == Seq(INCR))
+  assert(v.BurstShape.supportedSizesFor(helperLiteCfg) == Seq(fullSize))
+  assert(v.BurstShape.maxBeatsFor(helperLiteCfg) == 1)
   assert(
-    BurstShape(
-      len = 1,
-      tpe = Seq(WRAP, INCR, INCR),
-      size = Seq(2, 0, 2),
-      align = 0
-    ) == BurstShape(
-      len = 1,
-      tpe = Seq(INCR, WRAP),
-      size = Seq(0, 2),
-      align = 0
+    v.BurstShape(
+      maxBeats = 1,
+      burstTypes = Seq(WRAP, INCR, INCR),
+      transferSizes = Seq(2, 0, 2),
+      aligned = false
+    ) == v.BurstShape(
+      maxBeats = 1,
+      burstTypes = Seq(INCR, WRAP),
+      transferSizes = Seq(0, 2),
+      aligned = false
     )
   )
 
-  // MemoryMap remains the original immutable type through the values namespace.
-  val map: MemoryMap = MemoryMap(
+  // v.MemoryMap remains the original immutable type through the values namespace.
+  val map: v.MemoryMap = v.MemoryMap(
     size = 0x400,
     children = Seq(
-      MemoryMap(
+      v.MemoryMap(
         path = Seq("peripheral"),
         offset = 0x100,
         size = 0x100,
-        segments = Seq(MemoryMap.Segment(Seq("control"), 0x10, 0x20))
+        segments = Seq(v.MemoryMap.Segment(Seq("control"), 0x10, 0x20))
       )
     )
   )
-  assert(map.validate == MemoryMap.ValidationResult.Success)
+  assert(map.validate == v.MemoryMap.ValidationResult.Success)
   assert(map.flatten.segments.head.path == Seq("peripheral", "control"))
 
-  // Runtime value-type extractors distinguish aggregate property families.
-  val BurstShapeProperty = PropertyValueType[BurstShape]
-  val ThreadModeProperty = PropertyValueType[ThreadMode]
-  val TrafficProfileProperty = PropertyValueType[TrafficProfile]
-  val MemoryMapProperty = PropertyValueType[MemoryMap]
-  assert(BurstShapeProperty.unapply(Master.ReadBurstShape))
-  assert(BurstShapeProperty.unapply(Slave.WriteBurstShape))
-  assert(!BurstShapeProperty.accepts(Master.ReadThreadMode))
-  assert(ThreadModeProperty.unapply(Master.WriteThreadMode))
-  assert(TrafficProfileProperty.unapply(Slave.ReadTrafficProfile))
-  assert(MemoryMapProperty.unapply(Slave.MemoryMap))
+  // Roles, accesses, and value types are ordinary selectors.
+  assert(p.Role.Master == p.Master)
+  assert(p.Role.Slave == p.Slave)
+  assert(p.Role.None == p.NoRole)
+  assert(p.Access.Read == p.Read)
+  assert(p.Access.Write == p.Write)
+  assert(p.Access.None == p.NoAccess)
+  assert(p.MasterReadBurstShape.valueType == p.BurstShape)
+  assert(p.SlaveWriteBurstShape.valueType == p.BurstShape)
+  assert(p.MasterReadThreadMode.valueType == p.ThreadMode)
+  assert(p.SlaveReadTrafficProfile.valueType == p.TrafficProfile)
+  assert(p.SlaveMemoryMap.valueType == p.MemoryMap)
 
   // Resolver trace metadata follows the conventional implementation class name.
   assert(Resolver.defaultResolverName("Buffer_Resolver") == "BufferResolver")
@@ -88,7 +91,7 @@ object Properties_Test extends App {
 
   private val missingCaseResolver = new MissingCase_Resolver
   private val missingCaseRequest =
-    ResolveRequest(new Tracked { val cfg = Properties_Test.cfg }, Master.ReadBurstShape)
+    ResolveRequest(new Tracked { val cfg = Properties_Test.cfg }, p.MasterReadBurstShape)
   assert(
     missingCaseResolver.resolve(missingCaseRequest) ==
       ResolveResult.Failure(
@@ -98,88 +101,146 @@ object Properties_Test extends App {
       )
   )
 
-  assert(Master.size == 6)
-  assert(Slave.size == 7)
-  assert(Master.readProperties == Master.all.collect {
-    case key @ ReadProperty() => key
-  }.toSet)
-  assert(Master.writeProperties == Master.all.collect {
-    case key @ WriteProperty() => key
-  }.toSet)
-  assert(Slave.readProperties == Slave.all.collect {
-    case key @ ReadProperty() => key
-  }.toSet)
-  assert(Slave.writeProperties == Slave.all.collect {
-    case key @ WriteProperty() => key
-  }.toSet)
+  assert(p.KnownKeys.count(_.role == p.Master) == 6)
+  assert(p.KnownKeys.count(_.role == p.Slave) == 7)
+  assert(p.KnownKeys.count(_.access == p.Read) == 6)
+  assert(p.KnownKeys.count(_.access == p.Write) == 6)
+  assert(p.KnownKeys.count(_.access == p.NoAccess) == 1)
 
-  // Field updates own the lifecycle transition and never expose public mutable fields.
-  val properties = new PropertyManager
-  val burstProperty = properties(Master.ReadBurstShape)
-  burstProperty.len = 8
-  assert(burstProperty.state == PropertyState.Enforced(BurstShape(len = 8)))
-  burstProperty.tpe = Seq(INCR, WRAP)
-  burstProperty.size = allSizes
-  burstProperty.align = 2
+  // Aggregate property values are immutable and are enforced as complete values.
+  val properties = new p.Manager
+  val burstProperty = properties(p.MasterReadBurstShape)
+  assert(properties.select(p.Master).contains(burstProperty))
+  assert(properties.select(p.Read).contains(burstProperty))
+  assert(properties.select(p.BurstShape).contains(burstProperty))
+  assert(properties.select(p.MemoryMap).map(_.key) == Seq(p.SlaveMemoryMap))
   assert(
-    burstProperty.get ==
-      BurstShape(8, Seq(INCR, WRAP), allSizes, 2)
+    burstProperty match {
+      case original @ p.Key(p.Master, p.Read, p.BurstShape) =>
+        original eq burstProperty
+      case _ => false
+    }
   )
+  assert(
+    burstProperty match {
+      case p.Key(_, _, p.BurstShape | p.ThreadMode) => true
+      case _                                        => false
+    }
+  )
+  val noRoleKey =
+    p.Key(
+      p.NoRole,
+      p.NoAccess,
+      p.ThreadMode,
+      "test_threadMode",
+      "Role-free test property."
+    )
+  val noRoleProperty = properties(noRoleKey)
+  assert(properties.select(p.NoRole) == Seq(noRoleProperty))
 
-  val trafficProperty = properties(Master.ReadTrafficProfile)
-  trafficProperty.outstandingTransactions = 4
-  trafficProperty.threads = 2
-  trafficProperty.latencyCycles = Some(3.5)
-  assert(trafficProperty.get == TrafficProfile(4, 2, Some(3.5)))
-  assert(TrafficProfile.validationErrors(trafficProperty.get).isEmpty)
+  val adjustedShape = v.BurstShape(
+    maxBeats = 8,
+    burstTypes = Seq(INCR, WRAP),
+    transferSizes = allSizes,
+    aligned = true
+  )
+  burstProperty.enforce(adjustedShape)
+  assert(burstProperty.get == adjustedShape)
+
+  val trafficProperty = properties(p.MasterReadTrafficProfile)
+  trafficProperty.enforce(v.TrafficProfile(4, 2, Some(3.5)))
+  assert(trafficProperty.get == v.TrafficProfile(4, 2, Some(3.5)))
+  assert(v.TrafficProfile.validationErrors(trafficProperty.get).isEmpty)
 
   val dummyResolver =
     new Resolver(null.asInstanceOf[BaseModule]) {
       def resolve[T](request: ResolveRequest[T]): ResolveResult =
         request.failure("not used")
     }
-  val calculated = properties(Master.WriteBurstShape)
+  private def ops[T](request: ResolveRequest[T]): dummyResolver.RequestOps[T] =
+    new dummyResolver.RequestOps(request)
+
+  val noRoleTracked = new Tracked { val cfg = Properties_Test.cfg }
+  val noRoleResolver =
+    new Resolver(null.asInstanceOf[BaseModule]) {
+      bindNoRole(noRoleTracked)
+
+      def resolve[T](request: ResolveRequest[T]): ResolveResult =
+        request match {
+          case ResolveRequest(_, p.Key(p.NoRole, p.NoAccess, p.ThreadMode)) =>
+            request.calculate(noRoleKey, v.ThreadMode.SingleThread)
+          case _ =>
+            request.missingCase()
+        }
+    }
+  val noRoleRequest = ResolveRequest(noRoleTracked, noRoleKey)
+  assert(Resolver.resolve(noRoleRequest).result == ResolveResult.Success())
+  assert(noRoleRequest.cell.get == v.ThreadMode.SingleThread)
+
+  val rejectedCalculationTracked =
+    new Tracked { val cfg = Properties_Test.cfg }
+  rejectedCalculationTracked.properties(p.MasterReadBurstShape) = shape
+  val rejectedCalculationRequest =
+    ResolveRequest(rejectedCalculationTracked, p.MasterReadBurstShape)
+  assert(
+    ops(rejectedCalculationRequest).calculate(shape) ==
+      ResolveResult.Failure(
+        "Resolver 'Resolver' (kind 'resolver') could not calculate " +
+          "'master.read_burstShape': AlreadyEnforced",
+        rejectedCalculationRequest
+      )
+  )
+
+  val calculated = properties(p.MasterWriteBurstShape)
   val calculatedStep =
     ResolutionStep("/calculated", "/source", "test", "TestResolver", "/")
   assert(
     calculated.calculate(shape, dummyResolver, Seq(calculatedStep)) ==
-      CalculateResult.Success
+      p.CalculateResult.Success
   )
-  assert(calculated.state == PropertyState.Calculated(shape, dummyResolver))
-  calculated.len = 12
-  assert(calculated.state == PropertyState.Enforced(shape.copyForTest(len = 12)))
+  assert(calculated.state == p.State.Calculated(shape, dummyResolver))
+  calculated.enforce(shape.copy(maxBeats = 12))
+  assert(calculated.state == p.State.Enforced(shape.copy(maxBeats = 12)))
   assert(calculated.resolutionSteps.isEmpty)
 
   val terminalTracked = new Tracked { val cfg = Properties_Test.cfg }
-  val terminalRequest = ResolveRequest(terminalTracked, Slave.ReadBurstShape)
-  terminalRequest.incomplete()
-  terminalTracked.slaveProps(Slave.ReadBurstShape).len = 1
+  val terminalRequest = ResolveRequest(terminalTracked, p.SlaveReadBurstShape)
+  ops(terminalRequest).incomplete()
+  terminalTracked.properties(p.SlaveReadBurstShape).enforce(v.BurstShape(maxBeats = 1))
   assert(
-    terminalTracked.slaveProps(Slave.ReadBurstShape).state ==
-      PropertyState.Enforced(BurstShape(len = 1))
+    terminalTracked.properties(p.SlaveReadBurstShape).state ==
+      p.State.Enforced(v.BurstShape(maxBeats = 1))
   )
 
   val dontCareTracked = new Tracked { val cfg = Properties_Test.cfg }
-  ResolveRequest(dontCareTracked, Slave.ReadBurstShape).dontCare("test")
-  dontCareTracked.slaveProps(Slave.ReadBurstShape).tpe = Seq(INCR)
+  ops(ResolveRequest(dontCareTracked, p.SlaveReadBurstShape)).dontCare("test")
+  dontCareTracked
+    .properties(p.SlaveReadBurstShape)
+    .enforce(
+      v.BurstShape(burstTypes = Seq(INCR))
+    )
   assert(
-    dontCareTracked.slaveProps(Slave.ReadBurstShape).state ==
-      PropertyState.Enforced(BurstShape(tpe = Seq(INCR)))
+    dontCareTracked.properties(p.SlaveReadBurstShape).state ==
+      p.State.Enforced(v.BurstShape(burstTypes = Seq(INCR)))
   )
 
   val undefinedTracked = new Tracked { val cfg = Properties_Test.cfg }
-  ResolveRequest(undefinedTracked, Slave.ReadBurstShape).undefined()
-  undefinedTracked.slaveProps(Slave.ReadBurstShape).size = Seq(fullSize)
+  ops(ResolveRequest(undefinedTracked, p.SlaveReadBurstShape)).undefined()
+  undefinedTracked
+    .properties(p.SlaveReadBurstShape)
+    .enforce(
+      v.BurstShape(transferSizes = Seq(fullSize))
+    )
   assert(
-    undefinedTracked.slaveProps(Slave.ReadBurstShape).state ==
-      PropertyState.Enforced(BurstShape(size = Seq(fullSize)))
+    undefinedTracked.properties(p.SlaveReadBurstShape).state ==
+      p.State.Enforced(v.BurstShape(transferSizes = Seq(fullSize)))
   )
 
-  val authoritative = properties(Slave.ReadBurstShape).enforce(shape)
+  val authoritative = properties(p.SlaveReadBurstShape).enforce(shape)
   authoritative.enforce(shape)
   val conflictingReenforcementRejected =
     try {
-      authoritative.enforce(BurstShape(8, allTypes, allSizes, 2))
+      authoritative.enforce(v.BurstShape(8, allTypes, allSizes, true))
       false
     } catch {
       case _: IllegalStateException => true
@@ -187,99 +248,94 @@ object Properties_Test extends App {
   assert(conflictingReenforcementRejected)
 
   // Validation and compatibility return every applicable problem.
-  assert(BurstShape.validationErrors(BurstShape(), cfg).isEmpty)
+  assert(v.BurstShape.validationErrors(v.BurstShape(), cfg).isEmpty)
   private val liteCfg = cfg.copy(wId = 0, wData = 32, lite = true)
   assert(
-    BurstShape
+    v.BurstShape
       .validationErrors(
-        BurstShape(
+        v.BurstShape(
           1,
           Seq(INCR),
-          Seq(BurstShape.fullSize(liteCfg.wData)),
-          0
+          Seq(v.BurstShape.fullSize(liteCfg.wData)),
+          false
         ),
         liteCfg
       )
       .isEmpty
   )
   assert(
-    BurstShape
-      .validationErrors(BurstShape(2, Seq(FIXED), Seq(0), 0), liteCfg)
+    v.BurstShape
+      .validationErrors(v.BurstShape(2, Seq(FIXED), Seq(0), false), liteCfg)
       .length == 3
   )
-  val invalidShape = BurstShape(
-    len = 300,
-    tpe = Seq(3),
-    size = Seq(fullSize + 1),
-    align = cfg.wAddr + 1
+  val invalidShape = v.BurstShape(
+    maxBeats = 300,
+    burstTypes = Seq(3),
+    transferSizes = Seq(fullSize + 1),
+    aligned = false
   )
-  assert(BurstShape.validationErrors(invalidShape, cfg).length == 4)
-  assert(
-    BurstShape
-      .validationErrors(shape.copyForTest(align = -1), cfg)
-      .exists(_.contains("align must not be negative"))
-  )
+  assert(v.BurstShape.validationErrors(invalidShape, cfg).length == 3)
 
-  val masterMismatch = BurstShape(
-    len = 32,
-    tpe = Seq(FIXED, INCR, WRAP),
-    size = Seq(0, 1, 2, 3),
-    align = 1
+  val masterMismatch = v.BurstShape(
+    maxBeats = 32,
+    burstTypes = Seq(FIXED, INCR, WRAP),
+    transferSizes = Seq(0, 1, 2, 3),
+    aligned = false
   )
-  val slaveMismatch = BurstShape(
-    len = 8,
-    tpe = Seq(INCR),
-    size = Seq(3),
-    align = 3
+  val slaveMismatch = v.BurstShape(
+    maxBeats = 8,
+    burstTypes = Seq(INCR),
+    transferSizes = Seq(3),
+    aligned = true
   )
-  assert(BurstShape.compatibilityErrors(masterMismatch, slaveMismatch).length == 4)
+  assert(v.BurstShape.compatibilityErrors(masterMismatch, slaveMismatch).length == 4)
   assert(
-    BurstShape
+    v.BurstShape
       .compatibilityErrors(
-        shape.copyForTest(align = 3),
-        shape.copyForTest(align = 2)
+        shape.copy(aligned = true),
+        shape.copy(aligned = false)
       )
       .isEmpty
   )
   assert(
-    BurstShape
-      .compatibilityErrors(BurstShape(), shape.copyForTest(align = 3))
+    v.BurstShape
+      .compatibilityErrors(v.BurstShape(), shape.copy(aligned = true))
       .isEmpty
   )
 
   val modes = Seq(
-    ThreadMode.SingleTransaction,
-    ThreadMode.SingleThread,
-    ThreadMode.UniqueThreads,
-    ThreadMode.Unconstrained
+    v.ThreadMode.SingleTransaction,
+    v.ThreadMode.SingleThread,
+    v.ThreadMode.UniqueThreads,
+    v.ThreadMode.Unconstrained
   )
-  val compatibleModes = Map[ThreadMode, Set[ThreadMode]](
-    ThreadMode.SingleTransaction -> modes.toSet,
-    ThreadMode.SingleThread -> Set(ThreadMode.SingleThread, ThreadMode.Unconstrained),
-    ThreadMode.UniqueThreads -> Set(ThreadMode.UniqueThreads, ThreadMode.Unconstrained),
-    ThreadMode.Unconstrained -> Set(ThreadMode.Unconstrained)
+  val compatibleModes = Map[v.ThreadMode, Set[v.ThreadMode]](
+    v.ThreadMode.SingleTransaction -> modes.toSet,
+    v.ThreadMode.SingleThread -> Set(v.ThreadMode.SingleThread, v.ThreadMode.Unconstrained),
+    v.ThreadMode.UniqueThreads -> Set(v.ThreadMode.UniqueThreads, v.ThreadMode.Unconstrained),
+    v.ThreadMode.Unconstrained -> Set(v.ThreadMode.Unconstrained)
   )
   modes.foreach { master =>
     modes.foreach { slave =>
       assert(
-        ThreadMode.compatible(master, slave) ==
+        v.ThreadMode.compatible(master, slave) ==
           compatibleModes(master).contains(slave),
         s"$master -> $slave"
       )
     }
   }
   assert(
-    ThreadMode.validationErrors(ThreadMode.SingleTransaction, liteCfg).isEmpty
+    v.ThreadMode.validationErrors(v.ThreadMode.SingleTransaction, liteCfg).isEmpty
   )
-  assert(ThreadMode.validationErrors(ThreadMode.SingleThread, liteCfg).isEmpty)
+  assert(v.ThreadMode.validationErrors(v.ThreadMode.SingleThread, liteCfg).isEmpty)
   assert(
-    ThreadMode.validationErrors(ThreadMode.UniqueThreads, liteCfg).nonEmpty
-  )
-  assert(
-    ThreadMode.validationErrors(ThreadMode.Unconstrained, liteCfg).nonEmpty
+    v.ThreadMode.validationErrors(v.ThreadMode.UniqueThreads, liteCfg).nonEmpty
   )
   assert(
-    modes.forall(ThreadMode.validationErrors(_, cfg).isEmpty)
+    v.ThreadMode.validationErrors(v.ThreadMode.Unconstrained, liteCfg).nonEmpty
+  )
+  assert(
+    modes.forall(v.ThreadMode.validationErrors(_, cfg).isEmpty)
   )
 
   // Disabled property catalogs are classified automatically by resolver binding.
@@ -291,19 +347,22 @@ object Properties_Test extends App {
     bindSlave(writeOnly)
     def resolve[T](request: ResolveRequest[T]): ResolveResult =
       request match {
-        case MasterRequests(_) | SlaveRequests(_) => request.incomplete()
-        case _                                     => request.failure("wrong endpoint")
+        case ResolveRequest(_, p.Key(_, _, _)) => request.incomplete()
       }
   }
   assert(
-    Master.readProperties.forall(
-      writeOnly.masterProps(_).state == PropertyState.Undefined
-    )
+    p.KnownKeys
+      .filter(key => key.role == p.Master && key.access == p.Read)
+      .forall(
+        writeOnly.properties(_).state == p.State.Undefined
+      )
   )
   assert(
-    Slave.readProperties.forall(
-      writeOnly.slaveProps(_).state == PropertyState.Undefined
-    )
+    p.KnownKeys
+      .filter(key => key.role == p.Slave && key.access == p.Read)
+      .forall(
+        writeOnly.properties(_).state == p.State.Undefined
+      )
   )
 
   // AXI4-Lite has no burst-shape signals; binding classifies those properties as inapplicable.
@@ -314,26 +373,26 @@ object Properties_Test extends App {
     bindMaster(liteBound)
     bindSlave(liteBound)
     def resolve[T](request: ResolveRequest[T]): ResolveResult =
-      missingCase(request)
+      request.missingCase()
   }
   assert(
-    Seq(Master.ReadBurstShape, Master.WriteBurstShape).forall(
-      liteBound.masterProps(_).state == PropertyState.Undefined
+    Seq(p.MasterReadBurstShape, p.MasterWriteBurstShape).forall(
+      liteBound.properties(_).state == p.State.Undefined
     )
   )
   assert(
-    Seq(Slave.ReadBurstShape, Slave.WriteBurstShape).forall(
-      liteBound.slaveProps(_).state == PropertyState.Undefined
+    Seq(p.SlaveReadBurstShape, p.SlaveWriteBurstShape).forall(
+      liteBound.properties(_).state == p.State.Undefined
     )
   )
-  liteBound.masterProps(Master.ReadThreadMode) = ThreadMode.SingleTransaction
-  liteBound.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
-  liteBound.slaveProps(Slave.ReadThreadMode) = ThreadMode.SingleThread
-  liteBound.slaveProps(Slave.WriteThreadMode) = ThreadMode.SingleThread
-  liteBound.slaveProps.markUndefined(Slave.MemoryMap)
-  CompatibilityChecker.check(Seq(liteBound))
+  liteBound.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleTransaction
+  liteBound.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleTransaction
+  liteBound.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
+  liteBound.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
+  liteBound.properties.markUndefined(p.SlaveMemoryMap)
+  Checker.check(Seq(liteBound))
 
-  // Interface-aware family extractors identify the matching member of a sequence binding.
+  // ResolveRequest directly exposes the matching member of a sequence binding.
   val interfaceAware = Seq.fill(2)(new Tracked { val cfg = Properties_Test.cfg })
   var extractedSlaveInterface = Option.empty[Tracked]
   var extractedMasterInterface = Option.empty[Tracked]
@@ -344,10 +403,16 @@ object Properties_Test extends App {
 
       def resolve[T](request: ResolveRequest[T]): ResolveResult =
         request match {
-          case SlaveRequests.withInterface(interface, Slave.MemoryMap) =>
+          case ResolveRequest(
+                interface,
+                p.Key(p.Slave, p.NoAccess, p.MemoryMap)
+              ) =>
             extractedSlaveInterface = Some(interface)
             request.incomplete()
-          case MasterRequests.withInterface(interface, Master.ReadBurstShape) =>
+          case ResolveRequest(
+                interface,
+                p.Key(p.Master, p.Read, p.BurstShape)
+              ) =>
             extractedMasterInterface = Some(interface)
             request.incomplete()
           case _ => request.failure("unexpected interface-aware request")
@@ -356,13 +421,13 @@ object Properties_Test extends App {
 
   assert(
     interfaceAwareResolver.resolve(
-      ResolveRequest(interfaceAware(1), Slave.MemoryMap)
+      ResolveRequest(interfaceAware(1), p.SlaveMemoryMap)
     ) == ResolveResult.Success()
   )
   assert(extractedSlaveInterface.exists(_ eq interfaceAware(1)))
   assert(
     interfaceAwareResolver.resolve(
-      ResolveRequest(interfaceAware.head, Master.ReadBurstShape)
+      ResolveRequest(interfaceAware.head, p.MasterReadBurstShape)
     ) == ResolveResult.Success()
   )
   assert(extractedMasterInterface.exists(_ eq interfaceAware.head))
@@ -377,61 +442,74 @@ object Properties_Test extends App {
         bindSlave(interface)
 
         def resolve[T](request: ResolveRequest[T]): ResolveResult = {
-          visited += interface -> request.qualifiedName
+          visited += interface -> request.cell.key.qualifiedName
           request match {
-            case MasterRequests(Master.ReadBurstShape) =>
-              request.calculate(Master.ReadBurstShape, shape, this)
-              ResolveResult.Success()
-            case MasterRequests(Master.WriteBurstShape) =>
-              request.calculate(Master.WriteBurstShape, shape, this)
-              ResolveResult.Success()
-            case SlaveRequests(Slave.ReadBurstShape) =>
-              request.calculate(Slave.ReadBurstShape, shape, this)
-              ResolveResult.Success()
-            case SlaveRequests(Slave.WriteBurstShape) =>
-              request.calculate(Slave.WriteBurstShape, shape, this)
-              ResolveResult.Success()
-            case MasterRequests(Master.ReadThreadMode) =>
+            case ResolveRequest(
+                  _,
+                  p.Key(p.Master, p.Read, p.BurstShape)
+                ) =>
+              request.calculate(p.MasterReadBurstShape, shape)
+            case ResolveRequest(
+                  _,
+                  p.Key(p.Master, p.Write, p.BurstShape)
+                ) =>
+              request.calculate(p.MasterWriteBurstShape, shape)
+            case ResolveRequest(
+                  _,
+                  p.Key(p.Slave, p.Read, p.BurstShape)
+                ) =>
+              request.calculate(p.SlaveReadBurstShape, shape)
+            case ResolveRequest(
+                  _,
+                  p.Key(p.Slave, p.Write, p.BurstShape)
+                ) =>
+              request.calculate(p.SlaveWriteBurstShape, shape)
+            case ResolveRequest(
+                  _,
+                  p.Key(p.Master, p.Read, p.ThreadMode)
+                ) =>
               request.calculate(
-                Master.ReadThreadMode,
-                values.ThreadMode.SingleTransaction,
-                this
+                p.MasterReadThreadMode,
+                v.ThreadMode.SingleTransaction
               )
-              ResolveResult.Success()
-            case MasterRequests(Master.WriteThreadMode) =>
+            case ResolveRequest(
+                  _,
+                  p.Key(p.Master, p.Write, p.ThreadMode)
+                ) =>
               request.calculate(
-                Master.WriteThreadMode,
-                values.ThreadMode.SingleTransaction,
-                this
+                p.MasterWriteThreadMode,
+                v.ThreadMode.SingleTransaction
               )
-              ResolveResult.Success()
-            case SlaveRequests(Slave.ReadThreadMode) =>
+            case ResolveRequest(
+                  _,
+                  p.Key(p.Slave, p.Read, p.ThreadMode)
+                ) =>
               request.calculate(
-                Slave.ReadThreadMode,
-                values.ThreadMode.Unconstrained,
-                this
+                p.SlaveReadThreadMode,
+                v.ThreadMode.Unconstrained
               )
-              ResolveResult.Success()
-            case SlaveRequests(Slave.WriteThreadMode) =>
+            case ResolveRequest(
+                  _,
+                  p.Key(p.Slave, p.Write, p.ThreadMode)
+                ) =>
               request.calculate(
-                Slave.WriteThreadMode,
-                values.ThreadMode.Unconstrained,
-                this
+                p.SlaveWriteThreadMode,
+                v.ThreadMode.Unconstrained
               )
-              ResolveResult.Success()
-            case SlaveRequests(Slave.MemoryMap) =>
+            case ResolveRequest(
+                  _,
+                  p.Key(p.Slave, p.NoAccess, p.MemoryMap)
+                ) =>
               request.calculate(
-                Slave.MemoryMap,
-                values.MemoryMap(size = 0x100),
-                this
+                p.SlaveMemoryMap,
+                v.MemoryMap(size = 0x100)
               )
-              ResolveResult.Success()
             case _ => request.failure("unexpected checked property")
           }
         }
       }
   }
-  CompatibilityChecker.check(interfaces)
+  Checker.check(interfaces)
   assert(visited.groupBy(_._1).values.forall(_.length == 9))
 
   // Resolution diagnostics distinguish missing, incomplete, undefined, and incompatibility,
@@ -452,7 +530,7 @@ object Properties_Test extends App {
   }
 
   val missing = new Tracked { val cfg = Properties_Test.cfg }
-  val missingLog = capturedFailure(CompatibilityChecker.check(Seq(missing)))
+  val missingLog = capturedFailure(Checker.check(Seq(missing)))
   assert(missingLog.contains("no resolver is registered"))
 
   val invalidLiteModes = new Tracked {
@@ -462,15 +540,15 @@ object Properties_Test extends App {
     bindMaster(invalidLiteModes)
     bindSlave(invalidLiteModes)
     def resolve[T](request: ResolveRequest[T]): ResolveResult =
-      missingCase(request)
+      request.missingCase()
   }
-  invalidLiteModes.masterProps(Master.ReadThreadMode) = ThreadMode.UniqueThreads
-  invalidLiteModes.slaveProps(Slave.ReadThreadMode) = ThreadMode.SingleThread
-  invalidLiteModes.masterProps(Master.WriteThreadMode) = ThreadMode.SingleTransaction
-  invalidLiteModes.slaveProps(Slave.WriteThreadMode) = ThreadMode.Unconstrained
-  invalidLiteModes.slaveProps.markUndefined(Slave.MemoryMap)
+  invalidLiteModes.properties(p.MasterReadThreadMode) = v.ThreadMode.UniqueThreads
+  invalidLiteModes.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
+  invalidLiteModes.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleTransaction
+  invalidLiteModes.properties(p.SlaveWriteThreadMode) = v.ThreadMode.Unconstrained
+  invalidLiteModes.properties.markUndefined(p.SlaveMemoryMap)
   val invalidLiteLog =
-    capturedFailure(CompatibilityChecker.check(Seq(invalidLiteModes)))
+    capturedFailure(Checker.check(Seq(invalidLiteModes)))
   assert(
     invalidLiteLog.contains(
       "master.read_threadMode: AXI4-Lite thread mode UniqueThreads is invalid"
@@ -491,19 +569,17 @@ object Properties_Test extends App {
 
     def resolve[T](request: ResolveRequest[T]): ResolveResult =
       request match {
-        case MasterRequests(ThreadModeProperty()) =>
-          request.calculate(values.ThreadMode.UniqueThreads, this)
-          ResolveResult.Success()
-        case SlaveRequests(ThreadModeProperty()) =>
-          request.calculate(values.ThreadMode.SingleThread, this)
-          ResolveResult.Success()
+        case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
+          request.calculate(p.ThreadMode, v.ThreadMode.UniqueThreads)
+        case ResolveRequest(_, p.Key(p.Slave, _, p.ThreadMode)) =>
+          request.calculate(p.ThreadMode, v.ThreadMode.SingleThread)
         case _ =>
-          missingCase(request)
+          request.missingCase()
       }
   }
-  invalidResolvedLiteMode.slaveProps.markUndefined(Slave.MemoryMap)
+  invalidResolvedLiteMode.properties.markUndefined(p.SlaveMemoryMap)
   val invalidResolvedLiteLog =
-    capturedFailure(CompatibilityChecker.check(Seq(invalidResolvedLiteMode)))
+    capturedFailure(Checker.check(Seq(invalidResolvedLiteMode)))
   assert(
     invalidResolvedLiteLog.contains(
       "master.read_threadMode: AXI4-Lite thread mode UniqueThreads is invalid"
@@ -511,40 +587,40 @@ object Properties_Test extends App {
   )
 
   val stateDiagnostics = new Tracked { val cfg = Properties_Test.cfg }
-  stateDiagnostics.masterProps(Master.ReadBurstShape).enforce(shape)
-  stateDiagnostics.slaveProps(Slave.ReadBurstShape).markUndefined()
-  stateDiagnostics.masterProps(Master.ReadThreadMode).enforce(ThreadMode.SingleTransaction)
-  stateDiagnostics.slaveProps(Slave.ReadThreadMode).enforce(ThreadMode.Unconstrained)
-  stateDiagnostics.masterProps(Master.WriteBurstShape).enforce(shape)
-  ResolveRequest(stateDiagnostics, Slave.WriteBurstShape).incomplete()
-  stateDiagnostics.masterProps(Master.WriteThreadMode).enforce(ThreadMode.SingleTransaction)
-  stateDiagnostics.slaveProps(Slave.WriteThreadMode).enforce(ThreadMode.Unconstrained)
-  stateDiagnostics.slaveProps(Slave.MemoryMap).markUndefined()
-  val stateLog = capturedFailure(CompatibilityChecker.check(Seq(stateDiagnostics)))
+  stateDiagnostics.properties(p.MasterReadBurstShape).enforce(shape)
+  stateDiagnostics.properties(p.SlaveReadBurstShape).markUndefined()
+  stateDiagnostics.properties(p.MasterReadThreadMode).enforce(v.ThreadMode.SingleTransaction)
+  stateDiagnostics.properties(p.SlaveReadThreadMode).enforce(v.ThreadMode.Unconstrained)
+  stateDiagnostics.properties(p.MasterWriteBurstShape).enforce(shape)
+  ops(ResolveRequest(stateDiagnostics, p.SlaveWriteBurstShape)).incomplete()
+  stateDiagnostics.properties(p.MasterWriteThreadMode).enforce(v.ThreadMode.SingleTransaction)
+  stateDiagnostics.properties(p.SlaveWriteThreadMode).enforce(v.ThreadMode.Unconstrained)
+  stateDiagnostics.properties(p.SlaveMemoryMap).markUndefined()
+  val stateLog = capturedFailure(Checker.check(Seq(stateDiagnostics)))
   assert(stateLog.contains("property is undefined"))
   assert(stateLog.contains("property resolution is incomplete"))
 
-  val alignmentMismatch = new Tracked {
+  val naturalAlignmentMismatch = new Tracked {
     val cfg = Properties_Test.cfg.copy(write = false)
   }
-  alignmentMismatch
-    .masterProps(Master.ReadBurstShape)
-    .enforce(shape.copyForTest(align = 1))
-  alignmentMismatch
-    .slaveProps(Slave.ReadBurstShape)
-    .enforce(shape.copyForTest(align = 3))
-  alignmentMismatch
-    .masterProps(Master.ReadThreadMode)
-    .enforce(ThreadMode.SingleTransaction)
-  alignmentMismatch
-    .slaveProps(Slave.ReadThreadMode)
-    .enforce(ThreadMode.Unconstrained)
-  alignmentMismatch.slaveProps(Slave.MemoryMap).markUndefined()
+  naturalAlignmentMismatch
+    .properties(p.MasterReadBurstShape)
+    .enforce(shape.copy(aligned = false))
+  naturalAlignmentMismatch
+    .properties(p.SlaveReadBurstShape)
+    .enforce(shape.copy(aligned = true))
+  naturalAlignmentMismatch
+    .properties(p.MasterReadThreadMode)
+    .enforce(v.ThreadMode.SingleTransaction)
+  naturalAlignmentMismatch
+    .properties(p.SlaveReadThreadMode)
+    .enforce(v.ThreadMode.Unconstrained)
+  naturalAlignmentMismatch.properties(p.SlaveMemoryMap).markUndefined()
   val alignmentLog =
-    capturedFailure(CompatibilityChecker.check(Seq(alignmentMismatch)))
+    capturedFailure(Checker.check(Seq(naturalAlignmentMismatch)))
   assert(
     alignmentLog.contains(
-      "master align 1 does not meet slave align 3"
+      "master may issue unaligned transactions, but slave requires natural alignment"
     )
   )
 
@@ -552,29 +628,20 @@ object Properties_Test extends App {
   val masterTrace = ResolutionStep("/checked", "/master", "test", "MasterResolver", "/master")
   val slaveTrace = ResolutionStep("/checked", "/slave", "test", "SlaveResolver", "/slave")
   traced
-    .masterProps(Master.ReadBurstShape)
+    .properties(p.MasterReadBurstShape)
     .calculate(masterMismatch, dummyResolver, Seq(masterTrace))
   traced
-    .slaveProps(Slave.ReadBurstShape)
+    .properties(p.SlaveReadBurstShape)
     .calculate(slaveMismatch, dummyResolver, Seq(slaveTrace))
   traced
-    .masterProps(Master.ReadThreadMode)
-    .enforce(ThreadMode.SingleTransaction)
-  traced.slaveProps(Slave.ReadThreadMode).enforce(ThreadMode.Unconstrained)
-  traced.slaveProps(Slave.MemoryMap).markUndefined()
-  val traceLog = capturedFailure(CompatibilityChecker.check(Seq(traced)))
+    .properties(p.MasterReadThreadMode)
+    .enforce(v.ThreadMode.SingleTransaction)
+  traced.properties(p.SlaveReadThreadMode).enforce(v.ThreadMode.Unconstrained)
+  traced.properties(p.SlaveMemoryMap).markUndefined()
+  val traceLog = capturedFailure(Checker.check(Seq(traced)))
   assert(traceLog.contains("master trace"))
   assert(traceLog.contains("slave trace"))
   assert(traceLog.contains("MasterResolver"))
   assert(traceLog.contains("SlaveResolver"))
 
-  implicit final class BurstShapeTestOps(private val value: BurstShape) extends AnyVal {
-    def copyForTest(
-        len: Int = value.len,
-        tpe: Seq[Int] = value.tpe,
-        size: Seq[Int] = value.size,
-        align: Int = value.align
-    ): BurstShape =
-      BurstShape(len, tpe, size, align)
-  }
 }

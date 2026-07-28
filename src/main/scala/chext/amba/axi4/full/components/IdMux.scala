@@ -119,6 +119,7 @@ class IdMux(val cfg: IdMuxConfig) extends Module with chext.AnnotatedModule {
 private final class IdMux_Resolver(owner: IdMux)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axi.toSeq)
   bindMaster(owner.m_axi)
@@ -128,19 +129,16 @@ private final class IdMux_Resolver(owner: IdMux)(implicit sourceInfo: SourceInfo
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(MemoryMap() | BurstShape() | ThreadMode()) =>
-        forwardTo(request, owner.m_axi)
-      case MasterRequests(ThreadMode()) =>
-        if (owner.s_axi.length == 1) forwardTo(request, owner.s_axi.head)
-        else {
-          request.calculate(values.ThreadMode.Unconstrained, this)
-          ResolveResult.Success()
-        }
-      case MasterRequests(BurstShape()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap | p.BurstShape | p.ThreadMode)) =>
+        request.forwardTo(owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
+        if (owner.s_axi.length == 1) request.forwardTo(owner.s_axi.head)
+        else request.calculate(p.ThreadMode, v.ThreadMode.Unconstrained)
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.dontCare(noMasterAggregate)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

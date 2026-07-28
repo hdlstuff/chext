@@ -6,7 +6,7 @@ import java.nio.file.Path
 import chext.amba.axi4
 import chext.amba.axi4.full.components.CreditBufferConfig
 import chext.amba.axi4.full.ConnectOp._
-import chext.amba.axi4.tracking.properties.{Master => MasterProps, Slave => SlaveProps}
+import chext.amba.axi4.tracking.{properties => p}
 import chext.amba.axi4.tracking.values.{BurstShape, MemoryMap, ThreadMode}
 import chext.util.{ElaborationTest, SimulationCheck}
 
@@ -82,15 +82,15 @@ private class BufferedConnectTop extends Module with chext.AnnotatedModule {
   master :=> creditBuffer.s_axi
   creditBuffer.m_axi :=> slave
 
-  master.masterProps(MasterProps.ReadBurstShape) = BurstShape()
-  master.masterProps(MasterProps.WriteBurstShape) = BurstShape()
-  master.masterProps(MasterProps.ReadThreadMode) = ThreadMode.SingleTransaction
-  master.masterProps(MasterProps.WriteThreadMode) = ThreadMode.SingleTransaction
-  slave.slaveProps(SlaveProps.ReadBurstShape) = BurstShape()
-  slave.slaveProps(SlaveProps.WriteBurstShape) = BurstShape()
-  slave.slaveProps(SlaveProps.ReadThreadMode) = ThreadMode.Unconstrained
-  slave.slaveProps(SlaveProps.WriteThreadMode) = ThreadMode.Unconstrained
-  slave.slaveProps(SlaveProps.MemoryMap) = MemoryMap(size = 0)
+  master.properties(p.MasterReadBurstShape) = BurstShape()
+  master.properties(p.MasterWriteBurstShape) = BurstShape()
+  master.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
+  master.properties(p.MasterWriteThreadMode) = ThreadMode.SingleTransaction
+  slave.properties(p.SlaveReadBurstShape) = BurstShape()
+  slave.properties(p.SlaveWriteBurstShape) = BurstShape()
+  slave.properties(p.SlaveReadThreadMode) = ThreadMode.Unconstrained
+  slave.properties(p.SlaveWriteThreadMode) = ThreadMode.Unconstrained
+  slave.properties(p.SlaveMemoryMap) = MemoryMap(size = 0)
 }
 
 private class TieOffWarningTop extends Module {

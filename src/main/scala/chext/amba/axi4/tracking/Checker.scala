@@ -2,11 +2,10 @@ package chext.amba.axi4.tracking
 
 import scala.collection.mutable.ArrayBuffer
 
-import chext.amba.axi4.tracking.properties.{Master, Slave}
-import chext.amba.axi4.tracking.values.{BurstShape, MemoryMap, ThreadMode}
+import chext.amba.axi4.tracking.{properties => p, values => v}
 
-/** Exhaustive validation and master/slave compatibility checking for AXI interfaces. */
-object CompatibilityChecker {
+/** Resolves, validates, and checks compatibility for AXI interface properties. */
+object Checker {
   private final case class Diagnostic(
       interface: Tracked,
       property: String,
@@ -46,14 +45,14 @@ object CompatibilityChecker {
       if (!interface.cfg.lite)
         checkBurst(
           interface,
-          Master.ReadBurstShape,
-          Slave.ReadBurstShape,
+          p.MasterReadBurstShape,
+          p.SlaveReadBurstShape,
           diagnostics
         )
       checkThread(
         interface,
-        Master.ReadThreadMode,
-        Slave.ReadThreadMode,
+        p.MasterReadThreadMode,
+        p.SlaveReadThreadMode,
         diagnostics
       )
     }
@@ -62,26 +61,26 @@ object CompatibilityChecker {
       if (!interface.cfg.lite)
         checkBurst(
           interface,
-          Master.WriteBurstShape,
-          Slave.WriteBurstShape,
+          p.MasterWriteBurstShape,
+          p.SlaveWriteBurstShape,
           diagnostics
         )
       checkThread(
         interface,
-        Master.WriteThreadMode,
-        Slave.WriteThreadMode,
+        p.MasterWriteThreadMode,
+        p.SlaveWriteThreadMode,
         diagnostics
       )
     }
 
-    checkedValue(interface, Slave.MemoryMap, allowUndefined = true, diagnostics) match {
+    checkedValue(interface, p.SlaveMemoryMap, allowUndefined = true, diagnostics) match {
       case Value(memoryMap, _) =>
         memoryMap.validate match {
-          case MemoryMap.ValidationResult.Success => ()
-          case failure: MemoryMap.ValidationResult.Failure =>
+          case v.MemoryMap.ValidationResult.Success => ()
+          case failure: v.MemoryMap.ValidationResult.Failure =>
             diagnostics += Diagnostic(
               interface,
-              Slave.MemoryMap.qualifiedName,
+              p.SlaveMemoryMap.qualifiedName,
               "memory map validation failed",
               Seq(failure.render)
             )
@@ -91,7 +90,7 @@ object CompatibilityChecker {
         if (memoryMap.offset + memoryMap.allocatedSize > limit)
           diagnostics += Diagnostic(
             interface,
-            Slave.MemoryMap.qualifiedName,
+            p.SlaveMemoryMap.qualifiedName,
             s"memory map exceeds the ${interface.cfg.wAddr}-bit address space",
             Seq(
               s"offset=0x${memoryMap.offset.toString(16)}",
@@ -105,8 +104,8 @@ object CompatibilityChecker {
 
   private def checkBurst(
       interface: Tracked,
-      masterKey: PropertyKey[BurstShape],
-      slaveKey: PropertyKey[BurstShape],
+      masterKey: p.Key[v.BurstShape],
+      slaveKey: p.Key[v.BurstShape],
       diagnostics: ArrayBuffer[Diagnostic]
   ): Unit = {
     val master = checkedValue(interface, masterKey, allowUndefined = false, diagnostics)
@@ -114,14 +113,14 @@ object CompatibilityChecker {
 
     master match {
       case Value(value, _) =>
-        BurstShape.validationErrors(value, interface.cfg).foreach { message =>
+        v.BurstShape.validationErrors(value, interface.cfg).foreach { message =>
           diagnostics += Diagnostic(interface, masterKey.qualifiedName, message)
         }
       case _ => ()
     }
     slave match {
       case Value(value, _) =>
-        BurstShape.validationErrors(value, interface.cfg).foreach { message =>
+        v.BurstShape.validationErrors(value, interface.cfg).foreach { message =>
           diagnostics += Diagnostic(interface, slaveKey.qualifiedName, message)
         }
       case _ => ()
@@ -129,7 +128,7 @@ object CompatibilityChecker {
 
     (master, slave) match {
       case (Value(masterValue, masterSteps), Value(slaveValue, slaveSteps)) =>
-        val errors = BurstShape.compatibilityErrors(masterValue, slaveValue)
+        val errors = v.BurstShape.compatibilityErrors(masterValue, slaveValue)
         if (errors.nonEmpty)
           diagnostics += Diagnostic(
             interface,
@@ -143,20 +142,20 @@ object CompatibilityChecker {
 
   private def checkThread(
       interface: Tracked,
-      masterKey: PropertyKey[ThreadMode],
-      slaveKey: PropertyKey[ThreadMode],
+      masterKey: p.Key[v.ThreadMode],
+      slaveKey: p.Key[v.ThreadMode],
       diagnostics: ArrayBuffer[Diagnostic]
   ): Unit = {
     val master = checkedValue(interface, masterKey, allowUndefined = false, diagnostics)
     val slave = checkedValue(interface, slaveKey, allowUndefined = false, diagnostics)
 
     def validate(
-        checked: Checked[ThreadMode],
-        key: PropertyKey[ThreadMode]
+        checked: Checked[v.ThreadMode],
+        key: p.Key[v.ThreadMode]
     ): Boolean =
       checked match {
         case Value(value, steps) =>
-          val errors = ThreadMode.validationErrors(value, interface.cfg)
+          val errors = v.ThreadMode.validationErrors(value, interface.cfg)
           errors.foreach { message =>
             diagnostics += Diagnostic(
               interface,
@@ -176,7 +175,7 @@ object CompatibilityChecker {
       case (Value(masterValue, masterSteps), Value(slaveValue, slaveSteps))
           if masterValid &&
             slaveValid &&
-            !ThreadMode.compatible(masterValue, slaveValue) =>
+            !v.ThreadMode.compatible(masterValue, slaveValue) =>
         diagnostics += Diagnostic(
           interface,
           s"${masterKey.qualifiedName} -> ${slaveKey.qualifiedName}",
@@ -189,7 +188,7 @@ object CompatibilityChecker {
 
   private def checkedValue[T](
       interface: Tracked,
-      key: PropertyKey[T],
+      key: p.Key[T],
       allowUndefined: Boolean,
       diagnostics: ArrayBuffer[Diagnostic]
   ): Checked[T] = {
@@ -205,30 +204,30 @@ object CompatibilityChecker {
         )
         Invalid
       case ResolveResult.Success() =>
-        request.state match {
-          case PropertyState.Enforced(value) =>
+        request.cell.state match {
+          case p.State.Enforced(value) =>
             Value(value, Seq.empty)
-          case PropertyState.Calculated(value, _) =>
+          case p.State.Calculated(value, _) =>
             Value(value, resolution.steps)
-          case PropertyState.DontCare(_) =>
+          case p.State.DontCare(_) =>
             Skip
-          case PropertyState.Undefined if allowUndefined =>
+          case p.State.Undefined if allowUndefined =>
             Skip
-          case PropertyState.Undefined =>
+          case p.State.Undefined =>
             diagnostics += Diagnostic(
               interface,
               key.qualifiedName,
               "property is undefined on an enabled channel group"
             )
             Invalid
-          case PropertyState.Incomplete =>
+          case p.State.Incomplete =>
             diagnostics += Diagnostic(
               interface,
               key.qualifiedName,
               "property resolution is incomplete"
             )
             Invalid
-          case PropertyState.Unresolved =>
+          case p.State.Unresolved =>
             diagnostics += Diagnostic(
               interface,
               key.qualifiedName,
@@ -256,7 +255,7 @@ object CompatibilityChecker {
       }
 
   private def path(interface: Tracked): String =
-    try TrackingPath.interface(interface)
+    try interface.trackingPath
     catch {
       case _: RuntimeException => interface.toString
     }

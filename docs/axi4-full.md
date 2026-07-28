@@ -183,8 +183,7 @@ demux.m_axi(0) :=> m0_axi
 them and generate the private read/write decoders.
 
 ```scala
-import chext.amba.axi4.tracking.properties.Slave
-import chext.amba.axi4.util.MemoryMap
+import chext.amba.axi4.tracking.{properties => p, values => v}
 
 val demux = Module(
   new axi4f.components.DemuxMm(
@@ -197,14 +196,14 @@ demux.m_axi :=> m_axi
 // Properties attached downstream propagate through the AXI Connect components.
 m_axi.zip(childMaps).foreach { case (master, childMap) =>
   require(childMap.path.nonEmpty)
-  master.slaveProps(Slave.MemoryMap) = childMap
+  master.properties(p.SlaveMemoryMap) = childMap
 }
 
 // Place m_axi(2), then m_axi(0); reserve m_axi(1) for decode errors:
 val combinedMemoryMap = demux.genDecoder(
   permutation = Some(Seq(2, 0)),
   errorSlave = Some(1),
-  allocationScheme = MemoryMap.AllocationScheme.AlignedPacked
+  allocationScheme = v.MemoryMap.AllocationScheme.AlignedPacked
 )
 ```
 
@@ -213,13 +212,13 @@ using one of three allocation schemes: `AlignedPacked` reserves each child's pow
 extent, `AlignedLargest` gives every child the largest such extent, and `Tight` places declared
 extents consecutively. The map itself contains no AXI routing indices; `DemuxMm` privately
 associates each address-ordered child with its original `m_axi` index. The resulting combined map is
-validated and installed as `demux.s_axi`'s `Slave.MemoryMap`. Validation rejects children or
+validated and installed as `demux.s_axi`'s `SlaveMemoryMap`. Validation rejects children or
 segments outside their containing map and rejects overlapping direct entries. A child map must
 have a non-empty component `path`, and the complete layout must fit in `axiCfg.wAddr`. AXI boundary
 buffering is left to the caller.
 
 `errorSlave = Some(index)` excludes that interface from aggregation and routes addresses outside
-all mapped segments to it; the error interface therefore does not need a `Slave.MemoryMap`.
+all mapped segments to it; the error interface therefore does not need a `SlaveMemoryMap`.
 The permutation must contain every remaining interface exactly once. Without an error slave,
 unmapped addresses select the first interface in address-map order.
 
@@ -526,4 +525,4 @@ unburst stage is always instantiated. Upscaling does not create additional beats
 needs no output unburst stage.
 
 The converter publishes generated-traffic properties on `m_axil` and accepted-traffic properties
-on `s_axi`. The downstream `Slave.MemoryMap` property is resolved through the converter to `s_axi`.
+on `s_axi`. The downstream `SlaveMemoryMap` property is resolved through the converter to `s_axi`.

@@ -362,15 +362,25 @@ class Widen(val cfg: WidenConfig) extends Module with chext.AnnotatedModule {
 private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
-  import axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
+  import axi4.tracking.{properties => p, values => v}
+  import axi4.BurstType.Encoding.FIXED
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
-  private val fullSize = values.BurstShape.fullSize(owner.cfg.axiCfg.wData)
-  private val supportedTypes = Seq(INCR, WRAP)
-  private val protocolBeats =
-    if (owner.cfg.axiCfg.axi3Compat) 16 else 256
+  private val fullSize = v.BurstShape.fullSize(owner.cfg.axiCfg.wData)
+
+  private val inputShape = v.BurstShape(
+    maxBeats = v.BurstShape.maxBeatsFor(owner.s_axi.cfg),
+    burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg).filterNot(_ == FIXED),
+    transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+    aligned = false
+  )
+
+  if (owner.s_axi.cfg.read)
+    owner.s_axi.properties(p.SlaveReadBurstShape) = inputShape
+  if (owner.s_axi.cfg.write)
+    owner.s_axi.properties(p.SlaveWriteBurstShape) = inputShape
 
   private def widenedBeats(beats: Int, size: Int): Int = {
     val outputBytes = BigInt(1) << fullSize
@@ -379,56 +389,33 @@ private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo
     ((bytes + outputBytes - 1) / outputBytes).toInt
   }
 
-  private def masterShape(input: values.BurstShape): values.BurstShape = {
-    val types = input.tpe.filterNot(_ == FIXED)
-    if (input.size.isEmpty || types.isEmpty)
-      values.BurstShape()
-    else
-      values.BurstShape(
-        len = input.size.map(size => widenedBeats(input.len, size)).max,
-        tpe = types,
-        size = Seq(fullSize),
-        align = input.align
-      )
-  }
-
-  private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
-    val types = downstream.tpe.intersect(supportedTypes)
-    val sizes =
-      if (downstream.size.contains(fullSize))
-        values.BurstShape.validSizes(owner.cfg.axiCfg.wData)
-      else Seq.empty
-    val beats =
-      (0 to protocolBeats).reverse.find { candidate =>
-        sizes.forall(size => widenedBeats(candidate, size) <= downstream.len)
-      }.getOrElse(0)
-
-    if (sizes.isEmpty || types.isEmpty || beats == 0)
-      values.BurstShape()
-    else
-      values.BurstShape(
-        len = beats,
-        tpe = types,
-        size = sizes,
-        align = downstream.align
-      )
-  }
+  private val noLocalRequirement =
+    "Widen imposes no additional local requirement for this property"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(MemoryMap()) =>
-        forwardTo(request, owner.m_axi)
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
+        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
+        request.forwardTo(owner.s_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
+        request.mapFrom(owner.s_axi, p.BurstShape) { input =>
+          val types = input.burstTypes.filterNot(_ == FIXED)
+          if (input.transferSizes.isEmpty || types.isEmpty)
+            v.BurstShape()
+          else
+            v.BurstShape(
+              maxBeats = input.transferSizes.map(size => widenedBeats(input.maxBeats, size)).max,
+              burstTypes = types,
+              transferSizes = Seq(fullSize),
+              aligned = false
+            )
+        }
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(ThreadMode()) =>
-        forwardTo(request, owner.m_axi)
-      case MasterRequests(ThreadMode()) =>
-        forwardTo(request, owner.s_axi)
-      case MasterRequests(BurstShape()) =>
-        mapFrom(request, owner.s_axi)(masterShape)
-      case SlaveRequests(BurstShape()) =>
-        mapFrom(request, owner.m_axi)(slaveShape)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

@@ -134,28 +134,26 @@ class MemController(
 private final class MemController_Resolver(owner: MemController)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axil)
 
   override def kind: String = "memory-controller"
 
   if (owner.axiCfg.read) {
-    owner.s_axil.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.s_axil.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
   }
   if (owner.axiCfg.write) {
-    owner.s_axil.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.s_axil.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
   }
-  owner.s_axil.slaveProps(properties.Slave.MemoryMap) =
-    values.MemoryMap(
-      size = BigInt(1) << (owner.log2numElements + owner.addrBitLow)
-    )
+  owner.s_axil.properties(p.SlaveMemoryMap) = v.MemoryMap(
+    size = BigInt(1) << (owner.log2numElements + owner.addrBitLow)
+  )
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) => request.incomplete()
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) => request.incomplete()
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

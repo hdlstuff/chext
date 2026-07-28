@@ -264,28 +264,27 @@ class RegisterBlock(
 private final class RegisterBlock_Resolver(owner: RegisterBlock)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axil)
 
-  owner.s_axil.slaveProps(properties.Slave.ReadThreadMode) =
-    values.ThreadMode.SingleTransaction
-  owner.s_axil.slaveProps(properties.Slave.WriteThreadMode) =
-    values.ThreadMode.SingleTransaction
+  owner.s_axil.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleTransaction
+  owner.s_axil.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleTransaction
 
   def interfacePath: String =
-    TrackingPath.interface(owner.s_axil)
+    owner.s_axil.trackingPath
 
   def setMemoryMap(memoryMap: axi4.util.MemoryMap): Unit =
-    owner.s_axil.slaveProps(properties.Slave.MemoryMap) = memoryMap
+    owner.s_axil.properties(p.SlaveMemoryMap) = memoryMap
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(MemoryMap()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
         request.failure(
           "RegisterBlock.complete() was not called before resolving slave.memoryMap"
         )
-      case Request(TrafficProfile()) => request.incomplete()
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) => request.incomplete()
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

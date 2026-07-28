@@ -159,61 +159,30 @@ class Upscale(val cfg: UpscaleConfig) extends Module with chext.AnnotatedModule 
 private final class Upscale_Resolver(owner: Upscale)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
   if (owner.cfg.axiSlaveCfg.read) {
-    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.SingleThread
-    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
   }
   if (owner.cfg.axiSlaveCfg.write) {
-    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.SingleThread
-    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
   }
 
-  private def masterShape(input: values.BurstShape): values.BurstShape =
-    if (input.size.isEmpty)
-      values.BurstShape()
-    else
-      values.BurstShape(
-        len = input.len,
-        tpe = input.tpe,
-        size = input.size,
-        align = input.align
-      )
-
-  private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
-    val sizes =
-      downstream.size.intersect(
-        values.BurstShape.validSizes(owner.cfg.axiSlaveCfg.wData)
-      )
-    if (sizes.isEmpty)
-      values.BurstShape()
-    else
-      values.BurstShape(
-        len = downstream.len,
-        tpe = downstream.tpe,
-        size = sizes,
-        align = downstream.align
-      )
-  }
+  private val noLocalRequirement =
+    "Upscale imposes no local requirement for this property"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(MemoryMap()) =>
-        forwardTo(request, owner.m_axi)
-      case Request(TrafficProfile()) =>
-        request.incomplete()
-      case MasterRequests(BurstShape()) =>
-        mapFrom(request, owner.s_axi)(masterShape)
-      case SlaveRequests(BurstShape()) =>
-        mapFrom(request, owner.m_axi)(slaveShape)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
+        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Master, _, _)) =>
+        request.forwardTo(owner.s_axi)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

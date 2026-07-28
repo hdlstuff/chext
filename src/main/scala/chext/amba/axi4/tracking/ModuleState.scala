@@ -16,7 +16,8 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
   def newComponentState(component: tracking.Component): ComponentState =
     new ComponentState(component)
 
-  /** Records a DataView-created interface, which is not discoverable as an ordinary wire or port. */
+  /** Records a DataView-created interface, which is not discoverable as an ordinary wire or port.
+    */
   private[axi4] def registerInterface(interface: Tracked): Unit = {
     if (!registeredInterfaces.exists(_ eq interface))
       registeredInterfaces.addOne(interface)
@@ -41,11 +42,12 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
     require(moduleInfo.parent.isEmpty, "AXI compatibility checking must start at the root module")
     if (!checked) {
       checked = true
-      CompatibilityChecker.check(treeInterfaces)
+      Checker.check(treeInterfaces)
     }
   }
 
-  /** Child states wait for their parent so connections registered outside child bodies are visible. */
+  /** Child states wait for their parent so connections registered outside child bodies are visible.
+    */
   def onComplete(): Unit =
     if (moduleInfo.parent.isEmpty)
       checkRoot()

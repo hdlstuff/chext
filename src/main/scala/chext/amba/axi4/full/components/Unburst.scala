@@ -134,7 +134,7 @@ class Unburst(val cfg: UnburstConfig) extends Module with chext.AnnotatedModule 
 
     def implB(): Unit = {
       val lastRepeated = elastic.EWire(Bool())
-      
+
       val repeat0 = new elastic.Repeat(wire0, lastRepeated, axiCfg.wLen + 1) {
         len { in => in +& 1.U }
         out { (in, _, _, last) => last }
@@ -174,77 +174,45 @@ class Unburst(val cfg: UnburstConfig) extends Module with chext.AnnotatedModule 
 private final class Unburst_Resolver(owner: Unburst)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
-  import axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
+  import axi4.tracking.{properties => p, values => v}
+  import axi4.BurstType.Encoding.INCR
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
-  private val protocolBeats = if (owner.cfg.axiCfg.axi3Compat) 16 else 256
-  private val protocolTypes = Seq(FIXED, INCR, WRAP)
-
   if (owner.cfg.axiCfg.read) {
-    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.SingleThread
-    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
+    owner.m_axi.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleThread
   }
   if (owner.cfg.axiCfg.write) {
-    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.SingleThread
-    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
-      values.ThreadMode.SingleThread
+    owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
+    owner.m_axi.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
   }
 
-  private def masterShape(input: values.BurstShape): values.BurstShape =
-    if (input.size.isEmpty)
-      values.BurstShape()
-    else
-      values.BurstShape(
-        len = 1,
-        tpe = Seq(INCR),
-        size = input.size,
-        align =
-          if (
-            input.len > 1 &&
-            input.tpe.exists(_ != FIXED)
-          )
-            input.align min input.size.min
-          else input.align
-      )
-
-  private def slaveShape(downstream: values.BurstShape): values.BurstShape = {
-    val sizes =
-      if (
-        downstream.len >= 1 &&
-        downstream.tpe.contains(INCR)
-      )
-        downstream.size.intersect(
-          values.BurstShape.validSizes(owner.cfg.axiCfg.wData)
-        ).filter(_ >= downstream.align)
-      else Seq.empty
-
-    if (sizes.isEmpty)
-      values.BurstShape()
-    else
-      values.BurstShape(
-        len = protocolBeats,
-        tpe = protocolTypes,
-        size = sizes,
-        align = downstream.align
-      )
-  }
+  private val noLocalRequirement =
+    "Unburst imposes no additional local requirement for this property"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(MemoryMap()) =>
-        forwardTo(request, owner.m_axi)
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
+        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
+        request.mapFrom(owner.s_axi, p.BurstShape) { input =>
+          if (input.transferSizes.isEmpty)
+            v.BurstShape()
+          else
+            v.BurstShape(
+              maxBeats = 1,
+              burstTypes = Seq(INCR),
+              transferSizes = input.transferSizes,
+              aligned = input.aligned
+            )
+        }
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
         request.incomplete()
-      case MasterRequests(BurstShape()) =>
-        mapFrom(request, owner.s_axi)(masterShape)
-      case SlaveRequests(BurstShape()) =>
-        mapFrom(request, owner.m_axi)(slaveShape)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

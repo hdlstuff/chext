@@ -100,8 +100,7 @@ class ConstantSlave(
 }
 
 /** AXI4-Full slave that returns zero data and OKAY responses. */
-class ZeroSlave(axiCfg: axi4.Config)
-    extends ConstantSlave(axiCfg, 0.U, axi4.ResponseFlag.OKAY)
+class ZeroSlave(axiCfg: axi4.Config) extends ConstantSlave(axiCfg, 0.U, axi4.ResponseFlag.OKAY)
 
 /** AXI4-Full slave that returns zero data and SLVERR or DECERR responses. */
 class ErrorSlave(
@@ -117,7 +116,6 @@ class ErrorSlave(
     "errorResponse must be axi4.ResponseFlag.SLVERR or axi4.ResponseFlag.DECERR"
   )
 }
-
 
 /** AXI4-Full slave that permanently backpressures requests and produces no responses. */
 class StallSlave(val axiCfg: axi4.Config) extends Module with chext.AnnotatedModule {
@@ -176,91 +174,85 @@ class IdleMaster(val axiCfg: axi4.Config) extends Module with chext.AnnotatedMod
 private final class ConstantSlave_Resolver(owner: ConstantSlave)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
-  import axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
+  import axi4.tracking.{properties => p, values => v}
   import axi4.ResponseFlag.Encoding.EXOKAY
 
   bindSlave(owner.s_axi)
 
-  private val maxLen = if (owner.axiCfg.axi3Compat) 16 else 256
-  private val sizes = values.BurstShape.validSizes(owner.axiCfg.wData)
-  private val burstShape = values.BurstShape(
-    len = maxLen,
-    tpe = Seq(FIXED, INCR, WRAP),
-    size = sizes,
-    align = 0
+  private val sizes = v.BurstShape.supportedSizesFor(owner.axiCfg)
+  private val burstShape = v.BurstShape(
+    maxBeats = v.BurstShape.maxBeatsFor(owner.axiCfg),
+    burstTypes = v.BurstShape.supportedTypesFor(owner.axiCfg),
+    transferSizes = sizes,
+    aligned = false
   )
 
   if (owner.axiCfg.read) {
-    owner.s_axi.slaveProps(properties.Slave.ReadBurstShape) = burstShape
-    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.SingleTransaction
+    owner.s_axi.properties(p.SlaveReadBurstShape) = burstShape
+    owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleTransaction
   }
   if (owner.axiCfg.write) {
-    owner.s_axi.slaveProps(properties.Slave.WriteBurstShape) = burstShape
-    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.SingleTransaction
+    owner.s_axi.properties(p.SlaveWriteBurstShape) = burstShape
+    owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleTransaction
   }
   if (owner.responseValue <= EXOKAY)
-    owner.s_axi.slaveProps(properties.Slave.MemoryMap) =
-      values.MemoryMap(size = BigInt(1) << owner.axiCfg.wAddr)
+    owner.s_axi.properties(p.SlaveMemoryMap) = v.MemoryMap(size = BigInt(1) << owner.axiCfg.wAddr)
   else
-    owner.s_axi.slaveProps.markUndefined(properties.Slave.MemoryMap)
+    owner.s_axi.properties.markUndefined(p.SlaveMemoryMap)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) => request.incomplete()
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) => request.incomplete()
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }
 
 private final class StallSlave_Resolver(owner: StallSlave)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axi)
 
   if (owner.axiCfg.read) {
-    owner.s_axi.slaveProps(properties.Slave.ReadBurstShape) = values.BurstShape()
-    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.Unconstrained
+    owner.s_axi.properties(p.SlaveReadBurstShape) = v.BurstShape()
+    owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.Unconstrained
   }
   if (owner.axiCfg.write) {
-    owner.s_axi.slaveProps(properties.Slave.WriteBurstShape) = values.BurstShape()
-    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.Unconstrained
+    owner.s_axi.properties(p.SlaveWriteBurstShape) = v.BurstShape()
+    owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.Unconstrained
   }
-  owner.s_axi.slaveProps.markUndefined(properties.Slave.MemoryMap)
+  owner.s_axi.properties.markUndefined(p.SlaveMemoryMap)
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) => request.incomplete()
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) => request.incomplete()
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }
 
 private final class IdleMaster_Resolver(owner: IdleMaster)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindMaster(owner.m_axi)
 
   if (owner.axiCfg.read) {
-    owner.m_axi.masterProps(properties.Master.ReadBurstShape) = values.BurstShape()
-    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
-      values.ThreadMode.SingleTransaction
+    owner.m_axi.properties(p.MasterReadBurstShape) = v.BurstShape()
+    owner.m_axi.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleTransaction
   }
   if (owner.axiCfg.write) {
-    owner.m_axi.masterProps(properties.Master.WriteBurstShape) = values.BurstShape()
-    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
-      values.ThreadMode.SingleTransaction
+    owner.m_axi.properties(p.MasterWriteBurstShape) = v.BurstShape()
+    owner.m_axi.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleTransaction
   }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) => request.incomplete()
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) => request.incomplete()
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

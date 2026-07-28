@@ -9,9 +9,7 @@ import chext.elastic
 import elastic.ConnectOp._
 import chext.util.BitOps._
 
-import axi4.full.{
-  WriteDataChannel
-}
+import axi4.full.{WriteDataChannel}
 
 case class IdDemuxConfig(
     val axiSlaveCfg: chext.amba.axi4.Config,
@@ -162,6 +160,7 @@ class IdDemux(val cfg: IdDemuxConfig) extends Module with chext.AnnotatedModule 
 private final class IdDemux_Resolver(owner: IdDemux)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi.toSeq)
@@ -171,13 +170,25 @@ private final class IdDemux_Resolver(owner: IdDemux)(implicit sourceInfo: Source
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
         request.incomplete()
-      case SlaveRequests(MemoryMap() | BurstShape() | ThreadMode()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
         request.dontCare(noSlaveAggregate)
-      case MasterRequests(BurstShape() | ThreadMode()) =>
-        forwardTo(request, owner.s_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
+        request.forwardTo(owner.s_axi)
+      case ResolveRequest(output, p.Key(p.Master, _, p.ThreadMode)) =>
+        if (output.cfg.wId == 0)
+          request.mapFrom(owner.s_axi, p.ThreadMode) {
+            case v.ThreadMode.SingleTransaction =>
+              v.ThreadMode.SingleTransaction
+            case _ =>
+              v.ThreadMode.SingleThread
+          }
+        else
+          request.forwardTo(owner.s_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
+        request.incomplete()
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

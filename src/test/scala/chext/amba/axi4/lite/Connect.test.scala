@@ -6,7 +6,7 @@ import java.nio.file.Path
 import chext.amba.axi4
 import chext.amba.axi4.lite.components.CreditBufferConfig
 import chext.amba.axi4.lite.ConnectOp._
-import chext.amba.axi4.tracking.properties.{Master => MasterProps, Slave => SlaveProps}
+import chext.amba.axi4.tracking.{properties => p}
 import chext.amba.axi4.tracking.values.{MemoryMap, ThreadMode}
 import chext.util.{ElaborationTest, SimulationCheck}
 
@@ -60,11 +60,11 @@ private class BufferedConnectTop extends Module with chext.AnnotatedModule {
   master :=> creditBuffer.s_axi
   creditBuffer.m_axi :=> slave
 
-  master.masterProps(MasterProps.ReadThreadMode) = ThreadMode.SingleTransaction
-  master.masterProps(MasterProps.WriteThreadMode) = ThreadMode.SingleTransaction
-  slave.slaveProps(SlaveProps.ReadThreadMode) = ThreadMode.SingleThread
-  slave.slaveProps(SlaveProps.WriteThreadMode) = ThreadMode.SingleThread
-  slave.slaveProps(SlaveProps.MemoryMap) = MemoryMap(size = 0)
+  master.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
+  master.properties(p.MasterWriteThreadMode) = ThreadMode.SingleTransaction
+  slave.properties(p.SlaveReadThreadMode) = ThreadMode.SingleThread
+  slave.properties(p.SlaveWriteThreadMode) = ThreadMode.SingleThread
+  slave.properties(p.SlaveMemoryMap) = MemoryMap(size = 0)
 }
 
 private class TieOffWarningTop extends Module {

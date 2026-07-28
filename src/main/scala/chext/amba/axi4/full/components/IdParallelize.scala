@@ -119,6 +119,8 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig())
   val s_axi = IO(axi4.full.Slave(axiSlaveCfg))
   val m_axi = IO(axi4.full.Master(axiMasterCfg))
 
+  private[components] val readResponseCapacity = 1 << wBufferIndex
+
   declareClock(clock)
   declareReset(reset)
   declareAxi4Interface(s_axi)
@@ -305,34 +307,43 @@ class IdParallelize(cfg: IdParallelizeConfig = IdParallelizeConfig())
 private final class IdParallelize_Resolver(owner: IdParallelize)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
 
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
+  private val noLocalRequirement =
+    "IdParallelize imposes no additional local requirement for this property"
+
   if (owner.s_axi.cfg.read) {
-    owner.s_axi.slaveProps(properties.Slave.ReadThreadMode) =
-      values.ThreadMode.SingleThread
-    owner.m_axi.masterProps(properties.Master.ReadThreadMode) =
-      values.ThreadMode.UniqueThreads
+    owner.s_axi.properties(p.SlaveReadBurstShape) = v.BurstShape(
+      maxBeats = math.min(
+        owner.readResponseCapacity,
+        v.BurstShape.maxBeatsFor(owner.s_axi.cfg)
+      ),
+      burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
+      transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+      aligned = false
+    )
+    owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
+    owner.m_axi.properties(p.MasterReadThreadMode) = v.ThreadMode.UniqueThreads
   }
   if (owner.s_axi.cfg.write) {
-    owner.s_axi.slaveProps(properties.Slave.WriteThreadMode) =
-      values.ThreadMode.SingleThread
-    owner.m_axi.masterProps(properties.Master.WriteThreadMode) =
-      values.ThreadMode.UniqueThreads
+    owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
+    owner.m_axi.properties(p.MasterWriteThreadMode) = v.ThreadMode.UniqueThreads
   }
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case SlaveRequests(MemoryMap()) =>
-        forwardTo(request, owner.m_axi)
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
+        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
+        request.forwardTo(owner.s_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(BurstShape()) =>
-        forwardTo(request, owner.m_axi)
-      case MasterRequests(BurstShape()) =>
-        forwardTo(request, owner.s_axi)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }

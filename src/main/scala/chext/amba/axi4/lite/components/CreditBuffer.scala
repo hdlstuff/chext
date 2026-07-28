@@ -105,19 +105,25 @@ class CreditBuffer(val cfg: CreditBufferConfig) extends Module with chext.Annota
 private final class CreditBuffer_Resolver(owner: CreditBuffer)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
   import axi4.tracking._
+  import axi4.tracking.{properties => p}
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
+  private val noLocalRequirement =
+    "CreditBuffer imposes no local requirement for this property"
+
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case Request(TrafficProfile()) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+        request.forwardTo(owner.m_axi)
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
+        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
+        request.forwardTo(owner.s_axi)
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
         request.incomplete()
-      case SlaveRequests(MemoryMap() | ThreadMode()) =>
-        forwardTo(request, owner.m_axi)
-      case MasterRequests(ThreadMode()) =>
-        forwardTo(request, owner.s_axi)
       case _ =>
-        missingCase(request)
+        request.missingCase()
     }
 }
 
@@ -143,7 +149,9 @@ case class ReadResponseBufferConfig(
   * `s_*` are slave-side ports of this component; `m_*` are master-side ports. AR is forwarded only
   * when one R-buffer entry can be reserved.
   */
-class ReadResponseBuffer(val cfg: ReadResponseBufferConfig) extends Module with chext.AnnotatedModule {
+class ReadResponseBuffer(val cfg: ReadResponseBufferConfig)
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 
@@ -203,7 +211,9 @@ case class WriteResponseBufferConfig(
   * `s_*` are slave-side ports of this component; `m_*` are master-side ports. AW is forwarded only
   * when one B-buffer entry can be reserved. The W channel is intentionally not included.
   */
-class WriteResponseBuffer(val cfg: WriteResponseBufferConfig) extends Module with chext.AnnotatedModule {
+class WriteResponseBuffer(val cfg: WriteResponseBufferConfig)
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 
@@ -264,7 +274,9 @@ case class WritePayloadBufferConfig(
   * is released only after the matching W payload is locally accepted. B is intentionally not
   * included.
   */
-class WritePayloadBuffer(val cfg: WritePayloadBufferConfig) extends Module with chext.AnnotatedModule {
+class WritePayloadBuffer(val cfg: WritePayloadBufferConfig)
+    extends Module
+    with chext.AnnotatedModule {
   import cfg._
   private implicit val _axiCfg: axi4.Config = axiCfg
 

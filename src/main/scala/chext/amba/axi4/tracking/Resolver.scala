@@ -4,215 +4,53 @@ import chisel3.experimental.{BaseModule, SourceInfo}
 
 import scala.collection.mutable
 
-import chext.tracking.Component
-import chext.amba.axi4.tracking.properties.{Master, Slave}
+import chext.tracking.{Component, Path}
+import chext.amba.axi4.tracking.{properties => p}
 
-/** Type-safe resolver view of one property on one AXI interface.
-  *
-  * A request is the unit of work passed to [[Resolver.resolve]]. It keeps the requested
-  * [[Property]] and its owning [[Tracked]] interface together, exposes their resolver-relevant
-  * metadata, and provides the only operations a resolver normally needs to complete the request.
-  *
-  * Resolvers that derive a property from another interface should call [[retarget]], inspect the
-  * returned dependency, and return [[retry]] while that dependency is unresolved. The recursive
-  * coordinator resolves those dependencies depth-first and invokes the original resolver again.
-  * Once the required facts are available, the resolver terminates the request with `calculate`,
-  * [[dontCare]], [[incomplete]], or [[undefined]]. It may instead return [[failure]] when the
-  * topology or property state is invalid.
-  *
-  * Requests use interface and property identity for equality. Consequently, independently
-  * constructed requests for the same realized property compare equal and participate correctly in
-  * dependency-cycle detection.
+/** One property-resolution request.
   *
   * @tparam T
   *   value type of the requested property
-  * @param interface
+  * @param tracked
   *   AXI interface that owns the property
-  * @param property
-  *   realized property to resolve
+  * @param cell
+  *   realized property cell to resolve
   */
-final class ResolveRequest[T] private[tracking] (
-    val interface: Tracked,
-    val property: Property[T]
-) {
+final case class ResolveRequest[T](
+    tracked: Tracked,
+    cell: p.Cell[T]
+)
 
-  /** AXI configuration of the interface on which this request originated. */
-  final def cfg: chext.amba.axi4.Config = interface.cfg
-
-  /** Property manager of the request's interface. */
-  final def properties: PropertyManager = interface.properties
-
-  /** Typed key identifying the requested property. */
-  final def key: PropertyKey[T] = property.key
-
-  /** Unqualified property name. */
-  final def name: String = key.name
-
-  /** Family-qualified property name, for example `slave.memoryMap`. */
-  final def qualifiedName: String = key.qualifiedName
-
-  /** Human-readable description supplied by the property key. */
-  final def description: String = key.description
-
-  /** Current state of the realized property. */
-  final def state: PropertyState[T] = property.state
-
-  /** Whether the property has reached any terminal state, including valueless states. */
-  final def isResolved: Boolean = property.isResolved
-
-  /** Calculated or enforced value, or `None` for valueless and unresolved states. */
-  final def valueOption: Option[T] = property.valueOption
-
-  /** Ordered trace accumulated while calculating the property. */
-  final def resolutionSteps: Seq[ResolutionStep] = property.resolutionSteps
-
-  /** Calculates this property from facts handled by `resolver`.
-    *
-    * Calculation succeeds only while the property is unresolved. An explicitly enforced value and
-    * every other terminal state take precedence and produce the corresponding [[CalculateResult]]
-    * rejection. `resolutionSteps` should describe the hop performed by `resolver`, followed by any
-    * dependency trace that led to `value`.
-    *
-    * A resolver normally returns [[ResolveResult.Success]] after calling this method. The
-    * recursive coordinator verifies that a reported success really left the property in a
-    * terminal state.
-    */
-  final def calculate(
-      value: T,
-      resolver: Resolver,
-      resolutionSteps: Seq[ResolutionStep] = Seq.empty
-  ): CalculateResult =
-    property.calculate(value, resolver, resolutionSteps)
-
-  /** Calculates this request through a key whose singleton type was widened by generic code.
-    *
-    * The runtime identity check guarantees that `targetKey` is the key represented by this request
-    * before the localized type cast is made. Prefer the simpler `calculate(value, resolver)`
-    * overload when the request's `T` is already available.
-    */
-  final def calculate[T0](
-      targetKey: PropertyKey[T0],
-      value: T0,
-      resolver: Resolver
-  ): CalculateResult = {
-    require(
-      key.asInstanceOf[AnyRef] eq targetKey.asInstanceOf[AnyRef],
-      s"ResolveRequest targets '$qualifiedName', not '${targetKey.qualifiedName}'"
-    )
-    property.asInstanceOf[Property[T0]].calculate(value, resolver, Seq.empty)
-  }
-
-  /** Creates a dependency request for the same property key on `target`.
-    *
-    * The returned request points at `target`'s realized property while preserving `T`. No
-    * resolution is performed by this method.
-    */
-  final def retarget(target: Tracked): ResolveRequest[T] =
-    ResolveRequest(target, key)
-
-  /** Resolves this property as intentionally unnecessary for the tracking model.
-    *
-    * A don't-care result is different from missing information: the resolver deliberately does not
-    * derive this property because no planned compatibility check needs a synthetic value at this
-    * boundary.
-    */
-  final def dontCare(message: String): ResolveResult = {
-    property.markDontCare(message)
-    ResolveResult.Success()
-  }
-
-  /** Resolves this property as intentionally incomplete.
-    *
-    * Incomplete means that the interface participates in tracking, but the design has not supplied
-    * enough information to compute this property. It is a successful terminal state with no value.
-    */
-  final def incomplete(): ResolveResult = {
-    property.markIncomplete()
-    ResolveResult.Success()
-  }
-
-  /** Resolves this property as not defined for this interface or topology.
-    *
-    * Undefined is a successful terminal state with no value. Use [[incomplete]] instead when the
-    * property concept applies but required information is missing.
-    */
-  final def undefined(): ResolveResult = {
-    property.markUndefined()
-    ResolveResult.Success()
-  }
-
-  /** Asks the coordinator to resolve `dependencies` and then process this resolve request again.
-    *
-    * The original request is appended as a continuation marker. Callers supply only true
-    * dependencies; at least one is required. [[Resolver.resolve]] validates the shape,
-    * detects repeated retries and cycles, and resolves dependencies in sequence.
-    */
-  final def retry(dependencies: Seq[ResolveRequest[_]]): ResolveResult =
-    ResolveResult.Retry(dependencies :+ this)
-
-  /** Stops resolution with a diagnostic tied to this request. */
-  final def failure(message: String): ResolveResult =
-    ResolveResult.Failure(message, this)
-
-  final override def equals(other: Any): Boolean =
-    other match {
-      case that: ResolveRequest[_] =>
-        (interface.asInstanceOf[AnyRef] eq that.interface.asInstanceOf[AnyRef]) &&
-          (property.asInstanceOf[AnyRef] eq that.property.asInstanceOf[AnyRef])
-      case _ => false
-    }
-
-  final override def hashCode(): Int =
-    31 * System.identityHashCode(interface) + System.identityHashCode(property)
-
-  final override def toString: String =
-    s"ResolveRequest($qualifiedName, interface=$interface)"
-}
-
-/** Constructs validated [[ResolveRequest]] values. */
+/** Convenience construction of [[ResolveRequest]] values from property keys. */
 object ResolveRequest {
-  /** Creates a request for an already-realized property.
-    *
-    * The property must belong to `interface`; this guards against accidentally pairing a property
-    * instance from one interface with another interface.
-    */
-  def apply[T](
-      interface: Tracked,
-      property: Property[T]
-  ): ResolveRequest[T] = {
-    require(
-      interface.properties.containsProperty(property),
-      s"Property '${property.key.qualifiedName}' does not belong to the requested interface"
-    )
-    new ResolveRequest(interface, property)
-  }
 
   /** Realizes `key` in `interface`'s manager and creates its request. */
   def apply[T](
-      interface: Tracked,
-      key: PropertyKey[T]
+      tracked: Tracked,
+      key: p.Key[T]
   ): ResolveRequest[T] =
-    apply(interface, interface.properties(key))
+    ResolveRequest(tracked, tracked.properties(key))
 }
 
 /** Control result returned by one resolver step.
   *
-  * This is a small protocol between a resolver and the recursive coordinator. `Success` means
-  * the resolver put the request into a terminal property state. `Retry` exposes prerequisite
-  * requests and asks the coordinator to revisit the original request. `Failure` aborts the entire
-  * resolution operation.
+  * This is a small protocol between a resolver and the recursive coordinator. `Success` means the
+  * resolver put the request into a terminal property state. `Retry` exposes prerequisite requests
+  * and asks the coordinator to revisit the original request. `Failure` aborts the entire resolution
+  * operation.
   */
 sealed trait ResolveResult
 
 object ResolveResult {
+
   /** The requested property reached a terminal state. */
   final case class Success() extends ResolveResult
 
   /** Resolve prerequisite requests, then retry the original request.
     *
-    * Values produced by [[ResolveRequest.retry]] contain dependencies first and the original
-    * request last. Resolver implementations should use that helper rather than construct this case
-    * class directly.
+    * Values produced by resolver request operations contain dependencies first and the original
+    * request last. Resolver implementations should use `forwardTo` or `mapFrom` rather than
+    * construct this case class directly.
     */
   final case class Retry(requests: Seq[ResolveRequest[_]]) extends ResolveResult
 
@@ -226,85 +64,215 @@ object ResolveResult {
   final case class Failure(message: String, request: ResolveRequest[_]) extends ResolveResult
 }
 
+/** One boundary crossed while deriving a tracking property.
+  *
+  * Steps are ordered from the interface on which resolution was requested toward the interface that
+  * supplied the value. Paths are absolute slash-separated tracking paths, while `kind` and
+  * `resolver` are stable machine-readable identifiers suitable for diagnostics and serialized
+  * memory-map arguments.
+  *
+  * @param interfaceFrom
+  *   interface whose property was being calculated at this hop
+  * @param interfaceTo
+  *   dependency interface from which the property was obtained
+  * @param kind
+  *   category of boundary crossed, such as `connect` or `buffer`
+  * @param resolver
+  *   resolver implementation identifier
+  * @param resolverPath
+  *   absolute path of the component or module that owns the resolver
+  */
+final case class ResolutionStep(
+    interfaceFrom: String,
+    interfaceTo: String,
+    kind: String,
+    resolver: String,
+    resolverPath: String
+)
+
+/** Ordered provenance of a calculated tracking property.
+  *
+  * The first element is nearest the original request and the last is nearest the interface that
+  * supplied the value.
+  */
+final case class ResolutionTrace(steps: Seq[ResolutionStep])
+
 /** Derives AXI tracking properties for one component or module boundary.
   *
-  * A resolver is registered on one or more [[Tracked]] interfaces with the dedicated master or
-  * slave registration method. Registration is family-specific: slave properties conventionally
+  * A resolver is registered on one or more [[Tracked]] interfaces with the dedicated master, slave,
+  * or role-free registration method. Registration is role-specific: slave properties conventionally
   * flow downstream-to-upstream, while master properties flow upstream-to-downstream. When multiple
-  * resolvers are registered for the same interface and family, the tracking layer selects the
+  * resolvers are registered for the same interface and role, the tracking layer selects the
   * resolver owned by the shallowest hierarchy node so that an enclosing boundary controls
   * propagation. The latest registration wins when candidates have the same depth.
   *
-  * [[resolve]] is intentionally one step of a dependency-driven operation. Implementations
-  * inspect the request, create typed dependencies with [[ResolveRequest.retarget]], and use the
-  * request helpers to calculate a value, mark a valueless terminal state, retry after dependencies,
-  * or fail. [[Resolver.resolve]] owns recursive dependency traversal, cycle detection, retry
-  * validation, and the maximum dependency depth.
+  * [[resolve]] is intentionally one step of a dependency-driven operation. Implementations inspect
+  * the request and use the inherited `RequestOps` methods to calculate a value, mark a valueless
+  * terminal state, forward or transform a dependency, or fail. [[Resolver.resolve]] owns recursive
+  * dependency traversal, cycle detection, retry validation, and the maximum dependency depth.
   *
   * Ownership also supplies stable trace metadata through [[resolverPath]] and participates in
-  * resolver precedence. Use the `Component` constructor for tracked components and the
-  * `BaseModule` constructor for module-owned resolvers.
+  * resolver precedence. Use the `Component` constructor for tracked components and the `BaseModule`
+  * constructor for module-owned resolvers.
   */
 abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
   Tag.initialize()
 
-  /** Stable value-family extractors shared by standard component resolver policies. */
-  protected final val MemoryMap = PropertyValueType[values.MemoryMap]
-  protected final val BurstShape = PropertyValueType[values.BurstShape]
-  protected final val ThreadMode = PropertyValueType[values.ThreadMode]
-  protected final val TrafficProfile = PropertyValueType[values.TrafficProfile]
-
-  private val masterInterfaces = mutable.ArrayBuffer.empty[Tracked]
-  private val slaveInterfaces = mutable.ArrayBuffer.empty[Tracked]
-
-  /** Exposes a request's property key to a nested value-family extractor.
+  /** Resolver-facing operations for one request.
     *
-    * Resolver selection has already established the applicable interface and master/slave family,
-    * allowing family-independent policies to read as `Request(TrafficProfile())`.
+    * This class deliberately does not extend `AnyVal`. It is nested in [[Resolver]] so it captures
+    * the enclosing resolver instance, while a Scala value class cannot be a member of another
+    * class. The captured instance supplies calculation ownership, trace metadata, and diagnostics
+    * without an explicit resolver argument at each call site.
     */
-  protected object Request {
-    def unapply[T](request: ResolveRequest[T]): Some[PropertyKey[T]] =
-      Some(request.key)
-  }
+  implicit final class RequestOps[T](
+      private val request: ResolveRequest[T]
+  ) {
+    private def key: p.Key[T] = request.cell.key
+    private def qualifiedName: String = key.qualifiedName
 
-  /** Matches a master-property request registered on this resolver. */
-  protected object MasterRequests {
-    def unapply[T](request: ResolveRequest[T]): Option[PropertyKey[T]] =
-      if (
-        masterInterfaces.exists(_ eq request.interface) &&
-        MasterProperty.accepts(request.key)
+    private def calculateCell[T0](
+        cell: p.Cell[T0],
+        value: T0,
+        resolutionSteps: Seq[ResolutionStep]
+    ): ResolveResult =
+      cell.calculate(value, Resolver.this, resolutionSteps) match {
+        case p.CalculateResult.Success =>
+          ResolveResult.Success()
+        case rejected =>
+          failure(
+            s"Resolver '$resolver' (kind '$kind') could not calculate " +
+              s"'$qualifiedName': $rejected"
+          )
+      }
+
+    /** Calculates this request from a value produced by the enclosing resolver. */
+    def calculate(value: T): ResolveResult =
+      calculateCell(request.cell, value, Seq.empty)
+
+    /** Calculates through a key whose singleton type was widened by generic code. */
+    def calculate[T0](
+        targetKey: p.Key[T0],
+        value: T0
+    ): ResolveResult = {
+      require(
+        key == targetKey,
+        s"ResolveRequest targets '$qualifiedName', not '${targetKey.qualifiedName}'"
       )
-        Some(request.key)
-      else
-        None
-
-    /** Matches a master request and also extracts its bound interface. */
-    object withInterface {
-      def unapply[T](
-          request: ResolveRequest[T]
-      ): Option[(Tracked, PropertyKey[T])] =
-        MasterRequests.unapply(request).map(request.interface -> _)
-    }
-  }
-
-  /** Matches a slave-property request registered on this resolver. */
-  protected object SlaveRequests {
-    def unapply[T](request: ResolveRequest[T]): Option[PropertyKey[T]] =
-      if (
-        slaveInterfaces.exists(_ eq request.interface) &&
-        SlaveProperty.accepts(request.key)
+      calculateCell(
+        request.cell.asInstanceOf[p.Cell[T0]],
+        value,
+        Seq.empty
       )
-        Some(request.key)
-      else
-        None
-
-    /** Matches a slave request and also extracts its bound interface. */
-    object withInterface {
-      def unapply[T](
-          request: ResolveRequest[T]
-      ): Option[(Tracked, PropertyKey[T])] =
-        SlaveRequests.unapply(request).map(request.interface -> _)
     }
+
+    /** Calculates through a value type selected by a property pattern.
+      *
+      * Scala 2 does not refine the request's type parameter from a stable value-type pattern such
+      * as `p.Key(_, _, p.ThreadMode)`, so the selected value type is supplied explicitly.
+      */
+    def calculate[T0](
+        valueType: p.ValueType[T0],
+        value: T0
+    ): ResolveResult = {
+      require(
+        key.valueType == valueType,
+        s"ResolveRequest targets '$qualifiedName', not value type '${valueType.name}'"
+      )
+      calculateCell(
+        request.cell.asInstanceOf[p.Cell[T0]],
+        value,
+        Seq.empty
+      )
+    }
+
+    /** Resolves this property as intentionally unnecessary for the tracking model. */
+    def dontCare(message: String): ResolveResult = {
+      request.cell.markDontCare(message)
+      ResolveResult.Success()
+    }
+
+    /** Resolves this property as applicable but not yet modeled completely. */
+    def incomplete(): ResolveResult = {
+      request.cell.markIncomplete()
+      ResolveResult.Success()
+    }
+
+    /** Resolves this property as not defined for the interface or topology. */
+    def undefined(): ResolveResult = {
+      request.cell.markUndefined()
+      ResolveResult.Success()
+    }
+
+    /** Stops resolution with a diagnostic tied to this request. */
+    def failure(message: String): ResolveResult =
+      ResolveResult.Failure(message, request)
+
+    /** Forwards this request to the same property on `target`. */
+    def forwardTo(target: Tracked): ResolveResult =
+      mapFrom(target)(identity)
+
+    /** Resolves the same property on `target` and transforms its value at this boundary. */
+    def mapFrom(target: Tracked)(transform: T => T): ResolveResult =
+      mapCellFrom(request.cell, target)(transform)
+
+    /** Resolves and transforms a value type selected by a property pattern.
+      *
+      * This is the typed Scala 2 counterpart to matching a stable [[properties.ValueType]].
+      */
+    def mapFrom[T0](
+        target: Tracked,
+        valueType: p.ValueType[T0]
+    )(transform: T0 => T0): ResolveResult = {
+      require(
+        key.valueType == valueType,
+        s"ResolveRequest targets '$qualifiedName', not value type '${valueType.name}'"
+      )
+      mapCellFrom(
+        request.cell.asInstanceOf[p.Cell[T0]],
+        target
+      )(transform)
+    }
+
+    private def mapCellFrom[T0](
+        cell: p.Cell[T0],
+        target: Tracked
+    )(transform: T0 => T0): ResolveResult = {
+      val dependency = ResolveRequest(target, cell.key)
+      if (!dependency.cell.isResolved)
+        ResolveResult.Retry(Seq(dependency, request))
+      else
+        dependency.cell.valueOption match {
+          case Some(value) =>
+            calculateCell(
+              cell,
+              transform(value),
+              ResolutionStep(
+                interfaceFrom = request.tracked.trackingPath,
+                interfaceTo = target.trackingPath,
+                kind = kind,
+                resolver = resolver,
+                resolverPath = resolverPath
+              ) +: dependency.cell.resolutionSteps
+            )
+          case None =>
+            dependency.cell.state match {
+              case p.State.DontCare(message) => dontCare(message)
+              case p.State.Incomplete        => incomplete()
+              case p.State.Undefined         => undefined()
+              case state =>
+                failure(
+                  s"Forwarded property '$qualifiedName' has unexpected state $state"
+                )
+            }
+        }
+    }
+
+    /** Fails a request that reaches the catch-all branch of the enclosing resolver. */
+    def missingCase(): ResolveResult =
+      failure(
+        s"Resolver '$resolver' (kind '$kind') has no case for '$qualifiedName'"
+      )
   }
 
   /** Creates a resolver owned by a unified Chext component. */
@@ -343,22 +311,17 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
   /** Performs one resolution step.
     *
     * Implementations must return success only after placing `request` in a terminal state. They
-    * must not recursively call another resolver; unresolved prerequisites are returned with
-    * [[ResolveRequest.retry]] so the coordinator can detect cycles and enforce its depth bound.
+    * must not recursively call another resolver; request operations expose unresolved prerequisites
+    * to the coordinator so it can detect cycles and enforce its depth bound.
     */
   def resolve[T](request: ResolveRequest[T]): ResolveResult
 
-  /** Registers this resolver for master properties on one interface.
-    *
-    * Concrete resolvers match registered requests through the inherited [[MasterRequests]]
-    * extractor.
-    */
+  /** Registers this resolver for master properties on one interface. */
   protected final def bindMaster(
       interface: Tracked
   )(implicit sourceInfo: SourceInfo): Unit = {
-    initializeMasterApplicability(interface)
+    initializeApplicability(interface, p.Master)
     interface.addMasterResolver(this)
-    masterInterfaces += interface
   }
 
   /** Registers this resolver for master properties on every interface in `interfaces`. */
@@ -371,9 +334,8 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
   protected final def bindSlave(
       interface: Tracked
   )(implicit sourceInfo: SourceInfo): Unit = {
-    initializeSlaveApplicability(interface)
+    initializeApplicability(interface, p.Slave)
     interface.addSlaveResolver(this)
-    slaveInterfaces += interface
   }
 
   /** Registers this resolver for slave properties on every interface in `interfaces`. */
@@ -382,87 +344,36 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
   )(implicit sourceInfo: SourceInfo): Unit =
     interfaces.foreach(interface => bindSlave(interface))
 
-  /** Fails a request that reaches the catch-all branch of this resolver's policy.
-    *
-    * The diagnostic identifies the derived resolver implementation and kind, so concrete
-    * resolvers do not need to repeat endpoint-specific boilerplate.
-    */
-  protected final def missingCase[T](
-      request: ResolveRequest[T]
-  ): ResolveResult =
-    request.failure(
-      s"Resolver '$resolver' (kind '$kind') has no case for '${request.qualifiedName}'"
-    )
-
-  /** Eagerly classifies inapplicable standard master properties from the interface configuration. */
-  private def initializeMasterApplicability(interface: Tracked): Unit = {
-    if (interface.cfg.lite)
-      interface.masterProps.markUndefined(
-        Seq(Master.ReadBurstShape, Master.WriteBurstShape)
-      )
-    if (!interface.cfg.read)
-      interface.masterProps.markUndefined(Master.readProperties)
-    if (!interface.cfg.write)
-      interface.masterProps.markUndefined(Master.writeProperties)
+  /** Registers this resolver for properties without a master/slave role on one interface. */
+  protected final def bindNoRole(
+      interface: Tracked
+  )(implicit sourceInfo: SourceInfo): Unit = {
+    initializeApplicability(interface, p.NoRole)
+    interface.addNoRoleResolver(this)
   }
 
-  /** Eagerly classifies inapplicable standard slave properties from the interface configuration. */
-  private def initializeSlaveApplicability(interface: Tracked): Unit = {
+  /** Registers this resolver for role-free properties on every interface in `interfaces`. */
+  protected final def bindNoRole(
+      interfaces: Seq[Tracked]
+  )(implicit sourceInfo: SourceInfo): Unit =
+    interfaces.foreach(interface => bindNoRole(interface))
+
+  /** Eagerly classifies standard properties that do not apply to this configuration and role. */
+  private def initializeApplicability(interface: Tracked, role: p.Role): Unit = {
+    val roleKeys = p.KnownKeys.filter(_.role == role)
+
     if (interface.cfg.lite)
-      interface.slaveProps.markUndefined(
-        Seq(Slave.ReadBurstShape, Slave.WriteBurstShape)
+      interface.properties.markUndefined(
+        roleKeys.filter(_.valueType == p.BurstShape)
       )
     if (!interface.cfg.read)
-      interface.slaveProps.markUndefined(Slave.readProperties)
+      interface.properties.markUndefined(
+        roleKeys.filter(_.access == p.Read)
+      )
     if (!interface.cfg.write)
-      interface.slaveProps.markUndefined(Slave.writeProperties)
-  }
-
-  /** Forwards `request` to the same property on `target`.
-    *
-    * The helper implements the common retry/copy/trace protocol while the concrete component
-    * resolver remains responsible for selecting and validating the target endpoint.
-    */
-  protected final def forwardTo[T](
-      request: ResolveRequest[T],
-      target: Tracked
-  ): ResolveResult =
-    mapFrom(request, target)(identity)
-
-  /** Resolves a dependency for the same key and transforms its value at this boundary. */
-  protected final def mapFrom[T](
-      request: ResolveRequest[T],
-      target: Tracked
-  )(transform: T => T): ResolveResult = {
-    val dependency = request.retarget(target)
-    if (!dependency.isResolved)
-      request.retry(Seq(dependency))
-    else
-      dependency.valueOption match {
-        case Some(value) =>
-          request.calculate(
-            transform(value),
-            this,
-            ResolutionStep(
-              interfaceFrom = TrackingPath.interface(request.interface),
-              interfaceTo = TrackingPath.interface(target),
-              kind = kind,
-              resolver = resolver,
-              resolverPath = resolverPath
-            ) +: dependency.resolutionSteps
-          )
-          ResolveResult.Success()
-        case None =>
-          dependency.state match {
-            case PropertyState.DontCare(message) => request.dontCare(message)
-            case PropertyState.Incomplete        => request.incomplete()
-            case PropertyState.Undefined         => request.undefined()
-            case state =>
-              request.failure(
-                s"Forwarded property '${request.qualifiedName}' has unexpected state $state"
-              )
-          }
-      }
+      interface.properties.markUndefined(
+        roleKeys.filter(_.access == p.Write)
+      )
   }
 }
 
@@ -528,15 +439,16 @@ object Resolver {
   ): Resolution = {
     val context = new ResolveContext(maxStackSize)
     val result = context.resolve(initial)
-    Resolution(result, initial.resolutionSteps)
+    Resolution(result, initial.cell.resolutionSteps)
   }
 
   /** Mutable state for one top-level resolution.
     *
     * The context tracks the active recursive dependency path for cycle detection. Each active
-    * request also gets a retry-history set, preventing a resolver from returning the same dependency
-    * list twice without making progress. The class is private because callers should use
-    * [[resolve]]; exposing a reusable context would make its lifetime and state semantics ambiguous.
+    * request also gets a retry-history set, preventing a resolver from returning the same
+    * dependency list twice without making progress. The class is private because callers should use
+    * [[resolve]]; exposing a reusable context would make its lifetime and state semantics
+    * ambiguous.
     *
     * @param maxStackSize
     *   maximum number of requests permitted on the active dependency path
@@ -553,7 +465,7 @@ object Resolver {
         request: ResolveRequest[_],
         depth: Int
     ): ResolveResult = {
-      if (request.isResolved)
+      if (request.cell.isResolved)
         return ResolveResult.Success()
 
       if (depth > maxStackSize)
@@ -570,12 +482,13 @@ object Resolver {
         )
       }
 
-      val resolver = request.interface.resolverOption(request.key).getOrElse {
-        return ResolveResult.Failure(
-          s"no resolver is registered for property '${request.qualifiedName}'",
-          request
-        )
-      }
+      val resolver =
+        request.tracked.resolverOption(request.cell.key).getOrElse {
+          return ResolveResult.Failure(
+            s"no resolver is registered for property '${request.cell.key.qualifiedName}'",
+            request
+          )
+        }
 
       active.add(request)
       try {
@@ -584,7 +497,7 @@ object Resolver {
         while (true) {
           resolver.resolve(request) match {
             case success @ ResolveResult.Success() =>
-              if (request.isResolved)
+              if (request.cell.isResolved)
                 return success
               return ResolveResult.Failure(
                 "resolver returned Success without resolving the property",
@@ -633,9 +546,10 @@ object Resolver {
   }
 
   private[tracking] object Owner {
+
     /** Resolver ownership by a unified tracked component. */
     final case class ComponentOwner(component: Component) extends Owner {
-      lazy val resolverPath: String = TrackingPath.component(component)
+      lazy val resolverPath: String = Path.component(component)
 
       lazy val hierarchyDepth: Int = {
         @scala.annotation.tailrec
@@ -658,7 +572,7 @@ object Resolver {
       val hierarchyDepth: Int = 0
       lazy val resolverPath: String =
         if (module eq null) "/"
-        else TrackingPath.module(module)
+        else Path.module(module)
     }
   }
 }

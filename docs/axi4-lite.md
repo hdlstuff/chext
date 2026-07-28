@@ -301,7 +301,7 @@ class RegTop extends Module {
 ```
 
 `memoryMapOption` is `None` before completion, while `memoryMap` requires completion. Resolving
-`Slave.MemoryMap` before `complete()` returns a resolution failure; the same request can be retried
+`SlaveMemoryMap` before `complete()` returns a resolution failure; the same request can be retried
 successfully after completion.
 
 `base(addr)` rebases the next allocation, `nextAddr` returns the next free byte address, `reserve`
