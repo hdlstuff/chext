@@ -438,6 +438,11 @@ val cfg = axi4f.components.CreditBufferConfig(
 val credit = Module(new axi4f.components.CreditBuffer(cfg))
 ```
 
+When enabled, `rBuffer` limits the accepted read burst to the number of locally
+buffered R beats. Likewise, `wBuffer` limits the accepted write burst so the
+complete W payload can be accepted before AW is released, even if the
+downstream interface does not accept W before AW.
+
 ### `ReadResponseBuffer`
 
 Channel-level read buffer. AR is forwarded only if the R buffer has room for the whole burst

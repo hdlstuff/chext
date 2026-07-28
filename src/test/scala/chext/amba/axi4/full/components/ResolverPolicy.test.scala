@@ -3,7 +3,7 @@ package chext.amba.axi4.full.components
 import chisel3._
 
 import chext.amba.axi4
-import chext.amba.axi4.BurstType.Encoding.{INCR, WRAP}
+import chext.amba.axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
 import chext.amba.axi4.tracking.{ResolveRequest, ResolveResult, Resolver}
 import chext.amba.axi4.tracking.{properties => p}
 import chext.amba.axi4.tracking.values.{BurstShape, MemoryMap, ThreadMode, TrafficProfile}
@@ -279,14 +279,19 @@ class IdParallelizeResolverPolicyTestTop
 class CreditBufferResolverPolicyTestTop
     extends CreditBuffer(
       CreditBufferConfig(
-        axiCfg = axi4.Config(wId = 0, wAddr = 32, wData = 64, write = false),
-        rBuffer = 7
+        axiCfg = axi4.Config(wId = 0, wAddr = 32, wData = 64),
+        rBuffer = 7,
+        wBuffer = 5
       )
     ) {
-  private val inputShape =
+  private val readInputShape =
     BurstShape(7, Seq(INCR, WRAP), Seq(0, 1, 2, 3), true)
-  s_axi.properties(p.MasterReadBurstShape) = inputShape
+  s_axi.properties(p.MasterReadBurstShape) = readInputShape
   s_axi.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
+  private val writeInputShape =
+    BurstShape(5, Seq(FIXED, INCR), Seq(0, 1, 2), false)
+  s_axi.properties(p.MasterWriteBurstShape) = writeInputShape
+  s_axi.properties(p.MasterWriteThreadMode) = ThreadMode.SingleThread
 
   private val slaveBurstRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
   assert(Resolver.resolve(slaveBurstRequest).result == ResolveResult.Success())
@@ -307,11 +312,35 @@ class CreditBufferResolverPolicyTestTop
 
   private val masterBurstRequest = ResolveRequest(m_axi, p.MasterReadBurstShape)
   assert(Resolver.resolve(masterBurstRequest).result == ResolveResult.Success())
-  assert(masterBurstRequest.cell.valueOption.contains(inputShape))
+  assert(masterBurstRequest.cell.valueOption.contains(readInputShape))
 
   private val masterThreadRequest = ResolveRequest(m_axi, p.MasterReadThreadMode)
   assert(Resolver.resolve(masterThreadRequest).result == ResolveResult.Success())
   assert(masterThreadRequest.cell.valueOption.contains(ThreadMode.SingleTransaction))
+
+  private val slaveWriteBurstRequest =
+    ResolveRequest(s_axi, p.SlaveWriteBurstShape)
+  assert(Resolver.resolve(slaveWriteBurstRequest).result == ResolveResult.Success())
+  assert(
+    slaveWriteBurstRequest.cell.valueOption.contains(
+      BurstShape(
+        maxBeats = 5,
+        burstTypes = BurstShape.supportedTypesFor(s_axi.cfg),
+        transferSizes = BurstShape.supportedSizesFor(s_axi.cfg),
+        aligned = false
+      )
+    )
+  )
+
+  private val masterWriteBurstRequest =
+    ResolveRequest(m_axi, p.MasterWriteBurstShape)
+  assert(Resolver.resolve(masterWriteBurstRequest).result == ResolveResult.Success())
+  assert(masterWriteBurstRequest.cell.valueOption.contains(writeInputShape))
+
+  private val masterWriteThreadRequest =
+    ResolveRequest(m_axi, p.MasterWriteThreadMode)
+  assert(Resolver.resolve(masterWriteThreadRequest).result == ResolveResult.Success())
+  assert(masterWriteThreadRequest.cell.valueOption.contains(ThreadMode.SingleThread))
 }
 
 class ProtocolConverterResolverPolicyTestTop

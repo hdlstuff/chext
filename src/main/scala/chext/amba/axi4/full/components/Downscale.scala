@@ -272,24 +272,14 @@ private final class Downscale_Resolver(owner: Downscale)(implicit sourceInfo: So
     aligned = false
   )
 
-  private def enforceInputProperties(
-      burstShapeKey: p.Key[v.BurstShape],
-      threadModeKey: p.Key[v.ThreadMode]
-  ): Unit = {
-    owner.s_axi.properties(burstShapeKey) = acceptedInputShape
-    owner.s_axi.properties(threadModeKey) = v.ThreadMode.SingleThread
+  if (owner.cfg.axiSlaveCfg.read) {
+    owner.s_axi.properties(p.SlaveReadBurstShape) = acceptedInputShape
+    owner.s_axi.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
   }
-
-  if (owner.cfg.axiSlaveCfg.read)
-    enforceInputProperties(
-      p.SlaveReadBurstShape,
-      p.SlaveReadThreadMode
-    )
-  if (owner.cfg.axiSlaveCfg.write)
-    enforceInputProperties(
-      p.SlaveWriteBurstShape,
-      p.SlaveWriteThreadMode
-    )
+  if (owner.cfg.axiSlaveCfg.write) {
+    owner.s_axi.properties(p.SlaveWriteBurstShape) = acceptedInputShape
+    owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
+  }
 
   private val noLocalRequirement =
     "Downscale imposes no additional local requirement for this property"

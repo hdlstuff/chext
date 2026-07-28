@@ -1,5 +1,7 @@
 package chext.amba.axi4.tracking.properties
 
+import scala.reflect.ClassTag
+
 import chext.amba.axi4.tracking.{values => v}
 
 /** Matchable classification shared by property roles, accesses, and value types. */
@@ -52,7 +54,10 @@ object Access {
 }
 
 /** Runtime witness for one property value type. */
-sealed abstract class ValueType[T](val name: String) extends Selector {
+sealed abstract class ValueType[T: ClassTag](val name: String) extends Selector {
+  final val tpe: Class[T] =
+    implicitly[ClassTag[T]].runtimeClass.asInstanceOf[Class[T]]
+
   private[tracking] final def accepts(key: Key[_]): Boolean =
     key.valueType == this
 }

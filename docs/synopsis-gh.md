@@ -1615,7 +1615,7 @@ val creditBuffer0 =
   Module(new axi4f.components.CreditBuffer(cfg))
 ```
 
-**Details:** Module. Full AXI credit-style response buffering around read/write channels. `CreditBuffer_Resolver` forwards master `BurstShape` and `ThreadMode` downstream and `p.SlaveMemoryMap` upstream. When read buffering is enabled, the input slave's maximum read-burst length is the smaller of the buffer capacity and the protocol maximum; all supported burst types and sizes are accepted with `aligned = false`. Other slave properties are `DontCare`. `TrafficProfile` remains `Incomplete` until concurrency and latency semantics are implemented.
+**Details:** Module. Full AXI credit-style response buffering around read/write channels. `CreditBuffer_Resolver` forwards master `BurstShape` and `ThreadMode` downstream and `p.SlaveMemoryMap` upstream. When read-response or write-payload buffering is enabled, the corresponding input slave burst shape is capped by the buffer capacity and protocol maximum; all supported burst types and sizes are accepted with `aligned = false`. The write cap guarantees that the complete W burst can be accepted before AW is released without depending on downstream W progress. Other slave properties are `DontCare`. `TrafficProfile` remains `Incomplete` until concurrency and latency semantics are implemented.
 
 ---
 

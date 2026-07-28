@@ -3,6 +3,7 @@ package chext.amba.axi4.tracking
 import chisel3.experimental.{BaseModule, SourceInfo}
 
 import scala.collection.mutable
+import scala.reflect.ClassTag
 
 import chext.tracking.{Component, Path}
 import chext.amba.axi4.tracking.{properties => p}
@@ -166,22 +167,17 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
       )
     }
 
-    /** Calculates through a value type selected by a property pattern.
-      *
-      * Scala 2 does not refine the request's type parameter from a stable value-type pattern such
-      * as `p.Key(_, _, p.ThreadMode)`, so the selected value type is supplied explicitly.
-      */
-    def calculate[T0](
-        valueType: p.ValueType[T0],
-        value: T0
-    ): ResolveResult = {
+    /** Calculates a value whose type was selected by a property pattern. */
+    def calculate[T0: ClassTag](value: T0): ResolveResult = {
+      val actualType = implicitly[ClassTag[T0]].runtimeClass
       require(
-        key.valueType == valueType,
-        s"ResolveRequest targets '$qualifiedName', not value type '${valueType.name}'"
+        key.valueType.tpe.isInstance(value),
+        s"ResolveRequest targets '$qualifiedName' with value type '${key.valueType.name}', " +
+          s"not '${actualType.getName}'"
       )
       calculateCell(
-        request.cell.asInstanceOf[p.Cell[T0]],
-        value,
+        request.cell,
+        key.valueType.tpe.cast(value),
         Seq.empty
       )
     }

@@ -135,6 +135,18 @@ private final class CreditBuffer_Resolver(owner: CreditBuffer)(implicit sourceIn
     )
   }
 
+  if (owner.cfg.axiCfg.write && owner.cfg.wBuffer > 0) {
+    owner.s_axi.properties(p.SlaveWriteBurstShape) = v.BurstShape(
+      maxBeats = math.min(
+        owner.cfg.wBuffer,
+        v.BurstShape.maxBeatsFor(owner.s_axi.cfg)
+      ),
+      burstTypes = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
+      transferSizes = v.BurstShape.supportedSizesFor(owner.s_axi.cfg),
+      aligned = false
+    )
+  }
+
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
       case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>

@@ -191,6 +191,25 @@ object Properties_Test extends App {
       )
   )
 
+  val mismatchedCalculationRequest =
+    ResolveRequest(
+      new Tracked { val cfg = Properties_Test.cfg },
+      p.MasterReadBurstShape
+    )
+  val mismatchedCalculationMessage =
+    try {
+      ops(mismatchedCalculationRequest).calculate(v.ThreadMode.SingleThread)
+      throw new AssertionError("mismatched calculation value type was accepted")
+    } catch {
+      case exception: IllegalArgumentException =>
+        exception.getMessage
+    }
+  assert(
+    mismatchedCalculationMessage.contains(
+      "ResolveRequest targets 'master.read_burstShape' with value type 'burstShape'"
+    )
+  )
+
   val calculated = properties(p.MasterWriteBurstShape)
   val calculatedStep =
     ResolutionStep("/calculated", "/source", "test", "TestResolver", "/")
@@ -570,9 +589,9 @@ object Properties_Test extends App {
     def resolve[T](request: ResolveRequest[T]): ResolveResult =
       request match {
         case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
-          request.calculate(p.ThreadMode, v.ThreadMode.UniqueThreads)
+          request.calculate(v.ThreadMode.UniqueThreads)
         case ResolveRequest(_, p.Key(p.Slave, _, p.ThreadMode)) =>
-          request.calculate(p.ThreadMode, v.ThreadMode.SingleThread)
+          request.calculate(v.ThreadMode.SingleThread)
         case _ =>
           request.missingCase()
       }

@@ -151,7 +151,7 @@ private final class Mux_Resolver(owner: Mux)(implicit sourceInfo: SourceInfo)
         request.forwardTo(owner.m_axi)
       case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
         if (owner.s_axi.length == 1) request.forwardTo(owner.s_axi.head)
-        else request.calculate(p.ThreadMode, v.ThreadMode.Unconstrained)
+        else request.calculate(v.ThreadMode.Unconstrained)
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.dontCare(noMasterAggregate)
       case _ =>

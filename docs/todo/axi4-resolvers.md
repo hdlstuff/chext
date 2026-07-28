@@ -468,6 +468,10 @@ reach a registered compatibility-check boundary:
 - With read buffering enabled, slave `ReadBurstShape.maxBeats` is capped by the
   response-buffer capacity; its types and sizes cover every protocol-supported
   value, and `aligned = false` accepts unaligned transactions.
+- With write-payload buffering enabled, slave `WriteBurstShape.maxBeats` is
+  capped by the payload-buffer capacity. This guarantees that the complete W
+  burst can be accepted before AW is released without depending on downstream
+  W progress.
 - Other slave properties are `DontCare`.
 - Master `TrafficProfile` remains `Incomplete`.
 

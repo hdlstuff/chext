@@ -143,7 +143,7 @@ private final class Mux_Resolver(owner: Mux)(implicit sourceInfo: SourceInfo)
       case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap | p.ThreadMode)) =>
         request.forwardTo(owner.m_axil)
       case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
-        request.calculate(p.ThreadMode, v.ThreadMode.SingleThread)
+        request.calculate(v.ThreadMode.SingleThread)
       case _ =>
         request.missingCase()
     }
