@@ -64,15 +64,17 @@ object ModuleInternals {
     fieldBody.setAccessible(true)
     val body = fieldBody.get(module).asInstanceOf[Block]
 
-    val fieldCommands = classOf[Block].getDeclaredField("_commands")
-    fieldCommands.setAccessible(true)
-    val arrayBuilder = fieldCommands.get(body).asInstanceOf[Builder[Command, ArraySeq[Command]]]
+    val fieldBuilder = classOf[Block].getDeclaredField("_commandsBuilder")
+    fieldBuilder.setAccessible(true)
+    val arrayBuilder =
+      fieldBuilder.get(body).asInstanceOf[Builder[Command, ArraySeq[Command]]]
 
-    try {
+    if (arrayBuilder ne null)
       arrayBuilder.result()
-    } catch {
-      case _: NullPointerException => Seq.empty
-      case e: Exception            => throw e
+    else {
+      val fieldCommands = classOf[Block].getDeclaredField("_commands")
+      fieldCommands.setAccessible(true)
+      fieldCommands.get(body).asInstanceOf[Seq[Command]]
     }
   }
 

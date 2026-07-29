@@ -24,7 +24,7 @@ trait Tracked {
   def cfg: chext.amba.axi4.Config
 
   /** Lazily realized property store for this interface. */
-  final lazy val properties: p.Manager = new p.Manager
+  final lazy val properties: p.Manager = new p.Manager(this)
 
   /** Absolute path used by tracking diagnostics and resolution traces. */
   private[axi4] final def trackingPath: String =

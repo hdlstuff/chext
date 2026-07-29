@@ -9,6 +9,7 @@ import chext.elastic.ConnectOp._
 import chext.amba.{axi4, axi4s}
 import chext.amba.axi4.Casts._
 import chext.amba.axi4.ConnectOp._
+import chext.amba.axi4.tracking.{properties => p, values => v}
 import chext.amba.axi4.full.{ConnectOp => Axi4FullConnectOp}
 import chext.amba.axi4.lite.{ConnectOp => Axi4LiteConnectOp}
 import chext.amba.axi4s.Casts._
@@ -16,6 +17,43 @@ import chext.tracking.{Component, withComponent}
 import chext.util.ElaborationTest
 
 object TrackingDiagnosticsUtil {
+  def satisfyAxi4Tracking(interface: axi4.tracking.Tracked): Unit = {
+    val cfg = interface.cfg
+
+    if (cfg.read) {
+      if (!cfg.lite) {
+        val shape = v.BurstShape(
+          maxBeats = v.BurstShape.maxBeatsFor(cfg),
+          types = v.BurstShape.supportedTypesFor(cfg),
+          sizes = v.BurstShape.supportedSizesFor(cfg),
+          aligned = false
+        )
+        interface.properties(p.MasterReadBurstShape) = shape
+        interface.properties(p.SlaveReadBurstShape) = shape
+      }
+      interface.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleTransaction
+      interface.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
+    }
+
+    if (cfg.write) {
+      if (!cfg.lite) {
+        val shape = v.BurstShape(
+          maxBeats = v.BurstShape.maxBeatsFor(cfg),
+          types = v.BurstShape.supportedTypesFor(cfg),
+          sizes = v.BurstShape.supportedSizesFor(cfg),
+          aligned = false
+        )
+        interface.properties(p.MasterWriteBurstShape) = shape
+        interface.properties(p.SlaveWriteBurstShape) = shape
+      }
+      interface.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleTransaction
+      interface.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
+    }
+
+    interface.properties(p.SlaveMemoryMap) =
+      v.MemoryMap(size = BigInt(1) << math.min(cfg.wAddr, 8))
+  }
+
   def driveAxi4Slave(axi: axi4.RawInterface): Unit = {
     axi.ARREADY.foreach(_ := false.B)
     axi.RVALID.foreach(_ := false.B)
@@ -448,10 +486,45 @@ private class Axi4FullNativeDuplicateTop extends Module {
   val nullSourceB0 = new e.NullSource(s_axi.b)
 }
 
+private class Axi4TrackingFailureTop extends Module {
+  private val cfg =
+    axi4.Config(wId = 1, wAddr = 16, wData = 32, write = false)
+
+  val s_axi = IO(axi4.Slave(cfg))
+  private val view = s_axi.asFull
+
+  val nullSinkAr0 = new e.NullSink(view.ar)
+  val nullSourceR0 = new e.NullSource(view.r)
+
+  private val transferTypes = Seq(axi4.BurstType.Encoding.INCR)
+  private val transferSizes = Seq(v.BurstShape.fullSize(cfg.wData))
+
+  view.properties(p.MasterReadBurstShape) =
+    v.BurstShape(
+      maxBeats = 16,
+      types = transferTypes,
+      sizes = transferSizes,
+      aligned = true
+    )
+  view.properties(p.SlaveReadBurstShape) =
+    v.BurstShape(
+      maxBeats = 1,
+      types = transferTypes,
+      sizes = transferSizes,
+      aligned = true
+    )
+  view.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleTransaction
+  view.properties(p.SlaveReadThreadMode) = v.ThreadMode.Unconstrained
+  view.properties(p.SlaveMemoryMap) = v.MemoryMap(size = 0x100)
+}
+
 private class Axi4ViewRootOnceTop extends Module {
+  import TrackingDiagnosticsUtil._
+
   val axi = IO(axi4.Slave(axi4.Config(lite = true)))
 
   private val view = axi.asLite
+  satisfyAxi4Tracking(view)
 
   val nullSinkAr0 = new e.NullSink(view.ar)
   val nullSourceR0 = new e.NullSource(view.r)
@@ -465,8 +538,10 @@ private class Axi4ViewRepeatedRootTop extends Module {
 
   val axi = IO(axi4.Slave(axi4.Config(lite = true)))
 
-  axi.asLite
-  axi.asLite
+  private val view0 = axi.asLite
+  private val view1 = axi.asLite
+  satisfyAxi4Tracking(view0)
+  satisfyAxi4Tracking(view1)
   driveAxi4Slave(axi)
 }
 
@@ -475,7 +550,8 @@ private class Axi4ViewChild extends Module {
 
   val axi = IO(axi4.Slave(axi4.Config(lite = true)))
 
-  axi.asLite
+  private val view = axi.asLite
+  satisfyAxi4Tracking(view)
   driveAxi4Slave(axi)
 }
 
@@ -488,13 +564,18 @@ private class Axi4ViewChildTop extends Module {
 }
 
 private class Axi4ViewRootWireTop extends Module {
+  import TrackingDiagnosticsUtil._
+
   private val axi = Wire(axi4.Slave(axi4.Config(lite = true)))
 
   axi := DontCare
-  axi.asLite
+  private val view = axi.asLite
+  satisfyAxi4Tracking(view)
 }
 
 private class Axi4ViewLeaf extends Module {
+  import TrackingDiagnosticsUtil._
+
   private val cfg = axi4.Config(wId = 2, wAddr = 16, wData = 32, wUserAR = 1, wUserR = 1)
 
   val s_axi = IO(axi4.Slave(cfg))
@@ -502,6 +583,8 @@ private class Axi4ViewLeaf extends Module {
 
   private val s_view = s_axi.asFull
   private val m_view = m_axi.asFull
+  satisfyAxi4Tracking(s_view)
+  satisfyAxi4Tracking(m_view)
 
   val transformAr0 = new e.Transform(s_view.ar, m_view.ar) {
     out := in
@@ -521,6 +604,9 @@ private class Axi4ViewLeaf extends Module {
 }
 
 private class Axi4ViewNestedTop extends Module {
+  import Axi4FullConnectOp._
+  import TrackingDiagnosticsUtil._
+
   private val cfg = axi4.Config(wId = 2, wAddr = 16, wData = 32, wUserAR = 1, wUserR = 1)
 
   val s_axi = IO(axi4.Slave(cfg))
@@ -528,11 +614,22 @@ private class Axi4ViewNestedTop extends Module {
 
   private val leaf = Module(new Axi4ViewLeaf)
 
-  s_axi :=> leaf.s_axi
-  leaf.m_axi :=> m_axi
+  private val s_view = s_axi.asFull
+  private val leaf_s_view = leaf.s_axi.asFull
+  private val leaf_m_view = leaf.m_axi.asFull
+  private val m_view = m_axi.asFull
+  satisfyAxi4Tracking(s_view)
+  satisfyAxi4Tracking(leaf_s_view)
+  satisfyAxi4Tracking(leaf_m_view)
+  satisfyAxi4Tracking(m_view)
+
+  s_view :=> leaf_s_view
+  leaf_m_view :=> m_view
 }
 
 private class Axi4ViewNullTop extends Module {
+  import TrackingDiagnosticsUtil._
+
   private val cfg = axi4.Config(wId = 1, wAddr = 16, wData = 32)
 
   val s_axi = IO(axi4.Slave(cfg))
@@ -540,6 +637,8 @@ private class Axi4ViewNullTop extends Module {
 
   private val s_view = s_axi.asFull
   private val m_view = m_axi.asFull
+  satisfyAxi4Tracking(s_view)
+  satisfyAxi4Tracking(m_view)
 
   val nullSinkAr0 = new e.NullSink(s_view.ar)
   val nullSourceR0 = new e.NullSource(s_view.r)
@@ -555,6 +654,8 @@ private class Axi4ViewNullTop extends Module {
 }
 
 private class Axi4ViewZeroTop extends Module {
+  import TrackingDiagnosticsUtil._
+
   private val cfg = axi4.Config(wId = 1, wAddr = 16, wData = 32)
 
   val s_axi = IO(axi4.Slave(cfg))
@@ -562,17 +663,22 @@ private class Axi4ViewZeroTop extends Module {
 
   private val s_view = s_axi.asFull
   private val m_view = m_axi.asFull
+  satisfyAxi4Tracking(s_view)
+  satisfyAxi4Tracking(m_view)
 
   dontTouch(s_view.ar.$valid)
   dontTouch(m_view.r.$valid)
 }
 
 private class Axi4ViewMissingChannelTop extends Module {
+  import TrackingDiagnosticsUtil._
+
   private val cfg = axi4.Config(wId = 1, wAddr = 16, wData = 32)
 
   val s_axi = IO(axi4.Slave(cfg))
 
   private val s_view = s_axi.asFull
+  satisfyAxi4Tracking(s_view)
 
   val nullSinkAr0 = new e.NullSink(s_view.ar)
   val nullSinkAw0 = new e.NullSink(s_view.aw)
@@ -583,11 +689,14 @@ private class Axi4ViewMissingChannelTop extends Module {
 }
 
 private class Axi4ViewDuplicatedChannelTop extends Module {
+  import TrackingDiagnosticsUtil._
+
   private val cfg = axi4.Config(wId = 1, wAddr = 16, wData = 32)
 
   val s_axi = IO(axi4.Slave(cfg))
 
   private val s_view = s_axi.asFull
+  satisfyAxi4Tracking(s_view)
 
   val nullSinkAr0 = new e.NullSink(s_view.ar)
   val nullSinkAr1 = new e.NullSink(s_view.ar)
@@ -598,6 +707,8 @@ private class Axi4ViewDuplicatedChannelTop extends Module {
 }
 
 private class Axi4ViewMultiConnectTop extends Module {
+  import TrackingDiagnosticsUtil._
+
   private val cfg = axi4.Config(wId = 1, wAddr = 16, wData = 32)
 
   val s_axi = IO(axi4.Slave(cfg))
@@ -605,6 +716,8 @@ private class Axi4ViewMultiConnectTop extends Module {
 
   private val s_view = s_axi.asFull
   private val m_view = m_axi.asFull
+  satisfyAxi4Tracking(s_view)
+  satisfyAxi4Tracking(m_view)
 
   val transformAr0 = new e.Transform(s_view.ar, m_view.ar) {
     out := in
@@ -955,6 +1068,8 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
     expected = Failure,
     gen = () => new ElasticUnusedTop,
     checks = Seq(
+      Log contains "[ WARN ] elastic.tracking/sanityChecks",
+      Log excludes "axi4.tracking",
       Log contains "Interface never marked!",
       Log contains "Interface '/source' is defined by",
       FailureMessage contains "not fully initialized"
@@ -993,6 +1108,8 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
     expected = Failure,
     gen = () => new ElasticWrongRoleTop,
     checks = Seq(
+      FailureMessage contains "elastic.tracking:",
+      FailureMessage excludes "axi4.tracking",
       FailureMessage contains "declared as a Sink, but marked as Source"
     )
   )
@@ -1134,6 +1251,20 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
   )
 
   test(
+    name = "axi4_tracking_incompatible_burst",
+    description =
+      "AXI4 property incompatibility is reported as axi4.tracking without aborting elaboration.",
+    gen = () => new Axi4TrackingFailureTop,
+    checks = Seq(
+      SystemVerilog contains "module Axi4TrackingFailureTop",
+      Log contains "axi4.tracking : error:",
+      Log contains "master.read_burstShape",
+      Log excludes "elastic.tracking",
+      Errors excludes "axi4.tracking"
+    )
+  )
+
+  test(
     name = "axi4_view_root_once",
     description = "Raw AXI4 root IO is viewed once and the elastic view is reused for all channels.",
     gen = () => new Axi4ViewRootOnceTop,
@@ -1187,8 +1318,8 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
     checks = Seq(
       SystemVerilog contains "module Axi4ViewNestedTop",
       SystemVerilog contains "module Axi4ViewLeaf",
-      ModuleGraphJson contains "/leaf/s_axi$view.ar",
-      ModuleGraphJson contains "/leaf/m_axi$view.r",
+      ModuleGraphJson contains "/leaf/s_axi$view_ar",
+      ModuleGraphJson contains "/leaf/m_axi$view_r",
       Log contains "called outside the root module",
       Log excludes "Encountered an interface which is neither an IO or Wire."
     )
@@ -1200,8 +1331,8 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
     gen = () => new Axi4ViewNullTop,
     checks = Seq(
       SystemVerilog contains "module Axi4ViewNullTop",
-      ModuleGraphJson contains "/s_axi$view.ar",
-      ModuleGraphJson contains "/m_axi$view.r",
+      ModuleGraphJson contains "/s_axi$view_ar",
+      ModuleGraphJson contains "/m_axi$view_r",
       Log excludes "raw interface viewed multiple times"
     )
   )
@@ -1213,7 +1344,7 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
     gen = () => new Axi4ViewZeroTop,
     checks = Seq(
       Log contains "Interface never marked!",
-      Log contains "Interface '/s_axi$view.ar' is defined by",
+      Log contains "Interface '/s_axi$view_ar' is defined by",
       FailureMessage contains "not fully initialized"
     )
   )
@@ -1224,10 +1355,10 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
     expected = Failure,
     gen = () => new Axi4ViewMissingChannelTop,
     checks = Seq(
-      ModuleGraphJson contains "/s_axi$view.ar",
-      ModuleGraphJson contains "/s_axi$view.b",
+      ModuleGraphJson contains "/s_axi$view_ar",
+      ModuleGraphJson contains "/s_axi$view_b",
       Log contains "Interface never marked!",
-      Log contains "Interface '/s_axi$view.r' is defined by",
+      Log contains "Interface '/s_axi$view_r' is defined by",
       Log excludes "raw interface viewed multiple times",
       FailureMessage contains "not fully initialized"
     )
@@ -1238,9 +1369,9 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
     description = "A raw AXI4 root IO is viewed once but one viewed channel endpoint is used twice.",
     gen = () => new Axi4ViewDuplicatedChannelTop,
     checks = Seq(
-      ModuleGraphJson.occurs("/s_axi$view.ar", 2),
+      ModuleGraphJson.occurs("/s_axi$view_ar", 2),
       Log contains "Interface marked as source more than 1 times!",
-      Log contains "Interface '/s_axi$view.ar' is defined by",
+      Log contains "Interface '/s_axi$view_ar' is defined by",
       Log excludes "raw interface viewed multiple times"
     )
   )
@@ -1250,12 +1381,12 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
     description = "Two raw AXI4 root IOs are viewed once, then the viewed channels are connected twice.",
     gen = () => new Axi4ViewMultiConnectTop,
     checks = Seq(
-      ModuleGraphJson contains "/s_axi$view.ar",
-      ModuleGraphJson contains "/m_axi$view.r",
+      ModuleGraphJson contains "/s_axi$view_ar",
+      ModuleGraphJson contains "/m_axi$view_r",
       Log contains "Interface marked as source more than 1 times!",
       Log contains "Interface marked as sink more than 1 times!",
-      Log contains "Interface '/s_axi$view.ar' is defined by",
-      Log contains "Interface '/m_axi$view.b' is defined by",
+      Log contains "Interface '/s_axi$view_ar' is defined by",
+      Log contains "Interface '/m_axi$view_b' is defined by",
       Log excludes "raw interface viewed multiple times"
     )
   )

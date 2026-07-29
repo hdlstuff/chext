@@ -634,36 +634,66 @@ object ResolverPolicy_Test extends App with ElaborationTest {
     name = "axi4-resolver-policy",
     outputDir = Path.of("output", "axi4_resolver_policy")
   )
-  test(name = "demux", expected = Failure, gen = () => new DemuxResolverPolicyTestTop)
+
+  private val printedTrackingError = Seq(
+    Log contains "axi4.tracking : error:",
+    Errors excludes "axi4.tracking"
+  )
+
+  test(
+    name = "demux",
+    gen = () => new DemuxResolverPolicyTestTop,
+    checks = printedTrackingError
+  )
   test(
     name = "demux_write_only",
-    expected = Failure,
-    gen = () => new DemuxWriteOnlyResolverPolicyTestTop
+    gen = () => new DemuxWriteOnlyResolverPolicyTestTop,
+    checks = printedTrackingError
   )
-  test(name = "mux", expected = Failure, gen = () => new MuxResolverPolicyTestTop)
-  test(name = "mux_single", expected = Failure, gen = () => new SingleMuxResolverPolicyTestTop)
-  test(name = "id_demux", expected = Failure, gen = () => new IdDemuxResolverPolicyTestTop)
+  test(
+    name = "mux",
+    gen = () => new MuxResolverPolicyTestTop,
+    checks = printedTrackingError
+  )
+  test(
+    name = "mux_single",
+    gen = () => new SingleMuxResolverPolicyTestTop,
+    checks = printedTrackingError
+  )
+  test(
+    name = "id_demux",
+    gen = () => new IdDemuxResolverPolicyTestTop,
+    checks = printedTrackingError
+  )
   test(
     name = "id_demux_zero_id",
-    expected = Failure,
-    gen = () => new ZeroIdDemuxResolverPolicyTestTop
+    gen = () => new ZeroIdDemuxResolverPolicyTestTop,
+    checks = printedTrackingError
   )
-  test(name = "id_mux", expected = Failure, gen = () => new IdMuxResolverPolicyTestTop(1))
-  test(name = "id_mux_single", expected = Failure, gen = () => new IdMuxResolverPolicyTestTop(0))
+  test(
+    name = "id_mux",
+    gen = () => new IdMuxResolverPolicyTestTop(1),
+    checks = printedTrackingError
+  )
+  test(
+    name = "id_mux_single",
+    gen = () => new IdMuxResolverPolicyTestTop(0),
+    checks = printedTrackingError
+  )
   test(
     name = "id_serialize",
-    expected = Failure,
-    gen = () => new IdSerializeResolverPolicyTestTop
+    gen = () => new IdSerializeResolverPolicyTestTop,
+    checks = printedTrackingError
   )
   test(
     name = "id_parallelize",
-    expected = Failure,
-    gen = () => new IdParallelizeResolverPolicyTestTop
+    gen = () => new IdParallelizeResolverPolicyTestTop,
+    checks = printedTrackingError
   )
   test(
     name = "credit_buffer",
-    expected = Failure,
-    gen = () => new CreditBufferResolverPolicyTestTop
+    gen = () => new CreditBufferResolverPolicyTestTop,
+    checks = printedTrackingError
   )
   test(
     name = "protocol_converter",
@@ -688,8 +718,8 @@ object ResolverPolicy_Test extends App with ElaborationTest {
   test(name = "lite_demux", expected = Failure, gen = () => new LiteDemuxResolverPolicyTestTop)
   test(
     name = "lite_demux_write_only",
-    expected = Failure,
-    gen = () => new LiteDemuxWriteOnlyResolverPolicyTestTop
+    gen = () => new LiteDemuxWriteOnlyResolverPolicyTestTop,
+    checks = printedTrackingError
   )
   runTests()
 }

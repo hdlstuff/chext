@@ -1,8 +1,10 @@
 package chext.amba.axi4.tracking.properties
 
+import chisel3.experimental.SourceInfo
+
 import scala.collection.mutable
 
-import chext.amba.axi4.tracking.{ResolutionStep, Resolver}
+import chext.amba.axi4.tracking.{Owner, ResolutionStep, Resolver, Tracked}
 
 /** Lifecycle state of one realized [[Cell]]. */
 sealed trait State[+T] {
@@ -47,17 +49,32 @@ object CalculateResult {
 }
 
 /** Realized mutable state for one typed property key on one tracked interface. */
-final class Cell[T] private[tracking] (val key: Key[T]) {
+final class Cell[T] private[tracking] (
+    val key: Key[T],
+    tracked: Option[Tracked]
+) {
   import State._
 
   private var state_ : State[T] = Unresolved
   private var resolutionSteps_ = Seq.empty[ResolutionStep]
+  private var enforcementSourceInfo_ = Option.empty[SourceInfo]
+  private var enforcementOwner_ = Option.empty[Owner]
+  private var enforcementInterface_ = Option.empty[Tracked]
 
   def state: State[T] = state_
   def isResolved: Boolean = state_.isResolved
 
   private[tracking] def resolutionSteps: Seq[ResolutionStep] =
     resolutionSteps_
+
+  private[tracking] def enforcementSourceInfo: Option[SourceInfo] =
+    enforcementSourceInfo_
+
+  private[tracking] def enforcementOwner: Option[Owner] =
+    enforcementOwner_
+
+  private[tracking] def enforcementInterface: Option[Tracked] =
+    enforcementInterface_
 
   def valueOption: Option[T] =
     state_ match {
@@ -71,11 +88,23 @@ final class Cell[T] private[tracking] (val key: Key[T]) {
   def getOrElse[B >: T](default: => B): B = valueOption.getOrElse(default)
   def update(value: T): Unit = enforce(value)
 
-  def enforce(value: T): this.type = {
+  def enforce(value: T)(implicit
+      sourceInfo: SourceInfo,
+      owner: Owner = null
+  ): this.type =
+    enforce(value, Owner.resolve(owner))
+
+  private[tracking] def enforce(
+      value: T,
+      owner: Option[Owner]
+  )(implicit sourceInfo: SourceInfo): this.type = {
     state_ match {
       case Unresolved | Calculated(_, _) | DontCare(_) | Incomplete | Undefined =>
         state_ = Enforced(value)
         resolutionSteps_ = Seq.empty
+        enforcementSourceInfo_ = Some(sourceInfo)
+        enforcementOwner_ = owner
+        enforcementInterface_ = tracked
       case Enforced(existing) if existing == value => ()
       case Enforced(existing) =>
         throw new IllegalStateException(
@@ -91,10 +120,23 @@ final class Cell[T] private[tracking] (val key: Key[T]) {
       resolver: Resolver,
       resolutionSteps: Seq[ResolutionStep]
   ): CalculateResult =
+    calculate(value, resolver, resolutionSteps, None)
+
+  private[tracking] def calculate(
+      value: T,
+      resolver: Resolver,
+      resolutionSteps: Seq[ResolutionStep],
+      enforcedFrom: Option[Cell[_]]
+  ): CalculateResult = {
+    val origin = enforcedFrom.filter(_.enforcementSourceInfo.nonEmpty)
+
     state_ match {
       case Unresolved =>
         state_ = Calculated(value, resolver)
         resolutionSteps_ = resolutionSteps
+        enforcementSourceInfo_ = origin.flatMap(_.enforcementSourceInfo)
+        enforcementOwner_ = origin.flatMap(_.enforcementOwner)
+        enforcementInterface_ = origin.flatMap(_.enforcementInterface)
         CalculateResult.Success
       case Enforced(_)       => CalculateResult.AlreadyEnforced
       case Calculated(_, _)  => CalculateResult.AlreadyCalculated
@@ -102,6 +144,7 @@ final class Cell[T] private[tracking] (val key: Key[T]) {
       case Incomplete        => CalculateResult.Incomplete
       case Undefined         => CalculateResult.Undefined
     }
+  }
 
   private[tracking] def markDontCare(message: String): Unit = {
     require(message.nonEmpty, "AXI4 property DontCare needs an explanatory message")
@@ -135,19 +178,23 @@ final class Cell[T] private[tracking] (val key: Key[T]) {
 }
 
 /** Heterogeneous property store for one tracked AXI interface. */
-final class Manager private[tracking] () extends Iterable[Cell[_]] {
+final class Manager private[tracking] (tracked: Tracked = null) extends Iterable[Cell[_]] {
+  private val trackedOption = Option(tracked)
   private val propertiesByKey =
     mutable.LinkedHashMap.empty[Key[_], Cell[_]]
 
   private def cellFor[T](key: Key[T]): Cell[T] =
     propertiesByKey
-      .getOrElseUpdate(key, new Cell(key))
+      .getOrElseUpdate(key, new Cell(key, trackedOption))
       .asInstanceOf[Cell[T]]
 
   def apply[T](key: Key[T]): Cell[T] =
     cellFor(key)
 
-  def update[T](key: Key[T], value: T): Unit =
+  def update[T](key: Key[T], value: T)(implicit
+      sourceInfo: SourceInfo,
+      owner: Owner = null
+  ): Unit =
     cellFor(key).enforce(value)
 
   def select(selector: Selector): Seq[Cell[_]] =

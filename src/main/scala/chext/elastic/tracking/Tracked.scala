@@ -28,7 +28,7 @@ object DeclaredRole {
 }
 
 object Tracked {
-  val logger = new Logger("tracking")
+  val logger = new Logger(Tag.diagnosticName)
 
   private def isOwnedByCurrentModule(source: Data): Boolean =
     Module.currentModule.exists { current =>
@@ -98,12 +98,12 @@ trait Tracked extends Data {
   ): Unit = {
     requireIsHardware(
       this,
-      f"chext.elastic.tracking.Tracked: mark${role.str} must be called on a hardware!"
+      f"${Tag.diagnosticName}: mark${role.str} must be called on hardware!"
     )
 
     val currentModule = Module.currentModule.getOrElse(
       throw new ChiselException(
-        f"chext.elastic.tracking.Tracked: mark${role.str} must be called from a module!"
+        f"${Tag.diagnosticName}: mark${role.str} must be called from a module!"
       )
     )
     array.addOne((currentModule, sourceInfo))
@@ -119,7 +119,8 @@ trait Tracked extends Data {
         val pos = sourceInfoToString(sourceInfo)
 
         throw new ChiselException(
-          f"chext.elastic.tracking.Tracked: Interface '$this' is declared as a ${effectiveRole.str}, but marked as ${role.str}. @[$pos]!"
+          f"${Tag.diagnosticName}: Interface '$this' is declared as a ${effectiveRole.str}, " +
+            f"but marked as ${role.str}. @[$pos]!"
         )
       }
     }
@@ -153,7 +154,7 @@ trait Tracked extends Data {
   ): Unit = {
     Module.currentModule.getOrElse(
       throw new ChiselException(
-        "chext.elastic.tracking.Tracked: sanityCheck must be called from a module!"
+        s"${Tag.diagnosticName}: sanityCheck must be called from a module!"
       )
     )
 

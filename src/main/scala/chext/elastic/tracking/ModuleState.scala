@@ -13,7 +13,7 @@ import chext.util.sourceInfoToString
 
 final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
     extends tracking.ModuleState {
-  private val logger = new Logger("tracking")
+  private val logger = new Logger(Tag.diagnosticName)
   private val require_ = chext.util.Require.inferred()
 
   private var moduleGraph_ = Option.empty[Graph.Module]
@@ -97,7 +97,7 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
 
   private def missingChildGraph(childModule: BaseModule): Nothing =
     throw new IllegalStateException(
-      s"Child module '$childModule' has no Elastic tracking graph. " +
+      s"${Tag.diagnosticName}: Child module '$childModule' has no Elastic tracking graph. " +
         "If it has Elastic interfaces but no Elastic components, call " +
         "chext.elastic.tracking.register() in its module body."
     )

@@ -272,6 +272,9 @@ private final class RegisterBlock_Resolver(owner: RegisterBlock)(implicit source
   owner.s_axil.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleTransaction
   owner.s_axil.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleTransaction
 
+  def setMemoryMap(memoryMap: v.MemoryMap): Unit =
+    owner.s_axil.properties(p.SlaveMemoryMap) = memoryMap
+
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
       case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>

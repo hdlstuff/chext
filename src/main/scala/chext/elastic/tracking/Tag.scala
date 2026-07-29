@@ -8,6 +8,8 @@ object Tag extends tracking.Tag {
 
   val name: String = "elastic"
 
+  private[tracking] val diagnosticName: String = s"$name.tracking"
+
   // Explicitly forces this tag to register with the tracking registry.
   private[tracking] def initialize(): Unit = ()
 

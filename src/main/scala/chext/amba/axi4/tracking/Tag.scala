@@ -10,6 +10,9 @@ object Tag extends tracking.Tag {
   /** Stable domain name used by the unified tracking manager. */
   val name: String = "axi4"
 
+  /** Stable prefix used by AXI property-checker diagnostics. */
+  private[tracking] val diagnosticName: String = s"$name.tracking"
+
   /** Forces registration of this tracking domain before module completion. */
   def initialize(): Unit = ()
 

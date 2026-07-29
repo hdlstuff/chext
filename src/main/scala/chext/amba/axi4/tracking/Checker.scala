@@ -1,8 +1,11 @@
 package chext.amba.axi4.tracking
 
+import chisel3.experimental.{SourceInfo, UnlocatableSourceInfo}
+
 import scala.collection.mutable.ArrayBuffer
 
 import chext.amba.axi4.tracking.{properties => p, values => v}
+import chext.util.sourceInfoToString
 
 /** Resolves, validates, and checks compatibility for AXI interface properties. */
 object Checker {
@@ -14,7 +17,13 @@ object Checker {
   )
 
   private sealed trait Checked[+T]
-  private final case class Value[T](value: T, steps: Seq[ResolutionStep]) extends Checked[T]
+  private final case class Value[T](
+      value: T,
+      steps: Seq[ResolutionStep],
+      enforcementSourceInfo: Option[SourceInfo],
+      enforcementOwner: Option[Owner],
+      enforcementInterface: Option[Tracked]
+  ) extends Checked[T]
   private case object Skip extends Checked[Nothing]
   private case object Invalid extends Checked[Nothing]
 
@@ -25,15 +34,11 @@ object Checker {
 
     if (diagnostics.nonEmpty) {
       diagnostics.foreach { diagnostic =>
-        println(
-          s"axi4/tracking : error: ${path(diagnostic.interface)} " +
-            s"${diagnostic.property}: ${diagnostic.message}"
-        )
-        diagnostic.details.foreach(line => println(s"axi4/tracking :   $line"))
+        println(s"${Tag.diagnosticName} : error: ${diagnostic.message}")
+        println(s"${Tag.diagnosticName} :   Interface: ${path(diagnostic.interface)}")
+        println(s"${Tag.diagnosticName} :   Property: ${diagnostic.property}")
+        diagnostic.details.foreach(line => println(s"${Tag.diagnosticName} :   $line"))
       }
-      throw new IllegalArgumentException(
-        s"AXI4 property checking failed with ${diagnostics.length} diagnostic(s)"
-      )
     }
   }
 
@@ -74,7 +79,7 @@ object Checker {
     }
 
     checkedValue(interface, p.SlaveMemoryMap, allowUndefined = true, diagnostics) match {
-      case Value(memoryMap, _) =>
+      case value @ Value(memoryMap, steps, enforcementSourceInfo, _, _) =>
         memoryMap.validate match {
           case v.MemoryMap.ValidationResult.Success => ()
           case failure: v.MemoryMap.ValidationResult.Failure =>
@@ -82,7 +87,9 @@ object Checker {
               interface,
               p.SlaveMemoryMap.qualifiedName,
               "memory map validation failed",
-              Seq(failure.render)
+              detail(failure.render) ++
+                trace("Resolution trace", steps, enforcementSourceInfo) ++
+                enforcementContext("Property", value)
             )
         }
 
@@ -92,11 +99,12 @@ object Checker {
             interface,
             p.SlaveMemoryMap.qualifiedName,
             s"memory map exceeds the ${interface.cfg.wAddr}-bit address space",
-            Seq(
+            detail(
               s"offset=0x${memoryMap.offset.toString(16)}",
               s"size=0x${memoryMap.allocatedSize.toString(16)}",
               s"limit=0x${limit.toString(16)}"
-            )
+            ) ++ trace("Resolution trace", steps, enforcementSourceInfo)
+              ++ enforcementContext("Property", value)
           )
       case Skip | Invalid => ()
     }
@@ -111,30 +119,52 @@ object Checker {
     val master = checkedValue(interface, masterKey, allowUndefined = false, diagnostics)
     val slave = checkedValue(interface, slaveKey, allowUndefined = false, diagnostics)
 
+    if (!eitherEnforced(interface, masterKey, slaveKey))
+      return
+
     master match {
-      case Value(value, _) =>
+      case checked @ Value(value, steps, enforcementSourceInfo, _, _) =>
         v.BurstShape.validationErrors(value, interface.cfg).foreach { message =>
-          diagnostics += Diagnostic(interface, masterKey.qualifiedName, message)
+          diagnostics += Diagnostic(
+            interface,
+            masterKey.qualifiedName,
+            message,
+            trace("Resolution trace", steps, enforcementSourceInfo) ++
+              enforcementContext("Property", checked)
+          )
         }
       case _ => ()
     }
     slave match {
-      case Value(value, _) =>
+      case checked @ Value(value, steps, enforcementSourceInfo, _, _) =>
         v.BurstShape.validationErrors(value, interface.cfg).foreach { message =>
-          diagnostics += Diagnostic(interface, slaveKey.qualifiedName, message)
+          diagnostics += Diagnostic(
+            interface,
+            slaveKey.qualifiedName,
+            message,
+            trace("Resolution trace", steps, enforcementSourceInfo) ++
+              enforcementContext("Property", checked)
+          )
         }
       case _ => ()
     }
 
     (master, slave) match {
-      case (Value(masterValue, masterSteps), Value(slaveValue, slaveSteps)) =>
+      case (
+            master @ Value(masterValue, masterSteps, masterSourceInfo, _, _),
+            slave @ Value(slaveValue, slaveSteps, slaveSourceInfo, _, _)
+          ) =>
         val errors = v.BurstShape.compatibilityErrors(masterValue, slaveValue)
         if (errors.nonEmpty)
           diagnostics += Diagnostic(
             interface,
             s"${masterKey.qualifiedName} -> ${slaveKey.qualifiedName}",
             "burst shapes are incompatible",
-            errors ++ trace("master trace", masterSteps) ++ trace("slave trace", slaveSteps)
+            detail(errors: _*) ++
+              trace("Master trace", masterSteps, masterSourceInfo) ++
+              trace("Slave trace", slaveSteps, slaveSourceInfo) ++
+              enforcementContext("Master", master) ++
+              enforcementContext("Slave", slave)
           )
       case _ => ()
     }
@@ -149,19 +179,23 @@ object Checker {
     val master = checkedValue(interface, masterKey, allowUndefined = false, diagnostics)
     val slave = checkedValue(interface, slaveKey, allowUndefined = false, diagnostics)
 
+    if (!eitherEnforced(interface, masterKey, slaveKey))
+      return
+
     def validate(
         checked: Checked[v.ThreadMode],
         key: p.Key[v.ThreadMode]
     ): Boolean =
       checked match {
-        case Value(value, steps) =>
+        case checked @ Value(value, steps, enforcementSourceInfo, _, _) =>
           val errors = v.ThreadMode.validationErrors(value, interface.cfg)
           errors.foreach { message =>
             diagnostics += Diagnostic(
               interface,
               key.qualifiedName,
               message,
-              trace("resolution trace", steps)
+              trace("Resolution trace", steps, enforcementSourceInfo) ++
+                enforcementContext("Property", checked)
             )
           }
           errors.isEmpty
@@ -172,7 +206,10 @@ object Checker {
     val slaveValid = validate(slave, slaveKey)
 
     (master, slave) match {
-      case (Value(masterValue, masterSteps), Value(slaveValue, slaveSteps))
+      case (
+            master @ Value(masterValue, masterSteps, masterSourceInfo, _, _),
+            slave @ Value(slaveValue, slaveSteps, slaveSourceInfo, _, _)
+          )
           if masterValid &&
             slaveValid &&
             !v.ThreadMode.compatible(masterValue, slaveValue) =>
@@ -180,7 +217,10 @@ object Checker {
           interface,
           s"${masterKey.qualifiedName} -> ${slaveKey.qualifiedName}",
           s"thread modes are incompatible: master=$masterValue, slave=$slaveValue",
-          trace("master trace", masterSteps) ++ trace("slave trace", slaveSteps)
+          trace("Master trace", masterSteps, masterSourceInfo) ++
+            trace("Slave trace", slaveSteps, slaveSourceInfo) ++
+            enforcementContext("Master", master) ++
+            enforcementContext("Slave", slave)
         )
       case _ => ()
     }
@@ -206,9 +246,9 @@ object Checker {
       case ResolveResult.Success() =>
         request.cell.state match {
           case p.State.Enforced(value) =>
-            Value(value, Seq.empty)
+            checkedValue(value, Seq.empty, request.cell)
           case p.State.Calculated(value, _) =>
-            Value(value, resolution.steps)
+            checkedValue(value, resolution.steps, request.cell)
           case p.State.DontCare(_) =>
             Skip
           case p.State.Undefined if allowUndefined =>
@@ -245,14 +285,120 @@ object Checker {
     }
   }
 
-  private def trace(label: String, steps: Seq[ResolutionStep]): Seq[String] =
-    if (steps.isEmpty)
-      Seq(s"$label: enforced locally")
-    else
-      Seq(s"$label:") ++ steps.map { step =>
-        s"${step.interfaceFrom} -> ${step.interfaceTo} " +
-          s"(${step.kind}/${step.resolver} at ${step.resolverPath})"
+  private def detail(lines: String*): Seq[String] =
+    lines.map(line => s"Detail: $line")
+
+  private def checkedValue[T](
+      value: T,
+      steps: Seq[ResolutionStep],
+      cell: p.Cell[T]
+  ): Value[T] =
+    Value(
+      value,
+      steps,
+      cell.enforcementSourceInfo,
+      cell.enforcementOwner,
+      cell.enforcementInterface
+    )
+
+  private def eitherEnforced[T](
+      interface: Tracked,
+      masterKey: p.Key[T],
+      slaveKey: p.Key[T]
+  ): Boolean =
+    Seq(masterKey, slaveKey).exists { key =>
+      interface.properties(key).state match {
+        case p.State.Enforced(_) => true
+        case _                   => false
       }
+    }
+
+  private def trace(
+      label: String,
+      steps: Seq[ResolutionStep],
+      enforcementSourceInfo: Option[SourceInfo]
+  ): Seq[String] = {
+    val hops = steps.map { step =>
+      s"  ${step.interfaceFrom} -> ${step.interfaceTo} " +
+        s"(${step.kind}/${step.resolver} at ${step.resolverPath})"
+    }
+    val originLine =
+      enforcementSourceInfo match {
+        case Some(sourceInfo) =>
+          if (steps.isEmpty)
+            s"  enforced locally at ${sourceInfoToString(sourceInfo)}"
+          else
+            s"  enforced at ${sourceInfoToString(sourceInfo)}"
+        case None =>
+          if (steps.isEmpty) "  calculated locally"
+          else "  calculated at end of trace"
+      }
+
+    Seq(s"$label:") ++ hops :+ originLine
+  }
+
+  private def enforcementContext(
+      label: String,
+      value: Value[_]
+  ): Seq[String] =
+    value.enforcementSourceInfo match {
+      case None => Seq.empty
+      case Some(sourceInfo) =>
+        val header = Seq(s"$label property enforced by:")
+        val interfaceLines =
+          value.enforcementInterface match {
+            case Some(interface) =>
+              Seq(s"  Interface: ${path(interface)}")
+            case None =>
+              Seq("  Interface: (unavailable)")
+          }
+        val enforcementLine =
+          Seq(s"  Property enforced at: ${sourceInfoToString(sourceInfo)}")
+        val ownerLines =
+          value.enforcementOwner match {
+            case Some(owner @ Owner.ComponentOwner(component)) =>
+              Seq(
+                s"  Component: ${className(component)}",
+                s"  Component path: ${owner.path}",
+                s"  Component instantiated at: ${sourceInfoToString(owner.sourceInfo)}",
+                s"  Module: ${className(owner.module)}",
+                s"  Module path: ${owner.modulePath}",
+                s"  Module defined at: ${sourceInfoToString(owner.moduleDefinitionSourceInfo)}",
+                s"  Module instantiated at: ${owner.moduleInstantiationSourceInfo
+                    .map(sourceInfoToString)
+                    .getOrElse("(root elaboration)")}"
+              )
+            case Some(owner: Owner.Module) =>
+              Seq(
+                s"  Module: ${className(owner.module)}",
+                s"  Module path: ${owner.modulePath}",
+                s"  Module defined at: ${sourceInfoToString(owner.moduleDefinitionSourceInfo)}",
+                s"  Module instantiated at: ${owner.moduleInstantiationSourceInfo
+                    .map(sourceInfoToString)
+                    .getOrElse("(root elaboration)")}"
+              )
+            case None =>
+              Seq("  Owner: (property was enforced outside a Resolver)")
+          }
+        val declarationLines =
+          value.enforcementInterface.toSeq.map { interface =>
+            s"  Interface declared at: ${sourceInfoToString(interfaceSourceInfo(interface))}"
+          }
+
+        header ++ interfaceLines ++ enforcementLine ++ ownerLines ++ declarationLines
+    }
+
+  private def className(value: AnyRef): String =
+    if (value eq null) "(null)"
+    else value.getClass.getName.stripSuffix("$").replace('$', '.')
+
+  private def interfaceSourceInfo(interface: Tracked): SourceInfo =
+    interface match {
+      case full: chext.amba.axi4.full.Interface => full.sourceInfo
+      case lite: chext.amba.axi4.lite.Interface => lite.sourceInfo
+      case raw: chext.amba.axi4.RawInterface     => raw.sourceInfo
+      case _                                     => UnlocatableSourceInfo
+    }
 
   private def path(interface: Tracked): String =
     try interface.trackingPath

@@ -61,6 +61,7 @@ COMPILE_TARGETS=()
 
 APP_TARGETS=(
   "chext.amba.axi4.tracking.Properties_Test"
+  "chext.amba.axi4.tracking.CompositionDiagnostics_Test"
   "chext.amba.TrackingDiagnostics_Test"
   "chext.amba.axi4.ConstantSlave_Test"
   "chext.amba.axi4.full.Connect_Test"

@@ -5,7 +5,7 @@ import chisel3.experimental.{BaseModule, SourceInfo}
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
-import chext.tracking.{Component, Path}
+import chext.tracking.Component
 import chext.amba.axi4.tracking.{properties => p}
 
 /** One property-resolution request.
@@ -116,8 +116,11 @@ final case class ResolutionTrace(steps: Seq[ResolutionStep])
   * resolver precedence. Use the `Component` constructor for tracked components and the `BaseModule`
   * constructor for module-owned resolvers.
   */
-abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
+abstract class Resolver(private[tracking] val owner: Owner) {
   Tag.initialize()
+
+  /** Exact resolver owner consumed implicitly by ordinary property-enforcement syntax. */
+  protected implicit final val propertyOwner: Owner = owner
 
   /** Resolver-facing operations for one request.
     *
@@ -135,9 +138,10 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
     private def calculateCell[T0](
         cell: p.Cell[T0],
         value: T0,
-        resolutionSteps: Seq[ResolutionStep]
+        resolutionSteps: Seq[ResolutionStep],
+        enforcedFrom: Option[p.Cell[_]]
     ): ResolveResult =
-      cell.calculate(value, Resolver.this, resolutionSteps) match {
+      cell.calculate(value, Resolver.this, resolutionSteps, enforcedFrom) match {
         case p.CalculateResult.Success =>
           ResolveResult.Success()
         case rejected =>
@@ -149,7 +153,7 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
 
     /** Calculates this request from a value produced by the enclosing resolver. */
     def calculate(value: T): ResolveResult =
-      calculateCell(request.cell, value, Seq.empty)
+      calculateCell(request.cell, value, Seq.empty, None)
 
     /** Calculates through a key whose singleton type was widened by generic code. */
     def calculate[T0](
@@ -163,7 +167,8 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
       calculateCell(
         request.cell.asInstanceOf[p.Cell[T0]],
         value,
-        Seq.empty
+        Seq.empty,
+        None
       )
     }
 
@@ -178,7 +183,8 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
       calculateCell(
         request.cell,
         key.valueType.tpe.cast(value),
-        Seq.empty
+        Seq.empty,
+        None
       )
     }
 
@@ -249,7 +255,8 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
                 kind = kind,
                 resolver = resolver,
                 resolverPath = resolverPath
-              ) +: dependency.cell.resolutionSteps
+              ) +: dependency.cell.resolutionSteps,
+              Some(dependency.cell)
             )
           case None =>
             dependency.cell.state match {
@@ -273,11 +280,11 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
 
   /** Creates a resolver owned by a unified Chext component. */
   def this(owner: Component) =
-    this(Resolver.Owner.ComponentOwner(owner))
+    this(Owner(owner))
 
   /** Creates a resolver owned directly by a Chisel module. */
   def this(owner: BaseModule) =
-    this(Resolver.Owner.Module(owner))
+    this(Owner(owner))
 
   private[tracking] final lazy val hierarchyDepth: Int =
     owner.hierarchyDepth
@@ -302,7 +309,7 @@ abstract class Resolver private (private[tracking] val owner: Resolver.Owner) {
   def resolver: String = inferredResolverName
 
   /** Absolute path of the owning component or module. */
-  final lazy val resolverPath: String = owner.resolverPath
+  final lazy val resolverPath: String = owner.path
 
   /** Performs one resolution step.
     *
@@ -535,40 +542,4 @@ object Resolver {
     }
   }
 
-  /** Uniform owner abstraction used for precedence and trace paths. */
-  private[tracking] sealed trait Owner {
-    def hierarchyDepth: Int
-    def resolverPath: String
-  }
-
-  private[tracking] object Owner {
-
-    /** Resolver ownership by a unified tracked component. */
-    final case class ComponentOwner(component: Component) extends Owner {
-      lazy val resolverPath: String = Path.component(component)
-
-      lazy val hierarchyDepth: Int = {
-        @scala.annotation.tailrec
-        def loop(current: Component, depth: Int): Int =
-          current.parentOption match {
-            case Some(parent) => loop(parent, depth + 1)
-            case None         => depth
-          }
-
-        loop(component, 1)
-      }
-    }
-
-    /** Resolver ownership by a Chisel module.
-      *
-      * Modules use depth zero because they form the enclosing resolution boundary. A null module is
-      * accepted only for lightweight unit-test resolvers and is represented by the root path.
-      */
-    final case class Module(module: BaseModule) extends Owner {
-      val hierarchyDepth: Int = 0
-      lazy val resolverPath: String =
-        if (module eq null) "/"
-        else Path.module(module)
-    }
-  }
 }

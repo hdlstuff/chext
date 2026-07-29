@@ -533,23 +533,18 @@ object Properties_Test extends App {
 
   // Resolution diagnostics distinguish missing, incomplete, undefined, and incompatibility,
   // and failed comparisons print provenance from both sides.
-  def capturedFailure(body: => Unit): String = {
+  def capturedDiagnostics(body: => Unit): String = {
     val bytes = new ByteArrayOutputStream()
     val stream = new PrintStream(bytes)
-    val failed =
-      try {
-        Console.withOut(stream)(body)
-        false
-      } catch {
-        case _: IllegalArgumentException => true
-      }
+    Console.withOut(stream)(body)
     stream.flush()
-    assert(failed)
     bytes.toString("UTF-8")
   }
 
   val missing = new Tracked { val cfg = Properties_Test.cfg }
-  val missingLog = capturedFailure(Checker.check(Seq(missing)))
+  val missingLog = capturedDiagnostics(Checker.check(Seq(missing)))
+  assert(missingLog.contains("axi4.tracking : error:"))
+  assert(!missingLog.contains("elastic.tracking"))
   assert(missingLog.contains("no resolver is registered"))
 
   val invalidLiteModes = new Tracked {
@@ -567,16 +562,18 @@ object Properties_Test extends App {
   invalidLiteModes.properties(p.SlaveWriteThreadMode) = v.ThreadMode.Unconstrained
   invalidLiteModes.properties.markUndefined(p.SlaveMemoryMap)
   val invalidLiteLog =
-    capturedFailure(Checker.check(Seq(invalidLiteModes)))
+    capturedDiagnostics(Checker.check(Seq(invalidLiteModes)))
   assert(
-    invalidLiteLog.contains(
-      "master.read_threadMode: AXI4-Lite thread mode UniqueThreads is invalid"
-    )
+    invalidLiteLog.contains("Property: master.read_threadMode")
   )
   assert(
-    invalidLiteLog.contains(
-      "slave.write_threadMode: AXI4-Lite thread mode Unconstrained is invalid"
-    )
+    invalidLiteLog.contains("error: AXI4-Lite thread mode UniqueThreads is invalid")
+  )
+  assert(
+    invalidLiteLog.contains("Property: slave.write_threadMode")
+  )
+  assert(
+    invalidLiteLog.contains("error: AXI4-Lite thread mode Unconstrained is invalid")
   )
 
   val invalidResolvedLiteMode = new Tracked {
@@ -598,12 +595,9 @@ object Properties_Test extends App {
   }
   invalidResolvedLiteMode.properties.markUndefined(p.SlaveMemoryMap)
   val invalidResolvedLiteLog =
-    capturedFailure(Checker.check(Seq(invalidResolvedLiteMode)))
-  assert(
-    invalidResolvedLiteLog.contains(
-      "master.read_threadMode: AXI4-Lite thread mode UniqueThreads is invalid"
-    )
-  )
+    capturedDiagnostics(Checker.check(Seq(invalidResolvedLiteMode)))
+  assert(!invalidResolvedLiteLog.contains("master.read_threadMode"))
+  assert(!invalidResolvedLiteLog.contains("UniqueThreads is invalid"))
 
   val stateDiagnostics = new Tracked { val cfg = Properties_Test.cfg }
   stateDiagnostics.properties(p.MasterReadBurstShape).enforce(shape)
@@ -615,7 +609,7 @@ object Properties_Test extends App {
   stateDiagnostics.properties(p.MasterWriteThreadMode).enforce(v.ThreadMode.SingleTransaction)
   stateDiagnostics.properties(p.SlaveWriteThreadMode).enforce(v.ThreadMode.Unconstrained)
   stateDiagnostics.properties(p.SlaveMemoryMap).markUndefined()
-  val stateLog = capturedFailure(Checker.check(Seq(stateDiagnostics)))
+  val stateLog = capturedDiagnostics(Checker.check(Seq(stateDiagnostics)))
   assert(stateLog.contains("property is undefined"))
   assert(stateLog.contains("property resolution is incomplete"))
 
@@ -636,7 +630,7 @@ object Properties_Test extends App {
     .enforce(v.ThreadMode.Unconstrained)
   naturalAlignmentMismatch.properties(p.SlaveMemoryMap).markUndefined()
   val alignmentLog =
-    capturedFailure(Checker.check(Seq(naturalAlignmentMismatch)))
+    capturedDiagnostics(Checker.check(Seq(naturalAlignmentMismatch)))
   assert(
     alignmentLog.contains(
       "master may issue unaligned transactions, but slave requires natural alignment"
@@ -651,16 +645,35 @@ object Properties_Test extends App {
     .calculate(masterMismatch, dummyResolver, Seq(masterTrace))
   traced
     .properties(p.SlaveReadBurstShape)
-    .calculate(slaveMismatch, dummyResolver, Seq(slaveTrace))
+    .enforce(slaveMismatch)
   traced
     .properties(p.MasterReadThreadMode)
     .enforce(v.ThreadMode.SingleTransaction)
   traced.properties(p.SlaveReadThreadMode).enforce(v.ThreadMode.Unconstrained)
   traced.properties(p.SlaveMemoryMap).markUndefined()
-  val traceLog = capturedFailure(Checker.check(Seq(traced)))
-  assert(traceLog.contains("master trace"))
-  assert(traceLog.contains("slave trace"))
+  val traceLog = capturedDiagnostics(Checker.check(Seq(traced)))
+  assert(traceLog.contains("Master trace"))
+  assert(traceLog.contains("Slave trace"))
   assert(traceLog.contains("MasterResolver"))
-  assert(traceLog.contains("SlaveResolver"))
+  assert(!traceLog.contains("SlaveResolver"))
+  assert(traceLog.contains("Owner: (property was enforced outside a Resolver)"))
+
+  val bothInferred = new Tracked {
+    val cfg = Properties_Test.cfg.copy(write = false)
+  }
+  bothInferred
+    .properties(p.MasterReadBurstShape)
+    .calculate(masterMismatch, dummyResolver, Seq(masterTrace))
+  bothInferred
+    .properties(p.SlaveReadBurstShape)
+    .calculate(slaveMismatch, dummyResolver, Seq(slaveTrace))
+  bothInferred
+    .properties(p.MasterReadThreadMode)
+    .enforce(v.ThreadMode.SingleTransaction)
+  bothInferred.properties(p.SlaveReadThreadMode).enforce(v.ThreadMode.Unconstrained)
+  bothInferred.properties(p.SlaveMemoryMap).markUndefined()
+  val bothInferredLog =
+    capturedDiagnostics(Checker.check(Seq(bothInferred)))
+  assert(!bothInferredLog.contains("burst shapes are incompatible"))
 
 }
