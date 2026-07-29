@@ -1,7 +1,6 @@
 package chext.tracking
 
-import chisel3.RawModule
-import chisel3.experimental.{BaseModule, SourceInfo}
+import chisel3.experimental.BaseModule
 
 import chisel3.hacks.ModuleInternals
 import chisel3.hacks.PrefixManager
@@ -36,37 +35,6 @@ private[chext] class ModuleInfo(
   private val args_ = ArrayBuffer.empty[(String, TypedObject)]
 
   private var onComplete_ = ArrayBuffer.empty[() => Unit]
-
-  /** Source location at which this module is defined. */
-  private[chext] lazy val definitionSourceInfo: SourceInfo =
-    ModuleInternals.getSourceInfo(module)
-
-  /** Source location at which this module is instantiated.
-    *
-    * Chisel emits this information into the parent module. A lookup before that emission throws
-    * instead of caching an absent value; Scala retries a failed lazy-val initialization on the next
-    * access.
-    */
-  private[chext] lazy val instantiationSourceInfo: Option[SourceInfo] =
-    parent.map { parentInfo =>
-      val parentModule =
-        parentInfo.module match {
-          case rawModule: RawModule => rawModule
-          case other =>
-            throw new IllegalStateException(
-              s"Cannot obtain instantiation SourceInfo for $module from non-RawModule parent $other"
-            )
-        }
-
-      ModuleInternals
-        .getChildrenSourceInfo(parentModule)
-        .getOrElse(
-          module,
-          throw new IllegalStateException(
-            s"Instantiation SourceInfo for $module was requested before its parent emitted the instance"
-          )
-        )
-    }
 
   /** @return
     *   Children `ModuleInfo`s.

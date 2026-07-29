@@ -8,8 +8,8 @@ import chext.tracking.{Component, Path}
 
 /** Module or component that owns an AXI property resolver.
   *
-  * Owners provide resolver-precedence and diagnostic context. Module instantiation information is
-  * deliberately lazy: Chisel only makes it available after the parent has emitted the instance.
+  * Owners provide resolver-precedence and diagnostic context. AXI module states receive module
+  * instantiation information in one hierarchy pass immediately before checking.
   */
 sealed trait Owner {
 
@@ -57,9 +57,9 @@ object Owner {
     lazy val module: BaseModule = moduleInfo.module
     lazy val modulePath: String = moduleInfo.absolutePath
     lazy val moduleDefinitionSourceInfo: SourceInfo =
-      moduleInfo.definitionSourceInfo
+      ModuleInternals.getSourceInfo(module)
     lazy val moduleInstantiationSourceInfo: Option[SourceInfo] =
-      moduleInfo.instantiationSourceInfo
+      moduleInfo.trackingState(Tag).instanceSourceInfo
 
     private[tracking] lazy val hierarchyDepth: Int = {
       @scala.annotation.tailrec
@@ -80,12 +80,13 @@ object Owner {
     * metadata is unavailable for that test-only owner.
     */
   final case class Module(module: BaseModule) extends Owner {
-    private lazy val moduleInfo =
-      chext.tracking.Manager.registerModule(module)
+    private val moduleInfo =
+      if (module eq null) null
+      else chext.tracking.Manager.registerModule(module)
 
     lazy val path: String =
       if (module eq null) "/"
-      else Path.module(module)
+      else moduleInfo.absolutePath
 
     lazy val sourceInfo: SourceInfo =
       requireModule(ModuleInternals.getSourceInfo(module))
@@ -95,10 +96,10 @@ object Owner {
       else moduleInfo.absolutePath
 
     lazy val moduleDefinitionSourceInfo: SourceInfo =
-      requireModule(moduleInfo.definitionSourceInfo)
+      requireModule(ModuleInternals.getSourceInfo(module))
 
     lazy val moduleInstantiationSourceInfo: Option[SourceInfo] =
-      requireModule(moduleInfo.instantiationSourceInfo)
+      requireModule(moduleInfo.trackingState(Tag).instanceSourceInfo)
 
     private[tracking] val hierarchyDepth: Int = 0
 

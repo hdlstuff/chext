@@ -162,7 +162,7 @@ private class ComponentOwnerDiagnosticTop extends Module {
   interface.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleTransaction
 }
 
-private class OwnerSourceInfoChild extends Module {
+private class OwnerSourceInfoGrandchild extends Module {
   val trackingOwner: Owner = Owner(this)
   val earlyLookupFailed: Boolean =
     try {
@@ -173,10 +173,43 @@ private class OwnerSourceInfoChild extends Module {
     }
 }
 
+private class OwnerSourceInfoChild extends Module {
+  val trackingOwner: Owner = Owner(this)
+  val grandchild = Module(new OwnerSourceInfoGrandchild)
+  val grandchildLookupBeforeAssignmentFailed: Boolean =
+    try {
+      grandchild.trackingOwner.moduleInstantiationSourceInfo
+      false
+    } catch {
+      case _: IllegalStateException => true
+    }
+}
+
 private class OwnerSourceInfoTop extends Module {
+  Tag.initialize()
   private val child = Module(new OwnerSourceInfoChild)
-  require(child.earlyLookupFailed)
-  require(child.trackingOwner.moduleInstantiationSourceInfo.nonEmpty)
+  require(child.grandchild.earlyLookupFailed)
+  require(child.grandchildLookupBeforeAssignmentFailed)
+  private val childLookupBeforeAssignmentFailed =
+    try {
+      child.trackingOwner.moduleInstantiationSourceInfo
+      false
+    } catch {
+      case _: IllegalStateException => true
+    }
+  private val grandchildLookupBeforeAssignmentFailed =
+    try {
+      child.grandchild.trackingOwner.moduleInstantiationSourceInfo
+      false
+    } catch {
+      case _: IllegalStateException => true
+    }
+  require(childLookupBeforeAssignmentFailed)
+  require(grandchildLookupBeforeAssignmentFailed)
+  chext.tracking.onComplete(this) {
+    require(child.trackingOwner.moduleInstantiationSourceInfo.nonEmpty)
+    require(child.grandchild.trackingOwner.moduleInstantiationSourceInfo.nonEmpty)
+  }
 }
 
 object CompositionDiagnostics_Test extends App with ElaborationTest {
@@ -265,7 +298,7 @@ object CompositionDiagnostics_Test extends App with ElaborationTest {
   test(
     name = "owner_instantiation_source_info",
     description =
-      "Owner instantiation SourceInfo throws before DefInstance emission and its lazy value succeeds when retried afterward.",
+      "Direct and nested owner instantiation SourceInfo is unavailable before the root AXI hierarchy assignment and available afterward.",
     gen = () => new OwnerSourceInfoTop,
     checks = Seq(SystemVerilog contains "module OwnerSourceInfoTop")
   )

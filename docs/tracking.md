@@ -20,6 +20,41 @@ The generic model deliberately does not know what an elastic source or sink is. 
 | `DeclaredRole` | Records whether an interface is declared as `Source`, `Sink`, or role-neutral from the current module's perspective. |
 | Elastic module graph state | Collects interface declarations, wires, view sources, sanity-check data, and component port references for graph generation. |
 
+## Module Lifecycle and Registry Cleanup
+
+The tracking manager keeps an identity-based registry from each active Chisel module to its
+`ModuleInfo`. Registering a module also ensures that its ancestors are registered, links its
+`ModuleInfo` into its parent's child map, and installs a callback for the end of the module body.
+
+At module-body completion, `ModuleInfo` performs its work in this order:
+
+1. Run generic path and naming checks.
+2. Call `onComplete()` for every registered tracking layer.
+3. Run user-provided completion callbacks.
+4. Remove the module's direct children from the manager registry.
+5. If the module is the root, remove the module itself from the registry.
+
+Unregistering a module only removes the global registry entry. It does not clear the corresponding
+`ModuleInfo`, its child map, components, or layer-specific states. The parent therefore retains the
+constructed tracking tree until the parent itself becomes unreachable.
+
+For example, consider `Root -> A -> B`:
+
+- When leaf module `B` completes, it remains registered because its parent still needs it.
+- When `A` completes, `B` is removed from the global registry, while `A` remains registered.
+- When `Root` completes, root-level tracking passes can still traverse `Root -> A -> B` through the
+  retained child maps. Only after those passes and completion callbacks finish are `A` and `Root`
+  removed from the registry.
+
+This distinction lets a tracking layer wait for root completion without losing descendant metadata.
+Such a layer should traverse the retained `ModuleInfo` tree and keep references to the original
+module states. Re-registering an already-removed descendant during root completion could instead
+create a fresh `ModuleInfo` with fresh layer state.
+
+AXI tracking uses this lifecycle for its exhaustive check. Immediately before invoking `Checker`,
+the root AXI `ModuleState` recursively assigns module-instantiation source information across the
+retained tree, scanning each tracked parent's emitted instance commands once.
+
 ## Reading The Graph
 
 A component's path is not derived from its `tpe`; it is derived from the Chisel prefix stack at construction time. The `tpe` says what the thing is, while the path says where it was elaborated. For example, a `Queue` created under `e.SourceBuffer(source)` may have `tpe = "Queue"` but a path containing `sourceBuffer0_queue0`.
