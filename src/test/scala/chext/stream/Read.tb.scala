@@ -33,12 +33,6 @@ private class AxiTestSlave(axiCfg: axi4.Config) extends Module {
       }
     }
   }
-
-  if (axiCfg.write) {
-    val nullSinkAw = new elastic.NullSink(s_axi.aw)
-    val nullSinkW = new elastic.NullSink(s_axi.w)
-    val nullSourceB = new elastic.NullSource(s_axi.b)
-  }
 }
 
 class Read_Tbtop(
@@ -58,10 +52,6 @@ class Read_Tbtop(
   val randomStallAR = new elastic.RandomStall(read.m_axi.ar, axiTestSlave.s_axi.ar, 8)
   val randomStallR = new elastic.RandomStall(axiTestSlave.s_axi.r, read.m_axi.r, 8)
 
-  read.m_axi.aw :=> axiTestSlave.s_axi.aw
-  read.m_axi.w :=> axiTestSlave.s_axi.w
-  axiTestSlave.s_axi.b :=> read.m_axi.b
-
   declareClock(clock)
   declareReset(reset)
   declareElasticInterface(rd_sourceTask, "Rd_Task")
@@ -72,7 +62,10 @@ class Read_Tbtop(
 object Read_Tb extends chext.TestBench {
   emit(
     new Read_Tbtop(
-      ReadConfig(axi4.Config(wAddr = 32, wData = 64), resultMode = ReadResultMode.DropEmpty),
+      ReadConfig(
+        axi4.Config(wAddr = 32, wData = 64, write = false),
+        resultMode = ReadResultMode.DropEmpty
+      ),
       "Read_Tbtop_DropEmpty"
     )
   )
@@ -80,7 +73,7 @@ object Read_Tb extends chext.TestBench {
   emit(
     new Read_Tbtop(
       ReadConfig(
-        axi4.Config(wAddr = 32, wData = 64),
+        axi4.Config(wAddr = 32, wData = 64, write = false),
         resultMode = ReadResultMode.LastAlwaysInvalid
       ),
       "Read_Tbtop_LastAlwaysInvalid"
@@ -90,7 +83,7 @@ object Read_Tb extends chext.TestBench {
   emit(
     new Read_Tbtop(
       ReadConfig(
-        axi4.Config(wAddr = 32, wData = 64),
+        axi4.Config(wAddr = 32, wData = 64, write = false),
         resultMode = ReadResultMode.LastSometimesInvalid
       ),
       "Read_Tbtop_LastSometimesInvalid"

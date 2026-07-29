@@ -2,7 +2,7 @@ package chext.stream
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.elastic
 import elastic.ConnectOp._
@@ -34,7 +34,9 @@ case class WriteConfig[Tuser <: Data](
   private val require_ = chext.util.Require.inferred()
 
   require_(!axiCfg.lite)
+  require_(!axiCfg.read)
   require_(axiCfg.write)
+  require_(maxBurstLength > 0)
 
   if (axiCfg.axi3Compat)
     require_(maxBurstLength <= 16, "maxBurstLength <= 16")
@@ -189,11 +191,6 @@ private class Write0[Tuser <: Data](val cfg: WriteConfig[Tuser]) extends Module 
         out.user := 0.U
       }
     }
-
-    if (axiCfg.read) {
-      val nullSourceAr = new elastic.NullSource(m_axi.ar)
-      val nullSinkR = new elastic.NullSink(m_axi.r)
-    }
   }
 }
 
@@ -216,6 +213,7 @@ final class Write[Tuser <: Data](val cfg: WriteConfig[Tuser])
   declareElasticInterface(sourceData, "Data")
   declareAxi4Interface(m_axi)
 
+  private val resolver = new Write_Resolver(this)
   private val write0 = Module(new Write0(cfg))
   write0.m_axi :=> m_axi
 
@@ -263,4 +261,30 @@ final class Write[Tuser <: Data](val cfg: WriteConfig[Tuser])
     throw new IllegalArgumentException(
       "stream.Write: Incorrect result mode. Valid ones: WriteResultMode.{DropEmpty, KeepAll}"
     )
+}
+
+private final class Write_Resolver[Tuser <: Data](owner: Write[Tuser])(implicit
+    sourceInfo: SourceInfo
+) extends axi4.tracking.Resolver(owner) {
+  import axi4.BurstType.Encoding.INCR
+  import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
+
+  bindMaster(owner.m_axi)
+
+  owner.m_axi.properties(p.MasterWriteBurstShape) = v.BurstShape(
+    maxBeats = owner.cfg.maxBurstLength,
+    types = Seq(INCR),
+    sizes = Seq(v.BurstShape.fullSize(owner.cfg.axiCfg.wData)),
+    aligned = true
+  )
+  owner.m_axi.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
+        request.incomplete()
+      case _ =>
+        request.missingCase()
+    }
 }

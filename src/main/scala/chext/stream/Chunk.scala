@@ -12,6 +12,10 @@ case class ChunkConfig[Tuser <: Data](
     val maxBurstLength: Int,
     val genUser: Tuser = UInt(0.W)
 ) {
+  private val require_ = chext.util.Require.inferred()
+
+  require_(maxBurstLength > 0)
+
   val genSource = new ChunkTask(this)
   val genSink = new ChunkResult(this)
 }

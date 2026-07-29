@@ -2,7 +2,7 @@ package chext.ldstr
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.prefix
+import chisel3.experimental.{prefix, SourceInfo}
 
 import chext.elastic
 import elastic.ConnectOp._
@@ -17,6 +17,7 @@ case class StoreConfig[Tuser <: Data](
   private val require_ = chext.util.Require.inferred()
 
   require_(!axiCfg.lite)
+  require_(!axiCfg.read)
   require_(axiCfg.write)
 
   val genTask = new Task(genUser, axiCfg.wAddr)
@@ -47,6 +48,8 @@ class Store[Tuser <: Data](val cfg: StoreConfig[Tuser])
   declareElasticInterface(sinkResult, "Result")
   declareElasticInterface(sourceData, "Data")
   declareAxi4Interface(m_axi)
+
+  private val resolver = new Store_Resolver(this)
 
   {
     val taskAW = elastic.EWire(genTask)
@@ -92,10 +95,31 @@ class Store[Tuser <: Data](val cfg: StoreConfig[Tuser])
         out.user := join(wireUser)
       }
     }
-
-    if (axiCfg.read) {
-      val nullSourceAr = new elastic.NullSource(m_axi.ar)
-      val nullSinkR = new elastic.NullSink(m_axi.r)
-    }
   }
+}
+
+private final class Store_Resolver[Tuser <: Data](owner: Store[Tuser])(implicit
+    sourceInfo: SourceInfo
+) extends axi4.tracking.Resolver(owner) {
+  import axi4.BurstType.Encoding.INCR
+  import axi4.tracking._
+  import axi4.tracking.{properties => p, values => v}
+
+  bindMaster(owner.m_axi)
+
+  owner.m_axi.properties(p.MasterWriteBurstShape) = v.BurstShape(
+    maxBeats = 1,
+    types = Seq(INCR),
+    sizes = Seq(v.BurstShape.fullSize(owner.cfg.axiCfg.wData)),
+    aligned = false
+  )
+  owner.m_axi.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
+
+  def resolve[T](request: ResolveRequest[T]): ResolveResult =
+    request match {
+      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
+        request.incomplete()
+      case _ =>
+        request.missingCase()
+    }
 }

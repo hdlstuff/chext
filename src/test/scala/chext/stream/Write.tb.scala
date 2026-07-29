@@ -16,11 +16,16 @@ class Write_Tbtop(
     with chext.AnnotatedModule {
   private val require_ = chext.util.Require.inferred()
 
-  private val readCfg = ReadConfig(cfg.axiCfg, resultMode = ReadResultMode.DropEmpty)
+  private val readCfg = ReadConfig(
+    cfg.axiCfg.copy(read = true, write = false),
+    resultMode = ReadResultMode.DropEmpty
+  )
   private val read = Module(new Read(readCfg))
   private val write = Module(new Write(cfg))
 
-  require_(cfg.axiCfg == axi4.Config(wAddr = 20, wData = 32))
+  require_(
+    cfg.axiCfg == axi4.Config(wAddr = 20, wData = 32, read = false, write = true)
+  )
 
   val rd_sourceTask = IO(elastic.Source(readCfg.genTask))
   val rd_sinkResult = IO(elastic.Sink(readCfg.genResult))
@@ -40,15 +45,20 @@ class Write_Tbtop(
 
   private val (s_axi1, s_axi2) = {
     import chext.memory._
-    import cfg.axiCfg
 
-    val rawMemCfg = RawMemConfig(axiCfg.wAddr - (log2Ceil(axiCfg.wData) - 3), axiCfg.wData, 1, 1)
+    val bridgeAxiCfg = cfg.axiCfg.copy(read = true, write = true)
+    val rawMemCfg = RawMemConfig(
+      bridgeAxiCfg.wAddr - (log2Ceil(bridgeAxiCfg.wData) - 3),
+      bridgeAxiCfg.wData,
+      1,
+      1
+    )
     val portCfg = PortConfig(4, 4, () => new BasicReadWriteArbiter(8))
 
     val mem = Module(new TrueDualPortRAM(rawMemCfg, portCfg, portCfg))
 
-    val axiBridge1 = Module(new Axi4FullToReadWriteBridge(axiCfg))
-    val axiBridge2 = Module(new Axi4FullToReadWriteBridge(axiCfg))
+    val axiBridge1 = Module(new Axi4FullToReadWriteBridge(bridgeAxiCfg))
+    val axiBridge2 = Module(new Axi4FullToReadWriteBridge(bridgeAxiCfg))
 
     axiBridge1.read.req :=> mem.read1.req
     mem.read1.resp :=> axiBridge1.read.resp
@@ -83,14 +93,20 @@ class Write_Tbtop(
 object Write_Tb extends chext.TestBench {
   emit(
     new Write_Tbtop(
-      WriteConfig(axi4.Config(wAddr = 20, wData = 32), resultMode = WriteResultMode.DropEmpty),
+      WriteConfig(
+        axi4.Config(wAddr = 20, wData = 32, read = false),
+        resultMode = WriteResultMode.DropEmpty
+      ),
       "Write_Tbtop_DropEmpty"
     )
   )
 
   emit(
     new Write_Tbtop(
-      WriteConfig(axi4.Config(wAddr = 20, wData = 32), resultMode = WriteResultMode.KeepAll),
+      WriteConfig(
+        axi4.Config(wAddr = 20, wData = 32, read = false),
+        resultMode = WriteResultMode.KeepAll
+      ),
       "Write_Tbtop_KeepAll"
     )
   )
