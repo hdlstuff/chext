@@ -224,7 +224,23 @@ no global registry for this. Each recorded call stores:
 - the current module;
 - whether the call was made on root IO.
 
-Warnings are emitted through the same tracking logger style used elsewhere in Chext.
+AXI4 view-call warnings use the `axi4/axi4View` logger label. Once an Elastic endpoint exists,
+Elastic graph and endpoint diagnostics use `elastic.tracking`, while AXI4 property compatibility
+diagnostics use `axi4.tracking`. AXI4 property diagnostics are non-fatal: the checker prints every
+problem it finds and allows elaboration to continue. The shared component/path tracker retains its
+generic `tracking` label.
+
+AXI4 property diagnostics put the interface path and property names on separate labeled lines.
+Compatibility details and master/slave resolution traces follow, including the Chisel `SourceInfo`
+where an explicit property was enforced. Module-owned enforcement prints the module path, definition,
+and instantiation without a duplicate owner block. Component-owned enforcement first prints the
+component path and instantiation, then its containing module. The interface declaration location is
+printed last.
+
+For paired burst-shape and thread-mode checks, the checker reports a boundary only when the master
+or slave property on that interface is explicitly `Enforced`. A calculated value is still checked
+against an enforced value, but calculated-vs-calculated boundaries are omitted because they only
+repeat constraints inferred and checked elsewhere.
 
 The warnings cover:
 
@@ -274,13 +290,13 @@ For recoverable views, module graph generation resolves the raw interface and em
 path:
 
 ```text
-/s_axi$view.ar
-/m_axi$view.r
-/leaf/s_axi$view.b
+/s_axi$view_ar
+/m_axi$view_r
+/leaf/s_axi$view_b
 ```
 
 The `$view` marker is appended to the raw interface path rather than modeled as a child path
-segment. This means `/s_axi$view.ar` should be read as "the `ar` channel of a view of `s_axi`",
+segment. This means `/s_axi$view_ar` should be read as "the `ar` channel of a view of `s_axi`",
 not as a real hardware child named `view`.
 
 If view recovery fails, the old `/???/...` fallback and diagnostic remain in place.
@@ -308,10 +324,10 @@ separate ordinary interface naming from view-backed interface naming:
   view-conversion call-site `SourceInfo`.
 - `viewSuffix(interface)` derives the visible view suffix from the viewed channel name when the
   registration did not pass an explicit suffix. AXI4 channels have useful child names, so this
-  produces strings such as `$view.ar`, `$view.r`, and `$view.b`. AXI4 Stream registers `$view`
+  produces strings such as `$view_ar`, `$view_r`, and `$view_b`. AXI4 Stream registers `$view`
   explicitly because its entire raw interface maps to one elastic endpoint.
 - `viewInterfaceRef(interface)` combines the raw source reference and the view suffix. If the raw
-  source is `/s_axi` and the viewed child is `ar`, the result is `/s_axi$view.ar` with a
+  source is `/s_axi` and the viewed child is `ar`, the result is `/s_axi$view_ar` with a
   `View(...)` description. For AXI4 Stream, the explicit suffix produces `/axis$view`. If the raw
   source cannot be resolved as hardware, this helper returns `None` and the old unknown-interface
   fallback remains responsible for reporting the problem.
@@ -347,8 +363,8 @@ This lets tracking report misuse such as:
 The tracking report now uses the recovered view path as well. For example:
 
 ```text
-Interface '/s_axi$view.r' is defined by 'chext.amba.Axi4ViewMissingChannelTop...'
-Interface '/s_axi$view.ar' is defined by 'chext.amba.Axi4ViewDuplicatedChannelTop...'
+Interface '/s_axi$view_r' is defined by 'chext.amba.Axi4ViewMissingChannelTop...'
+Interface '/s_axi$view_ar' is defined by 'chext.amba.Axi4ViewDuplicatedChannelTop...'
 ```
 
 instead of internal Chisel view names such as `_$$View$$_.s_view_view_1.r` or
@@ -416,7 +432,7 @@ owning module is enforced as `Source`, a raw stream master IO is enforced as `Si
 is inverted when viewed from the parent side.
 
 This changes the failure mode for wrong-role viewed endpoints. For example,
-`axi4_view_wrong_role` now fails during Chext tracking when `m_axi$view.ar` is marked as a source
+`axi4_view_wrong_role` now fails during Chext tracking when `m_axi$view_ar` is marked as a source
 even though the viewed master request channel is a sink from the module's perspective. Previously
 that case reached Chisel's lower-level write-direction check.
 
@@ -471,7 +487,7 @@ flattened module graph. Each section starts with a `>` category header and ends 
 
 The tests assert that:
 
-- recoverable views use `/raw$view.channel` paths;
+- recoverable views use `/raw$view_channel` paths;
 - the old `/???/...` fallback does not appear for recoverable views;
 - bad view-call patterns warn through Chext logging;
 - viewed-channel misuse produces tracking diagnostics before relying only on FIRRTL errors;

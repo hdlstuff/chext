@@ -112,7 +112,12 @@ interface.properties(p.MasterReadThreadMode) =
 
 Re-enforcing an equal value is idempotent. Re-enforcing a different value
 fails. Enforcement may replace a calculated or valueless state and clears its
-resolution trace.
+resolution trace. The cell retains the Chisel `SourceInfo` supplied at
+enforcement, the originating interface, and a public `Owner` describing the
+resolver's module or component. Ordinary assignment syntax receives the exact
+resolver owner implicitly; enforcement outside a resolver falls back to
+Chisel's current module when one exists. Calculated forwarding preserves this
+authoritative origin.
 
 Aggregate property values are immutable. Adjust a value with `copy` and enforce
 the complete replacement:
@@ -286,13 +291,19 @@ resolver-owner path. Enforced and valueless states have no calculated trace.
 
 The checker processes each enabled Full read and write direction independently:
 
-1. resolve and validate the master and slave `BurstShape`;
-2. compare their burst capabilities;
-3. resolve and validate the master and slave `ThreadMode`; and
-4. compare their thread guarantees.
+1. resolve the master and slave `BurstShape`;
+2. when either local burst property is `Enforced`, validate both values and
+   compare their burst capabilities;
+3. resolve the master and slave `ThreadMode`; and
+4. when either local thread property is `Enforced`, validate both values and
+   compare their thread guarantees.
 
 AXI4-Lite skips burst checks and checks only `ThreadMode`. Every interface also
 resolves and validates `p.SlaveMemoryMap`. `TrafficProfile` is not requested.
+
+Calculated-vs-calculated pairs are omitted because they describe an inferred
+intermediate boundary and duplicate a check at an authoritative enforced
+boundary.
 
 `DontCare` skips only the local comparison. The checker still visits every
 other registered interface, where a component's resolver policy preserves the
@@ -382,8 +393,7 @@ of each component.
   it.
 - Raw interfaces and DataView-created interfaces do not share canonical
   property identity.
-- Calculated forwarding steps have provenance; enforced values and rejected
-  calculation attempts do not yet retain general source provenance.
+- Rejected calculation attempts do not retain separate source provenance.
 - Resolver selection uses hierarchy depth, not a validated ancestry
   relationship, and does not fall back to a lower-priority candidate after a
   selected resolver fails.

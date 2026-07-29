@@ -202,7 +202,10 @@ API and keeps retry construction internal to dependency operations.
 resolver for calculation ownership, trace metadata, and diagnostics. It does
 not extend `AnyVal`: Scala value classes cannot be members of another class,
 and this nested operation wrapper necessarily carries the enclosing
-`Resolver` reference.
+`Resolver` reference. Resolver ownership is represented by the public `Owner`
+API in `tracking/Defs.scala`. The resolver exposes that exact module/component
+owner implicitly to ordinary property assignment, so enforcement provenance
+does not need a separate setter or call-site syntax.
 
 ## Standard keys
 
@@ -429,9 +432,11 @@ interface.
 For each enabled AXI4-Full read direction, the checker:
 
 1. resolves `p.MasterReadBurstShape` and `p.SlaveReadBurstShape`;
-2. checks burst compatibility when both resolutions contain values;
+2. checks burst validity and compatibility when both resolutions contain
+   values and at least one local property is `Enforced`;
 3. resolves `p.MasterReadThreadMode` and `p.SlaveReadThreadMode`;
-4. checks thread compatibility when both resolutions contain values.
+4. checks thread validity and compatibility when both resolutions contain
+   values and at least one local property is `Enforced`.
 
 The checker performs the same steps for enabled writes. For AXI4-Lite, it skips
 burst shape and checks only the enabled read and write thread modes. It also
@@ -443,7 +448,9 @@ the same dependency are inexpensive.
 `DontCare` suppresses only the local comparison for that property. The checker
 still visits all other interfaces, so mux/demux policies place the
 comparison at the interfaces where the unaggregated facts remain available.
-There is no compatibility-check delegation.
+Calculated-vs-calculated boundaries are also omitted because they only repeat
+constraints inferred from authoritative boundaries. There is no
+compatibility-check delegation.
 
 `TrafficProfile` is excluded from the compatibility pass. Direct requests may
 be forwarded, marked `DontCare`, or resolve to `Incomplete` according to the
@@ -554,7 +561,9 @@ bits from the downstream ID.
 
 - Enforce master `ThreadMode = SingleThread` on `m_axi`.
 - Master `BurstShape` flows unchanged.
-- Slave burst/thread/traffic properties are `DontCare`.
+- Slave `BurstShape` flows unchanged from `m_axi` to `s_axi`, preserving
+  downstream burst restrictions across ID serialization.
+- Slave thread/traffic properties are `DontCare`.
 - `p.SlaveMemoryMap` flows unchanged.
 - Master `TrafficProfile` remains `Incomplete`.
 
@@ -698,4 +707,7 @@ Unit tests cover:
 - demux and ID-demux master propagation plus slave-side `DontCare`;
 - every registered interface being visited;
 - missing, incomplete, undefined, and incompatible property diagnostics;
-- resolution traces for both sides of a failed compatibility check.
+- resolution traces and enforcement-owner context for both sides of a failed
+  compatibility check;
+- module and component owners, lazy module-instantiation `SourceInfo`, and the
+  early-lookup failure contract.

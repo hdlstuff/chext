@@ -842,7 +842,7 @@ val axiCfg = axi4.Config(
 
 ### AXI4 aggregate tracking properties [#](#entry-axi-connects-tracking-properties)
 
-**Sources:** [Scala](../src/main/scala/chext/amba/axi4/tracking/values/BurstShape.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/values/ThreadMode.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/values/TrafficProfile.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/values/package.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/properties/Defs.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/properties/Keys.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/properties/Store.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/Resolver.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/Checker.scala); [Scala TB](../src/test/scala/chext/amba/axi4/tracking/Properties.test.scala)
+**Sources:** [Scala](../src/main/scala/chext/amba/axi4/tracking/values/BurstShape.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/values/ThreadMode.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/values/TrafficProfile.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/values/package.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/properties/Defs.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/properties/Keys.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/properties/Store.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/Defs.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/Resolver.scala); [Scala](../src/main/scala/chext/amba/axi4/tracking/Checker.scala); [Scala TB](../src/test/scala/chext/amba/axi4/tracking/Properties.test.scala); [Scala TB](../src/test/scala/chext/amba/axi4/tracking/CompositionDiagnostics.test.scala)
 
 **Intent and Usage:** Declare generated and accepted traffic facts:
 ```scala
@@ -872,7 +872,7 @@ request match {
 }
 ```
 
-**Details:** Scala. Property keys are flat values in `tracking.properties`: for example, `p.MasterReadBurstShape` and `p.SlaveMemoryMap`. `p.KnownKeys` contains the standard catalog. Every `p.Key[T]` carries a `Role`, `Access`, and typed `ValueType[T]`; their package aliases (`p.Master`, `p.Read`, `p.BurstShape`, and so on) are both selectors and stable pattern values. `Manager.select` accepts one selector and returns matching `Cell` instances. `ResolveRequest[T]` is the transparent case class `(tracked, cell)`, so resolvers pattern-match it directly with `p.Key(role, access, valueType)` and may bind the original cell. Scala 2 does not refine `T` from a stable value-type pattern, so `calculate` checks the inferred value against the key's runtime type while `mapFrom` receives the selected value type explicitly. `BurstShape` and placeholder `TrafficProfile` are immutable value case classes under `tracking.values`; actual values conventionally use the `v` alias. `BurstShape` uses maximum beat count `maxBeats`, normalized `types` and `sizes` sequences, and Boolean `aligned`, which means every transaction satisfies `AxADDR % (1 << AxSIZE) == 0`. Values are enforced as complete replacements; equal re-enforcement is idempotent, while conflicting re-enforcement fails. At root completion, `Checker` validates Full burst shapes, Full/Lite thread modes, and each interface's memory map. AXI4-Lite burst shapes are `Undefined`; `TrafficProfile` is not checked.
+**Details:** Scala. Property keys are flat values in `tracking.properties`: for example, `p.MasterReadBurstShape` and `p.SlaveMemoryMap`. `p.KnownKeys` contains the standard catalog. Every `p.Key[T]` carries a `Role`, `Access`, and typed `ValueType[T]`; their package aliases (`p.Master`, `p.Read`, `p.BurstShape`, and so on) are both selectors and stable pattern values. `Manager.select` accepts one selector and returns matching `Cell` instances. `ResolveRequest[T]` is the transparent case class `(tracked, cell)`, so resolvers pattern-match it directly with `p.Key(role, access, valueType)` and may bind the original cell. Scala 2 does not refine `T` from a stable value-type pattern, so `calculate` checks the inferred value against the key's runtime type while `mapFrom` receives the selected value type explicitly. `BurstShape` and placeholder `TrafficProfile` are immutable value case classes under `tracking.values`; actual values conventionally use the `v` alias. `BurstShape` uses maximum beat count `maxBeats`, normalized `types` and `sizes` sequences, and Boolean `aligned`, which means every transaction satisfies `AxADDR % (1 << AxSIZE) == 0`. Values are enforced as complete replacements; equal re-enforcement is idempotent, while conflicting re-enforcement fails. At root completion, `Checker` resolves paired Full burst shapes and Full/Lite thread modes but validates and compares a pair only when at least one local property is `Enforced`; calculated-vs-calculated pairs are omitted as redundant inferred boundaries. Each interface's memory map is still validated independently. AXI4-Lite burst shapes are `Undefined`; `TrafficProfile` is not checked. AXI4 property-checker diagnostics use the `axi4.tracking` label and are printed without aborting elaboration; Elastic endpoint and graph diagnostics use `elastic.tracking`. Each AXI diagnostic renders the problem, `Interface`, `Property`, details, and resolution traces as separate labeled lines. Enforcement retains its Chisel `SourceInfo`, originating interface, and the public resolver `Owner`; ordinary assignment syntax consumes the resolver's exact module/component owner implicitly and otherwise falls back to Chisel's current module. This origin propagates with calculated values. Failed compatibility diagnostics render separate master/slave enforcement blocks with the origin interface and property location. Module owners show module path, definition, and instantiation only; component owners first show component path and instantiation, then the containing module. The interface declaration is printed last. Module instantiation `SourceInfo` is cached lazily after Chisel emits the parent `DefInstance`; querying it earlier throws.
 
 ---
 
@@ -1403,7 +1403,7 @@ val idSerialize0 =
   Module(new axi4f.components.IdSerialize(cfg))
 ```
 
-**Details:** Module. Full AXI ID serialization. Its private `IdSerialize_Resolver` forwards the memory map upstream and the incoming master burst shape downstream. Input burst/thread capabilities are `DontCare` because the component imposes no such local restriction, while its output master thread mode is `SingleThread`. Master `TrafficProfile` transformation remains `Incomplete`. Internally limits outstanding work and routes response channels through elastic control logic.
+**Details:** Module. Full AXI ID serialization. Its private `IdSerialize_Resolver` forwards the memory map and downstream slave burst shape upstream, and forwards the incoming master burst shape downstream. Forwarding the slave burst shape preserves downstream restrictions across ID serialization so upstream compatibility checks still catch a missing `Unburst`; input thread/traffic capabilities remain `DontCare` because the component imposes no such local restriction. Its output master thread mode is `SingleThread`, and master `TrafficProfile` transformation remains `Incomplete`. Internally limits outstanding work and routes response channels through elastic control logic.
 
 ---
 
@@ -2106,7 +2106,7 @@ val cfg = stream.ChunkConfig(
 )
 ```
 
-**Details:** Config. Configuration for `stream.Chunk`; controls address width, length width, data width, and maximum emitted burst length.
+**Details:** Config. Configuration for `stream.Chunk`; controls address width, length width, data width, and maximum emitted burst length. `maxBurstLength` is a positive beat count.
 
 ---
 
@@ -2151,7 +2151,7 @@ val writeCfg = stream.WriteConfig(
 )
 ```
 
-**Details:** Config. `ReadConfig` controls read result mode and outstanding task buffering. `WriteConfig` controls write result mode and outstanding task buffering.
+**Details:** Config. `ReadConfig` requires a read-only Full AXI configuration and controls read result mode and outstanding task buffering. `WriteConfig` requires a write-only Full AXI configuration and controls write result mode and outstanding task buffering. `maxBurstLength` is a positive beat count limited to 16 for AXI3-compatible configurations and 256 otherwise.
 
 ---
 
@@ -2167,7 +2167,7 @@ val read0 = Module(new stream.Read(readCfg))
 val write0 = Module(new stream.Write(writeCfg))
 ```
 
-**Details:** Module. AXI stream read/write engines. They create task/data/result elastic channels and internally use `Drop`, `Fork`, `Transform`, `Repeat`, `Join`, `Mux`, buffers, and null channel components.
+**Details:** Module. AXI stream read/write engines. They create task/data/result elastic channels and internally use `Drop`, `Fork`, `Transform`, `Repeat`, `Join`, `Mux`, and buffers. A private neighboring resolver binds each `m_axi` as a master. `Read` publishes its read `BurstShape` and `Write` publishes its write `BurstShape` with `maxBeats = cfg.maxBurstLength`, INCR bursts, full-width transfer size, and `aligned = true`; both publish `SingleThread` because every request uses ID zero while multiple transactions may be outstanding. The absent direction is `Undefined`, and master `TrafficProfile` remains `Incomplete`.
 
 ---
 
@@ -2195,7 +2195,7 @@ val storeCfg = ldstr.StoreConfig(
 )
 ```
 
-**Details:** Config. Configuration for `ldstr.Load` and `ldstr.Store`; `numOutstandingTasks` sizes the buffering around AXI read/write response paths.
+**Details:** Config. Configuration for `ldstr.Load` and `ldstr.Store`; `LoadConfig` requires a read-only Full AXI configuration, `StoreConfig` requires a write-only Full AXI configuration, and `numOutstandingTasks` sizes the buffering around AXI read/write response paths.
 
 ---
 
@@ -2211,7 +2211,7 @@ val load0 = Module(new ldstr.Load(loadCfg))
 val store0 = Module(new ldstr.Store(storeCfg))
 ```
 
-**Details:** Module. Load/store frontends for AXI memory access. They internally use elastic `Fork`, `Transform`, `SinkBuffer`, `Join`, and null channel components around AXI `ar/r` or `aw/w/b` paths.
+**Details:** Module. Load/store frontends for AXI memory access. They internally use elastic `Fork`, `Transform`, `SinkBuffer`, and `Join` components around AXI `ar/r` or `aw/w/b` paths. A private neighboring resolver binds each `m_axi` as a master and publishes the active direction as a one-beat INCR `BurstShape` with full-width transfer size and `aligned = false`, plus `SingleThread` because every request uses ID zero while multiple transactions may be outstanding. The absent direction is `Undefined`, and master `TrafficProfile` remains `Incomplete`.
 
 ---
 

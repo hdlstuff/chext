@@ -246,8 +246,8 @@ case class Example3_Config() {
   val genResult = new Example3_Result
 
   val axiCfg   = axi4.Config(wId = 6, wAddr = 64, wData = 64)
-  val axiRdCfg = axi4.Config(wAddr = 64, wData = 32)
-  val axiStCfg = axi4.Config(wAddr = 64, wData = 32)
+  val axiRdCfg = axi4.Config(wAddr = 64, wData = 32, write = false)
+  val axiStCfg = axi4.Config(wAddr = 64, wData = 32, read = false)
 }
 
 class Example3_Basic(cfg: Example3_Config) extends Module {
