@@ -221,12 +221,15 @@ class IdSerializeResolverPolicyTestTop
     ) {
   private val shape =
     BurstShape(8, Seq(INCR, WRAP), Seq(0, 1, 2, 3), true)
+  private val acceptedShape =
+    BurstShape(4, Seq(INCR), Seq(0, 1, 2, 3), false)
   s_axi.properties(p.MasterReadBurstShape) = shape
   s_axi.properties(p.MasterReadThreadMode) = ThreadMode.Unconstrained
+  m_axi.properties(p.SlaveReadBurstShape) = acceptedShape
 
   private val slaveBurstRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
   assert(Resolver.resolve(slaveBurstRequest).result == ResolveResult.Success())
-  assert(slaveBurstRequest.cell.state.isInstanceOf[p.State.DontCare])
+  assert(slaveBurstRequest.cell.valueOption.contains(acceptedShape))
 
   private val slaveThreadRequest = ResolveRequest(s_axi, p.SlaveReadThreadMode)
   assert(Resolver.resolve(slaveThreadRequest).result == ResolveResult.Success())

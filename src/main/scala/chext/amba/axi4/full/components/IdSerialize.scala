@@ -104,7 +104,7 @@ private final class IdSerialize_Resolver(owner: IdSerialize)(implicit sourceInfo
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap | p.BurstShape)) =>
         request.forwardTo(owner.m_axi)
       case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
         request.dontCare(noLocalRequirement)
