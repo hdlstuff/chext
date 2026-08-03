@@ -154,9 +154,9 @@ idleMaster.m_axi :=> m_axi
 
 ### `axi4f.components.Demux`
 
-Fans one slave-side AXI port out to `numMasters` master-side ports. `decodeFn(addr)` selects the
-target port for AR and AW. The module tracks outstanding IDs so read data and write responses can
-return from the correct selected master.
+Routes transactions from `s_axi` to one of the `numMasters` `m_axi` interfaces.
+`decodeFn(addr)` selects the `m_axi` interface for AR and AW. The module tracks outstanding IDs so
+read data and write responses return through `s_axi` from the selected `m_axi` interface.
 
 ```scala
 val cfg = axi4f.components.DemuxConfig(
@@ -193,7 +193,7 @@ val demux = Module(
 
 demux.m_axi :=> m_axi
 
-// Properties attached downstream propagate through the AXI Connect components.
+// Slave properties propagate through the AXI Connect components.
 m_axi.zip(childMaps).foreach { case (master, childMap) =>
   require(childMap.path.nonEmpty)
   master.properties(p.SlaveMemoryMap) = childMap
@@ -243,8 +243,9 @@ segments and grandchildren by adding the child offset and prefixing names with t
 
 ### `axi4f.components.Mux`
 
-Merges `numSlaves` slave-side AXI ports into one master-side port. It appends a port-select field
-above the incoming ID bits, so `axiMasterCfg.wId = axiSlaveCfg.wId + log2Ceil(numSlaves)`.
+Arbitrates transactions from `numSlaves` `s_axi` interfaces onto one `m_axi` interface. It appends
+an `s_axi`-select field above the original ID bits, so
+`axiMasterCfg.wId = axiSlaveCfg.wId + log2Ceil(numSlaves)`.
 
 ```scala
 val cfg = axi4f.components.MuxConfig(
@@ -261,7 +262,8 @@ mux.m_axi :=> memory_axi
 ### `axi4f.components.IdDemux`
 
 Splits a bus by low ID bits instead of by address. `wIdSel` low bits choose one of
-`1 << wIdSel` master ports; those bits are removed from the outgoing ID.
+`1 << wIdSel` `m_axi` interfaces; those bits are removed from the ID issued at the selected
+interface.
 
 ```scala
 val cfg = axi4f.components.IdDemuxConfig(
@@ -274,8 +276,9 @@ val idDemux = Module(new axi4f.components.IdDemux(cfg))
 
 ### `axi4f.components.IdMux`
 
-Inverse of `IdDemux`. It accepts `1 << wIdSel` slave-side ports, arbitrates requests, and appends
-the selected port index to outgoing IDs so responses can be routed back.
+Inverse of `IdDemux`. It arbitrates requests from `1 << wIdSel` `s_axi` interfaces and appends the
+selected interface index to IDs issued at `m_axi` so responses can be routed back to the originating
+`s_axi` interface.
 
 ```scala
 val cfg = axi4f.components.IdMuxConfig(
@@ -290,8 +293,8 @@ val idMux = Module(new axi4f.components.IdMux(cfg))
 
 ### `axi4f.components.IdSerialize`
 
-Serializes all transactions to master ID `0`. Read responses and write responses are joined with
-saved original IDs before returning to the slave side.
+Serializes all transactions to ID `0` at `m_axi`. Read responses and write responses are joined with
+saved original IDs before returning through `s_axi`.
 
 ```scala
 val cfg = axi4f.components.IdSerializeConfig(
@@ -305,9 +308,9 @@ val idSerialize = Module(new axi4f.components.IdSerialize(cfg))
 
 ### `axi4f.components.IdParallelize`
 
-Accepts an ID-less slave interface (`axiSlaveCfg.wId == 0`) and issues requests on a master
-interface with `wIdMaster` generated IDs. Responses are buffered and drained in original request
-order.
+Accepts transactions through an ID-less `s_axi` interface (`axiSlaveCfg.wId == 0`) and issues them
+through `m_axi` with `wIdMaster` generated IDs. Responses are buffered and drained in original
+request order.
 
 ```scala
 val cfg = axi4f.components.IdParallelizeConfig(
@@ -323,8 +326,8 @@ val idParallelize = Module(new axi4f.components.IdParallelize(cfg))
 
 ### `axi4f.components.Upscale`
 
-Adapts a narrower slave-side data bus to a wider master-side data bus. It requires `wId == 0`,
-AXI4-Full, and `wDataMaster > axiSlaveCfg.wData`.
+Adapts a narrow `s_axi` data bus to a wide `m_axi` data bus. It requires `wId == 0`, AXI4-Full, and
+`wDataMaster > axiSlaveCfg.wData`.
 
 ```scala
 val cfg = axi4f.components.UpscaleConfig(
@@ -337,17 +340,17 @@ val upscale = Module(new axi4f.components.Upscale(cfg))
 
 ### `axi4f.components.Downscale`
 
-Adapts a wider slave-side data bus to a narrower master-side data bus. Its input has two important
-traffic preconditions:
+Adapts a wide `s_axi` data bus to a narrow `m_axi` data bus. Transactions accepted at `s_axi` have
+two important preconditions:
 
 - There are no transaction IDs: the configured `wId` must be zero.
-- There are no input bursts: every accepted request must have `ARLEN == 0` or `AWLEN == 0`.
+- Every accepted transaction is single-beat: `ARLEN == 0` or `AWLEN == 0`.
 
 It also requires AXI4-Full, `wDataMaster < axiSlaveCfg.wData`, and no R-channel user data.
-`Downscale` can turn one wide input beat into a burst of narrower output beats. `simCheckBurst`
-controls optional `ARLEN`/`AWLEN` checks for the single-beat precondition. Use `Unburst` before it
-when single-beat input is not guaranteed, and after it when the downstream interface accepts only
-single-beat transactions.
+`Downscale` can turn one wide beat accepted at `s_axi` into a burst of narrower beats issued at
+`m_axi`. `simCheckBurst` controls optional `ARLEN`/`AWLEN` checks for the single-beat precondition.
+Use `Unburst` before it when transactions at `s_axi` may contain bursts, and after it when the slave
+connected to `m_axi` accepts only single-beat transactions.
 
 ```scala
 val cfg = axi4f.components.DownscaleConfig(
@@ -440,8 +443,8 @@ val credit = Module(new axi4f.components.CreditBuffer(cfg))
 
 When enabled, `rBuffer` limits the accepted read burst to the number of locally
 buffered R beats. Likewise, `wBuffer` limits the accepted write burst so the
-complete W payload can be accepted before AW is released, even if the
-downstream interface does not accept W before AW.
+complete W payload is buffered locally before the AW transfer is allowed to
+proceed, even if the slave connected to `m_axi` does not accept W before AW.
 
 ### `ReadResponseBuffer`
 
@@ -467,8 +470,8 @@ val wb = Module(new axi4f.components.WriteResponseBuffer(
 
 ### `WritePayloadBuffer`
 
-Channel-level write payload buffer. W beats are buffered and AW is released after the matching W
-burst has been accepted locally; B is not part of this component.
+Channel-level write payload buffer. W beats are buffered locally before the matching AW transfer is
+allowed to proceed; B is not part of this component.
 
 ```scala
 val wp = Module(new axi4f.components.WritePayloadBuffer(
@@ -499,10 +502,10 @@ converter.m_axi :=> m_axi
 
 `axi4f.components.LiteConverter` terminates a Full AXI interface as an AXI4-Lite master. It can
 increase or reduce the data width and decompose bursts. It requires an ID-free Full interface
-(`wId == 0`) and does not instantiate `IdSerialize`. Input unbursting always occurs before width
-conversion. `Upscale` selects the addressed read-data lane and shifts write data and `WSTRB` into
-the corresponding wider lanes. Because `Downscale` can create a narrow burst, only its output needs
-a second unburst stage before AXI4-Lite.
+(`wId == 0`) and does not instantiate `IdSerialize`. Unbursting at `s_axi` always occurs before
+width conversion. `Upscale` selects the addressed read-data lane and shifts write data and
+`WSTRB` into the corresponding wider lanes. Because `Downscale` can create a narrow burst, its
+`m_axi` interface is followed by a second unburst stage before AXI4-Lite.
 
 ```scala
 val cfg = axi4f.components.LiteConverterConfig(
@@ -519,15 +522,16 @@ s_axi :=> converter.s_axi
 converter.m_axil :=> registerBlock.s_axil
 ```
 
-The Full interface must have `wId == 0`, and all AXI user widths must be zero. Input transfers must
-use the full Full-side data width and must be naturally aligned to that width. `simCheckNarrow`
-checks `ARSIZE`/`AWSIZE`; `simCheckAligned` checks the low address bits of `ARADDR`/`AWADDR`. Both
-support `SimulationCheck.Default`, `None`, `Printf`, or `Assert`.
+The Full `s_axi` interface must have `wId == 0`, and all AXI user widths must be zero. Transfers
+accepted at `s_axi` must use the full `s_axi` data width and be naturally aligned to that width.
+`simCheckNarrow` checks `ARSIZE`/`AWSIZE`; `simCheckAligned` checks the low address bits of
+`ARADDR`/`AWADDR`. Both support `SimulationCheck.Default`, `None`, `Printf`, or `Assert`.
 
 Upscaling is instantiated when the Full data width is narrower than the Lite width; downscaling is
 instantiated when it is wider. Equal widths need neither stage. After downscaling, a second internal
 unburst stage is always instantiated. Upscaling does not create additional beats and therefore
-needs no output unburst stage.
+needs no unburst stage after its `m_axi` interface.
 
-The converter publishes generated-traffic properties on `m_axil` and accepted-traffic properties
-on `s_axi`. The downstream `SlaveMemoryMap` property is resolved through the converter to `s_axi`.
+The converter publishes master properties, i.e. issued traffic, on `m_axil` and slave properties,
+i.e. accepted traffic, on `s_axi`. The `SlaveMemoryMap` property from `m_axil` is resolved through
+the converter to `s_axi`.

@@ -17,7 +17,7 @@ object ThreadMode {
 
   /** Combines several slave thread-mode properties into one slave property.
     *
-    * The combined property accepts an initiated transaction pattern only when every supplied slave
+    * The combined property accepts an issued transaction pattern only when every supplied slave
     * property accepts that pattern. For example, combining `SingleThread` and `UniqueThreads`
     * yields `SingleTransaction`, because that is the broadest pattern accepted by both properties.
     */
@@ -36,8 +36,8 @@ object ThreadMode {
 
   /** Computes the master property after a boundary removes all ID bits.
     *
-    * The master property before the boundary describes the transactions that may be initiated.
-    * After ID removal, all of those transactions have the same implicit ID. Therefore:
+    * The master property before the boundary describes the transactions that may be issued. After
+    * ID removal, all of those transactions have the same implicit ID. Therefore:
     *
     *   - `SingleTransaction` stays `SingleTransaction`;
     *   - every mode that may have several outstanding transactions becomes `SingleThread`.
@@ -57,13 +57,13 @@ object ThreadMode {
     *   - otherwise, the slave property before it must be `SingleTransaction`.
     *
     * A slave property accepts `SingleThread` when its mode is `SingleThread` or `Unconstrained`.
-    * This propagates an acceptance constraint toward the initiating master; it does not restore the
+    * This propagates a slave acceptance constraint toward the master; it does not restore the
     * removed IDs.
     */
   private[axi4] def idlessBackward(slave: ThreadMode): ThreadMode =
     slave match {
-      case SingleThread | Unconstrained       => Unconstrained
-      case SingleTransaction | UniqueThreads  => SingleTransaction
+      case SingleThread | Unconstrained      => Unconstrained
+      case SingleTransaction | UniqueThreads => SingleTransaction
     }
 
   /** Thread modes supported by an interface configuration. */
@@ -86,15 +86,17 @@ object ThreadMode {
     * multiple outstanding transactions in one thread.
     */
   def checkConfig(value: ThreadMode, cfg: axi4.Config): CheckResult =
-    CheckResult.from(Seq(
-      Option.when(
-        cfg.lite &&
-          value != SingleTransaction &&
-          value != SingleThread
-      )(
-        s"AXI4-Lite thread mode $value is invalid; expected SingleTransaction or SingleThread"
-      )
-    ).flatten)
+    CheckResult.from(
+      Seq(
+        Option.when(
+          cfg.lite &&
+            value != SingleTransaction &&
+            value != SingleThread
+        )(
+          s"AXI4-Lite thread mode $value is invalid; expected SingleTransaction or SingleThread"
+        )
+      ).flatten
+    )
 
   private def isCompatible(master: ThreadMode, slave: ThreadMode): Boolean =
     (master, slave) match {
@@ -105,9 +107,7 @@ object ThreadMode {
       case _                                              => false
     }
 
-  /** Checks whether every transaction pattern described by a master property is accepted by a
-    * slave property.
-    */
+  /** Checks whether every transaction pattern the master may issue is accepted by the slave. */
   def checkCompatible(master: ThreadMode, slave: ThreadMode): CheckResult =
     CheckResult.from(
       Option

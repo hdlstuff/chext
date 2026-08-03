@@ -265,8 +265,8 @@ case class WritePayloadBufferConfig(
 
 /** AXI4-Lite write payload buffer.
   *
-  * `s_*` are slave-side ports of this component; `m_*` are master-side ports. W is buffered, and AW
-  * is released only after the matching W payload is locally accepted. B is intentionally not
+  * `s_*` are slave-side ports of this component; `m_*` are master-side ports. The matching W
+  * payload is buffered locally before the AW transfer is allowed to proceed. B is intentionally not
   * included.
   */
 class WritePayloadBuffer(val cfg: WritePayloadBufferConfig)

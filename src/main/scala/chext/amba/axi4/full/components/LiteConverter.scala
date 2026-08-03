@@ -11,10 +11,11 @@ import axi4.full.ConnectOp._
 
 /** Configuration for [[LiteConverter]].
   *
-  * Stage-enable parameters permit hardware to be omitted when the corresponding restriction is The
-  * Full interface must be ID-free (`wId == 0`). Burst and width-conversion stages are inferred from
-  * the interface shapes and are instantiated whenever required. Simulation-check parameters
-  * optionally verify that input transfers are full-width and naturally aligned.
+  * Stage-enable parameters permit hardware to be omitted when the corresponding restriction does
+  * not apply. The Full interface must be ID-free (`wId == 0`). Burst and width-conversion stages
+  * are inferred from the interface shapes and are instantiated whenever required. Simulation-check
+  * parameters optionally verify that transfers accepted at `s_axi` are full-width and naturally
+  * aligned.
   */
 case class LiteConverterConfig(
     axiSlaveCfg: axi4.Config,
@@ -65,11 +66,11 @@ case class LiteConverterConfig(
 /** Converts an AXI4-Full slave interface into an AXI4-Lite master interface.
   *
   * The Full interface must have `wId == 0`; this converter does not instantiate `IdSerialize`.
-  * Input bursts are always decomposed before width conversion. `Upscale` steers read data and
-  * shifts write data and strobes into the addressed wider lanes. `Downscale` can create a new
-  * burst, so its output is unbursted again. Input transfers must be full-width and naturally
-  * aligned; simulation checks are controlled by [[LiteConverterConfig.simCheckNarrow]] and
-  * [[LiteConverterConfig.simCheckAligned]].
+  * Bursts accepted at `s_axi` are always decomposed before width conversion. `Upscale` steers read
+  * data and shifts write data and strobes into the addressed wider lanes. `Downscale` can create a
+  * new burst, so its `m_axi` interface is followed by another unburst stage. Transfers accepted at
+  * `s_axi` must be full-width and naturally aligned; simulation checks are controlled by
+  * [[LiteConverterConfig.simCheckNarrow]] and [[LiteConverterConfig.simCheckAligned]].
   */
 class LiteConverter(val cfg: LiteConverterConfig) extends Module with chext.AnnotatedModule {
   import cfg._
@@ -213,8 +214,8 @@ class LiteConverter(val cfg: LiteConverterConfig) extends Module with chext.Anno
 
 /** Resolves properties and initializes interface properties for one [[LiteConverter]].
   *
-  * Slave properties, most importantly `p.SlaveMemoryMap`, flow from the Lite master interface to
-  * the Full slave interface, while master properties flow in the opposite direction.
+  * Slave properties, most importantly `p.SlaveMemoryMap`, flow from `m_axil` to `s_axi`, while
+  * master properties flow from `s_axi` to `m_axil`.
   */
 private final class LiteConverter_Resolver(owner: LiteConverter)(implicit sourceInfo: SourceInfo)
     extends axi4.tracking.Resolver(owner) {
@@ -257,7 +258,7 @@ private final class LiteConverter_Resolver(owner: LiteConverter)(implicit source
     }
 }
 
-/** Propagates downstream slave facts across the manually wired Full-to-Lite channel bridge. */
+/** Propagates slave properties across the manually wired Full-to-Lite channel bridge. */
 private final class LiteConverterBridge_Resolver(
     owner: LiteConverter,
     converted: axi4.full.Interface

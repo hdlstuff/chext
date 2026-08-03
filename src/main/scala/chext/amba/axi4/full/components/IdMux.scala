@@ -125,7 +125,7 @@ private final class IdMux_Resolver(owner: IdMux)(implicit sourceInfo: SourceInfo
   bindMaster(owner.m_axi)
 
   private val noMasterAggregate =
-    "IdMux keeps each upstream master's traffic properties separate instead of aggregating them"
+    "IdMux keeps the master properties of its s_axi interfaces separate instead of aggregating them"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {

@@ -136,9 +136,9 @@ idleMaster.m_axil :=> m_axil
 
 ### `axi4l.components.Demux`
 
-Fans one AXI4-Lite slave-side port out to multiple master-side ports. `decodeFn(addr)` selects the
-target for AR and AW; small queues remember the selection so R, W, and B channels follow the
-matching address transaction.
+Routes transactions from `s_axil` to one of several `m_axil` interfaces. `decodeFn(addr)` selects
+the `m_axil` interface for AR and AW; small queues remember the selection so R, W, and B channels
+follow the matching address transaction.
 
 ```scala
 val cfg = axi4l.components.DemuxConfig(
@@ -159,8 +159,8 @@ demux.m_axil(0) :=> peripheral0
 
 ### `axi4l.components.Mux`
 
-Merges several AXI4-Lite slave-side ports into one master-side port. Address channels are
-arbitrated; selection queues route read and write responses back to the initiating slave.
+Arbitrates transactions from several `s_axil` interfaces onto one `m_axil` interface. Selection
+queues route read and write responses back to the originating `s_axil` interface.
 
 ```scala
 val cfg = axi4l.components.MuxConfig(
@@ -217,8 +217,8 @@ val wb = Module(new axi4l.components.WriteResponseBuffer(
 
 ### `WritePayloadBuffer`
 
-Channel-level write payload buffer. W is buffered and AW is released after the matching W payload
-has been accepted locally; B is intentionally separate.
+Channel-level write payload buffer. W is buffered locally before the matching AW transfer is allowed
+to proceed; B is intentionally separate.
 
 ```scala
 val wp = Module(new axi4l.components.WritePayloadBuffer(

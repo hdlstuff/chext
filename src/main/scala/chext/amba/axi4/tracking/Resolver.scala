@@ -100,12 +100,12 @@ final case class ResolutionTrace(steps: Seq[ResolutionStep])
 
 /** Derives AXI tracking properties for one component or module boundary.
   *
-  * A resolver is registered on one or more [[Tracked]] interfaces with the dedicated master or slave
-  * registration method. Registration is role-specific: slave properties conventionally flow
-  * downstream-to-upstream, while master properties flow upstream-to-downstream. When multiple
-  * resolvers are registered for the same interface and role, the tracking layer selects the resolver
-  * owned by the shallowest hierarchy node so that an enclosing boundary controls propagation. The
-  * latest registration wins when candidates have the same depth.
+  * A resolver is registered on one or more [[Tracked]] interfaces with the dedicated master or
+  * slave registration method. Registration is role-specific: slave properties conventionally follow
+  * the response path, while master properties follow the request path. When multiple resolvers are
+  * registered for the same interface and role, the tracking layer selects the resolver owned by the
+  * shallowest hierarchy node so that an enclosing boundary controls propagation. The latest
+  * registration wins when candidates have the same depth.
   *
   * [[resolve]] is intentionally one step of a dependency-driven operation. Implementations inspect
   * the request and use the inherited `RequestOps` methods to calculate a value, mark a valueless
@@ -220,8 +220,8 @@ abstract class Resolver(private[tracking] val owner: Owner) {
 
     /** Resolves this property on several targets and combines their values.
       *
-      * This is intended for sound fan-out capability aggregates. The resulting trace contains one
-      * branch per target in target order.
+      * This is intended for sound fan-out slave-property aggregates. The resulting trace contains
+      * one branch per target in target order.
       */
     def aggregateFrom(
         targets: Seq[Tracked]

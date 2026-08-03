@@ -141,7 +141,7 @@ private final class Mux_Resolver(owner: Mux)(implicit sourceInfo: SourceInfo)
   bindMaster(owner.m_axi)
 
   private val noMasterAggregate =
-    "Mux keeps each upstream master's traffic properties separate instead of aggregating them"
+    "Mux keeps the master properties of its s_axi interfaces separate instead of aggregating them"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {

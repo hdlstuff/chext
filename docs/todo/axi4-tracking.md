@@ -8,17 +8,17 @@
 `chext.amba.axi4.tracking` detects incompatible AXI compositions during
 elaboration. It models only the facts needed for compatibility checks:
 
-- what traffic a master may generate;
+- what traffic a master may issue;
 - what traffic a slave may accept; and
 - which address space a slave provides.
 
 Resolvers propagate or transform those facts. They do not perform compatibility
 checks or invent aggregate values merely to make a property complete.
 
-For example, a demux forwards the upstream master's requirements to every
-output. It keeps the downstream slave capabilities separate instead of
-intersecting them into one synthetic input capability. The checker then compares
-each output independently.
+For example, a demux forwards the master properties from `s_axi` to every
+`m_axi` interface. It keeps the slave properties of those `m_axi` interfaces
+separate instead of intersecting them into one synthetic property on `s_axi`.
+The checker then compares each `m_axi` interface independently.
 
 ## Lifecycle
 
@@ -44,8 +44,16 @@ property state, so create a view once at the root and reuse it.
 
 Master and slave describe AXI protocol roles, not Chisel port directions:
 
-- master properties describe traffic that may be generated;
-- slave properties describe traffic that may be accepted.
+- master properties, i.e. the issued traffic, describe transactions that a
+  master may issue;
+- slave properties, i.e. the accepted traffic, describe transactions that a
+  slave accepts.
+
+On an individual AXI connection, the master endpoint is the upstream interface
+(`m_axi`) and the slave endpoint is the downstream interface (`s_axi`). For a
+two-sided module, name its interfaces explicitly: its `s_axi` interface belongs
+to the upstream connection, while its `m_axi` interface belongs to the
+downstream connection.
 
 Each `properties.Key[T]` carries:
 
@@ -294,14 +302,14 @@ resolver-owner path. Enforced and valueless states have no calculated trace.
 
 ## Compatibility checks
 
-The checker processes each enabled Full read and write direction independently:
+The checker processes each enabled Full read and write access independently:
 
 1. resolve the master and slave `BurstShape`;
 2. when either local burst property is `Enforced`, validate both values and
-   compare their burst capabilities;
+   compare the master and slave burst shapes;
 3. resolve the master and slave `ThreadMode`; and
 4. when either local thread property is `Enforced`, validate both values and
-   compare their thread guarantees.
+   compare the master and slave thread modes.
 
 AXI4-Lite skips burst checks and checks only `ThreadMode`. Every interface also
 resolves and validates `p.SlaveMemoryMap`. `TrafficProfile` is not requested.
@@ -337,10 +345,11 @@ interface configuration. `checkConfig` returns all configuration errors, and
 `checkCompatible` returns all master-to-slave compatibility errors. Both
 checks use `CheckResult.Success` or `CheckResult.Error(errors: Seq[String])`.
 
-On a master property, `aligned = false` means transactions may be unaligned.
-On a slave property, `aligned = false` means unaligned transactions are
-accepted; it does not mean transactions must be unaligned. A slave with
-`aligned = true` requires natural alignment. The `types` and
+As a master property, `aligned = false` means the master may issue unaligned
+transactions. As a slave property, `aligned = false` means the slave accepts
+unaligned transactions; it does not mean transactions must be unaligned. A
+slave property with `aligned = true` accepts only naturally aligned
+transactions. The `types` and
 `sizes` sequences are normalized to sorted, distinct values.
 
 A master shape is compatible with a slave shape when:
@@ -366,7 +375,7 @@ requirement. All mismatches are reported together.
 
 Compatibility is:
 
-| Master mode | Accepted slave modes |
+| Master mode | Compatible slave modes |
 |---|---|
 | `SingleTransaction` | any mode |
 | `SingleThread` | `SingleThread`, `Unconstrained` |
@@ -390,8 +399,8 @@ explicit sizes, component paths, absolute origins, and typed arguments.
 Validation rejects invalid bounds, overlaps, and layouts that exceed the
 interface address width.
 
-`DemuxMm` resolves downstream maps, aggregates them in routing order, and
-publishes the result after `genDecoder()`. A demux driven by an arbitrary
+`DemuxMm` resolves the maps at its `m_axi` interfaces, aggregates them in
+routing order, and publishes the result after `genDecoder()`. A demux driven by an arbitrary
 address function cannot derive a correct aggregate map and leaves the property
 `Incomplete`.
 

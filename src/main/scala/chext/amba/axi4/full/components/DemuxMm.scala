@@ -314,7 +314,7 @@ private final class DemuxMm_Resolver(owner: DemuxMm)(implicit sourceInfo: Source
 
   private var memoryMapOption = Option.empty[MemoryMap]
   private val noSlaveAggregate =
-    "DemuxMm keeps each downstream slave capability separate instead of aggregating them"
+    "DemuxMm keeps the slave properties of its m_axi interfaces separate instead of aggregating them"
 
   def resolveMemoryMap(
       interface: axi4.tracking.Tracked,

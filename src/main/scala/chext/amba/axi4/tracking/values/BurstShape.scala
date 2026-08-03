@@ -3,7 +3,7 @@ package chext.amba.axi4.tracking.values
 import chext.amba.axi4
 import chext.amba.axi4.BurstType.Encoding.{FIXED, INCR, WRAP}
 
-/** Burst-related limits and capabilities carried by one read or write property. */
+/** Burst characteristics carried by one master or slave read/write property. */
 final case class BurstShape private (
     maxBeats: Int,
     types: Seq[Int],
@@ -53,11 +53,11 @@ object BurstShape {
   /** Creates a complete burst shape.
     *
     * `aligned` describes natural transfer alignment: when true, every transaction satisfies `AxADDR
-    * % (1 << AxSIZE) == 0`. On a master property, false means transactions may be unaligned. On a
-    * slave property, false means unaligned transactions are accepted; it does not mean that
-    * transactions must be unaligned.
+    * % (1 << AxSIZE) == 0`. As a master property, false means the master may issue unaligned
+    * transactions. As a slave property, false means the slave accepts unaligned transactions; it
+    * does not mean that transactions must be unaligned.
     *
-    * Defaults describe an empty stream or capability.
+    * Defaults describe an empty master or slave shape.
     */
   def apply(
       maxBeats: Int = 0,
@@ -105,7 +105,8 @@ object BurstShape {
       aligned = false
     )
 
-  /** Checks that a burst shape is internally consistent and valid for an interface configuration. */
+  /** Checks that a burst shape is internally consistent and valid for an interface configuration.
+    */
   def checkConfig(value: BurstShape, cfg: axi4.Config): CheckResult = {
     val isEmpty =
       value.maxBeats == 0 &&
@@ -121,50 +122,50 @@ object BurstShape {
         Seq.empty
       else
         Seq(
-        Option.when(value.maxBeats <= 0)(
-          s"maxBeats must be positive for a non-empty shape (got ${value.maxBeats})"
-        ),
-        Option.when(value.maxBeats > protocolMaxBeats)(
-          s"maxBeats ${value.maxBeats} exceeds the protocol limit $protocolMaxBeats"
-        ),
-        Option.when(value.types.isEmpty)(
-          "types must not be empty for a non-empty shape"
-        ),
-        Option.when(value.sizes.isEmpty)(
-          "sizes must not be empty for a non-empty shape"
-        ),
-        Option.when(!value.types.toSet.subsetOf(protocolTypes))(
-          s"types ${value.types} contains encodings outside $protocolTypes"
-        ),
-        Option.when(!value.sizes.toSet.subsetOf(interfaceSizes.toSet))(
-          s"sizes ${value.sizes} contains encodings outside $interfaceSizes"
-        )
+          Option.when(value.maxBeats <= 0)(
+            s"maxBeats must be positive for a non-empty shape (got ${value.maxBeats})"
+          ),
+          Option.when(value.maxBeats > protocolMaxBeats)(
+            s"maxBeats ${value.maxBeats} exceeds the protocol limit $protocolMaxBeats"
+          ),
+          Option.when(value.types.isEmpty)(
+            "types must not be empty for a non-empty shape"
+          ),
+          Option.when(value.sizes.isEmpty)(
+            "sizes must not be empty for a non-empty shape"
+          ),
+          Option.when(!value.types.toSet.subsetOf(protocolTypes))(
+            s"types ${value.types} contains encodings outside $protocolTypes"
+          ),
+          Option.when(!value.sizes.toSet.subsetOf(interfaceSizes.toSet))(
+            s"sizes ${value.sizes} contains encodings outside $interfaceSizes"
+          )
         ).flatten
 
     CheckResult.from(errors)
   }
 
-  /** Checks whether every transaction described by a master property is accepted by a slave
-    * property.
+  /** Checks whether every transaction the master may issue is accepted by the slave.
     *
-    * A failed result contains every mismatch between the initiated burst shapes and the accepted
-    * burst shapes.
+    * A failed result contains every mismatch between the master and slave burst shapes.
     */
   def checkCompatible(master: BurstShape, slave: BurstShape): CheckResult =
-    CheckResult.from(Seq(
-      Option.when(master.maxBeats > slave.maxBeats)(
-        s"master maxBeats ${master.maxBeats} exceeds slave maxBeats ${slave.maxBeats}"
-      ),
-      Option.when(!master.types.toSet.subsetOf(slave.types.toSet))(
-        s"master types ${master.types} is not a subset of " +
-          s"slave types ${slave.types}"
-      ),
-      Option.when(!master.sizes.toSet.subsetOf(slave.sizes.toSet))(
-        s"master sizes ${master.sizes} is not a subset of " +
-          s"slave sizes ${slave.sizes}"
-      ),
-      Option.when(master.maxBeats > 0 && slave.aligned && !master.aligned)(
-        "master may issue unaligned transactions, but slave requires natural alignment"
-      )
-    ).flatten)
+    CheckResult.from(
+      Seq(
+        Option.when(master.maxBeats > slave.maxBeats)(
+          s"master maxBeats ${master.maxBeats} exceeds slave maxBeats ${slave.maxBeats}"
+        ),
+        Option.when(!master.types.toSet.subsetOf(slave.types.toSet))(
+          s"master types ${master.types} is not a subset of " +
+            s"slave types ${slave.types}"
+        ),
+        Option.when(!master.sizes.toSet.subsetOf(slave.sizes.toSet))(
+          s"master sizes ${master.sizes} is not a subset of " +
+            s"slave sizes ${slave.sizes}"
+        ),
+        Option.when(master.maxBeats > 0 && slave.aligned && !master.aligned)(
+          "master may issue unaligned transactions, but slave requires natural alignment"
+        )
+      ).flatten
+    )
 }

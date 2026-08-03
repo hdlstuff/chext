@@ -158,7 +158,7 @@ private final class Demux_Resolver(owner: Demux)(implicit sourceInfo: SourceInfo
   bindMaster(owner.m_axil.toSeq)
 
   private val noSlaveAggregate =
-    "Demux keeps each downstream slave capability separate instead of aggregating them"
+    "Demux keeps the slave properties of its m_axil interfaces separate instead of aggregating them"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {

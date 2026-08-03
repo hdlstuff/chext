@@ -166,7 +166,7 @@ private final class IdDemux_Resolver(owner: IdDemux)(implicit sourceInfo: Source
   bindMaster(owner.m_axi.toSeq)
 
   private val noSlaveBurstAggregate =
-    "IdDemux keeps each downstream slave burst capability separate"
+    "IdDemux keeps the slave burst properties of its m_axi interfaces separate"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {

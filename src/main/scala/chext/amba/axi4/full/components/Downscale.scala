@@ -15,9 +15,9 @@ import helpers.{SteerLeft, SteerRight}
 
 /** Configuration for [[Downscale]].
   *
-  * The slave interface must have no transaction IDs (`wId == 0`), and input traffic must contain
-  * only single-beat transactions (`ARLEN == 0` and `AWLEN == 0`). `Downscale` may turn one wide
-  * input beat into a multi-beat transaction on its narrower master interface.
+  * Transactions accepted at `s_axi` must have no IDs (`wId == 0`) and must be single-beat (`ARLEN
+  * \== 0` and `AWLEN == 0`). `Downscale` may turn one wide beat accepted at `s_axi` into a
+  * multi-beat transaction issued at its narrower `m_axi` interface.
   */
 case class DownscaleConfig(
     val axiSlaveCfg: axi4.Config,
@@ -54,9 +54,9 @@ case class DownscaleConfig(
 
 /** Reduces the data width of single-beat, ID-free AXI4-Full traffic.
   *
-  * This module does not decompose input bursts. Place `Unburst` before it unless single-beat input
-  * is guaranteed, and place `Unburst` after it when the downstream interface requires single-beat
-  * transactions.
+  * This module does not decompose bursts accepted at `s_axi`. Place `Unburst` before it unless
+  * transactions at `s_axi` are guaranteed to be single-beat, and place `Unburst` after it when the
+  * slave connected to `m_axi` accepts only single-beat transactions.
   */
 class Downscale(val cfg: DownscaleConfig) extends Module with chext.AnnotatedModule {
   import cfg._
