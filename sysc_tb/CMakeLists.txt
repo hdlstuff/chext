@@ -101,7 +101,7 @@ function(generate_tb)
 
         hdlscw(
             TARGET ${GEN_TB_TARGET_NAME}
-            HDLINFO ${CMAKE_CURRENT_SOURCE_DIR}/hdl/${MODULE}.hdlinfo.json
+            HDLINFO hdl/${MODULE}.hdlinfo.json
             ARGS -r ${CMAKE_CURRENT_SOURCE_DIR}/protocols.py
         )
     endforeach()
