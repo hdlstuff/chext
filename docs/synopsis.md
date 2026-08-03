@@ -18,6 +18,7 @@ This is a working synopsis of the main Chext constructions, their intended use, 
 - [Stream](#stream)
 - [Load/Store](#loadstore)
 - [Float](#float)
+- [HDLInfo Port Declarations](#hdlinfo-port-declarations)
 
 <span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span>
 <span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span>
@@ -1259,6 +1260,34 @@ val custom = float.FloatingPoint(
 val mul0 =
   Module(new float.ElasticMultiply(fp, combinational = false))</code></pre></td>
       <td style="vertical-align:top;"><span style="background:#fff4d6;color:#8a5a00;padding:2px 6px;border-radius:4px;">Module</span> Elastic wrappers around floating-point add/multiply datapaths. They expose elastic input/output interfaces; graph participation comes through surrounding elastic wiring and transforms.</td>
+    </tr>
+  </tbody>
+</table>
+
+## HDLInfo Port Declarations
+
+<table style="table-layout:fixed;width:100%;">
+  <colgroup>
+    <col style="width:24%;">
+    <col style="width:42%;">
+    <col style="width:34%;">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Construct</th>
+      <th>Intent and Usage</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="entry-hdlinfo-port-declarations-declare-data">
+      <td style="vertical-align:top;"><code>declareData</code> <a href="#entry-hdlinfo-port-declarations-declare-data" style="text-decoration:none;" aria-label="Permalink to entry-hdlinfo-port-declarations-declare-data">#</a><div style="margin-top:6px;font-size:0.92em;"><div><a href="../src/main/scala/chext/AnnotatedModule.scala" style="text-decoration:none;"><span style="background:#e7f0ff;color:#0b4f9c;padding:2px 6px;border-radius:4px;">Scala</span></a></div></div></td>
+      <td style="vertical-align:top;">Declare raw scalar and integer IO on an <code>AnnotatedModule</code>:<br><pre style="white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0;padding:8px;background:#f6f8fa;border:1px solid #d0d7de;border-radius:6px;line-height:1.45;"><code class="language-scala">val request = IO(Input(UInt(12.W)))
+val result = IO(Output(SInt(9.W)))
+
+declareData(request)
+declareData(result)</code></pre></td>
+      <td style="vertical-align:top;"><span style="background:#f3e8ff;color:#6b21a8;padding:2px 6px;border-radius:4px;">Interface</span> Adds an hdlinfo data port and infers its name, direction, width, and bus range. Supports <code>Bool</code>, <code>UInt</code>, and <code>SInt</code>; signed integers are represented as raw bit vectors in hdlinfo.</td>
     </tr>
   </tbody>
 </table>

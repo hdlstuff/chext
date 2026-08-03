@@ -18,6 +18,7 @@ This is a working synopsis of the main Chext constructions, their intended use, 
 - [Stream](#stream)
 - [Load/Store](#loadstore)
 - [Float](#float)
+- [HDLInfo Port Declarations](#hdlinfo-port-declarations)
 
 ## Elastic Imports
 
@@ -2253,5 +2254,26 @@ val mul0 =
 ```
 
 **Details:** Module. Elastic wrappers around floating-point add/multiply datapaths. They expose elastic input/output interfaces; graph participation comes through surrounding elastic wiring and transforms.
+
+---
+
+## HDLInfo Port Declarations
+
+<a id="entry-hdlinfo-port-declarations-declare-data"></a>
+
+### `declareData` [#](#entry-hdlinfo-port-declarations-declare-data)
+
+**Sources:** [Scala](../src/main/scala/chext/AnnotatedModule.scala)
+
+**Intent and Usage:** Declare raw scalar and integer IO on an `AnnotatedModule`:
+```scala
+val request = IO(Input(UInt(12.W)))
+val result = IO(Output(SInt(9.W)))
+
+declareData(request)
+declareData(result)
+```
+
+**Details:** Interface. Adds an hdlinfo data port and infers its name, direction, width, and bus range. Supports `Bool`, `UInt`, and `SInt`; signed integers are represented as raw bit vectors in hdlinfo.
 
 ---

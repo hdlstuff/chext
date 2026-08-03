@@ -117,7 +117,7 @@ private object Axi4HdlinfoDeclaration {
 /** Mixin for modules that describe their ports and interfaces for hdlinfo emission.
   *
   * An `AnnotatedModule` is still an ordinary Chisel `RawModule`; the mixin only adds declaration
-  * helpers such as `declareClock`, `declareReset`, `declareElasticInterface`, and
+  * helpers such as `declareClock`, `declareReset`, `declareData`, `declareElasticInterface`, and
   * `declareAxi4Interface`. `chext.TestBench.emit` consumes the collected annotations and writes
   * the corresponding hdlinfo sidecar.
   */
@@ -256,6 +256,77 @@ trait AnnotatedModule extends HasHdlinfoModule {
         100,
         associatedClock,
         ""
+      )
+    )
+    portNames.addOne(name)
+  }
+
+  /** Declares a scalar or integer data port.
+    *
+    * `Bool`, `UInt`, and `SInt` ports are supported. Integer signedness is intentionally not
+    * represented by hdlinfo: `UInt` and `SInt` are both described as raw bit vectors using their
+    * elaborated width.
+    */
+  final def declareData(
+      data: Data,
+      associatedClock: String = "clock",
+      associatedReset: String = "reset",
+      portName: Option[String] = None,
+      args: Map[String, hdlinfo.TypedObject] = Map.empty
+  )(implicit si: SourceInfo): Unit = {
+    val name = nameFor(data, portName)
+    require_.here(
+      !hasPortNamed(name),
+      "duplicate hdlinfo port",
+      Seq(s"Port name: $name")
+    )
+
+    val width = data match {
+      case _: Bool => 1
+      case integer: UInt =>
+        integer.widthOption.getOrElse(
+          require_.failHere(
+            "data port width must be known",
+            Seq(s"Port name: $name", s"Actual type: ${data.getClass.getName}")
+          )
+        )
+      case integer: SInt =>
+        integer.widthOption.getOrElse(
+          require_.failHere(
+            "data port width must be known",
+            Seq(s"Port name: $name", s"Actual type: ${data.getClass.getName}")
+          )
+        )
+      case other =>
+        require_.failHere(
+          "unsupported data port type",
+          Seq(
+            s"Port name: $name",
+            s"Actual type: ${other.getClass.getName}",
+            "Expected Bool, UInt, or SInt."
+          )
+        )
+    }
+
+    require_.here(
+      width > 0,
+      "data port width must be positive",
+      Seq(s"Port name: $name", s"Width: $width")
+    )
+
+    val isBus = width > 1
+    ports.addOne(
+      hdlinfo.Port(
+        name,
+        getValidDirection(data),
+        hdlinfo.PortKind.data,
+        hdlinfo.PortSensitivity.none,
+        isBus,
+        if (isBus) (width - 1, 0) else (0, 0),
+        100,
+        associatedClock,
+        associatedReset,
+        args
       )
     )
     portNames.addOne(name)

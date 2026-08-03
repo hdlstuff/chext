@@ -2483,3 +2483,27 @@ hierarchy <<END
 {{badge:Scala}} {{src:src/test/scala/chext/float/Elastic.tb.scala}}
 {{badge:SysC}} {{src:sysc_tb/chext/float/src/ElasticTop.tb.cpp}}
 END
+
+[section.hdlinfo_declarations]
+kind = table
+title = HDLInfo Port Declarations
+
+[row.hdlinfo_declarations]
+anchor = hdlinfo-port-declarations-declare-data
+construct = `declareData`
+intent <<END
+Declare raw scalar and integer IO on an `AnnotatedModule`:
+```scala
+val request = IO(Input(UInt(12.W)))
+val result = IO(Output(SInt(9.W)))
+
+declareData(request)
+declareData(result)
+```
+END
+details <<END
+{{badge:Interface}} Adds an hdlinfo data port and infers its name, direction, width, and bus range. Supports `Bool`, `UInt`, and `SInt`; signed integers are represented as raw bit vectors in hdlinfo.
+END
+hierarchy <<END
+{{badge:Scala}} {{src:src/main/scala/chext/AnnotatedModule.scala}}
+END
