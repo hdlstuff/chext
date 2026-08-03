@@ -1278,7 +1278,7 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
 
   test(
     name = "axi4_view_repeated",
-    description = "The same raw AXI4 root IO is viewed twice, which should show current and previous call sites.",
+    description = "Viewing the same raw AXI4 root IO twice warns with current and previous call sites.",
     gen = () => new Axi4ViewRepeatedRootTop,
     checks = Seq(
       Log contains "[ WARN ] axi4/axi4View : bad use of AXI4 view: raw interface viewed multiple times; current call is .asLite",
@@ -1321,6 +1321,7 @@ object TrackingDiagnostics_Test extends App with ElaborationTest {
       ModuleGraphJson contains "/leaf/s_axi$view_ar",
       ModuleGraphJson contains "/leaf/m_axi$view_r",
       Log contains "called outside the root module",
+      Log contains "raw interface viewed multiple times",
       Log excludes "Encountered an interface which is neither an IO or Wire."
     )
   )

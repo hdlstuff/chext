@@ -20,6 +20,21 @@ import chext.tracking.Path
   */
 trait Tracked {
 
+  private var viewCounter_ = 0
+
+  /** Advances this object's tracking-registration count.
+    *
+    * Module tracking uses it to retain only the first registration of an interface object.
+    *
+    * @return
+    *   `true` only for the first mark of this object
+    */
+  private[tracking] final def markViewed(): Boolean = {
+    val first = viewCounter_ == 0
+    viewCounter_ += 1
+    first
+  }
+
   /** Static AXI interface configuration. */
   def cfg: chext.amba.axi4.Config
 

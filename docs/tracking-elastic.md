@@ -214,7 +214,7 @@ The intended safe pattern is:
 3. Do this on root IO.
 4. Reuse the resulting elastic interface.
 
-## View Warnings
+## View Diagnostics
 
 AXI4 and AXI4 Stream raw interfaces record view calls locally on the raw interface object. There is
 no global registry for this. Each recorded call stores:
@@ -242,16 +242,20 @@ or slave property on that interface is explicitly `Enforced`. A calculated value
 against an enforced value, but calculated-vs-calculated boundaries are omitted because they only
 repeat constraints inferred and checked elsewhere.
 
-The warnings cover:
+AXI4 warnings cover:
 
 - calling `.asLite` or `.asFull` outside the root module;
-- calling `.asLite` or `.asFull` at the root but not on root IO;
-- calling the conversion multiple times on the same raw interface.
+- calling `.asLite` or `.asFull` at the root but not on root IO.
+
+Calling an AXI4 conversion multiple times on the same raw interface emits a warning, including
+mixed `.asLite`/`.asFull` calls and calls made from different module levels. The warning reports the
+current conversion call and all previous call sites. Each resulting view remains a distinct Scala
+object with its own property store and endpoint identity.
 
 When the call is outside the root module, Chext does not also warn about root IO. That keeps the
 message focused: the non-root-module use is already the important unsafe pattern.
 
-The warnings deliberately do not try to diagnose whether the view type is compatible. If a raw
+The diagnostics deliberately do not try to diagnose whether a view type is compatible. If a raw
 interface is viewed as the wrong AXI flavor, downstream AXI/connect logic is responsible for
 catching that semantic error.
 

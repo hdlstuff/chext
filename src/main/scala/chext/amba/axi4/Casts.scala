@@ -7,7 +7,8 @@ import chisel3.experimental.dataview._
 
 import chisel3.hacks.DataInternals
 import chisel3.hacks.ModuleInternals
-import chext.elastic.{tracking => t}
+import chext.amba.axi4
+import chext.elastic
 import chext.util.Logger
 import chext.util.sourceInfoToString
 
@@ -17,7 +18,7 @@ private[axi4] case class ViewCall(
     module: Option[BaseModule]
 )
 
-private object ViewWarnings {
+private object ViewDiagnostics {
   private val logger = new Logger("axi4")
 
   private def moduleString(module: Option[BaseModule]): String =
@@ -53,6 +54,7 @@ private object ViewWarnings {
 
     val call = ViewCall(conversion, si, module)
     val previous = x.viewCalls_.toSeq
+    val firstView = previous.isEmpty
     x.viewCalls_.addOne(call)
 
     if (!rootModule)
@@ -61,7 +63,7 @@ private object ViewWarnings {
     if (rootModule && !rootIo)
       warn(x, s"bad use of AXI4 view: .$conversion was not called on root IO", call)
 
-    if (previous.nonEmpty) {
+    if (!firstView)
       logger.warn(
         "axi4View",
         (Seq(s"bad use of AXI4 view: raw interface viewed multiple times; current call is .$conversion") ++
@@ -69,36 +71,35 @@ private object ViewWarnings {
           Seq("Previous calls:") ++
           previous.map(prev => s"  ${callString(prev)}")): _*
       )
-    }
   }
 }
 
 trait Casts {
-  private def requestRole(source: RawInterface): Option[t.DeclaredRole] =
-    t.Tracked.roleFromCurrentModule(source)
+  private def requestRole(source: RawInterface): Option[elastic.tracking.DeclaredRole] =
+    elastic.tracking.Tracked.roleFromCurrentModule(source)
 
   private def enforceAxi4Roles(
       source: RawInterface,
-      ar: => t.Tracked,
-      r: => t.Tracked,
-      aw: => t.Tracked,
-      w: => t.Tracked,
-      b: => t.Tracked
+      ar: => elastic.tracking.Tracked,
+      r: => elastic.tracking.Tracked,
+      aw: => elastic.tracking.Tracked,
+      w: => elastic.tracking.Tracked,
+      b: => elastic.tracking.Tracked
   ): Unit =
     requestRole(source) match {
       case None => ()
       case Some(requestRole) =>
-        val responseRole = t.DeclaredRole.invert(requestRole)
+        val responseRole = elastic.tracking.DeclaredRole.invert(requestRole)
 
         if (source.cfg.read) {
-          t.Tracked.enforceRole(ar, requestRole)
-          t.Tracked.enforceRole(r, responseRole)
+          elastic.tracking.Tracked.enforceRole(ar, requestRole)
+          elastic.tracking.Tracked.enforceRole(r, responseRole)
         }
 
         if (source.cfg.write) {
-          t.Tracked.enforceRole(aw, requestRole)
-          t.Tracked.enforceRole(w, requestRole)
-          t.Tracked.enforceRole(b, responseRole)
+          elastic.tracking.Tracked.enforceRole(aw, requestRole)
+          elastic.tracking.Tracked.enforceRole(w, requestRole)
+          elastic.tracking.Tracked.enforceRole(b, responseRole)
         }
     }
 
@@ -110,20 +111,20 @@ trait Casts {
 
   implicit class viewAxiInterfaceAs(x: RawInterface) {
     def asFull(implicit si: SourceInfo) = {
-      ViewWarnings.record(x, "asFull")
+      ViewDiagnostics.record(x, "asFull")
       val view = x.viewAs[full.Interface]
       enforceFullRoles(view, x)
-      t.registerView(view, x, sourceInfo = Some(si))
-      tracking.registerView(view)
+      elastic.tracking.registerView(view, x, sourceInfo = Some(si))
+      axi4.tracking.registerView(view)
       view
     }
 
     def asLite(implicit si: SourceInfo) = {
-      ViewWarnings.record(x, "asLite")
+      ViewDiagnostics.record(x, "asLite")
       val view = x.viewAs[lite.Interface]
       enforceLiteRoles(view, x)
-      t.registerView(view, x, sourceInfo = Some(si))
-      tracking.registerView(view)
+      elastic.tracking.registerView(view, x, sourceInfo = Some(si))
+      axi4.tracking.registerView(view)
       view
     }
   }
