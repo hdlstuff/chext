@@ -4,8 +4,6 @@ import chisel3.RawModule
 import chisel3.experimental.SourceInfo
 import chisel3.hacks.ModuleInternals
 
-import java.util.IdentityHashMap
-
 import scala.collection.mutable.ArrayBuffer
 
 import chext.tracking
@@ -70,25 +68,24 @@ final class ModuleState private[tracking] (moduleInfo: tracking.ModuleInfo)
   def newComponentState(component: tracking.Component): ComponentState =
     new ComponentState(component)
 
-  /** Records a DataView-created interface, which is not discoverable as an ordinary wire or port.
-    */
+  /** Retains an interface only on its first registration. */
   private[axi4] def registerInterface(interface: Tracked): Unit = {
-    if (!registeredInterfaces.exists(_ eq interface))
+    if (interface.markViewed())
       registeredInterfaces.addOne(interface)
   }
 
+  /** Interfaces first registered in this module, in registration order. */
   private def localInterfaces: Seq[Tracked] =
     registeredInterfaces.toSeq
 
+  /** Collects registered AXI interfaces from this module subtree in deterministic preorder. */
   private def treeInterfaces: Seq[Tracked] = {
-    val seen = new IdentityHashMap[Tracked, java.lang.Boolean]
-
     def collect(info: tracking.ModuleInfo): Seq[Tracked] = {
       val state = info.trackingState(Tag)
       state.localInterfaces ++ info.children.flatMap { case (_, child) => collect(child) }
     }
 
-    collect(moduleInfo).filter(interface => seen.put(interface, java.lang.Boolean.TRUE) == null)
+    collect(moduleInfo)
   }
 
   /** Runs the exhaustive pass once at the root of a complete module hierarchy. */

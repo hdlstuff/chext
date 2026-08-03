@@ -38,7 +38,9 @@ ensures that parent-side connections and resolver registrations are visible.
 Interfaces declared through `AnnotatedModule` are registered automatically.
 `.asFull` and `.asLite` register their DataView-created interfaces explicitly.
 A raw interface and its DataView are still distinct Scala objects with distinct
-property state, so create a view once at the root and reuse it.
+property state, so create a view once at the root and reuse it. Further
+conversions of the same raw interface emit warnings with the current and
+previous call sites but do not fail elaboration.
 
 ## Property keys and values
 
