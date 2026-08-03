@@ -127,7 +127,6 @@ object Properties_Test extends App {
   // Roles, accesses, and value types are ordinary selectors.
   assert(p.Role.Master == p.Master)
   assert(p.Role.Slave == p.Slave)
-  assert(p.Role.None == p.NoRole)
   assert(p.Access.Read == p.Read)
   assert(p.Access.Write == p.Write)
   assert(p.Access.None == p.NoAccess)
@@ -188,17 +187,6 @@ object Properties_Test extends App {
       case _                                        => false
     }
   )
-  val noRoleKey =
-    p.Key(
-      p.NoRole,
-      p.NoAccess,
-      p.ThreadMode,
-      "test_threadMode",
-      "Role-free test property."
-    )
-  val noRoleProperty = properties(noRoleKey)
-  assert(properties.select(p.NoRole) == Seq(noRoleProperty))
-
   val adjustedShape = v.BurstShape(
     maxBeats = 8,
     types = Seq(INCR, WRAP),
@@ -220,23 +208,6 @@ object Properties_Test extends App {
     }
   private def ops[T](request: ResolveRequest[T]): dummyResolver.RequestOps[T] =
     new dummyResolver.RequestOps(request)
-
-  val noRoleTracked = new Tracked { val cfg = Properties_Test.cfg }
-  val noRoleResolver =
-    new Resolver(null.asInstanceOf[BaseModule]) {
-      bindNoRole(noRoleTracked)
-
-      def resolve[T](request: ResolveRequest[T]): ResolveResult =
-        request match {
-          case ResolveRequest(_, p.Key(p.NoRole, p.NoAccess, p.ThreadMode)) =>
-            request.calculate(noRoleKey, v.ThreadMode.SingleThread)
-          case _ =>
-            request.missingCase()
-        }
-    }
-  val noRoleRequest = ResolveRequest(noRoleTracked, noRoleKey)
-  assert(Resolver.resolve(noRoleRequest).result == ResolveResult.Success())
-  assert(noRoleRequest.cell.get == v.ThreadMode.SingleThread)
 
   val rejectedCalculationTracked =
     new Tracked { val cfg = Properties_Test.cfg }

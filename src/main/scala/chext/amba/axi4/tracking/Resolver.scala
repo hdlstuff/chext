@@ -100,12 +100,12 @@ final case class ResolutionTrace(steps: Seq[ResolutionStep])
 
 /** Derives AXI tracking properties for one component or module boundary.
   *
-  * A resolver is registered on one or more [[Tracked]] interfaces with the dedicated master, slave,
-  * or role-free registration method. Registration is role-specific: slave properties conventionally
-  * flow downstream-to-upstream, while master properties flow upstream-to-downstream. When multiple
-  * resolvers are registered for the same interface and role, the tracking layer selects the
-  * resolver owned by the shallowest hierarchy node so that an enclosing boundary controls
-  * propagation. The latest registration wins when candidates have the same depth.
+  * A resolver is registered on one or more [[Tracked]] interfaces with the dedicated master or slave
+  * registration method. Registration is role-specific: slave properties conventionally flow
+  * downstream-to-upstream, while master properties flow upstream-to-downstream. When multiple
+  * resolvers are registered for the same interface and role, the tracking layer selects the resolver
+  * owned by the shallowest hierarchy node so that an enclosing boundary controls propagation. The
+  * latest registration wins when candidates have the same depth.
   *
   * [[resolve]] is intentionally one step of a dependency-driven operation. Implementations inspect
   * the request and use the inherited `RequestOps` methods to calculate a value, mark a valueless
@@ -440,20 +440,6 @@ abstract class Resolver(private[tracking] val owner: Owner) {
       interfaces: Seq[Tracked]
   )(implicit sourceInfo: SourceInfo): Unit =
     interfaces.foreach(interface => bindSlave(interface))
-
-  /** Registers this resolver for properties without a master/slave role on one interface. */
-  protected final def bindNoRole(
-      interface: Tracked
-  )(implicit sourceInfo: SourceInfo): Unit = {
-    initializeApplicability(interface, p.NoRole)
-    interface.addNoRoleResolver(this)
-  }
-
-  /** Registers this resolver for role-free properties on every interface in `interfaces`. */
-  protected final def bindNoRole(
-      interfaces: Seq[Tracked]
-  )(implicit sourceInfo: SourceInfo): Unit =
-    interfaces.foreach(interface => bindNoRole(interface))
 
   /** Eagerly classifies standard properties that do not apply to this configuration and role. */
   private def initializeApplicability(interface: Tracked, role: p.Role): Unit = {

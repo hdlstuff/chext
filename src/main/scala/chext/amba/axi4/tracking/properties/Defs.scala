@@ -25,10 +25,6 @@ object Role {
   case object Slave extends Role {
     val name = "slave"
   }
-
-  case object None extends Role {
-    val name = "none"
-  }
 }
 
 /** Read/write classification described by a property. */

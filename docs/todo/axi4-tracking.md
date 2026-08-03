@@ -181,9 +181,9 @@ case ResolveRequest(
   request.forwardTo(owner.m_axi)
 ```
 
-`bindMaster`, `bindSlave`, and the symmetric `bindNoRole` accept one interface
-or a sequence. Resolver selection prefers the candidate owned by the shallowest
-hierarchy node. The most recently registered candidate wins at equal depth.
+`bindMaster` and `bindSlave` accept one interface or a sequence. Resolver
+selection prefers the candidate owned by the shallowest hierarchy node. The
+most recently registered candidate wins at equal depth.
 
 Resolver trace metadata defaults from the implementation class name. For
 example, `CreditBuffer_Resolver` becomes `CreditBufferResolver` with kind
