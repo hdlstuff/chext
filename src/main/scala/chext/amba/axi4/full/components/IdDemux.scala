@@ -165,29 +165,30 @@ private final class IdDemux_Resolver(owner: IdDemux)(implicit sourceInfo: Source
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi.toSeq)
 
-  private val noSlaveAggregate =
-    "IdDemux keeps each downstream slave capability separate instead of aggregating them"
+  private val noSlaveBurstAggregate =
+    "IdDemux keeps each downstream slave burst capability separate"
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+      case ResolveRequest(_, p.Key(_, _, p.MemoryMap | p.TrafficProfile)) =>
         request.incomplete()
-      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
-        request.dontCare(noSlaveAggregate)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.BurstShape)) =>
+        request.dontCare(noSlaveBurstAggregate)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.ThreadMode)) =>
+        request.aggregateFrom(owner.m_axi.toSeq, p.ThreadMode) { downstream =>
+          val aggregate = v.ThreadMode.intersect(downstream)
+          if (owner.m_axi.head.cfg.wId == 0)
+            v.ThreadMode.idlessBackward(aggregate)
+          else
+            aggregate
+        }
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.forwardTo(owner.s_axi)
       case ResolveRequest(output, p.Key(p.Master, _, p.ThreadMode)) =>
         if (output.cfg.wId == 0)
-          request.mapFrom(owner.s_axi, p.ThreadMode) {
-            case v.ThreadMode.SingleTransaction =>
-              v.ThreadMode.SingleTransaction
-            case _ =>
-              v.ThreadMode.SingleThread
-          }
+          request.mapFrom(owner.s_axi, p.ThreadMode)(v.ThreadMode.idlessForward)
         else
           request.forwardTo(owner.s_axi)
-      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
-        request.incomplete()
       case _ =>
         request.missingCase()
     }

@@ -382,15 +382,10 @@ private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo
   if (owner.s_axi.cfg.write)
     owner.s_axi.properties(p.SlaveWriteBurstShape) = inputShape
 
-  private val noLocalRequirement =
-    "Widen imposes no additional local requirement for this property"
-
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap | p.ThreadMode)) =>
         request.forwardTo(owner.m_axi)
-      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
-        request.dontCare(noLocalRequirement)
       case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
         request.forwardTo(owner.s_axi)
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
@@ -413,7 +408,7 @@ private final class Widen_Resolver(owner: Widen)(implicit sourceInfo: SourceInfo
             )
           }
         }
-      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
       case _ =>
         request.missingCase()

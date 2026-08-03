@@ -31,8 +31,15 @@ interface because the component's resolver policy preserves the check at other
 interfaces. Since the checker visits every interface, no explicit delegation
 graph is needed.
 
-`TrafficProfile` is not checked. Resolvers terminate traffic-profile requests
-with `incomplete()` until its compatibility rules are defined.
+One-to-one modules do not originate `DontCare`: they forward an unchanged
+property, calculate its forward or inverse transformation, retain an
+authoritative local requirement, or return `Incomplete` when an applicable
+transformation is not modeled. `DontCare` is reserved for synthetic
+multi-endpoint aggregates that intentionally have no represented value.
+
+`TrafficProfile` is not checked. Transparent boundaries may forward it;
+transforming resolvers terminate traffic-profile requests with `incomplete()`
+until its compatibility rules are defined.
 
 ## Conventions
 
@@ -479,8 +486,9 @@ reach a registered compatibility-check boundary:
   capped by the payload-buffer capacity. This guarantees that the complete W
   burst can be accepted before AW is released without depending on downstream
   W progress.
-- Other slave properties are `DontCare`.
-- Master `TrafficProfile` remains `Incomplete`.
+- Without the corresponding buffer, slave `BurstShape` flows unchanged
+  upstream. Slave `ThreadMode` always flows unchanged upstream.
+- Slave and master `TrafficProfile` remain `Incomplete`.
 
 ### Demux
 
@@ -526,10 +534,13 @@ bits from the downstream ID.
 - Master `ThreadMode` is preserved while output IDs remain. When selection
   removes every ID bit, `SingleTransaction` is preserved and every other input
   mode becomes `SingleThread`.
-- Slave burst, thread, and traffic properties remain `DontCare`; downstream
-  capabilities stay separate rather than being aggregated.
+- Slave `BurstShape` remains `DontCare`; downstream capabilities remain
+  separate and are checked at the outputs.
+- Slave `ThreadMode` intersects the downstream capabilities and, when
+  selection removes every ID bit, applies the inverse of the output thread
+  transformation.
+- Slave and master `TrafficProfile` remain `Incomplete`.
 - `p.SlaveMemoryMap` remains `Incomplete`.
-- Master `TrafficProfile` remains `Incomplete`.
 
 ### IdMux
 
@@ -552,20 +563,24 @@ bits from the downstream ID.
   protocol maximum, whichever is smaller), while accepting every supported
   type and size with `aligned = false`.
 - Enforce master `ThreadMode = UniqueThreads` on `m_axi`.
-- Master `BurstShape` flows unchanged; remaining slave burst/traffic
-  properties are `DontCare`.
+- Master `BurstShape` flows unchanged; slave write `BurstShape` flows
+  unchanged upstream.
+- Slave and master `TrafficProfile` remain `Incomplete`.
 - `p.SlaveMemoryMap` flows unchanged.
-- Master `TrafficProfile` remains `Incomplete`.
 
 ### IdSerialize
 
-- Enforce master `ThreadMode = SingleThread` on `m_axi`.
+- Master `ThreadMode` preserves `SingleTransaction`; all other input modes
+  become `SingleThread`.
 - Master `BurstShape` flows unchanged.
 - Slave `BurstShape` flows unchanged from `m_axi` to `s_axi`, preserving
   downstream burst restrictions across ID serialization.
-- Slave thread/traffic properties are `DontCare`.
+- Slave `ThreadMode` is the inverse of the serialization transform:
+  downstream `SingleThread` or `Unconstrained` permits unconstrained input,
+  while downstream `SingleTransaction` or `UniqueThreads` permits only one
+  input transaction.
+- Slave and master `TrafficProfile` remain `Incomplete`.
 - `p.SlaveMemoryMap` flows unchanged.
-- Master `TrafficProfile` remains `Incomplete`.
 
 ### Downscale
 
@@ -586,8 +601,7 @@ output type       = INCR
 - Preserve the input natural-alignment guarantee forward.
 - Forward the incoming master thread mode unchanged.
 - `p.SlaveMemoryMap` flows unchanged.
-- Other slave properties are `DontCare`; master `TrafficProfile` remains
-  `Incomplete`.
+- Slave and master `TrafficProfile` remain `Incomplete`.
 
 ### Unburst
 
@@ -595,18 +609,22 @@ output type       = INCR
 - Calculate a one-beat `{ INCR }` burst shape on `m_axi`.
 - Master sizes flow from `s_axi`.
 - Preserve the input natural-alignment guarantee.
-- Slave burst/traffic properties without a local requirement are `DontCare`.
+- Derive slave `BurstShape` from the downstream one-beat `{ INCR }`
+  capability: filter accepted sizes, retain every locally supported input
+  burst type, and propagate the downstream alignment requirement.
+- Slave and master `TrafficProfile` remain `Incomplete`.
 - `p.SlaveMemoryMap` flows unchanged.
-- Master `TrafficProfile` remains `Incomplete`.
 
 ### Upscale
 
 Let `S = fullSize(s_axi.wData)` and `M = fullSize(m_axi.wData)`, where `S < M`.
 
 - Enforce `SingleThread` at `s_axi`.
-- Forward every master property unchanged, preserving stronger modes such as
-  `SingleTransaction`.
-- Mark other slave properties `DontCare`.
+- Forward master `BurstShape` and `ThreadMode` unchanged, preserving stronger
+  modes such as `SingleTransaction`.
+- Derive slave `BurstShape` from the downstream capability, filtering types
+  and sizes to the narrower input interface.
+- Slave and master `TrafficProfile` remain `Incomplete`.
 - `p.SlaveMemoryMap` flows unchanged.
 
 ### Widen
@@ -614,15 +632,15 @@ Let `S = fullSize(s_axi.wData)` and `M = fullSize(m_axi.wData)`, where `S < M`.
 Let `F = fullSize(axiCfg.wData)`.
 
 - Publish a protocol-maximum input burst shape with all supported sizes and all
-  types except `FIXED`; other slave properties are `DontCare`.
-- Master `ThreadMode` flows unchanged.
+  types except `FIXED`.
+- Slave and master `ThreadMode` flow unchanged.
+- Slave and master `TrafficProfile` remain `Incomplete`.
 - Calculate the `m_axi` shape with transfer sizes `{ F }` and the input
   `types` minus `FIXED`.
 - Calculate output beats for the worst-case starting offset.
 - Set output `aligned = false`: natural alignment to a narrow input size does
   not imply natural alignment to the widened full-width size.
 - `p.SlaveMemoryMap` flows unchanged.
-- Master `TrafficProfile` remains `Incomplete`.
 
 ### LiteConverter
 
@@ -634,7 +652,8 @@ transfers.
   full-width alignment; the Lite output burst properties remain `Undefined`.
 - Publish the protocol-implied one-beat shape on the internal Full interface at
   the manual Full-to-Lite bridge.
-- Mark the bridge's slave thread/traffic properties `DontCare`.
+- Forward the bridge's slave thread and traffic properties from the Lite
+  output. The external slave traffic profile remains `Incomplete`.
 - Forward `p.SlaveMemoryMap` from Lite to Full.
 - Master `TrafficProfile` remains `Incomplete`.
 
@@ -653,11 +672,13 @@ optional second Unburst
 IdMux
 ```
 
-Master burst/thread properties compose in that order. Intrinsic slave
-requirements are checked at the internal stage that imposes them, so external
-slave properties are `DontCare` except for `p.SlaveMemoryMap`, which flows
-directly from external `m_axi` to external `s_axi`. Master `TrafficProfile`
-remains `Incomplete`.
+Master burst/thread properties compose in that order, and slave properties
+resolve backward through the same stages. An internal `IdDemux` leaves the
+external slave burst aggregate `DontCare` while preserving checks at its
+outputs; slave thread mode still uses its represented aggregate and inverse
+ID-removal rule. `p.SlaveMemoryMap` flows directly from external `m_axi` to
+external `s_axi`. A passthrough converter also forwards traffic profiles in
+both directions; a transforming converter leaves them `Incomplete`.
 
 ### ConstantSlave
 
@@ -704,7 +725,10 @@ Unit tests cover:
 - all burst compatibility dimensions;
 - the complete 4-by-4 thread compatibility table;
 - mux and ID-mux burst `DontCare` plus the existing `ThreadMode` rules;
-- demux and ID-demux master propagation plus slave-side `DontCare`;
+- demux master propagation plus slave-side `DontCare`, and ID-demux thread
+  aggregation;
+- one-to-one resolver propagation, inverse transformations, and the absence of
+  enabled `DontCare` results;
 - every registered interface being visited;
 - missing, incomplete, undefined, and incompatible property diagnostics;
 - resolution traces and enforcement-owner context for both sides of a failed

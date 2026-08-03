@@ -124,7 +124,7 @@ object Checker {
 
     master match {
       case checked @ Value(value, steps, enforcementSourceInfo, _, _) =>
-        v.BurstShape.validationErrors(value, interface.cfg).foreach { message =>
+        v.BurstShape.checkConfig(value, interface.cfg).errors.foreach { message =>
           diagnostics += Diagnostic(
             interface,
             masterKey.qualifiedName,
@@ -137,7 +137,7 @@ object Checker {
     }
     slave match {
       case checked @ Value(value, steps, enforcementSourceInfo, _, _) =>
-        v.BurstShape.validationErrors(value, interface.cfg).foreach { message =>
+        v.BurstShape.checkConfig(value, interface.cfg).errors.foreach { message =>
           diagnostics += Diagnostic(
             interface,
             slaveKey.qualifiedName,
@@ -154,13 +154,13 @@ object Checker {
             master @ Value(masterValue, masterSteps, masterSourceInfo, _, _),
             slave @ Value(slaveValue, slaveSteps, slaveSourceInfo, _, _)
           ) =>
-        val errors = v.BurstShape.compatibilityErrors(masterValue, slaveValue)
-        if (errors.nonEmpty)
+        val result = v.BurstShape.checkCompatible(masterValue, slaveValue)
+        if (!result.isSuccess)
           diagnostics += Diagnostic(
             interface,
             s"${masterKey.qualifiedName} -> ${slaveKey.qualifiedName}",
             "burst shapes are incompatible",
-            detail(errors: _*) ++
+            detail(result.errors: _*) ++
               trace("Master trace", masterSteps, masterSourceInfo) ++
               trace("Slave trace", slaveSteps, slaveSourceInfo) ++
               enforcementContext("Master", master) ++
@@ -188,8 +188,8 @@ object Checker {
     ): Boolean =
       checked match {
         case checked @ Value(value, steps, enforcementSourceInfo, _, _) =>
-          val errors = v.ThreadMode.validationErrors(value, interface.cfg)
-          errors.foreach { message =>
+          val result = v.ThreadMode.checkConfig(value, interface.cfg)
+          result.errors.foreach { message =>
             diagnostics += Diagnostic(
               interface,
               key.qualifiedName,
@@ -198,7 +198,7 @@ object Checker {
                 enforcementContext("Property", checked)
             )
           }
-          errors.isEmpty
+          result.isSuccess
         case _ => false
       }
 
@@ -209,19 +209,18 @@ object Checker {
       case (
             master @ Value(masterValue, masterSteps, masterSourceInfo, _, _),
             slave @ Value(slaveValue, slaveSteps, slaveSourceInfo, _, _)
+          ) if masterValid && slaveValid =>
+        v.ThreadMode.checkCompatible(masterValue, slaveValue).errors.foreach { message =>
+          diagnostics += Diagnostic(
+            interface,
+            s"${masterKey.qualifiedName} -> ${slaveKey.qualifiedName}",
+            message,
+            trace("Master trace", masterSteps, masterSourceInfo) ++
+              trace("Slave trace", slaveSteps, slaveSourceInfo) ++
+              enforcementContext("Master", master) ++
+              enforcementContext("Slave", slave)
           )
-          if masterValid &&
-            slaveValid &&
-            !v.ThreadMode.compatible(masterValue, slaveValue) =>
-        diagnostics += Diagnostic(
-          interface,
-          s"${masterKey.qualifiedName} -> ${slaveKey.qualifiedName}",
-          s"thread modes are incompatible: master=$masterValue, slave=$slaveValue",
-          trace("Master trace", masterSteps, masterSourceInfo) ++
-            trace("Slave trace", slaveSteps, slaveSourceInfo) ++
-            enforcementContext("Master", master) ++
-            enforcementContext("Slave", slave)
-        )
+        }
       case _ => ()
     }
   }

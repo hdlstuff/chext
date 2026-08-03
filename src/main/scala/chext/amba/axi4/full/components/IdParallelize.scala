@@ -312,9 +312,6 @@ private final class IdParallelize_Resolver(owner: IdParallelize)(implicit source
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
-  private val noLocalRequirement =
-    "IdParallelize imposes no additional local requirement for this property"
-
   if (owner.s_axi.cfg.read) {
     owner.s_axi.properties(p.SlaveReadBurstShape) = v.BurstShape(
       maxBeats = math.min(
@@ -335,13 +332,12 @@ private final class IdParallelize_Resolver(owner: IdParallelize)(implicit source
 
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) |
+          ResolveRequest(_, p.Key(p.Slave, p.Write, p.BurstShape)) =>
         request.forwardTo(owner.m_axi)
-      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
-        request.dontCare(noLocalRequirement)
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.forwardTo(owner.s_axi)
-      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
       case _ =>
         request.missingCase()

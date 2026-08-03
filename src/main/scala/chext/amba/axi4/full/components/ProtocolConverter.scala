@@ -169,19 +169,20 @@ private final class ProtocolConverter_Resolver(owner: ProtocolConverter)(implici
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
-  private val noExternalRequirement =
-    "ProtocolConverter checks its input requirements at the internal transformation stages"
-
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
       case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
         request.forwardTo(owner.m_axi)
-      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
-        request.dontCare(noExternalRequirement)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.BurstShape | p.ThreadMode)) =>
+        request.forwardTo(owner.slaveResolutionTarget)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.TrafficProfile)) =>
+        if (owner.cfg.isPassthrough) request.forwardTo(owner.m_axi)
+        else request.incomplete()
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape | p.ThreadMode)) =>
         request.forwardTo(owner.masterResolutionTarget)
       case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
-        request.incomplete()
+        if (owner.cfg.isPassthrough) request.forwardTo(owner.s_axi)
+        else request.incomplete()
       case _ =>
         request.missingCase()
     }
@@ -198,15 +199,10 @@ private final class ProtocolConverterBridge_Resolver(
 
   bindSlave(internal)
 
-  private val noLocalRequirement =
-    "ProtocolConverter bridge imposes no local traffic-profile requirement"
-
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap | p.BurstShape | p.ThreadMode)) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
         request.forwardTo(owner.m_axi)
-      case ResolveRequest(_, p.Key(p.Slave, _, p.TrafficProfile)) =>
-        request.dontCare(noLocalRequirement)
       case _ =>
         request.missingCase()
     }
@@ -227,6 +223,7 @@ class ProtocolConverter(val cfg: ProtocolConverterConfig)
 
   private val resolver = new ProtocolConverter_Resolver(this)
   private[components] var masterResolutionTarget: axi4.full.Interface = s_axi
+  private[components] var slaveResolutionTarget: axi4.full.Interface = m_axi
 
   if (isPassthrough) {
     s_axi :=> m_axi
@@ -236,6 +233,7 @@ class ProtocolConverter(val cfg: ProtocolConverterConfig)
     val s_axi_internal = Wire(axi4.full.Interface(axiSlaveCfgInternal))
     val m_axi_internal = Wire(axi4.full.Interface(axiMasterCfgInternal))
     masterResolutionTarget = m_axi_internal
+    slaveResolutionTarget = s_axi_internal
     val bridgeResolver = new ProtocolConverterBridge_Resolver(this, m_axi_internal)
 
     // drives the internal wire

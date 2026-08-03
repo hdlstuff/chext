@@ -142,8 +142,18 @@ class IdDemuxResolverPolicyTestTop
     BurstShape(8, Seq(INCR, WRAP), Seq(0, 1, 2, 3), true)
   s_axi.properties(p.MasterReadBurstShape) = shape
   s_axi.properties(p.MasterReadThreadMode) = ThreadMode.UniqueThreads
+  private val downstreamShapes = Seq(
+    BurstShape(16, Seq(INCR, WRAP), Seq(0, 1, 2, 3), false),
+    BurstShape(8, Seq(INCR), Seq(0, 1, 2), true)
+  )
+  private val downstreamThreadModes =
+    Seq(ThreadMode.Unconstrained, ThreadMode.SingleThread)
 
-  m_axi.foreach { output =>
+  m_axi.zip(downstreamShapes).zip(downstreamThreadModes).foreach {
+    case ((output, downstreamShape), downstreamThreadMode) =>
+      output.properties(p.SlaveReadBurstShape) = downstreamShape
+      output.properties(p.SlaveReadThreadMode) = downstreamThreadMode
+
     val burstRequest = ResolveRequest(output, p.MasterReadBurstShape)
     assert(Resolver.resolve(burstRequest).result == ResolveResult.Success())
     assert(burstRequest.cell.valueOption.contains(shape))
@@ -153,13 +163,18 @@ class IdDemuxResolverPolicyTestTop
     assert(threadRequest.cell.valueOption.contains(ThreadMode.UniqueThreads))
   }
 
-  private def assertSlaveDontCare[T](key: p.Key[T]): Unit = {
-    val request = ResolveRequest(s_axi, key)
-    assert(Resolver.resolve(request).result == ResolveResult.Success())
-    assert(request.cell.state.isInstanceOf[p.State.DontCare])
-  }
-  assertSlaveDontCare(p.SlaveReadBurstShape)
-  assertSlaveDontCare(p.SlaveReadThreadMode)
+  private val slaveBurstRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
+  assert(Resolver.resolve(slaveBurstRequest).result == ResolveResult.Success())
+  assert(
+    slaveBurstRequest.cell.state match {
+      case p.State.DontCare(message) => message.contains("separate")
+      case _                         => false
+    }
+  )
+
+  private val slaveThreadRequest = ResolveRequest(s_axi, p.SlaveReadThreadMode)
+  assert(Resolver.resolve(slaveThreadRequest).result == ResolveResult.Success())
+  assert(slaveThreadRequest.cell.valueOption.contains(ThreadMode.SingleThread))
 
   private val memoryMapRequest = ResolveRequest(s_axi, p.SlaveMemoryMap)
   assert(Resolver.resolve(memoryMapRequest).result == ResolveResult.Success())
@@ -175,11 +190,19 @@ class ZeroIdDemuxResolverPolicyTestTop
     ) {
   s_axi.properties(p.MasterReadThreadMode) = ThreadMode.UniqueThreads
 
-  m_axi.foreach { output =>
+  m_axi.zipWithIndex.foreach { case (output, index) =>
+    val downstreamThreadMode =
+      if (index == 0) ThreadMode.SingleThread else ThreadMode.Unconstrained
+    output.properties(p.SlaveReadThreadMode) = downstreamThreadMode
+
     val request = ResolveRequest(output, p.MasterReadThreadMode)
     assert(Resolver.resolve(request).result == ResolveResult.Success())
     assert(request.cell.valueOption.contains(ThreadMode.SingleThread))
   }
+
+  private val slaveThreadRequest = ResolveRequest(s_axi, p.SlaveReadThreadMode)
+  assert(Resolver.resolve(slaveThreadRequest).result == ResolveResult.Success())
+  assert(slaveThreadRequest.cell.valueOption.contains(ThreadMode.Unconstrained))
 }
 
 class IdMuxResolverPolicyTestTop(wIdSel: Int)
@@ -226,6 +249,7 @@ class IdSerializeResolverPolicyTestTop
   s_axi.properties(p.MasterReadBurstShape) = shape
   s_axi.properties(p.MasterReadThreadMode) = ThreadMode.Unconstrained
   m_axi.properties(p.SlaveReadBurstShape) = acceptedShape
+  m_axi.properties(p.SlaveReadThreadMode) = ThreadMode.SingleThread
 
   private val slaveBurstRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
   assert(Resolver.resolve(slaveBurstRequest).result == ResolveResult.Success())
@@ -233,7 +257,7 @@ class IdSerializeResolverPolicyTestTop
 
   private val slaveThreadRequest = ResolveRequest(s_axi, p.SlaveReadThreadMode)
   assert(Resolver.resolve(slaveThreadRequest).result == ResolveResult.Success())
-  assert(slaveThreadRequest.cell.state.isInstanceOf[p.State.DontCare])
+  assert(slaveThreadRequest.cell.valueOption.contains(ThreadMode.Unconstrained))
 
   private val masterBurstRequest = ResolveRequest(m_axi, p.MasterReadBurstShape)
   assert(Resolver.resolve(masterBurstRequest).result == ResolveResult.Success())
@@ -295,6 +319,8 @@ class CreditBufferResolverPolicyTestTop
     BurstShape(5, Seq(FIXED, INCR), Seq(0, 1, 2), false)
   s_axi.properties(p.MasterWriteBurstShape) = writeInputShape
   s_axi.properties(p.MasterWriteThreadMode) = ThreadMode.SingleThread
+  m_axi.properties(p.SlaveReadThreadMode) = ThreadMode.Unconstrained
+  m_axi.properties(p.SlaveWriteThreadMode) = ThreadMode.SingleThread
 
   private val slaveBurstRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
   assert(Resolver.resolve(slaveBurstRequest).result == ResolveResult.Success())
@@ -311,7 +337,7 @@ class CreditBufferResolverPolicyTestTop
 
   private val slaveThreadRequest = ResolveRequest(s_axi, p.SlaveReadThreadMode)
   assert(Resolver.resolve(slaveThreadRequest).result == ResolveResult.Success())
-  assert(slaveThreadRequest.cell.state.isInstanceOf[p.State.DontCare])
+  assert(slaveThreadRequest.cell.valueOption.contains(ThreadMode.Unconstrained))
 
   private val masterBurstRequest = ResolveRequest(m_axi, p.MasterReadBurstShape)
   assert(Resolver.resolve(masterBurstRequest).result == ResolveResult.Success())
@@ -346,6 +372,62 @@ class CreditBufferResolverPolicyTestTop
   assert(masterWriteThreadRequest.cell.valueOption.contains(ThreadMode.SingleThread))
 }
 
+class UnbufferedCreditBufferResolverPolicyTestTop
+    extends CreditBuffer(
+      CreditBufferConfig(
+        axiCfg = axi4.Config(wId = 0, wAddr = 16, wData = 64, write = false),
+        rBuffer = 0
+      )
+    ) {
+  private val shape =
+    BurstShape(4, Seq(INCR), Seq(1, 2, 3), true)
+  s_axi.properties(p.MasterReadBurstShape) = shape
+  s_axi.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
+  m_axi.properties(p.SlaveReadBurstShape) = shape
+  m_axi.properties(p.SlaveReadThreadMode) = ThreadMode.SingleThread
+  m_axi.properties(p.SlaveMemoryMap) = MemoryMap(size = 0x100)
+
+  private val burstRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
+  assert(Resolver.resolve(burstRequest).result == ResolveResult.Success())
+  assert(burstRequest.cell.valueOption.contains(shape))
+
+  private val threadRequest = ResolveRequest(s_axi, p.SlaveReadThreadMode)
+  assert(Resolver.resolve(threadRequest).result == ResolveResult.Success())
+  assert(threadRequest.cell.valueOption.contains(ThreadMode.SingleThread))
+
+  private val trafficRequest =
+    ResolveRequest(s_axi, p.SlaveReadTrafficProfile)
+  assert(Resolver.resolve(trafficRequest).result == ResolveResult.Success())
+  assert(trafficRequest.cell.state == p.State.Incomplete)
+}
+
+class IdParallelizeWriteResolverPolicyTestTop
+    extends IdParallelize(
+      IdParallelizeConfig(
+        axiSlaveCfg =
+          axi4.Config(wId = 0, wAddr = 16, wData = 64, read = false),
+        wIdMaster = 3,
+        wBufferIndex = 3
+      )
+    ) {
+  private val shape =
+    BurstShape(8, Seq(INCR, WRAP), Seq(0, 1, 2, 3), false)
+  s_axi.properties(p.MasterWriteBurstShape) = shape
+  s_axi.properties(p.MasterWriteThreadMode) = ThreadMode.SingleThread
+  m_axi.properties(p.SlaveWriteBurstShape) = shape
+  m_axi.properties(p.SlaveWriteThreadMode) = ThreadMode.Unconstrained
+  m_axi.properties(p.SlaveMemoryMap) = MemoryMap(size = 0x100)
+
+  private val burstRequest = ResolveRequest(s_axi, p.SlaveWriteBurstShape)
+  assert(Resolver.resolve(burstRequest).result == ResolveResult.Success())
+  assert(burstRequest.cell.valueOption.contains(shape))
+
+  private val trafficRequest =
+    ResolveRequest(s_axi, p.SlaveWriteTrafficProfile)
+  assert(Resolver.resolve(trafficRequest).result == ResolveResult.Success())
+  assert(trafficRequest.cell.state == p.State.Incomplete)
+}
+
 class ProtocolConverterResolverPolicyTestTop
     extends ProtocolConverter(
       ProtocolConverterConfig(
@@ -378,6 +460,87 @@ class ProtocolConverterResolverPolicyTestTop
   private val outputRequest = ResolveRequest(m_axi, p.MasterReadBurstShape)
   assert(Resolver.resolve(outputRequest).result == ResolveResult.Success())
   assert(outputRequest.cell.valueOption.contains(BurstShape()))
+
+  private val inputBurstRequest =
+    ResolveRequest(s_axi, p.SlaveReadBurstShape)
+  assert(Resolver.resolve(inputBurstRequest).result == ResolveResult.Success())
+  assert(
+    inputBurstRequest.cell.valueOption.contains(
+      BurstShape(
+        maxBeats = BurstShape.maxBeatsFor(s_axi.cfg),
+        types = BurstShape.supportedTypesFor(s_axi.cfg),
+        sizes = BurstShape.supportedSizesFor(s_axi.cfg),
+        aligned = false
+      )
+    )
+  )
+
+  private val inputThreadRequest =
+    ResolveRequest(s_axi, p.SlaveReadThreadMode)
+  assert(Resolver.resolve(inputThreadRequest).result == ResolveResult.Success())
+  assert(inputThreadRequest.cell.valueOption.contains(ThreadMode.SingleThread))
+}
+
+class ProtocolConverterIdResolverPolicyTestTop
+    extends ProtocolConverter(
+      ProtocolConverterConfig(
+        axiSlaveCfg =
+          axi4.Config(wId = 2, wAddr = 16, wData = 64),
+        axiMasterCfg =
+          axi4.Config(wId = 1, wAddr = 16, wData = 64)
+      )
+    ) {
+  private val shape =
+    BurstShape(8, Seq(INCR, WRAP), Seq(0, 1, 2, 3), true)
+  s_axi.properties(p.MasterReadBurstShape) = shape
+  s_axi.properties(p.MasterReadThreadMode) = ThreadMode.UniqueThreads
+  s_axi.properties(p.MasterWriteBurstShape) = shape
+  s_axi.properties(p.MasterWriteThreadMode) = ThreadMode.UniqueThreads
+  m_axi.properties(p.SlaveReadBurstShape) = shape
+  m_axi.properties(p.SlaveReadThreadMode) = ThreadMode.Unconstrained
+  m_axi.properties(p.SlaveWriteBurstShape) = shape
+  m_axi.properties(p.SlaveWriteThreadMode) = ThreadMode.Unconstrained
+  m_axi.properties(p.SlaveMemoryMap) = MemoryMap(size = 0x100)
+
+  private val burstRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
+  assert(Resolver.resolve(burstRequest).result == ResolveResult.Success())
+  assert(burstRequest.cell.state.isInstanceOf[p.State.DontCare])
+
+  private val threadRequest = ResolveRequest(s_axi, p.SlaveReadThreadMode)
+  assert(Resolver.resolve(threadRequest).result == ResolveResult.Success())
+  assert(threadRequest.cell.valueOption.contains(ThreadMode.Unconstrained))
+}
+
+class ProtocolConverterPassthroughResolverPolicyTestTop
+    extends ProtocolConverter(
+      ProtocolConverterConfig(
+        axiSlaveCfg =
+          axi4.Config(wId = 1, wAddr = 16, wData = 64, write = false),
+        axiMasterCfg =
+          axi4.Config(wId = 2, wAddr = 16, wData = 64, write = false)
+      )
+    ) {
+  private val shape =
+    BurstShape(4, Seq(INCR), Seq(0, 1, 2, 3), false)
+  private val masterTraffic = TrafficProfile(4, 2, Some(1.0))
+  private val slaveTraffic = TrafficProfile(8, 4, Some(3.0))
+  s_axi.properties(p.MasterReadBurstShape) = shape
+  s_axi.properties(p.MasterReadThreadMode) = ThreadMode.UniqueThreads
+  s_axi.properties(p.MasterReadTrafficProfile) = masterTraffic
+  m_axi.properties(p.SlaveReadBurstShape) = shape
+  m_axi.properties(p.SlaveReadThreadMode) = ThreadMode.Unconstrained
+  m_axi.properties(p.SlaveReadTrafficProfile) = slaveTraffic
+  m_axi.properties(p.SlaveMemoryMap) = MemoryMap(size = 0x100)
+
+  private val masterTrafficRequest =
+    ResolveRequest(m_axi, p.MasterReadTrafficProfile)
+  assert(Resolver.resolve(masterTrafficRequest).result == ResolveResult.Success())
+  assert(masterTrafficRequest.cell.valueOption.contains(masterTraffic))
+
+  private val slaveTrafficRequest =
+    ResolveRequest(s_axi, p.SlaveReadTrafficProfile)
+  assert(Resolver.resolve(slaveTrafficRequest).result == ResolveResult.Success())
+  assert(slaveTrafficRequest.cell.valueOption.contains(slaveTraffic))
 }
 
 class DownscaleAlignmentResolverPolicyTestTop
@@ -431,7 +594,7 @@ class DownscaleAlignmentResolverPolicyTestTop
   private val slaveTrafficRequest =
     ResolveRequest(s_axi, p.SlaveReadTrafficProfile)
   assert(Resolver.resolve(slaveTrafficRequest).result == ResolveResult.Success())
-  assert(slaveTrafficRequest.cell.state.isInstanceOf[p.State.DontCare])
+  assert(slaveTrafficRequest.cell.state == p.State.Incomplete)
 }
 
 class UpscaleAlignmentResolverPolicyTestTop
@@ -468,7 +631,7 @@ class UpscaleAlignmentResolverPolicyTestTop
 
   private val slaveRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
   assert(Resolver.resolve(slaveRequest).result == ResolveResult.Success())
-  assert(slaveRequest.cell.state.isInstanceOf[p.State.DontCare])
+  assert(slaveRequest.cell.valueOption.contains(downstreamShape))
 
   private val threadRequest = ResolveRequest(m_axi, p.MasterReadThreadMode)
   assert(Resolver.resolve(threadRequest).result == ResolveResult.Success())
@@ -476,12 +639,12 @@ class UpscaleAlignmentResolverPolicyTestTop
 
   private val trafficRequest = ResolveRequest(m_axi, p.MasterReadTrafficProfile)
   assert(Resolver.resolve(trafficRequest).result == ResolveResult.Success())
-  assert(trafficRequest.cell.valueOption.contains(inputTrafficProfile))
+  assert(trafficRequest.cell.state == p.State.Incomplete)
 
   private val slaveTrafficRequest =
     ResolveRequest(s_axi, p.SlaveReadTrafficProfile)
   assert(Resolver.resolve(slaveTrafficRequest).result == ResolveResult.Success())
-  assert(slaveTrafficRequest.cell.state.isInstanceOf[p.State.DontCare])
+  assert(slaveTrafficRequest.cell.state == p.State.Incomplete)
 }
 
 class UnburstAlignmentResolverPolicyTestTop
@@ -514,7 +677,16 @@ class UnburstAlignmentResolverPolicyTestTop
 
   private val slaveRequest = ResolveRequest(s_axi, p.SlaveReadBurstShape)
   assert(Resolver.resolve(slaveRequest).result == ResolveResult.Success())
-  assert(slaveRequest.cell.state.isInstanceOf[p.State.DontCare])
+  assert(
+    slaveRequest.cell.valueOption.contains(
+      BurstShape(
+        maxBeats = BurstShape.maxBeatsFor(s_axi.cfg),
+        types = BurstShape.supportedTypesFor(s_axi.cfg),
+        sizes = downstreamShape.sizes,
+        aligned = true
+      )
+    )
+  )
 
   private val threadRequest = ResolveRequest(m_axi, p.MasterReadThreadMode)
   assert(Resolver.resolve(threadRequest).result == ResolveResult.Success())
@@ -568,7 +740,7 @@ class WidenAlignmentResolverPolicyTestTop
 
   private val slaveThreadRequest = ResolveRequest(s_axi, p.SlaveReadThreadMode)
   assert(Resolver.resolve(slaveThreadRequest).result == ResolveResult.Success())
-  assert(slaveThreadRequest.cell.state.isInstanceOf[p.State.DontCare])
+  assert(slaveThreadRequest.cell.valueOption.contains(ThreadMode.Unconstrained))
 
   private val masterThreadRequest = ResolveRequest(m_axi, p.MasterReadThreadMode)
   assert(Resolver.resolve(masterThreadRequest).result == ResolveResult.Success())
@@ -596,6 +768,33 @@ class LiteDemuxResolverPolicyTestTop
   }
 
   val trafficRequest = ResolveRequest(s_axil, p.SlaveReadTrafficProfile)
+  assert(Resolver.resolve(trafficRequest).result == ResolveResult.Success())
+  assert(trafficRequest.cell.state == p.State.Incomplete)
+}
+
+class LiteCreditBufferResolverPolicyTestTop
+    extends axi4.lite.components.CreditBuffer(
+      axi4.lite.components.CreditBufferConfig(
+        axiCfg =
+          axi4.Config(
+            wId = 0,
+            wAddr = 16,
+            wData = 32,
+            write = false,
+            lite = true
+          )
+      )
+    ) {
+  s_axi.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
+  m_axi.properties(p.SlaveReadThreadMode) = ThreadMode.SingleThread
+  m_axi.properties(p.SlaveMemoryMap) = MemoryMap(size = 0x100)
+
+  private val threadRequest = ResolveRequest(s_axi, p.SlaveReadThreadMode)
+  assert(Resolver.resolve(threadRequest).result == ResolveResult.Success())
+  assert(threadRequest.cell.valueOption.contains(ThreadMode.SingleThread))
+
+  private val trafficRequest =
+    ResolveRequest(s_axi, p.SlaveReadTrafficProfile)
   assert(Resolver.resolve(trafficRequest).result == ResolveResult.Success())
   assert(trafficRequest.cell.state == p.State.Incomplete)
 }
@@ -696,8 +895,24 @@ object ResolverPolicy_Test extends App with ElaborationTest {
     checks = printedTrackingError
   )
   test(
+    name = "credit_buffer_unbuffered",
+    gen = () => new UnbufferedCreditBufferResolverPolicyTestTop
+  )
+  test(
+    name = "id_parallelize_write",
+    gen = () => new IdParallelizeWriteResolverPolicyTestTop
+  )
+  test(
     name = "protocol_converter",
     gen = () => new ProtocolConverterResolverPolicyTestTop
+  )
+  test(
+    name = "protocol_converter_id",
+    gen = () => new ProtocolConverterIdResolverPolicyTestTop
+  )
+  test(
+    name = "protocol_converter_passthrough",
+    gen = () => new ProtocolConverterPassthroughResolverPolicyTestTop
   )
   test(
     name = "downscale_alignment",
@@ -716,6 +931,10 @@ object ResolverPolicy_Test extends App with ElaborationTest {
     gen = () => new WidenAlignmentResolverPolicyTestTop
   )
   test(name = "lite_demux", expected = Failure, gen = () => new LiteDemuxResolverPolicyTestTop)
+  test(
+    name = "lite_credit_buffer",
+    gen = () => new LiteCreditBufferResolverPolicyTestTop
+  )
   test(
     name = "lite_demux_write_only",
     gen = () => new LiteDemuxWriteOnlyResolverPolicyTestTop,

@@ -22,8 +22,33 @@ final case class BurstShape private (
 }
 
 object BurstShape {
-  private def normalize(values: Seq[Int]): Seq[Int] =
+  private def normalizeSeq(values: Seq[Int]): Seq[Int] =
     values.distinct.sorted
+
+  /** Combines several slave burst-shape properties into one slave property.
+    *
+    * The combined property accepts exactly the transactions accepted by every supplied slave
+    * property: its beat limit is the smallest limit, its burst types and transfer sizes are the
+    * common sets, and it requires natural alignment when any supplied property does. If no
+    * transaction can be accepted, the result is the canonical empty shape.
+    */
+  private[axi4] def intersect(values: Seq[BurstShape]): BurstShape = {
+    require(values.nonEmpty, "BurstShape.intersect needs at least one value")
+
+    val maxBeats = values.map(_.maxBeats).min
+    val types = values.map(_.types.toSet).reduce(_ intersect _).toSeq
+    val sizes = values.map(_.sizes.toSet).reduce(_ intersect _).toSeq
+
+    if (maxBeats <= 0 || types.isEmpty || sizes.isEmpty)
+      BurstShape()
+    else
+      BurstShape(
+        maxBeats = maxBeats,
+        types = types,
+        sizes = sizes,
+        aligned = values.exists(_.aligned)
+      )
+  }
 
   /** Creates a complete burst shape.
     *
@@ -40,11 +65,19 @@ object BurstShape {
       sizes: Seq[Int] = Seq.empty,
       aligned: Boolean = false
   ): BurstShape =
+    normalize(new BurstShape(maxBeats, types, sizes, aligned))
+
+  /** Returns the canonical form of a burst shape.
+    *
+    * Burst-type and transfer-size encodings are deduplicated and sorted. The remaining fields are
+    * already canonical and are preserved.
+    */
+  def normalize(value: BurstShape): BurstShape =
     new BurstShape(
-      maxBeats,
-      normalize(types),
-      normalize(sizes),
-      aligned
+      value.maxBeats,
+      normalizeSeq(value.types),
+      normalizeSeq(value.sizes),
+      value.aligned
     )
 
   /** AXI transfer-size encoding for one full-width beat. */
@@ -63,8 +96,17 @@ object BurstShape {
   def maxBeatsFor(cfg: axi4.Config): Int =
     if (cfg.lite) 1 else if (cfg.axi3Compat) 16 else 256
 
-  /** Returns every internal-consistency or interface-specific validation problem. */
-  def validationErrors(value: BurstShape, cfg: axi4.Config): Seq[String] = {
+  /** Most permissive burst shape supported by an interface configuration. */
+  def all(cfg: axi4.Config): BurstShape =
+    BurstShape(
+      maxBeats = maxBeatsFor(cfg),
+      types = supportedTypesFor(cfg),
+      sizes = supportedSizesFor(cfg),
+      aligned = false
+    )
+
+  /** Checks that a burst shape is internally consistent and valid for an interface configuration. */
+  def checkConfig(value: BurstShape, cfg: axi4.Config): CheckResult = {
     val isEmpty =
       value.maxBeats == 0 &&
         value.types.isEmpty &&
@@ -74,10 +116,11 @@ object BurstShape {
     val protocolTypes = supportedTypesFor(cfg).toSet
     val interfaceSizes = supportedSizesFor(cfg).toSet
 
-    if (isEmpty)
-      Seq.empty
-    else
-      Seq(
+    val errors =
+      if (isEmpty)
+        Seq.empty
+      else
+        Seq(
         Option.when(value.maxBeats <= 0)(
           s"maxBeats must be positive for a non-empty shape (got ${value.maxBeats})"
         ),
@@ -96,12 +139,19 @@ object BurstShape {
         Option.when(!value.sizes.toSet.subsetOf(interfaceSizes.toSet))(
           s"sizes ${value.sizes} contains encodings outside $interfaceSizes"
         )
-      ).flatten
+        ).flatten
+
+    CheckResult.from(errors)
   }
 
-  /** Returns all reasons why a master burst shape exceeds a slave capability. */
-  def compatibilityErrors(master: BurstShape, slave: BurstShape): Seq[String] =
-    Seq(
+  /** Checks whether every transaction described by a master property is accepted by a slave
+    * property.
+    *
+    * A failed result contains every mismatch between the initiated burst shapes and the accepted
+    * burst shapes.
+    */
+  def checkCompatible(master: BurstShape, slave: BurstShape): CheckResult =
+    CheckResult.from(Seq(
       Option.when(master.maxBeats > slave.maxBeats)(
         s"master maxBeats ${master.maxBeats} exceeds slave maxBeats ${slave.maxBeats}"
       ),
@@ -116,5 +166,5 @@ object BurstShape {
       Option.when(master.maxBeats > 0 && slave.aligned && !master.aligned)(
         "master may issue unaligned transactions, but slave requires natural alignment"
       )
-    ).flatten
+    ).flatten)
 }

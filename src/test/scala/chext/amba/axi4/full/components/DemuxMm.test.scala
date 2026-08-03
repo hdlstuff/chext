@@ -325,7 +325,6 @@ object DemuxMm_Test extends App with ElaborationTest {
   )
   test(
     name = "tree_with_buffers",
-    expected = Failure,
     gen = () => new DemuxMmTreeTestTop,
     checks = Seq(
       Log contains "thread modes are incompatible: master=SingleThread, slave=SingleTransaction",
@@ -339,7 +338,6 @@ object DemuxMm_Test extends App with ElaborationTest {
       MemoryMapJson contains "\"resolver\" : \"LiteConverterResolver\"",
       FlattenedMemoryMapJson contains "\"registers\""
     ),
-    disabledCommonChecks = Set(HasDemuxModule),
     captureArtifacts = captureMemoryMap
   )
 

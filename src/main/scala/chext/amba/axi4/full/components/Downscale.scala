@@ -281,15 +281,10 @@ private final class Downscale_Resolver(owner: Downscale)(implicit sourceInfo: So
     owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
   }
 
-  private val noLocalRequirement =
-    "Downscale imposes no additional local requirement for this property"
-
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
       case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
         request.forwardTo(owner.m_axi)
-      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
-        request.dontCare(noLocalRequirement)
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.mapFrom(owner.s_axi, p.BurstShape) { input =>
           if (input.sizes.isEmpty)
@@ -304,7 +299,7 @@ private final class Downscale_Resolver(owner: Downscale)(implicit sourceInfo: So
         }
       case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
         request.forwardTo(owner.s_axi)
-      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
       case _ =>
         request.missingCase()

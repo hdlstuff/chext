@@ -245,17 +245,12 @@ private final class LiteConverter_Resolver(owner: LiteConverter)(implicit source
     owner.m_axil.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
   }
 
-  private val noLocalRequirement =
-    "LiteConverter imposes no additional local traffic-profile requirement"
-
   /** Forwards one non-traffic-shape property across the protocol boundary. */
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
       case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
         request.forwardTo(owner.m_axil)
-      case ResolveRequest(_, p.Key(p.Slave, _, p.TrafficProfile)) =>
-        request.dontCare(noLocalRequirement)
-      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
       case _ =>
         request.missingCase()
@@ -287,15 +282,10 @@ private final class LiteConverterBridge_Resolver(
   if (converted.cfg.write)
     converted.properties(p.SlaveWriteBurstShape) = fullBridgeShape
 
-  private val noLocalRequirement =
-    "LiteConverter bridge imposes no additional local requirement for this property"
-
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
-      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap | p.ThreadMode | p.TrafficProfile)) =>
         request.forwardTo(owner.m_axil)
-      case ResolveRequest(_, p.Key(p.Slave, _, p.ThreadMode | p.TrafficProfile)) =>
-        request.dontCare(noLocalRequirement)
       case _ =>
         request.missingCase()
     }

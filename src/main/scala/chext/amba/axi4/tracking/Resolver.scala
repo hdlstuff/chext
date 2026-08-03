@@ -218,6 +218,100 @@ abstract class Resolver(private[tracking] val owner: Owner) {
     def mapFrom(target: Tracked)(transform: T => T): ResolveResult =
       mapCellFrom(request.cell, target)(transform)
 
+    /** Resolves this property on several targets and combines their values.
+      *
+      * This is intended for sound fan-out capability aggregates. The resulting trace contains one
+      * branch per target in target order.
+      */
+    def aggregateFrom(
+        targets: Seq[Tracked]
+    )(combine: Seq[T] => T): ResolveResult =
+      aggregateCellsFrom(request.cell, targets)(combine)
+
+    /** Aggregates through a value type selected by a property pattern. */
+    def aggregateFrom[T0](
+        targets: Seq[Tracked],
+        valueType: p.ValueType[T0]
+    )(combine: Seq[T0] => T0): ResolveResult = {
+      require(
+        key.valueType == valueType,
+        s"ResolveRequest targets '$qualifiedName', not value type '${valueType.name}'"
+      )
+      aggregateCellsFrom(
+        request.cell.asInstanceOf[p.Cell[T0]],
+        targets
+      )(combine)
+    }
+
+    private def aggregateCellsFrom[T0](
+        cell: p.Cell[T0],
+        targets: Seq[Tracked]
+    )(combine: Seq[T0] => T0): ResolveResult = {
+      require(targets.nonEmpty, "aggregateFrom needs at least one target")
+      val dependencies = targets.map(target => ResolveRequest(target, cell.key))
+      val unresolved = dependencies.filterNot(_.cell.isResolved)
+
+      if (unresolved.nonEmpty)
+        ResolveResult.Retry(unresolved :+ request)
+      else {
+        val values = dependencies.flatMap(_.cell.valueOption)
+        if (values.length == dependencies.length) {
+          val resolutionSteps =
+            dependencies.zip(targets).flatMap { case (dependency, target) =>
+              ResolutionStep(
+                interfaceFrom = request.tracked.trackingPath,
+                interfaceTo = target.trackingPath,
+                kind = kind,
+                resolver = resolver,
+                resolverPath = resolverPath
+              ) +: dependency.cell.resolutionSteps
+            }
+          val originCells = dependencies.map(_.cell)
+          val enforcedFrom =
+            if (
+              originCells.forall(_.enforcementSourceInfo.nonEmpty) &&
+              originCells
+                .map(cell =>
+                  (
+                    cell.enforcementSourceInfo,
+                    cell.enforcementOwner,
+                    cell.enforcementInterface
+                  )
+                )
+                .distinct
+                .length == 1
+            )
+              Some(originCells.head)
+            else
+              None
+          calculateCell(
+            cell,
+            combine(values),
+            resolutionSteps,
+            enforcedFrom
+          )
+        } else {
+          val states = dependencies.map(_.cell.state)
+          if (states.exists(_ == p.State.Incomplete))
+            incomplete()
+          else if (states.forall(_.isInstanceOf[p.State.DontCare]))
+            dontCare(
+              states
+                .collect { case p.State.DontCare(message) => message }
+                .distinct
+                .mkString("; ")
+            )
+          else if (states.forall(_ == p.State.Undefined))
+            undefined()
+          else
+            failure(
+              s"Cannot aggregate property '$qualifiedName' from terminal states " +
+                states.mkString(", ")
+            )
+        }
+      }
+    }
+
     /** Resolves and transforms a value type selected by a property pattern.
       *
       * This is the typed Scala 2 counterpart to matching a stable [[properties.ValueType]].

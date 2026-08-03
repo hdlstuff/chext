@@ -28,12 +28,20 @@ object Properties_Test extends App {
   assert(v.BurstShape.supportedTypesFor(cfg) == allTypes)
   assert(v.BurstShape.supportedSizesFor(cfg) == 0.to(fullSize))
   assert(v.BurstShape.maxBeatsFor(cfg) == 256)
+  assert(
+    v.BurstShape.all(cfg) ==
+      v.BurstShape(256, allTypes, 0.to(fullSize), aligned = false)
+  )
   private val axi3Cfg = cfg.copy(axi3Compat = true)
   assert(v.BurstShape.maxBeatsFor(axi3Cfg) == 16)
   private val helperLiteCfg = cfg.copy(wId = 0, lite = true)
   assert(v.BurstShape.supportedTypesFor(helperLiteCfg) == Seq(INCR))
   assert(v.BurstShape.supportedSizesFor(helperLiteCfg) == Seq(fullSize))
   assert(v.BurstShape.maxBeatsFor(helperLiteCfg) == 1)
+  assert(
+    v.BurstShape.all(helperLiteCfg) ==
+      v.BurstShape(1, Seq(INCR), Seq(fullSize), aligned = false)
+  )
   assert(
     v.BurstShape(
       maxBeats = 1,
@@ -45,6 +53,59 @@ object Properties_Test extends App {
       types = Seq(INCR, WRAP),
       sizes = Seq(0, 2),
       aligned = false
+    )
+  )
+  assert(v.BurstShape.normalize(shape) == shape)
+  assert(
+    v.BurstShape.intersect(
+      Seq(
+        v.BurstShape(16, Seq(INCR, WRAP), Seq(0, 1, 2, 3), false),
+        v.BurstShape(8, Seq(INCR), Seq(1, 2, 3), true)
+      )
+    ) == v.BurstShape(8, Seq(INCR), Seq(1, 2, 3), true)
+  )
+  assert(
+    v.BurstShape.intersect(
+      Seq(
+        v.BurstShape(16, Seq(INCR), Seq(0), false),
+        v.BurstShape(16, Seq(WRAP), Seq(0), false)
+      )
+    ) == v.BurstShape()
+  )
+  assert(
+    v.ThreadMode.intersect(
+      Seq(v.ThreadMode.SingleThread, v.ThreadMode.UniqueThreads)
+    ) == v.ThreadMode.SingleTransaction
+  )
+  assert(
+    v.ThreadMode.intersect(
+      Seq(v.ThreadMode.Unconstrained, v.ThreadMode.UniqueThreads)
+    ) == v.ThreadMode.UniqueThreads
+  )
+  assert(
+    Seq(
+      v.ThreadMode.SingleTransaction,
+      v.ThreadMode.SingleThread,
+      v.ThreadMode.UniqueThreads,
+      v.ThreadMode.Unconstrained
+    ).map(v.ThreadMode.idlessForward) == Seq(
+      v.ThreadMode.SingleTransaction,
+      v.ThreadMode.SingleThread,
+      v.ThreadMode.SingleThread,
+      v.ThreadMode.SingleThread
+    )
+  )
+  assert(
+    Seq(
+      v.ThreadMode.SingleTransaction,
+      v.ThreadMode.SingleThread,
+      v.ThreadMode.UniqueThreads,
+      v.ThreadMode.Unconstrained
+    ).map(v.ThreadMode.idlessBackward) == Seq(
+      v.ThreadMode.SingleTransaction,
+      v.ThreadMode.Unconstrained,
+      v.ThreadMode.SingleTransaction,
+      v.ThreadMode.Unconstrained
     )
   )
 
@@ -266,12 +327,17 @@ object Properties_Test extends App {
     }
   assert(conflictingReenforcementRejected)
 
-  // Validation and compatibility return every applicable problem.
-  assert(v.BurstShape.validationErrors(v.BurstShape(), cfg).isEmpty)
+  // Configuration and compatibility checks return every applicable problem.
+  assert(v.CheckResult.from(Seq.empty) == v.CheckResult.Success)
+  assert(
+    v.CheckResult.from(Seq("first", "second")).errors == Seq("first", "second")
+  )
+  assert(!v.CheckResult.from(Seq("problem")).isSuccess)
+  assert(v.BurstShape.checkConfig(v.BurstShape(), cfg).isSuccess)
   private val liteCfg = cfg.copy(wId = 0, wData = 32, lite = true)
   assert(
     v.BurstShape
-      .validationErrors(
+      .checkConfig(
         v.BurstShape(
           1,
           Seq(INCR),
@@ -280,11 +346,12 @@ object Properties_Test extends App {
         ),
         liteCfg
       )
-      .isEmpty
+      .isSuccess
   )
   assert(
     v.BurstShape
-      .validationErrors(v.BurstShape(2, Seq(FIXED), Seq(0), false), liteCfg)
+      .checkConfig(v.BurstShape(2, Seq(FIXED), Seq(0), false), liteCfg)
+      .errors
       .length == 3
   )
   val invalidShape = v.BurstShape(
@@ -293,7 +360,7 @@ object Properties_Test extends App {
     sizes = Seq(fullSize + 1),
     aligned = false
   )
-  assert(v.BurstShape.validationErrors(invalidShape, cfg).length == 3)
+  assert(v.BurstShape.checkConfig(invalidShape, cfg).errors.length == 3)
 
   val masterMismatch = v.BurstShape(
     maxBeats = 32,
@@ -307,19 +374,19 @@ object Properties_Test extends App {
     sizes = Seq(3),
     aligned = true
   )
-  assert(v.BurstShape.compatibilityErrors(masterMismatch, slaveMismatch).length == 4)
+  assert(v.BurstShape.checkCompatible(masterMismatch, slaveMismatch).errors.length == 4)
   assert(
     v.BurstShape
-      .compatibilityErrors(
+      .checkCompatible(
         shape.copy(aligned = true),
         shape.copy(aligned = false)
       )
-      .isEmpty
+      .isSuccess
   )
   assert(
     v.BurstShape
-      .compatibilityErrors(v.BurstShape(), shape.copy(aligned = true))
-      .isEmpty
+      .checkCompatible(v.BurstShape(), shape.copy(aligned = true))
+      .isSuccess
   )
 
   val modes = Seq(
@@ -328,6 +395,15 @@ object Properties_Test extends App {
     v.ThreadMode.UniqueThreads,
     v.ThreadMode.Unconstrained
   )
+  assert(v.ThreadMode.values == modes)
+  assert(v.ThreadMode.supportedModesFor(cfg) == modes)
+  assert(
+    v.ThreadMode.supportedModesFor(liteCfg) ==
+      Seq(v.ThreadMode.SingleTransaction, v.ThreadMode.SingleThread)
+  )
+  assert(v.ThreadMode.all(cfg) == v.ThreadMode.Unconstrained)
+  assert(v.ThreadMode.all(liteCfg) == v.ThreadMode.SingleThread)
+  assert(modes.forall(mode => v.ThreadMode.normalize(mode) == mode))
   val compatibleModes = Map[v.ThreadMode, Set[v.ThreadMode]](
     v.ThreadMode.SingleTransaction -> modes.toSet,
     v.ThreadMode.SingleThread -> Set(v.ThreadMode.SingleThread, v.ThreadMode.Unconstrained),
@@ -337,24 +413,24 @@ object Properties_Test extends App {
   modes.foreach { master =>
     modes.foreach { slave =>
       assert(
-        v.ThreadMode.compatible(master, slave) ==
+        v.ThreadMode.checkCompatible(master, slave).isSuccess ==
           compatibleModes(master).contains(slave),
         s"$master -> $slave"
       )
     }
   }
   assert(
-    v.ThreadMode.validationErrors(v.ThreadMode.SingleTransaction, liteCfg).isEmpty
+    v.ThreadMode.checkConfig(v.ThreadMode.SingleTransaction, liteCfg).isSuccess
   )
-  assert(v.ThreadMode.validationErrors(v.ThreadMode.SingleThread, liteCfg).isEmpty)
+  assert(v.ThreadMode.checkConfig(v.ThreadMode.SingleThread, liteCfg).isSuccess)
   assert(
-    v.ThreadMode.validationErrors(v.ThreadMode.UniqueThreads, liteCfg).nonEmpty
-  )
-  assert(
-    v.ThreadMode.validationErrors(v.ThreadMode.Unconstrained, liteCfg).nonEmpty
+    !v.ThreadMode.checkConfig(v.ThreadMode.UniqueThreads, liteCfg).isSuccess
   )
   assert(
-    modes.forall(v.ThreadMode.validationErrors(_, cfg).isEmpty)
+    !v.ThreadMode.checkConfig(v.ThreadMode.Unconstrained, liteCfg).isSuccess
+  )
+  assert(
+    modes.forall(v.ThreadMode.checkConfig(_, cfg).isSuccess)
   )
 
   // Disabled property catalogs are classified automatically by resolver binding.

@@ -92,25 +92,17 @@ private final class IdSerialize_Resolver(owner: IdSerialize)(implicit sourceInfo
   bindSlave(owner.s_axi)
   bindMaster(owner.m_axi)
 
-  if (owner.cfg.axiSlaveCfg.read) {
-    owner.m_axi.properties(p.MasterReadThreadMode) = v.ThreadMode.SingleThread
-  }
-  if (owner.cfg.axiSlaveCfg.write) {
-    owner.m_axi.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
-  }
-
-  private val noLocalRequirement =
-    "IdSerialize imposes no local requirement for this property"
-
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
       case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap | p.BurstShape)) =>
         request.forwardTo(owner.m_axi)
-      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
-        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.ThreadMode)) =>
+        request.mapFrom(owner.m_axi, p.ThreadMode)(v.ThreadMode.idlessBackward)
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.forwardTo(owner.s_axi)
-      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
+      case ResolveRequest(_, p.Key(p.Master, _, p.ThreadMode)) =>
+        request.mapFrom(owner.s_axi, p.ThreadMode)(v.ThreadMode.idlessForward)
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
       case _ =>
         request.missingCase()

@@ -171,17 +171,31 @@ private final class Upscale_Resolver(owner: Upscale)(implicit sourceInfo: Source
     owner.s_axi.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
   }
 
-  private val noLocalRequirement =
-    "Upscale imposes no local requirement for this property"
-
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
       case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
         request.forwardTo(owner.m_axi)
-      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
-        request.dontCare(noLocalRequirement)
-      case ResolveRequest(_, p.Key(p.Master, _, _)) =>
+      case ResolveRequest(_, p.Key(p.Slave, _, p.BurstShape)) =>
+        request.mapFrom(owner.m_axi, p.BurstShape) { downstream =>
+          val types =
+            downstream.types.intersect(v.BurstShape.supportedTypesFor(owner.s_axi.cfg))
+          val sizes =
+            downstream.sizes.intersect(v.BurstShape.supportedSizesFor(owner.s_axi.cfg))
+          if (downstream.maxBeats <= 0 || types.isEmpty || sizes.isEmpty)
+            v.BurstShape()
+          else
+            v.BurstShape(
+              maxBeats =
+                math.min(downstream.maxBeats, v.BurstShape.maxBeatsFor(owner.s_axi.cfg)),
+              types = types,
+              sizes = sizes,
+              aligned = downstream.aligned
+            )
+        }
+      case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape | p.ThreadMode)) =>
         request.forwardTo(owner.s_axi)
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
+        request.incomplete()
       case _ =>
         request.missingCase()
     }

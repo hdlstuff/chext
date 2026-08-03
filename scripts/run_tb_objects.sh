@@ -67,6 +67,7 @@ APP_TARGETS=(
   "chext.amba.axi4.full.Connect_Test"
   "chext.amba.axi4.lite.Connect_Test"
   "chext.amba.axi4.full.components.DemuxMm_Test"
+  "chext.amba.axi4.full.components.ResolverPolicy_Test"
   "chext.amba.axi4.full.components.LiteConverter_Test"
   "chext.elastic.ChildIoTracking_Test"
   "chext.elastic.GraphDeclarationOrder_Test"

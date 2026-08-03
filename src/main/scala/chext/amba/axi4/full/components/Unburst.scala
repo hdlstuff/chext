@@ -189,15 +189,28 @@ private final class Unburst_Resolver(owner: Unburst)(implicit sourceInfo: Source
     owner.m_axi.properties(p.MasterWriteThreadMode) = v.ThreadMode.SingleThread
   }
 
-  private val noLocalRequirement =
-    "Unburst imposes no additional local requirement for this property"
-
   def resolve[T](request: ResolveRequest[T]): ResolveResult =
     request match {
       case ResolveRequest(_, p.Key(p.Slave, _, p.MemoryMap)) =>
         request.forwardTo(owner.m_axi)
-      case ResolveRequest(_, p.Key(p.Slave, _, _)) =>
-        request.dontCare(noLocalRequirement)
+      case ResolveRequest(_, p.Key(p.Slave, _, p.BurstShape)) =>
+        request.mapFrom(owner.m_axi, p.BurstShape) { downstream =>
+          val sizes =
+            downstream.sizes.intersect(v.BurstShape.supportedSizesFor(owner.s_axi.cfg))
+          if (
+            downstream.maxBeats < 1 ||
+            !downstream.types.contains(INCR) ||
+            sizes.isEmpty
+          )
+            v.BurstShape()
+          else
+            v.BurstShape(
+              maxBeats = v.BurstShape.maxBeatsFor(owner.s_axi.cfg),
+              types = v.BurstShape.supportedTypesFor(owner.s_axi.cfg),
+              sizes = sizes,
+              aligned = downstream.aligned
+            )
+        }
       case ResolveRequest(_, p.Key(p.Master, _, p.BurstShape)) =>
         request.mapFrom(owner.s_axi, p.BurstShape) { input =>
           if (input.sizes.isEmpty)
@@ -210,7 +223,7 @@ private final class Unburst_Resolver(owner: Unburst)(implicit sourceInfo: Source
               aligned = input.aligned
             )
         }
-      case ResolveRequest(_, p.Key(p.Master, _, p.TrafficProfile)) =>
+      case ResolveRequest(_, p.Key(_, _, p.TrafficProfile)) =>
         request.incomplete()
       case _ =>
         request.missingCase()

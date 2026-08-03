@@ -248,6 +248,11 @@ Request operations provide the terminal transitions:
 - `undefined()` records inapplicability;
 - `failure(message)` returns a request-specific error.
 
+One-to-one AXI module resolvers should forward or transform applicable
+properties rather than use `dontCare`; applicable transformations that are not
+yet modeled are `Incomplete`. `DontCare` is reserved for boundaries such as
+synthetic multi-endpoint aggregates where no single value is represented.
+
 `request.forwardTo(target)` implements transparent propagation. It creates a
 dependency for the same key, asks the coordinator to retry while that
 dependency is unresolved, copies a resolved value, and propagates valueless
@@ -326,6 +331,12 @@ A nonempty shape must have positive `maxBeats` and nonempty `types` and
 `sizes` sequences. Validation checks protocol limits and interface
 transfer sizes.
 
+`BurstShape.normalize` produces the canonical representation.
+`BurstShape.all(cfg)` produces the most permissive valid shape for an
+interface configuration. `checkConfig` returns all configuration errors, and
+`checkCompatible` returns all master-to-slave compatibility errors. Both
+checks use `CheckResult.Success` or `CheckResult.Error(errors: Seq[String])`.
+
 On a master property, `aligned = false` means transactions may be unaligned.
 On a slave property, `aligned = false` means unaligned transactions are
 accepted; it does not mean transactions must be unaligned. A slave with
@@ -365,6 +376,12 @@ Compatibility is:
 AXI4-Lite has one implicit ID. Only `SingleTransaction` and `SingleThread` are
 valid on a Lite interface; the checker rejects `UniqueThreads` and
 `Unconstrained` on either side and includes resolution provenance.
+
+`ThreadMode.values` lists every mode. `supportedModesFor(cfg)` limits that list
+for AXI4-Lite, and `all(cfg)` returns the most permissive valid mode:
+`Unconstrained` for Full AXI or `SingleThread` for AXI4-Lite. `normalize` is an
+identity operation because thread modes have no redundant representation.
+As for `BurstShape`, `checkConfig` and `checkCompatible` return `CheckResult`.
 
 ### MemoryMap
 
