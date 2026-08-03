@@ -12,6 +12,15 @@ find_package(chext_test REQUIRED)
 find_package(boost_endian REQUIRED)
 find_package(hdlscw REQUIRED)
 
+set(CHEXT_HDL_DIR "${CMAKE_SOURCE_DIR}/_common/verilog")
+
+if(NOT EXISTS "${CHEXT_TEST_HDL_DIR}/chext_deadlock_monitor.sv")
+    message(
+        FATAL_ERROR
+        "chext_test did not provide chext_deadlock_monitor.sv via CHEXT_TEST_HDL_DIR"
+    )
+endif()
+
 option(SYSC_TB_ENABLE_VERILATOR_TRACE "Enable Verilator VCD tracing for SystemC testbenches" OFF)
 
 include(CMakeParseArguments)
@@ -85,7 +94,8 @@ function(generate_tb)
             SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/hdl/${MODULE}.sv
             VERILATOR_ARGS
                 ${GEN_TB_VERILATOR_TRACE_ARGS}
-                -I${CMAKE_SOURCE_DIR}/_common/verilog
+                -I${CHEXT_HDL_DIR}
+                -I${CHEXT_TEST_HDL_DIR}
                 -Wno-fatal
         )
 
