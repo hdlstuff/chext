@@ -46,7 +46,7 @@ fit when you want:
 - Scala 2.13.x
 - SBT
 - Java 8+ (JDK)
-- Chisel 6.x
+- Chisel 7.6.0 (the version pinned in `build.sbt`)
 
 ### Build configuration
 
@@ -65,8 +65,8 @@ lazy val root = (project in file("."))
     name := "chext_examples",
     libraryDependencies ++= Seq(
       "org.chipsalliance" %% "chisel" % chiselVersion,
-      "hdlstuff" %% "hdlinfo" % "0.1.0",
-      "hdlstuff" %% "chext" % "0.2.2",
+      "hdlstuff" %% "hdlstuff_hdlinfo" % "0.1.0",
+      "hdlstuff" %% "hdlstuff_chext" % "0.2.3",
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion
@@ -80,11 +80,16 @@ lazy val root = (project in file("."))
     ),
     addCompilerPlugin(
       "org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full
-    ),
-    resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
-    resolvers ++= Resolver.sonatypeOssRepos("releases")
+    )
   )
 ```
+
+## Scala artifact-name migration
+
+The published artifact was renamed from `hdlstuff:chext_2.13` to
+`hdlstuff:hdlstuff_chext_2.13`. In sbt, use
+`"hdlstuff" %% "hdlstuff_chext"`. The Scala package remains `chext`, so
+existing imports do not need to be modified.
 
 ### Build, Test, and Emit Verilog
 

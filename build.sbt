@@ -8,10 +8,10 @@ val chiselVersion = "7.6.0"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "chext",
+    name := "hdlstuff_chext",
     libraryDependencies ++= Seq(
       "org.chipsalliance" %% "chisel" % chiselVersion,
-      "hdlstuff" %% "hdlinfo" % "0.1.0",
+      "hdlstuff" %% "hdlstuff_hdlinfo" % "0.1.0",
       "com.lihaoyi" %% "sourcecode" % "0.4.4"
     ),
     scalacOptions ++= Seq(
@@ -26,7 +26,5 @@ lazy val root = (project in file("."))
     ),
     addCompilerPlugin(
       "org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full
-    ),
-    resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
-    resolvers ++= Resolver.sonatypeOssRepos("releases")
+    )
   )

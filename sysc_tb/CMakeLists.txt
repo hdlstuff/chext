@@ -83,7 +83,7 @@ function(generate_tb)
         PUBLIC
         SystemC::systemc
         fmt::fmt
-        chext::chext_test
+        hdlstuff::chext_test
         Boost::endian
     )
 
