@@ -269,8 +269,8 @@ private final class RegisterBlock_Resolver(owner: RegisterBlock)(implicit source
 
   bindSlave(owner.s_axil)
 
-  owner.s_axil.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleTransaction
-  owner.s_axil.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleTransaction
+  owner.s_axil.properties(p.SlaveReadThreadMode) = v.ThreadMode.SingleThread
+  owner.s_axil.properties(p.SlaveWriteThreadMode) = v.ThreadMode.SingleThread
 
   def setMemoryMap(memoryMap: v.MemoryMap): Unit =
     owner.s_axil.properties(p.SlaveMemoryMap) = memoryMap

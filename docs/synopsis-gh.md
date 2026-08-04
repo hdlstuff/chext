@@ -1961,7 +1961,7 @@ assert(regs.memoryMapOption.contains(memoryMap))
 assert(regs.memoryMap == memoryMap)
 ```
 
-**Details:** Component. AXI4-Lite register block with generated Elastic read/write behavior. Its resolver publishes `SingleTransaction` slave mode while Lite burst shapes remain `Undefined`. `memoryMapOption` is `None` until `complete()` is called exactly once; `memoryMap` requires the completed value. `complete()` eagerly publishes `p.SlaveMemoryMap`, while a resolution request made before completion fails and `TrafficProfile` remains `Incomplete`.
+**Details:** Component. AXI4-Lite register block with generated Elastic read/write behavior. Its request and response buffers permit multiple outstanding transactions, so its resolver publishes `SingleThread` slave mode while Lite burst shapes remain `Undefined`. `memoryMapOption` is `None` until `complete()` is called exactly once; `memoryMap` requires the completed value. `complete()` eagerly publishes `p.SlaveMemoryMap`, while a resolution request made before completion fails and `TrafficProfile` remains `Incomplete`.
 
 ---
 

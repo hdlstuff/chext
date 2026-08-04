@@ -105,8 +105,8 @@ private class RegisterBlockTestTop(completeMode: Int) extends Module with chext.
     new RegisterBlock(wAddr = 16, wData = 32, wMask = 8, memoryMapPath = Seq("leaf"))
   }
   s_axil :=> registerBlock.s_axil
-  s_axil.properties(p.MasterReadThreadMode) = ThreadMode.SingleTransaction
-  s_axil.properties(p.MasterWriteThreadMode) = ThreadMode.SingleTransaction
+  s_axil.properties(p.MasterReadThreadMode) = ThreadMode.SingleThread
+  s_axil.properties(p.MasterWriteThreadMode) = ThreadMode.SingleThread
 
   private val storage = RegInit(0.U(32.W))
   private val status = WireDefault(0x1234.U(32.W))
@@ -124,7 +124,11 @@ private class RegisterBlockTestTop(completeMode: Int) extends Module with chext.
   assert(memoryMapUnavailable)
   assert(
     registerBlock.s_axil.properties(p.SlaveReadThreadMode).get ==
-      ThreadMode.SingleTransaction
+      ThreadMode.SingleThread
+  )
+  assert(
+    registerBlock.s_axil.properties(p.SlaveWriteThreadMode).get ==
+      ThreadMode.SingleThread
   )
 
   private val earlyRequest = Option.when(completeMode == 3) {

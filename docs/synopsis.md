@@ -1042,7 +1042,7 @@ regs.reg(status, write = false, desc = &quot;status&quot;)
 val memoryMap = regs.complete()
 assert(regs.memoryMapOption.contains(memoryMap))
 assert(regs.memoryMap == memoryMap)</code></pre></td>
-      <td style="vertical-align:top;"><span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span> AXI4-Lite register block with generated Elastic read/write behavior. Its resolver publishes <code>SingleTransaction</code> slave mode while Lite burst shapes remain <code>Undefined</code>. <code>memoryMapOption</code> is <code>None</code> until <code>complete()</code> is called exactly once; <code>memoryMap</code> requires the completed value. <code>complete()</code> eagerly publishes <code>p.SlaveMemoryMap</code>, while a resolution request made before completion fails and <code>TrafficProfile</code> remains <code>Incomplete</code>.</td>
+      <td style="vertical-align:top;"><span style="background:#e8f1ff;color:#174ea6;padding:2px 6px;border-radius:4px;">Component</span> AXI4-Lite register block with generated Elastic read/write behavior. Its request and response buffers permit multiple outstanding transactions, so its resolver publishes <code>SingleThread</code> slave mode while Lite burst shapes remain <code>Undefined</code>. <code>memoryMapOption</code> is <code>None</code> until <code>complete()</code> is called exactly once; <code>memoryMap</code> requires the completed value. <code>complete()</code> eagerly publishes <code>p.SlaveMemoryMap</code>, while a resolution request made before completion fails and <code>TrafficProfile</code> remains <code>Incomplete</code>.</td>
     </tr>
   </tbody>
 </table>

@@ -275,6 +275,8 @@ when(mem.debug.wen) {
 (`s_axil`) and a matching `cfgAxi`, then maps Chisel registers and read-only wires into an aligned
 address space. `complete()` must be called exactly once after all declarations; it generates the
 Elastic read/write implementation and makes the memory map available to the interface resolver.
+The request and response buffers permit multiple outstanding transactions on each channel, so the
+resolver publishes `SingleThread` for both read and write traffic.
 
 ```scala
 class RegTop extends Module {
