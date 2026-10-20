@@ -22,22 +22,19 @@ abstract class Chooser(val v: Vec[Bool]) extends AffectsChiselPrefix {
 
 class RRChooser(v: Vec[Bool]) extends Chooser(v) {
   private val lastChoice = RegInit(zeroChoice)
-  private val choiceMax = (-1).S(wChoice.W).asUInt
 
   override def choice: UInt = {
     Mux(v(rrChoice), rrChoice, priorityChoice)
   }
   override def updateState: Unit = (lastChoice := choice)
 
-  private val rrChoice =
-    Mux(
-      lastChoice === choiceMax,
-      zeroChoice,
-      PriorityEncoder(v.zipWithIndex.map { case (x, i) =>
-        i.U > lastChoice && x
-      })
-    )
   private val priorityChoice = PriorityEncoder(v)
+  // Next valid input above the last winner, wrapping to the lowest valid input. The old
+  // form only wrapped when lastChoice was all ones, i.e. for a power-of-2 input count;
+  // otherwise PriorityEncoder of an all-false vector returned n-1 and the last input kept
+  // winning for as long as it stayed valid, starving every other input.
+  private val higher = VecInit(v.zipWithIndex.map { case (x, i) => i.U > lastChoice && x })
+  private val rrChoice = Mux(higher.asUInt.orR, PriorityEncoder(higher), priorityChoice)
 
 }
 
