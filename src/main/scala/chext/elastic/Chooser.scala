@@ -15,18 +15,15 @@ object Chooser {
       if (valid.length == 1)
         return 0.U(0.W)
 
-      val max = (-1).S(wChoice.W).asUInt
       val last = RegInit(0.U(wChoice.W))
 
       val priority0 = PriorityEncoder(valid)
-      val rr0 =
-        Mux(
-          last === max,
-          0.U(wChoice.W),
-          PriorityEncoder(valid.zipWithIndex.map { case (x, i) =>
-            i.U > last && x
-          })
-        )
+      // Next valid input above the last winner, wrapping to the lowest valid input. The old
+      // form only wrapped when `last` was all ones, i.e. for a power-of-2 input count;
+      // otherwise PriorityEncoder of an all-false vector returned n-1 and the last input kept
+      // winning for as long as it stayed valid, starving every other input.
+      val higher = VecInit(valid.zipWithIndex.map { case (x, i) => i.U > last && x })
+      val rr0 = Mux(higher.asUInt.orR, PriorityEncoder(higher), priority0)
       val rr = Mux(valid(rr0), rr0, priority0)
 
       val locked = RegInit(false.B)
